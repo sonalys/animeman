@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 // StripTitle returns only the main title, trimming everything after ':'.
@@ -85,14 +87,7 @@ func ParseTitle(title string) ParsedTitle {
 			resp.Tags = append(resp.Tags, matches[1])
 		}
 	}
-	resp.Episode = coalesce(matchEpisode(resp.Title), "00")
-	resp.Season = coalesce(matchSeason(resp.Title), "00")
+	resp.Episode = utils.Coalesce(matchEpisode(resp.Title), "00")
+	resp.Season = utils.Coalesce(matchSeason(resp.Title), "00")
 	return resp
-}
-
-func coalesce[T string](value, fallback T) T {
-	if value == "" {
-		return fallback
-	}
-	return value
 }

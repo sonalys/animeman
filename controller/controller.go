@@ -2,6 +2,7 @@ package controller
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"strings"
 	"time"
@@ -76,7 +77,10 @@ func (c *Controller) scan(ctx context.Context) {
 		}
 		added, err := c.digestEntry(ctx, entry, torrents)
 		if err != nil {
-			log.Error().Msgf("failed to add entry to torrent client: %s\n", err)
+			log.Error().Msgf("failed to digest entry: %s\n", err)
+			if errors.Is(err, qbittorrent.ErrUnauthorized) {
+				break
+			}
 			continue
 		}
 		if added {

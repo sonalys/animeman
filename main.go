@@ -14,6 +14,7 @@ import (
 	"github.com/sonalys/animeman/integrations/myanimelist"
 	"github.com/sonalys/animeman/integrations/nyaa"
 	"github.com/sonalys/animeman/integrations/qbittorrent"
+	"github.com/sonalys/animeman/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -53,7 +54,7 @@ func createMockConfig() {
 }
 
 func readConfig() Config {
-	file, err := os.ReadFile("config.yaml")
+	file, err := os.ReadFile(utils.Coalesce(os.Getenv("CONFIG_PATH"), "config.yaml"))
 	if err != nil {
 		createMockConfig()
 		panic("file config.yaml not detected, please open the created file and configure it correctly")
