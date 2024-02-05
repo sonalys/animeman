@@ -29,7 +29,6 @@ func New(host, username, password string) *API {
 			Jar:     jar,
 		},
 	}
-	log.Info().Msg("connecting to qBitTorrent")
 	var version string
 	if version, err = api.Version(); err != nil {
 		if !errors.Is(err, ErrUnauthorized) {

@@ -94,6 +94,7 @@ func (c *Controller) scan(ctx context.Context) {
 
 func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeListEntry, torrents []nyaa.Entry) (bool, error) {
 	if len(torrents) == 0 {
+		log.Error().Msgf("no torrents found for entry '%s'", entry.GetTitle())
 		return false, nil
 	}
 	// We only add the most recent entry for now.

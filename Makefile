@@ -5,3 +5,6 @@ build:
 
 image:
 	docker build -t ${IMG}:latest -f Dockerfile .
+
+push:
+	docker push ${IMG}
