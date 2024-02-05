@@ -32,7 +32,7 @@ type (
 )
 
 func New(host, username, password string) *API {
-	jar, err := cookiejar.New(&cookiejar.Options{})
+	jar, err := cookiejar.New(nil)
 	if err != nil {
 		panic(err)
 	}
@@ -145,13 +145,14 @@ func (api *API) AddTorrent(ctx context.Context, args ...ArgAddTorrent) error {
 	if err != nil {
 		return fmt.Errorf("creating request failed: %w", err)
 	}
+	req.Header.Set("Content-Type", formdata.FormDataContentType())
 	resp, err := api.client.Do(req)
 	if err != nil {
 		return fmt.Errorf("post torrents/add failed: %w", err)
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return fmt.Errorf("unauthorized: %w", err)
+		return fmt.Errorf("unauthorized")
 	}
 	return nil
 }
@@ -182,6 +183,9 @@ func (api *API) List(ctx context.Context, args ...ArgListTorrent) ([]Torrent, er
 		return nil, fmt.Errorf("could not list torrents: %w", err)
 	}
 	defer resp.Body.Close()
+	if resp.StatusCode != 200 {
+		return nil, fmt.Errorf("unauthorized")
+	}
 	var respBody []Torrent
 	if err := json.NewDecoder(resp.Body).Decode(&respBody); err != nil {
 		return nil, fmt.Errorf("could not read response: %w", err)

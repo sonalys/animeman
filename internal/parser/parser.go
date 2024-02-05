@@ -85,7 +85,14 @@ func ParseTitle(title string) ParsedTitle {
 			resp.Tags = append(resp.Tags, matches[1])
 		}
 	}
-	resp.Episode = matchEpisode(resp.Title)
-	resp.Season = matchSeason(resp.Title)
+	resp.Episode = coalesce(matchEpisode(resp.Title), "00")
+	resp.Season = coalesce(matchSeason(resp.Title), "00")
 	return resp
+}
+
+func coalesce[T string](value, fallback T) T {
+	if value == "" {
+		return fallback
+	}
+	return value
 }
