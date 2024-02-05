@@ -1,17 +1,19 @@
 package qbittorrent
 
-import "io"
+import (
+	"io"
+	"net/http"
+
+	"github.com/sonalys/animeman/internal/utils"
+)
 
 func (api *API) Version() (string, error) {
 	var path = api.host + "/app/version"
-	resp, err := api.client.Get(path)
+	resp, err := api.Do(utils.Must(http.NewRequest(http.MethodGet, path, nil)))
 	if err != nil {
-		panic(err)
+		return "", NewErrConnection(err)
 	}
 	defer resp.Body.Close()
-	if resp.StatusCode != 200 {
-		return "", ErrUnauthorized
-	}
 	version, err := io.ReadAll(resp.Body)
 	if err != nil {
 		panic(err)

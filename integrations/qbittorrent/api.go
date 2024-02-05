@@ -30,6 +30,7 @@ func New(host, username, password string) *API {
 		},
 	}
 	var version string
+	api.Wait()
 	if version, err = api.Version(); err != nil {
 		if !errors.Is(err, ErrUnauthorized) {
 			log.Fatal().Msgf("failed to initialize: %s", err)

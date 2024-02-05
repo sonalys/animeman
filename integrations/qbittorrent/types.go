@@ -10,6 +10,10 @@ import (
 
 var ErrUnauthorized = fmt.Errorf("unauthorized")
 
+func NewErrConnection(err error) error {
+	return fmt.Errorf("connection error: %w", err)
+}
+
 type TorrentURL []string
 
 func (t TorrentURL) ApplyAddTorrent(w *multipart.Writer) {
