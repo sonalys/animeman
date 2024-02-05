@@ -1,2 +1,7 @@
+IMG = ghcr.io/sonalys/animeman
+
 build:
-	docker build -t animeman:latest -f Dockerfile .
+	CGO_ENABLED=0 GOOS=linux go build -o /animeman
+
+image:
+	docker build -t ${IMG}:latest -f Dockerfile .
