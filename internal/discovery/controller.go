@@ -1,4 +1,4 @@
-package controller
+package discovery
 
 import (
 	"context"
@@ -14,25 +14,27 @@ import (
 	"github.com/sonalys/animeman/internal/parser"
 )
 
-type Config struct {
-	Sources          []string
-	Qualitites       []string
-	Category         string
-	DownloadPath     string
-	CreateShowFolder bool
-	PollFrequency    time.Duration
-}
+type (
+	Config struct {
+		Sources          []string
+		Qualitites       []string
+		Category         string
+		DownloadPath     string
+		CreateShowFolder bool
+		PollFrequency    time.Duration
+	}
 
-type Dependencies struct {
-	MAL    *myanimelist.API
-	NYAA   *nyaa.API
-	QB     *qbittorrent.API
-	Config Config
-}
+	Dependencies struct {
+		MAL    *myanimelist.API
+		NYAA   *nyaa.API
+		QB     *qbittorrent.API
+		Config Config
+	}
 
-type Controller struct {
-	dep Dependencies
-}
+	Controller struct {
+		dep Dependencies
+	}
+)
 
 func New(dep Dependencies) *Controller {
 	return &Controller{
@@ -40,22 +42,26 @@ func New(dep Dependencies) *Controller {
 	}
 }
 
-func (c *Controller) Start(ctx context.Context) {
+func (c *Controller) Start(ctx context.Context) error {
 	log.Info().Msgf("starting polling with frequency %s", c.dep.Config.PollFrequency.String())
 	timer := time.NewTicker(c.dep.Config.PollFrequency)
 	defer timer.Stop()
-	c.scan(ctx)
+	c.RunDiscovery(ctx)
 	for {
 		select {
 		case <-timer.C:
-			c.scan(ctx)
+			err := c.RunDiscovery(ctx)
+			if errors.Is(err, context.Canceled) {
+				return err
+			}
+			log.Error().Msgf("scan failed: %s", err)
 		case <-ctx.Done():
-			return
+			return nil
 		}
 	}
 }
 
-func (c *Controller) scan(ctx context.Context) {
+func (c *Controller) RunDiscovery(ctx context.Context) error {
 	log.Info().Msg("discovery started")
 	entries, err := c.dep.MAL.GetAnimeList(ctx, myanimelist.ListStatusWatching)
 	if err != nil {
@@ -72,14 +78,12 @@ func (c *Controller) scan(ctx context.Context) {
 			nyaa.Query("(^~|batch)"),
 		)
 		if err != nil {
-			log.Error().Msgf("getting nyaa list: %s", err)
-			break
+			return fmt.Errorf("getting nyaa list: %w", err)
 		}
 		added, err := c.digestEntry(ctx, entry, torrents)
 		if err != nil {
-			log.Error().Msgf("failed to digest entry: %s\n", err)
-			if errors.Is(err, qbittorrent.ErrUnauthorized) {
-				break
+			if errors.Is(err, qbittorrent.ErrUnauthorized) || errors.Is(err, context.Canceled) {
+				return fmt.Errorf("failed to digest entry: %w", err)
 			}
 			continue
 		}
@@ -90,6 +94,7 @@ func (c *Controller) scan(ctx context.Context) {
 	if addedCount > 0 {
 		log.Info().Msgf("added %d torrents", addedCount)
 	}
+	return nil
 }
 
 func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeListEntry, torrents []nyaa.Entry) (bool, error) {
