@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 
 	"github.com/sonalys/animeman/internal/utils"
@@ -48,9 +49,12 @@ func matchEpisode(title string) (string, bool) {
 			continue
 		}
 		if len(matches) == 1 {
-			return matches[0][1], false
+			episode, _ := strconv.ParseInt(matches[0][1], 10, 64)
+			return fmt.Sprint(episode), false
 		}
-		return fmt.Sprintf("%s~%s", matches[0][1], matches[1][1]), true
+		episode1, _ := strconv.ParseInt(matches[0][1], 10, 64)
+		episode2, _ := strconv.ParseInt(matches[1][1], 10, 64)
+		return fmt.Sprintf("%d~%d", episode1, episode2), true
 	}
 	// Some scenarios are like Frieren Season 1
 	return "", true
@@ -63,6 +67,8 @@ var seasonExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(\d+)(?:x\d+)`),
 	// S02E15.
 	regexp.MustCompile(`(?i:s)(\d+)(?i:e\d+)`),
+	// Season 1.
+	regexp.MustCompile(`(?i:season\s)(\d+)`),
 }
 
 func matchSeason(title string) string {
@@ -71,7 +77,8 @@ func matchSeason(title string) string {
 		if len(matches) == 0 || len(matches[0]) < 2 {
 			continue
 		}
-		return matches[0][1]
+		season, _ := strconv.ParseInt(matches[0][1], 10, 64)
+		return fmt.Sprint(season)
 	}
 	return ""
 }
