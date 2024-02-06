@@ -28,7 +28,7 @@ func GenerateBoilerplateConfig() {
 	}
 	err = yaml.NewEncoder(file).Encode(Config{
 		Sources:             []string{},
-		Qualities:           []string{"1080", "720"},
+		Qualities:           []string{"1080 HEVC", "720"},
 		Category:            "Animes",
 		DownloadPath:        "/downloads/animes",
 		MALUser:             "raicon",

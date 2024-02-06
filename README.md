@@ -28,6 +28,7 @@ sources:
     - source2
 qualities:
     - "1080"
+    - "1080 HEVC"
     - "720"
 category: Animes
 downloadPath: /downloads/animes

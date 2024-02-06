@@ -1,15 +1,20 @@
 package myanimelist
 
-import "fmt"
+import (
+	"fmt"
+	"net/url"
+)
 
 type (
-	ListStatus int
-	Title      string
+	ListStatus   int
+	AiringStatus int
+	Title        string
 
 	AnimeListEntry struct {
-		Status   ListStatus `json:"status"`
-		Title    any        `json:"anime_title"`
-		TitleEng string     `json:"anime_title_eng"`
+		Status       ListStatus   `json:"status"`
+		Title        any          `json:"anime_title"`
+		TitleEng     string       `json:"anime_title_eng"`
+		AiringStatus AiringStatus `json:"anime_airing_status"`
 	}
 )
 
@@ -20,6 +25,11 @@ const (
 	ListStatusDropped     ListStatus = 4
 	ListStatusPlanToWatch ListStatus = 6
 	ListStatusAll         ListStatus = 7
+)
+
+const (
+	AiringStatusAired AiringStatus = iota
+	AiringStatusAiring
 )
 
 var statusNames = []string{
@@ -42,4 +52,12 @@ func (e *AnimeListEntry) GetTitle() string {
 		return e.TitleEng
 	}
 	return fmt.Sprint(e.Title)
+}
+
+func (s ListStatus) ApplyList(v url.Values) {
+	v.Set("status", fmt.Sprint(s))
+}
+
+func (s AiringStatus) ApplyList(v url.Values) {
+	v.Set("airing_status", fmt.Sprint(s))
 }

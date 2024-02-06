@@ -18,11 +18,12 @@ func StripTitle(title string) string {
 }
 
 type ParsedTitle struct {
-	Source  string
-	Title   string
-	Episode string
-	Season  string
-	Tags    []string
+	Source         string
+	Title          string
+	Episode        string
+	Season         string
+	Tags           []string
+	IsMultiEpisode bool
 }
 
 // Anything that is inside [].
@@ -35,23 +36,24 @@ var episodeExpr = []*regexp.Regexp{
 	// 0x15.
 	regexp.MustCompile(`x` + episodeGroup),
 	// - 15.
-	regexp.MustCompile(`\s` + episodeGroup + `(?:\W|$)`),
+	regexp.MustCompile(`(?i:[^season])\s` + episodeGroup + `(?:\W|$)`),
 	// S02E15.
 	regexp.MustCompile(`(?i:e)` + episodeGroup),
 }
 
-func matchEpisode(title string) string {
+func matchEpisode(title string) (string, bool) {
 	for _, expr := range episodeExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 || len(matches[0]) < 2 {
 			continue
 		}
 		if len(matches) == 1 {
-			return matches[0][1]
+			return matches[0][1], false
 		}
-		return fmt.Sprintf("%s~%s", matches[0][1], matches[1][1])
+		return fmt.Sprintf("%s~%s", matches[0][1], matches[1][1]), true
 	}
-	return ""
+	// Some scenarios are like Frieren Season 1
+	return "", true
 }
 
 var seasonExpr = []*regexp.Regexp{
@@ -87,7 +89,9 @@ func ParseTitle(title string) ParsedTitle {
 			resp.Tags = append(resp.Tags, matches[1])
 		}
 	}
-	resp.Episode = utils.Coalesce(matchEpisode(resp.Title), "00")
+	episode, isMultiEpisode := matchEpisode(resp.Title)
+	resp.IsMultiEpisode = isMultiEpisode
+	resp.Episode = utils.Coalesce(episode, "00")
 	resp.Season = utils.Coalesce(matchSeason(resp.Title), "00")
 	return resp
 }

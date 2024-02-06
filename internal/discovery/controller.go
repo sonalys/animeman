@@ -63,20 +63,23 @@ func (c *Controller) Start(ctx context.Context) error {
 
 func (c *Controller) RunDiscovery(ctx context.Context) error {
 	log.Info().Msg("discovery started")
-	entries, err := c.dep.MAL.GetAnimeList(ctx, myanimelist.ListStatusWatching)
+	entries, err := c.dep.MAL.GetAnimeList(ctx,
+		myanimelist.ListStatusWatching,
+	)
 	if err != nil {
 		panic(fmt.Errorf("getting MAL list: %w", err))
 	}
 	log.Info().Msgf("processing %d entries from MAL", len(entries))
 	var addedCount int
 	for _, entry := range entries {
+		log.Debug().Msgf("Digesting entry '%s'", entry.GetTitle())
 		torrents, err := c.dep.NYAA.List(ctx,
 			nyaa.CategoryAnimeEnglishTranslated,
 			nyaa.Query(parser.StripTitle(entry.GetTitle())),
 			nyaa.Query(fmt.Sprintf("(%s)", strings.Join(c.dep.Config.Sources, "|"))),
 			nyaa.Query(fmt.Sprintf("(%s)", strings.Join(c.dep.Config.Qualitites, "|"))),
-			nyaa.Query("(^~|batch)"),
 		)
+		log.Debug().Str("entry", entry.GetTitle()).Msgf("Found %d torrents", len(torrents))
 		if err != nil {
 			return fmt.Errorf("getting nyaa list: %w", err)
 		}
@@ -102,17 +105,26 @@ func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeLis
 		log.Error().Msgf("no torrents found for entry '%s'", entry.GetTitle())
 		return false, nil
 	}
-	// We only add the most recent entry for now.
-	torrent := torrents[0]
-	parsedTitle := parser.ParseTitle(torrent.Title)
-	tags := qbittorrent.Tags{"animeman", entry.GetTitle(), fmt.Sprintf("S%sE%s", parsedTitle.Season, parsedTitle.Episode)}
-	// check if torrent already exists, if so we skip it.
-	torrentList, err := c.dep.QB.List(ctx, tags)
-	if err != nil {
-		return false, fmt.Errorf("listing torrents: %w", err)
-	}
-	if len(torrentList) > 0 {
-		return false, nil
+	var torrent nyaa.Entry
+	var tags qbittorrent.Tags
+	for i := range torrents {
+		torrent = torrents[i]
+		log.Debug().Str("entry", entry.GetTitle()).Msgf("Analyzing torrent '%s'", torrent.Title)
+		parsedTitle := parser.ParseTitle(torrent.Title)
+		if parsedTitle.IsMultiEpisode && entry.AiringStatus == myanimelist.AiringStatusAiring {
+			log.Debug().Str("entry", entry.GetTitle()).Msgf("torrent '%s' dropped: multi-episode for currently airing", torrent.Title)
+			continue
+		}
+		tags = qbittorrent.Tags{"animeman", entry.GetTitle(), fmt.Sprintf("S%sE%s", parsedTitle.Season, parsedTitle.Episode)}
+		// check if torrent already exists, if so we skip it.
+		torrentList, err := c.dep.QB.List(ctx, tags)
+		if err != nil {
+			return false, fmt.Errorf("listing torrents: %w", err)
+		}
+		if len(torrentList) > 0 {
+			log.Debug().Str("entry", entry.GetTitle()).Msgf("S%sE%s already exists for %s in qBitTorrent client", parsedTitle.Season, parsedTitle.Episode, entry.GetTitle())
+			return false, nil
+		}
 	}
 	var savePath qbittorrent.SavePath
 	if c.dep.Config.CreateShowFolder {
@@ -120,11 +132,11 @@ func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeLis
 	} else {
 		savePath = qbittorrent.SavePath(c.dep.Config.DownloadPath)
 	}
-	err = c.dep.QB.AddTorrent(ctx,
-		qbittorrent.TorrentURL{torrent.Link},
+	err := c.dep.QB.AddTorrent(ctx,
 		tags,
-		qbittorrent.Category(c.dep.Config.Category),
 		savePath,
+		qbittorrent.TorrentURL{torrent.Link},
+		qbittorrent.Category(c.dep.Config.Category),
 	)
 	if err != nil {
 		return false, fmt.Errorf("adding torrents: %w", err)
