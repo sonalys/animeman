@@ -69,7 +69,7 @@ func (c *Controller) Start(ctx context.Context) error {
 
 func buildTorrentTags(title string) qbittorrent.Tags {
 	parsedTitle := parser.ParseTitle(title)
-	tags := qbittorrent.Tags{"animeman", "!" + parsedTitle.Title, buildSeasonEpisodeTag(parsedTitle.Season, parsedTitle.Episode)}
+	tags := qbittorrent.Tags{"!" + parsedTitle.Title, buildSeasonEpisodeTag(parsedTitle.Season, parsedTitle.Episode)}
 	if parsedTitle.Episode == "0" && parsedTitle.IsMultiEpisode {
 		tags = append(tags, TagBatch)
 	}
