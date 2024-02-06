@@ -54,6 +54,9 @@ func (c *Controller) Start(ctx context.Context) error {
 		select {
 		case <-timer.C:
 			err := c.RunDiscovery(ctx)
+			if err == nil {
+				continue
+			}
 			if errors.Is(err, context.Canceled) {
 				return err
 			}
@@ -201,7 +204,7 @@ func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeLis
 		savePath,
 		qbittorrent.TorrentURL{torrent.Link},
 		qbittorrent.Category(c.dep.Config.Category),
-		qbittorrent.Paused(true),
+		// qbittorrent.Paused(true),
 	)
 	if err != nil {
 		return false, fmt.Errorf("adding torrents: %w", err)
