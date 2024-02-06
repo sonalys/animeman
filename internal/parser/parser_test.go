@@ -14,8 +14,14 @@ func Test_matchEpisode(t *testing.T) {
 		{name: "0x15", title: "Frieren 0x15", episode: "15", multi: false},
 		{name: "-15", title: "Frieren - 15", episode: "15", multi: false},
 		{name: "S02E15", title: "Frieren S02E15", episode: "15", multi: false},
-		{name: "Season", title: "Frieren Season 2", episode: "", multi: true},
+		{name: "Season", title: "Frieren Season 2", episode: "0", multi: true},
 		{name: "Season with episode", title: "Frieren Season 2 - 15", episode: "15", multi: false},
+		{
+			name:    "Boku no Kokoro no Yabai",
+			title:   "Boku no Kokoro no Yabai Yatsu S01 1080p WEBRip DD+ x265-EMBER",
+			episode: "0",
+			multi:   true,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -36,6 +42,21 @@ func Test_matchSeason(t *testing.T) {
 		title string
 		want  string
 	}{
+		{
+			name:  "Ragna Crimson",
+			title: "[SubsPlease] Ragna Crimson - 02 (1080p) [B8FB702D].mkv",
+			want:  "0",
+		},
+		{
+			name:  "Boku no Kokoro no Yabai",
+			title: "Boku no Kokoro no Yabai Yatsu S01 1080p WEBRip DD+ x265-EMBER",
+			want:  "1",
+		},
+		{
+			name:  "Kusuriya no Hitorigoto",
+			title: "Kusuriya no Hitorigoto - 01.mkv",
+			want:  "0",
+		},
 		{
 			name:  "Tatami Galaxy",
 			title: "[EMBER] The Tatami Galaxy (2010) (Season 1) [BDRip] [1080p HEVC 10 bits] (Yojouhan Shinwa Taikei)",

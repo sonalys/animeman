@@ -5,8 +5,6 @@ import (
 	"regexp"
 	"strconv"
 	"strings"
-
-	"github.com/sonalys/animeman/internal/utils"
 )
 
 // StripTitle returns only the main title, trimming everything after ':'.
@@ -35,7 +33,7 @@ const episodeGroup = `(\d+(?:\.\d+)?|(?:\s?~|-\s?-\s?\d+))`
 
 var episodeExpr = []*regexp.Regexp{
 	// 0x15.
-	regexp.MustCompile(`x` + episodeGroup),
+	regexp.MustCompile(`\d+x` + episodeGroup),
 	// - 15.
 	regexp.MustCompile(`(?i:[^season])\s` + episodeGroup + `(?:\W|$)`),
 	// S02E15.
@@ -57,7 +55,7 @@ func matchEpisode(title string) (string, bool) {
 		return fmt.Sprintf("%d~%d", episode1, episode2), true
 	}
 	// Some scenarios are like Frieren Season 1
-	return "", true
+	return "0", true
 }
 
 var seasonExpr = []*regexp.Regexp{
@@ -66,7 +64,7 @@ var seasonExpr = []*regexp.Regexp{
 	// 2x15.
 	regexp.MustCompile(`(\d+)(?:x\d+)`),
 	// S02E15.
-	regexp.MustCompile(`(?i:s)(\d+)(?i:e\d+)`),
+	regexp.MustCompile(`(?i:s)(\d+)`),
 	// Season 1.
 	regexp.MustCompile(`(?i:season\s)(\d+)`),
 }
@@ -80,14 +78,57 @@ func matchSeason(title string) string {
 		season, _ := strconv.ParseInt(matches[0][1], 10, 64)
 		return fmt.Sprint(season)
 	}
-	return ""
+	return "0"
 }
 
-var titleCleanupExpr = regexp.MustCompile(`(\[.*?\]|\(.*?\))`)
+func matchEpisodeIndex(title string) int {
+	for _, expr := range episodeExpr {
+		matches := expr.FindAllStringSubmatchIndex(title, -1)
+		if len(matches) == 0 || len(matches[0]) < 2 {
+			continue
+		}
+		return matches[0][0]
+	}
+	return -1
+}
+
+func matchSeasonIndex(title string) int {
+	for _, expr := range seasonExpr {
+		matches := expr.FindAllStringSubmatchIndex(title, -1)
+		if len(matches) == 0 || len(matches[0]) < 2 {
+			continue
+		}
+		return matches[0][0]
+	}
+	return -1
+}
+
+var titleCleanupExpr = []*regexp.Regexp{
+	regexp.MustCompile(`(\[.*?\]|\(.*?\))`),
+	regexp.MustCompile(`\..*$`),
+}
+
+func cleanWithRegex(expr *regexp.Regexp, value string) string {
+	return expr.ReplaceAllString(value, "")
+}
+
+func cleanupTitle(title string) string {
+	for _, expr := range titleCleanupExpr {
+		title = cleanWithRegex(expr, title)
+	}
+	if index := matchSeasonIndex(title); index != -1 {
+		title = title[:index]
+	}
+	if index := matchEpisodeIndex(title); index != -1 {
+		title = title[:index]
+	}
+	title = strings.ReplaceAll(title, "  ", " ")
+	return strings.TrimSpace(title)
+}
 
 func ParseTitle(title string) ParsedTitle {
 	resp := ParsedTitle{
-		Title: strings.TrimSpace(titleCleanupExpr.ReplaceAllString(title, "")),
+		Title: cleanupTitle(title),
 	}
 	if tags := tagsExpr.FindAllStringSubmatch(title, -1); len(tags) > 0 {
 		resp.Source = tags[0][1]
@@ -96,9 +137,7 @@ func ParseTitle(title string) ParsedTitle {
 			resp.Tags = append(resp.Tags, matches[1])
 		}
 	}
-	episode, isMultiEpisode := matchEpisode(resp.Title)
-	resp.IsMultiEpisode = isMultiEpisode
-	resp.Episode = utils.Coalesce(episode, "00")
-	resp.Season = utils.Coalesce(matchSeason(resp.Title), "00")
+	resp.Episode, resp.IsMultiEpisode = matchEpisode(title)
+	resp.Season = matchSeason(title)
 	return resp
 }

@@ -31,7 +31,6 @@ func (api *API) List(ctx context.Context, args ...ArgListTorrent) ([]Torrent, er
 		return nil, fmt.Errorf("could not list torrents: %w", err)
 	}
 	defer resp.Body.Close()
-
 	rawBody := utils.Must(io.ReadAll(resp.Body))
 	var respBody []Torrent
 	if err := json.Unmarshal(rawBody, &respBody); err != nil {

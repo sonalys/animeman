@@ -38,6 +38,10 @@ func (t Tags) ApplyAddTorrent(w *multipart.Writer) {
 	}
 }
 
+func (t Tags) ApplyAddTorrentTagsArg(v url.Values) {
+	v.Set("tags", strings.Join(t, ","))
+}
+
 type SavePath string
 
 func (s SavePath) ApplyAddTorrent(w *multipart.Writer) {
@@ -50,20 +54,36 @@ func (s SavePath) ApplyAddTorrent(w *multipart.Writer) {
 
 type Category string
 
-func (s Category) ApplyAddTorrent(w *multipart.Writer) {
+func (c Category) ApplyAddTorrent(w *multipart.Writer) {
 	field, err := w.CreateFormField("category")
 	if err != nil {
 		panic(err)
 	}
-	io.WriteString(field, string(s))
+	io.WriteString(field, string(c))
+}
+
+func (c Category) ApplyListTorrent(v url.Values) {
+	v.Add("category", url.QueryEscape(string(c)))
 }
 
 type Torrent struct {
-	Name string `json:"name"`
+	Name     string `json:"name"`
+	Category string `json:"category"`
+	Hash     string `json:"hash"`
 }
 
 func (t Tags) ApplyListTorrent(v url.Values) {
 	for _, tag := range t {
 		v.Add("tag", url.QueryEscape(tag))
 	}
+}
+
+type Paused bool
+
+func (p Paused) ApplyAddTorrent(w *multipart.Writer) {
+	field, err := w.CreateFormField("paused")
+	if err != nil {
+		panic(err)
+	}
+	io.WriteString(field, fmt.Sprint(p))
 }

@@ -3,7 +3,10 @@ package main
 import (
 	"context"
 	"os"
+	"os/exec"
 	"os/signal"
+	"strconv"
+	"strings"
 	"syscall"
 
 	"github.com/rs/zerolog"
@@ -16,10 +19,19 @@ import (
 	"github.com/sonalys/animeman/internal/utils"
 )
 
+func isLaunchedByDebugger() bool {
+	// gops executable must be in the path. See https://github.com/google/gops
+	gopsOut, err := exec.Command("gops", strconv.Itoa(os.Getppid())).Output()
+	return err == nil && strings.Contains(string(gopsOut), "dlv")
+}
+
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{
 		Out: os.Stderr,
 	})
+	if !isLaunchedByDebugger() {
+		zerolog.SetGlobalLevel(zerolog.InfoLevel)
+	}
 }
 
 func main() {
