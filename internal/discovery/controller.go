@@ -80,9 +80,6 @@ func (c *Controller) UpdateExistingTorrentsTags(ctx context.Context) error {
 	}
 	for i := range torrents {
 		torrent := &torrents[i]
-		if err := c.dep.QB.RemoveTorrentTags(ctx, []string{torrent.Hash}); err != nil {
-			log.Warn().Msgf("failed to remove tags from torrent '%s'", torrent.Name)
-		}
 		if err := c.dep.QB.AddTorrentTags(ctx, []string{torrent.Hash}, buildTorrentTags(torrent.Name)); err != nil {
 			return fmt.Errorf("updating tags: %w", err)
 		}
@@ -181,10 +178,14 @@ func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeLis
 			continue
 		}
 		doesConflict, err := c.doesConflict(ctx, entry.GetTitle(), parsedTitle)
-		if err != nil || !doesConflict {
-			found = true
+		if err != nil {
 			break
 		}
+		if doesConflict {
+			return false, nil
+		}
+		found = true
+		break
 	}
 	if !found {
 		return false, nil
