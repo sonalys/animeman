@@ -38,7 +38,7 @@ func New() *API {
 			Transport: roundtripper.NewRateLimitedTransport(
 				http.DefaultTransport, rate.NewLimiter(rate.Every(1*time.Second), 1),
 			),
-			Timeout: 10 * time.Second,
+			// Timeout: 10 * time.Second,
 		},
 	}
 }

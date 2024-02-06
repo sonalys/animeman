@@ -2,12 +2,9 @@ package qbittorrent
 
 import (
 	"fmt"
-	"io"
 	"net/http"
 	"net/url"
 	"strings"
-
-	"github.com/sonalys/animeman/internal/utils"
 )
 
 func (api *API) Login(username, password string) error {
@@ -23,7 +20,7 @@ func (api *API) Login(username, password string) error {
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
 	resp, err := api.Do(req)
 	if err != nil {
-		return fmt.Errorf("login failed: %s: %w", utils.Must(io.ReadAll(resp.Body)), err)
+		return fmt.Errorf("login failed: %w", err)
 	}
 	resp.Body.Close()
 	return nil

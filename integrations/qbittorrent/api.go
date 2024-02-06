@@ -38,9 +38,8 @@ func New(host, username, password string) *API {
 		if err := api.Login(username, password); err != nil {
 			log.Fatal().Msgf("could not initialize qBittorrent: %s", err)
 		}
-		version, err = api.Version()
-		if err == ErrUnauthorized {
-			panic(err)
+		if version, err = api.Version(); err == ErrUnauthorized {
+			log.Fatal().Msgf("could not check version: %s", err)
 		}
 	}
 	log.Info().Msgf("connected to qBitTorrent:%s", version)
@@ -52,7 +51,7 @@ func (api *API) Do(req *http.Request) (*http.Response, error) {
 	if err != nil {
 		return nil, err
 	}
-	if resp.StatusCode == 400 {
+	if resp.StatusCode >= 400 {
 		return nil, ErrUnauthorized
 	}
 	return resp, nil

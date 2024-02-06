@@ -22,7 +22,7 @@ func (api *API) List(ctx context.Context, args ...ListArg) ([]Entry, error) {
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("login failed: %s: %w", utils.Must(io.ReadAll(resp.Body)), err)
+		return nil, fmt.Errorf("request failed: %s", string(utils.Must(io.ReadAll(resp.Body))))
 	}
 	var feed RSS
 	if err := xml.NewDecoder(resp.Body).Decode(&feed); err != nil {

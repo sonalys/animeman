@@ -4,8 +4,11 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
+
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 type ArgListTorrent interface {
@@ -28,9 +31,11 @@ func (api *API) List(ctx context.Context, args ...ArgListTorrent) ([]Torrent, er
 		return nil, fmt.Errorf("could not list torrents: %w", err)
 	}
 	defer resp.Body.Close()
+
+	rawBody := utils.Must(io.ReadAll(resp.Body))
 	var respBody []Torrent
-	if err := json.NewDecoder(resp.Body).Decode(&respBody); err != nil {
-		return nil, fmt.Errorf("could not read response: %w", err)
+	if err := json.Unmarshal(rawBody, &respBody); err != nil {
+		return nil, fmt.Errorf("could not read response: %s: %w", string(rawBody), err)
 	}
 	return respBody, nil
 }
