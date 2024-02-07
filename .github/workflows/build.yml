@@ -57,6 +57,12 @@ jobs:
         chmod +x builders/release.sh
         ./builders/release.sh
 
+    - name: Set up QEMU
+      uses: docker/setup-qemu-action@v3
+    
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
     - name: Build and push
       uses: docker/build-push-action@v5
       with:
@@ -65,11 +71,12 @@ jobs:
         push: true
         tags: ${{ steps.meta.outputs.tags }}
         cache-from: type=registry,ref=${{ github.repository }}:latest
+        platforms: linux/amd64,linux/arm64
 
     - name: Create Github Release
       uses: ncipollo/release-action@v1
       with:
-        artifacts: "releases/**"
+        artifacts: "releases/*.zip"
         body: ${{ env.TAG_VERSION }}
         token: ${{ secrets.GITHUB_TOKEN }}
         generateReleaseNotes: true
