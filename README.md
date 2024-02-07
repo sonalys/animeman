@@ -5,7 +5,7 @@
 
 Animeman is a service for fetching your MyAnimeList currently watching animes from Nyaa.si RSS feed.
 
-Currently it manages qBitTorrent through it's WebUI, creating and managing a category of torrents.
+Currently it manages qBittorrent through it's WebUI, creating and managing a category of torrents.
 
 It automatically parses the torrent titles for tagging the show, season and episodes, while also searching in Nyaa.si for new releases.
 
@@ -46,7 +46,7 @@ downloadPath: /downloads/animes
 createShowFolder: true
 malUser: YOUR_USER
 qBitTorrentHost: http://192.168.1.240:8088 # qBittorrent WebUI Host.
-qBitTorrentUsername: admin # change with qBitTorrent credentials.
+qBitTorrentUsername: admin # change with qBittorrent credentials.
 qBitTorrentPassword: adminadmin
 pollFrequency: 15m0s # How often should we seek for updates?
 ```

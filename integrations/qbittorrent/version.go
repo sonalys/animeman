@@ -14,9 +14,5 @@ func (api *API) Version() (string, error) {
 		return "", NewErrConnection(err)
 	}
 	defer resp.Body.Close()
-	version, err := io.ReadAll(resp.Body)
-	if err != nil {
-		panic(err)
-	}
-	return string(version), nil
+	return string(utils.Must(io.ReadAll(resp.Body))), nil
 }

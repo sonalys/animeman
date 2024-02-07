@@ -1,10 +1,12 @@
 package qbittorrent
 
 import (
+	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/http/cookiejar"
+	"syscall"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -12,47 +14,51 @@ import (
 
 type (
 	API struct {
-		host   string
-		client *http.Client
+		host               string
+		username, password string
+		client             *http.Client
 	}
 )
 
-func New(host, username, password string) *API {
+func New(ctx context.Context, host, username, password string) *API {
 	jar, err := cookiejar.New(nil)
 	if err != nil {
 		panic(err)
 	}
 	api := &API{
-		host: fmt.Sprintf("%s/api/v2", host),
+		host:     fmt.Sprintf("%s/api/v2", host),
+		username: username,
+		password: password,
 		client: &http.Client{
 			Timeout: 3 * time.Second,
 			Jar:     jar,
 		},
 	}
 	var version string
-	api.Wait()
+	api.Wait(ctx)
 	if version, err = api.Version(); err != nil {
-		if !errors.Is(err, ErrUnauthorized) {
-			log.Fatal().Msgf("failed to initialize: %s", err)
-		}
-		if err := api.Login(username, password); err != nil {
-			log.Fatal().Msgf("could not initialize qBittorrent: %s", err)
-		}
-		if version, err = api.Version(); err == ErrUnauthorized {
-			log.Fatal().Msgf("could not check version: %s", err)
-		}
+		log.Fatal().Msgf("failed to connect to qBittorrent: %s", err)
 	}
-	log.Info().Msgf("connected to qBitTorrent:%s", version)
+	log.Info().Msgf("connected to qBittorrent:%s", version)
 	return api
 }
 
 func (api *API) Do(req *http.Request) (*http.Response, error) {
-	resp, err := api.client.Do(req)
-	if err != nil {
-		return nil, err
+	ctx := context.WithoutCancel(req.Context())
+	localReq := req.Clone(ctx)
+	resp, err := api.client.Do(localReq)
+	switch {
+	case errors.Is(err, syscall.ECONNREFUSED) ||
+		errors.Is(err, syscall.ECONNABORTED) ||
+		errors.Is(err, syscall.ECONNRESET):
+		log.Warn().Msgf("qBittorrent disconnected")
+		api.Wait(ctx)
+		return api.Do(req)
+	case err == nil && resp.StatusCode >= 400:
+		if loginErr := api.Login(api.username, api.password); loginErr != nil {
+			return resp, loginErr
+		}
+		return api.Do(req)
 	}
-	if resp.StatusCode >= 400 {
-		return nil, ErrUnauthorized
-	}
-	return resp, nil
+	return resp, err
 }

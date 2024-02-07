@@ -44,7 +44,7 @@ func New(dep Dependencies) *Controller {
 
 func (c *Controller) Start(ctx context.Context) error {
 	if err := c.UpdateExistingTorrentsTags(ctx); err != nil {
-		return fmt.Errorf("updating qBitTorrent entries: %w", err)
+		return fmt.Errorf("updating qBittorrent entries: %w", err)
 	}
 	log.Info().Msgf("starting polling with frequency %s", c.dep.Config.PollFrequency.String())
 	timer := time.NewTicker(c.dep.Config.PollFrequency)

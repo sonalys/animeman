@@ -44,14 +44,13 @@ func GenerateBoilerplateConfig() {
 }
 
 func ReadConfig(path string) Config {
-	file, err := os.ReadFile(path)
+	file, err := os.Open(path)
 	if err != nil {
 		GenerateBoilerplateConfig()
 		log.Fatal().Msg("file config.yaml not detected, please open the created file and configure it correctly")
 	}
 	var config Config
-	err = yaml.Unmarshal(file, &config)
-	if err != nil {
+	if err = yaml.NewDecoder(file).Decode(&config); err != nil {
 		log.Fatal().Msgf("could not read config.yaml: %s", err)
 	}
 	return config

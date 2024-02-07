@@ -1,18 +1,22 @@
 package qbittorrent
 
 import (
+	"context"
 	"time"
 
 	"github.com/rs/zerolog/log"
 )
 
-func (api *API) Wait() {
-	for retries := 5; retries >= 0; retries-- {
-		_, err := api.client.Get(api.host + "/app/version")
-		if err == nil {
+func (api *API) Wait(ctx context.Context) {
+	log.Info().Msgf("probing for qBittorrent")
+	for {
+		if ctx.Err() != nil {
 			return
 		}
-		log.Info().Msgf("waiting for qBitTorrent")
-		time.Sleep(time.Duration(6-retries) * 3 * time.Second)
+		if _, err := api.client.Get(api.host + "/app/version"); err == nil {
+			log.Info().Msgf("qBittorrent is ready")
+			return
+		}
+		time.Sleep(time.Second)
 	}
 }
