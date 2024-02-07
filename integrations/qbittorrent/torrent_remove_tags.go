@@ -14,7 +14,7 @@ func (api *API) RemoveTorrentTags(ctx context.Context, hashes []string, args ...
 		"hashes": []string{strings.Join(hashes, "|")},
 	}
 	for _, f := range args {
-		f.ApplyAddTorrentTagsArg(values)
+		f.ApplyAddTorrentTags(values)
 	}
 	req, err := http.NewRequestWithContext(ctx, http.MethodPost, path, strings.NewReader(values.Encode()))
 	if err != nil {

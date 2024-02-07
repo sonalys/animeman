@@ -10,8 +10,6 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/roundtripper"
-	"golang.org/x/time/rate"
 )
 
 type (
@@ -32,9 +30,8 @@ func New(ctx context.Context, host, username, password string) *API {
 		username: username,
 		password: password,
 		client: &http.Client{
-			Transport: roundtripper.NewRateLimitedTransport(http.DefaultTransport, rate.NewLimiter(rate.Every(1*time.Second), 1)),
-			Timeout:   3 * time.Second,
-			Jar:       jar,
+			Timeout: 3 * time.Second,
+			Jar:     jar,
 		},
 	}
 	var version string
@@ -47,7 +44,7 @@ func New(ctx context.Context, host, username, password string) *API {
 }
 
 func (api *API) Do(req *http.Request) (*http.Response, error) {
-	ctx := context.WithoutCancel(req.Context())
+	ctx := req.Context()
 	localReq := req.Clone(ctx)
 	resp, err := api.client.Do(localReq)
 	switch {

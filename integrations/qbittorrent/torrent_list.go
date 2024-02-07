@@ -15,6 +15,14 @@ type ArgListTorrent interface {
 	ApplyListTorrent(url.Values)
 }
 
+func (t Tag) ApplyListTorrent(v url.Values) {
+	v.Add("tag", string(t))
+}
+
+func (c Category) ApplyListTorrent(v url.Values) {
+	v.Add("category", string(c))
+}
+
 func (api *API) List(ctx context.Context, args ...ArgListTorrent) ([]Torrent, error) {
 	var path = api.host + "/torrents/info"
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, path, nil)

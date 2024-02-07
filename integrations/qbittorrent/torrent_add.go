@@ -4,12 +4,58 @@ import (
 	"bytes"
 	"context"
 	"fmt"
+	"io"
 	"mime/multipart"
 	"net/http"
+	"strings"
 )
 
 type ArgAddTorrent interface {
 	ApplyAddTorrent(*multipart.Writer)
+}
+
+func (t TorrentURL) ApplyAddTorrent(w *multipart.Writer) {
+	field, err := w.CreateFormField("urls")
+	if err != nil {
+		panic(err)
+	}
+	if _, err := io.WriteString(field, strings.Join(t, "\n")); err != nil {
+		panic(err)
+	}
+}
+
+func (t Tags) ApplyAddTorrent(w *multipart.Writer) {
+	field, err := w.CreateFormField("tags")
+	if err != nil {
+		panic(err)
+	}
+	if _, err := io.WriteString(field, strings.Join(t, ",")); err != nil {
+		panic(err)
+	}
+}
+
+func (c Category) ApplyAddTorrent(w *multipart.Writer) {
+	field, err := w.CreateFormField("category")
+	if err != nil {
+		panic(err)
+	}
+	io.WriteString(field, string(c))
+}
+
+func (p Paused) ApplyAddTorrent(w *multipart.Writer) {
+	field, err := w.CreateFormField("paused")
+	if err != nil {
+		panic(err)
+	}
+	io.WriteString(field, fmt.Sprint(p))
+}
+
+func (s SavePath) ApplyAddTorrent(w *multipart.Writer) {
+	field, err := w.CreateFormField("savepath")
+	if err != nil {
+		panic(err)
+	}
+	io.WriteString(field, string(s))
 }
 
 func (api *API) AddTorrent(ctx context.Context, args ...ArgAddTorrent) error {
