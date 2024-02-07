@@ -26,6 +26,12 @@ func (t TorrentURL) ApplyAddTorrent(w *multipart.Writer) {
 	}
 }
 
+type Tag string
+
+func (t Tag) ApplyListTorrent(v url.Values) {
+	v.Add("tag", url.QueryEscape(string(t)))
+}
+
 type Tags []string
 
 func (t Tags) ApplyAddTorrent(w *multipart.Writer) {
@@ -70,12 +76,6 @@ type Torrent struct {
 	Name     string `json:"name"`
 	Category string `json:"category"`
 	Hash     string `json:"hash"`
-}
-
-func (t Tags) ApplyListTorrent(v url.Values) {
-	for _, tag := range t {
-		v.Add("tag", url.QueryEscape(tag))
-	}
 }
 
 type Paused bool

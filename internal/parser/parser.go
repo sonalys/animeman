@@ -7,15 +7,6 @@ import (
 	"strings"
 )
 
-// StripTitle returns only the main title, trimming everything after ':'.
-func StripTitle(title string) string {
-	title, _, found := strings.Cut(title, ":")
-	if found {
-		return title
-	}
-	return title
-}
-
 type ParsedTitle struct {
 	Source         string
 	Title          string
@@ -55,12 +46,12 @@ func matchEpisode(title string) (string, bool) {
 		return fmt.Sprintf("%d~%d", episode1, episode2), true
 	}
 	// Some scenarios are like Frieren Season 1
-	return "0", true
+	return "", true
 }
 
 var seasonExpr = []*regexp.Regexp{
 	// 2nd season.
-	regexp.MustCompile(`(\d+)(?:nd)|(?:rd)|(?:th)(?i:\sseason)`),
+	regexp.MustCompile(`(\d+)(?:(?:nd)|(?:rd)|(?:th))(?i:\sseason)`),
 	// 2x15.
 	regexp.MustCompile(`(\d+)(?:x\d+)`),
 	// S02E15.
@@ -78,7 +69,7 @@ func matchSeason(title string) string {
 		season, _ := strconv.ParseInt(matches[0][1], 10, 64)
 		return fmt.Sprint(season)
 	}
-	return "0"
+	return "1"
 }
 
 func matchEpisodeIndex(title string) int {
@@ -112,7 +103,7 @@ func cleanWithRegex(expr *regexp.Regexp, value string) string {
 	return expr.ReplaceAllString(value, "")
 }
 
-func cleanupTitle(title string) string {
+func StripTitle(title string) string {
 	for _, expr := range titleCleanupExpr {
 		title = cleanWithRegex(expr, title)
 	}
@@ -122,13 +113,16 @@ func cleanupTitle(title string) string {
 	if index := matchEpisodeIndex(title); index != -1 {
 		title = title[:index]
 	}
+	title = strings.Split(title, ": ")[0]
+	title = strings.Split(title, ", ")[0]
+	title = strings.Split(title, "- ")[0]
 	title = strings.ReplaceAll(title, "  ", " ")
 	return strings.TrimSpace(title)
 }
 
 func ParseTitle(title string) ParsedTitle {
 	resp := ParsedTitle{
-		Title: cleanupTitle(title),
+		Title: StripTitle(title),
 	}
 	if tags := tagsExpr.FindAllStringSubmatch(title, -1); len(tags) > 0 {
 		resp.Source = tags[0][1]

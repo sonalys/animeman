@@ -4,11 +4,13 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"strings"
 )
 
 type (
 	SourceType int
 	Query      string
+	OrQuery    []string
 	Category   string
 	User       string
 )
@@ -35,8 +37,34 @@ func (q Query) Apply(req *http.Request) {
 	prevQuery := query.Get("q")
 	if prevQuery == "" {
 		query.Set("q", string(q))
+	} else {
+		query.Set("q", prevQuery+" "+string(q))
 	}
-	query.Set("q", prevQuery+" "+string(q))
+	req.URL.RawQuery = query.Encode()
+}
+
+func filterNotEmpty(entries []string) []string {
+	notEmpty := make([]string, 0, len(entries))
+	for i := range entries {
+		if entries[i] != "" {
+			notEmpty = append(notEmpty, entries[i])
+		}
+	}
+	return notEmpty
+}
+
+func (entries OrQuery) Apply(req *http.Request) {
+	query := req.URL.Query()
+	prevQuery := query.Get("q")
+
+	entries = filterNotEmpty(entries)
+	curQuery := fmt.Sprintf("(%s)", strings.Join(entries, "|"))
+
+	if prevQuery == "" {
+		query.Set("q", curQuery)
+	} else {
+		query.Set("q", prevQuery+" "+curQuery)
+	}
 	req.URL.RawQuery = query.Encode()
 }
 

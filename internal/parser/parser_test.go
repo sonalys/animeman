@@ -14,12 +14,12 @@ func Test_matchEpisode(t *testing.T) {
 		{name: "0x15", title: "Frieren 0x15", episode: "15", multi: false},
 		{name: "-15", title: "Frieren - 15", episode: "15", multi: false},
 		{name: "S02E15", title: "Frieren S02E15", episode: "15", multi: false},
-		{name: "Season", title: "Frieren Season 2", episode: "0", multi: true},
+		{name: "Season", title: "Frieren Season 2", episode: "", multi: true},
 		{name: "Season with episode", title: "Frieren Season 2 - 15", episode: "15", multi: false},
 		{
 			name:    "Boku no Kokoro no Yabai",
 			title:   "Boku no Kokoro no Yabai Yatsu S01 1080p WEBRip DD+ x265-EMBER",
-			episode: "0",
+			episode: "",
 			multi:   true,
 		},
 	}
@@ -45,7 +45,7 @@ func Test_matchSeason(t *testing.T) {
 		{
 			name:  "Ragna Crimson",
 			title: "[SubsPlease] Ragna Crimson - 02 (1080p) [B8FB702D].mkv",
-			want:  "0",
+			want:  "1",
 		},
 		{
 			name:  "Boku no Kokoro no Yabai",
@@ -55,7 +55,7 @@ func Test_matchSeason(t *testing.T) {
 		{
 			name:  "Kusuriya no Hitorigoto",
 			title: "Kusuriya no Hitorigoto - 01.mkv",
-			want:  "0",
+			want:  "1",
 		},
 		{
 			name:  "Tatami Galaxy",

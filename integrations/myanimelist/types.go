@@ -12,7 +12,7 @@ type (
 
 	AnimeListEntry struct {
 		Status       ListStatus   `json:"status"`
-		Title        any          `json:"anime_title"`
+		Title        string       `json:"anime_title"`
 		TitleEng     string       `json:"anime_title_eng"`
 		AiringStatus AiringStatus `json:"anime_airing_status"`
 	}
