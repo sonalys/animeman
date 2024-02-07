@@ -4,6 +4,10 @@
 
 Animeman is a service for fetching your MyAnimeList currently watching animes from Nyaa.si RSS feed.
 
+Currently it manages qBitTorrent through it's WebUI, creating and managing a category of torrents.
+
+It automatically parses the torrent titles for tagging the show, season and episodes, while also searching in Nyaa.si for new releases.
+
 ## How does it work?
 
 We fetch your currently watching anime list from MAL and search Nyaa.si with some extra parameters for entries.
@@ -29,8 +33,7 @@ sources:
     - source1
     - source2
 qualities:
-    - "1080"
-    - "1080 HEVC"
+    - "1080 HEVC" # Only downloads HEVC that are 1080p
     - "720"
 category: Animes
 downloadPath: /downloads/animes
@@ -82,3 +85,19 @@ services:
 ```
 
 `docker compose -f docker-compose.yaml up -d animeman`
+
+## Roadmap
+
+There are a couple things that will be iterated:
+
+* Improve batch torrent validation ( example: batches containing only part of the episodes of a season are blocking the download of the subsequent episodes )
+* Use some calendar service like anilist.co for scanning Nyaa only when close to the release date
+* Improve behavior for adding shows that are already released
+* Improve interfaces for allowing other torrent clients
+* Improve interfaces for allowing other RSS feeds and anime lists
+
+## Contribution
+
+Feel free to fork and open pull requests
+
+Tests or roadmap features are very welcome, thanks.
