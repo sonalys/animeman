@@ -71,9 +71,12 @@ jobs:
     permissions:
       contents: write
     steps:
+      - run: ls build
       - name: Create Github Release
         uses: ncipollo/release-action@v1
         with:
+          artifacts: "build/bin/*"
           body: ${{ env.TAG_VERSION }}
           token: ${{ secrets.GITHUB_TOKEN }}
           generateReleaseNotes: true
+          allowUpdates: true
