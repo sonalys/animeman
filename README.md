@@ -50,7 +50,7 @@ pollFrequency: 15m0s # How often should we seek for updates?
 
 ### Dependencies
 
-You will need at least go 1.16 for building the binary.
+You will need at least go 1.21 for building the binary.
 
 For the image you will need docker.
 
@@ -58,15 +58,25 @@ To build you can simply run `make build`
 
 For the image you can run `make image`
 
-## Running
+## Installation
+
+### Download
+
+You can download the latest release [here](https://github.com/sonalys/animeman/releases).
 
 You can run a first time for generating a boilerplate config, then you configure your `config.yaml`.
 
-### CLI
+### Linux CLI
 
 Simply run `CONFIG_PATH=./config.yaml ./animeman`
 
+### Windows
+
+Simply run `animeman.exe` on the `cmd`.
+
 ### Docker
+
+Support for `linux/amd64` and `linux/arm64`.
 
 ```docker run -it -e CONFIG_PATH=/config/config.yaml -v ./config:/config ghcr.io/sonalys/animeman:latest```
 
