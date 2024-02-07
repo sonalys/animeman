@@ -99,7 +99,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		log.Fatal().Msgf("getting MAL list: %s", err)
 	}
 	log.Info().Msgf("processing %d entries from MAL", len(entries))
-	var addedCount int
+	var totalCount int
 	for _, entry := range entries {
 		log.Debug().Msgf("Digesting entry '%s'", entry.GetTitle())
 		torrents, err := c.dep.NYAA.List(ctx,
@@ -112,19 +112,17 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		if err != nil {
 			return fmt.Errorf("getting nyaa list: %w", err)
 		}
-		added, err := c.digestEntry(ctx, entry, torrents)
+		count, err := c.digestEntry(ctx, entry, torrents)
 		if err != nil {
 			if errors.Is(err, qbittorrent.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 				return fmt.Errorf("failed to digest entry: %w", err)
 			}
 			continue
 		}
-		if added {
-			addedCount++
-		}
+		totalCount += count
 	}
-	if addedCount > 0 {
-		log.Info().Msgf("added %d torrents", addedCount)
+	if totalCount > 0 {
+		log.Info().Msgf("added %d torrents", totalCount)
 	}
 	return nil
 }
@@ -165,15 +163,13 @@ func (c *Controller) doesConflict(ctx context.Context, title string, parsedTitle
 	return false, nil
 }
 
-func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeListEntry, torrents []nyaa.Entry) (bool, error) {
+func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeListEntry, torrents []nyaa.Entry) (count int, err error) {
 	if len(torrents) == 0 {
 		log.Error().Msgf("no torrents found for entry '%s'", entry.GetTitle())
-		return false, nil
+		return 0, nil
 	}
-	var torrent nyaa.Entry
-	var found bool
 	for i := range torrents {
-		torrent = torrents[i]
+		torrent := torrents[i]
 		log.Debug().Str("entry", entry.GetTitle()).Msgf("Analyzing torrent '%s'", torrent.Title)
 		parsedTitle := parser.ParseTitle(torrent.Title)
 		if parsedTitle.IsMultiEpisode && entry.AiringStatus == myanimelist.AiringStatusAiring {
@@ -185,32 +181,26 @@ func (c *Controller) digestEntry(ctx context.Context, entry myanimelist.AnimeLis
 			break
 		}
 		if doesConflict {
-			return false, nil
+			continue
 		}
-		found = true
-		break
+		var savePath qbittorrent.SavePath
+		if c.dep.Config.CreateShowFolder {
+			savePath = qbittorrent.SavePath(fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, entry.GetTitle()))
+		} else {
+			savePath = qbittorrent.SavePath(c.dep.Config.DownloadPath)
+		}
+		err = c.dep.QB.AddTorrent(ctx,
+			buildTorrentTags(torrent.Title),
+			savePath,
+			qbittorrent.TorrentURL{torrent.Link},
+			qbittorrent.Category(c.dep.Config.Category),
+		)
+		if err != nil {
+			return count, fmt.Errorf("adding torrents: %w", err)
+		}
+		log.Info().
+			Str("savePath", string(savePath)).
+			Msgf("torrent '%s' added", entry.GetTitle())
 	}
-	if !found {
-		return false, nil
-	}
-	var savePath qbittorrent.SavePath
-	if c.dep.Config.CreateShowFolder {
-		savePath = qbittorrent.SavePath(fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, entry.GetTitle()))
-	} else {
-		savePath = qbittorrent.SavePath(c.dep.Config.DownloadPath)
-	}
-	err := c.dep.QB.AddTorrent(ctx,
-		buildTorrentTags(torrent.Title),
-		savePath,
-		qbittorrent.TorrentURL{torrent.Link},
-		qbittorrent.Category(c.dep.Config.Category),
-		// qbittorrent.Paused(true),
-	)
-	if err != nil {
-		return false, fmt.Errorf("adding torrents: %w", err)
-	}
-	log.Info().
-		Str("savePath", string(savePath)).
-		Msgf("torrent '%s' added", entry.GetTitle())
-	return true, nil
+	return count, nil
 }
