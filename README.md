@@ -1,6 +1,7 @@
 # Animeman
 
 [![Build](https://github.com/sonalys/animeman/actions/workflows/build.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/build.yml)
+[![Tests](https://github.com/sonalys/animeman/actions/workflows/tests.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/tests.yml)
 
 Animeman is a service for fetching your MyAnimeList currently watching animes from Nyaa.si RSS feed.
 
