@@ -5,16 +5,34 @@ name: Go
 
 on:
   push:
-    branches: [ "main" ]
-  pull_request:
-    branches: [ "main" ]
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+*"
+
+env:
+  TAG_VERSION: ${{ github.ref_name }}
+  GO_VERSION: "1.21"
+  REGISTRY: ghcr.io
 
 jobs:
-
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
+
+    - name: Login to DockerHub
+      uses: docker/login-action@v3
+      with:
+        registry: ${{ env.REGISTRY }}
+        username: ${{ github.actor }}
+        password: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Docker meta
+      id: meta
+      uses: docker/metadata-action@v5
+      with:
+        images: ${{ env.REGISTRY }}/${{ github.repository }}
+        tags: |
+          type=semver,pattern={{version}}
 
     - name: Cache
       uses: actions/cache@v4.0.0
@@ -27,7 +45,7 @@ jobs:
           ${{ runner.os }}-golang-
 
     - name: Set up Go
-      uses: actions/setup-go@v4
+      uses: actions/setup-go@v5
       with:
         go-version: '1.21'
 
@@ -37,4 +55,25 @@ jobs:
     - name: Build
       run: make build
 
-      
+    - name: Build and push
+      uses: docker/build-push-action@v5
+      with:
+        context: .
+        file: ./builders/service.dockerfile
+        push: true
+        tags: ${{ steps.meta.outputs.tags }}
+        cache-from: type=registry,ref=${{ github.repository }}:latest
+
+  release:
+    needs:
+      - build
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+      - name: Create Github Release
+        uses: ncipollo/release-action@v1
+        with:
+          body: ${{ env.TAG_VERSION }}
+          token: ${{ secrets.GITHUB_TOKEN }}
+          generateReleaseNotes: true
