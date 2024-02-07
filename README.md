@@ -9,27 +9,32 @@ Currently it manages qBitTorrent through it's WebUI, creating and managing a cat
 
 It automatically parses the torrent titles for tagging the show, season and episodes, while also searching in Nyaa.si for new releases.
 
+## Features
+
+* **Automatic Downloads** weekly releases from your WatchList
+* **Downloads batch releases**: from complete series from your WatchList
+* **Tags**: all torrent entries under the configured category with [`!Serie name`, `S01`, `E01`] as an example
+* **Source and quality filter**: you can specify resolution and HEVC tag
+* **Smart episode detection**: you don't need to worry about downloading the same episode twice
+
 ## How does it work?
 
-We fetch your currently watching anime list from MAL and search Nyaa.si with some extra parameters for entries.
+0. Tag existing torrents in the configured category
+1. Fetch your **Currently Watching** entries in **MAL**
+2. Search for the RSS feed for each entry in **Nyaa.si**
+3. Validate if the episode / season is already present in **qBittorrent**
+4. Add torrent to qBittorrent via WebUI.
 
-You can specify several sources and quality.
-
-It will fetch from the first result found, for it to download as soon as possible.
-
-Currently it only fetches the latest entry, so if you missed an episode, you will have to download it yourself.
-
-We avoid duplication from other sources by tagging downloads with season and episode tags, and checking if it already exists.
+The purpose of this tool is to download the latest RSS entry for each episode, so you can't prioritize quality or source for now. If you want series from one source or quality only, be sure to configure that.
 
 ## Configuration
 
-You can run animeman for it to generate a boilerplate config file, then you configure it yourself.
+Animeman will generate a boilerplate config for the first time.
 
-### Config.yaml
-
-It will read config.yaml either from the current work directory or from the env `CONFIG_PATH`.
+You can set your own config path with the env `CONFIG_PATH`.
 
 ```yaml
+# config.yaml
 sources:
     - source1
     - source2
