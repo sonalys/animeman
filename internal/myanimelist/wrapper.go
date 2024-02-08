@@ -7,7 +7,6 @@ import (
 
 	"github.com/sonalys/animeman/integrations/myanimelist"
 	"github.com/sonalys/animeman/internal/roundtripper"
-	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"golang.org/x/time/rate"
 )
@@ -38,16 +37,15 @@ func convertMALEntry(in []myanimelist.AnimeListEntry) []animelist.Entry {
 	for i := range in {
 		out = append(out, animelist.Entry{
 			ListStatus:   animelist.ListStatus(in[i].Status),
-			Title:        in[i].Title,
-			TitleEng:     in[i].TitleEng,
+			Titles:       []string{in[i].Title, in[i].TitleEng},
 			AiringStatus: animelist.AiringStatus(in[i].AiringStatus),
 		})
 	}
 	return out
 }
 
-func (w *Wrapper) GetAnimeList(ctx context.Context, args ...animelist.AnimeListArg) ([]animelist.Entry, error) {
-	resp, err := w.client.GetAnimeList(ctx, utils.ConvertInterfaceList[animelist.AnimeListArg, myanimelist.AnimeListArg](args)...)
+func (w *Wrapper) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, error) {
+	resp, err := w.client.GetCurrentlyWatching(ctx)
 	if err != nil {
 		return nil, err
 	}

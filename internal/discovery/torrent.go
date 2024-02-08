@@ -83,20 +83,19 @@ func tagGetLatest(torrents ...torrentclient.Torrent) string {
 
 // TagGetLatest will receive an anime list entry and return all torrents listed from the anime.
 func (c *Controller) TagGetLatest(ctx context.Context, entry animelist.Entry) (string, error) {
-	// check if torrent already exists, if so we skip it.
-	title := parser.TitleParse(entry.Title)
-	titleEng := parser.TitleParse(entry.TitleEng)
-	// we should consider both title and titleEng, because your anime list has different titles available,
-	// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
-	torrents1, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(title.TagBuildSeries()))
-	if err != nil {
-		return "", fmt.Errorf("listing torrents: %w", err)
+	var torrents []torrentclient.Torrent
+	for i := range entry.Titles {
+		// check if torrent already exists, if so we skip it.
+		title := parser.TitleParse(entry.Titles[i])
+		// we should consider both title and titleEng, because your anime list has different titles available,
+		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
+		torrents1, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(title.TagBuildSeries()))
+		if err != nil {
+			return "", fmt.Errorf("listing torrents: %w", err)
+		}
+		torrents = append(torrents, torrents1...)
 	}
-	torrents2, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(titleEng.TagBuildSeries()))
-	if err != nil {
-		return "", fmt.Errorf("listing torrents: %w", err)
-	}
-	return tagGetLatest(append(torrents1, torrents2...)...), nil
+	return tagGetLatest(torrents...), nil
 }
 
 // torrentGetPath returns a torrent path, creating a show folder if configured.
@@ -111,7 +110,7 @@ func (c *Controller) torrentGetPath(title string) (path torrentclient.SavePath) 
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, nyaaEntry ParsedNyaa) error {
 	tags := nyaaEntry.meta.TagsBuildTorrent()
-	savePath := c.torrentGetPath(entry.GetTitle())
+	savePath := c.torrentGetPath(entry.Titles[0])
 	torrentURL := torrentclient.TorrentURL{nyaaEntry.entry.Link}
 	category := torrentclient.Category(c.dep.Config.Category)
 	if err := c.dep.TorrentClient.AddTorrent(ctx, tags, savePath, torrentURL, category); err != nil {

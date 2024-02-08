@@ -8,7 +8,6 @@ import (
 type (
 	ListStatus   int
 	AiringStatus int
-	Title        string
 
 	AnimeListEntry struct {
 		Status       ListStatus   `json:"status"`

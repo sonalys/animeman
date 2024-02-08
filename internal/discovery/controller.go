@@ -23,7 +23,7 @@ type (
 	}
 
 	AnimeListSource interface {
-		GetAnimeList(ctx context.Context, args ...animelist.AnimeListArg) ([]animelist.Entry, error)
+		GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, error)
 	}
 
 	TorrentClient interface {

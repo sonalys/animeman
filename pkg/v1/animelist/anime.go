@@ -24,20 +24,12 @@ const (
 
 type Entry struct {
 	ListStatus   ListStatus
-	Title        string
-	TitleEng     string
+	Titles       []string
 	AiringStatus AiringStatus
 }
 
 type AnimeListArg interface {
 	ApplyList(url.Values)
-}
-
-func (e *Entry) GetTitle() string {
-	if e.TitleEng != "" {
-		return e.TitleEng
-	}
-	return fmt.Sprint(e.Title)
 }
 
 func (s ListStatus) ApplyList(v url.Values) {

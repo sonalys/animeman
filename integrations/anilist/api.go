@@ -1,10 +1,8 @@
-package myanimelist
+package anilist
 
-import (
-	"net/http"
-)
+import "net/http"
 
-const API_URL = "https://myanimelist.net"
+const API_URL = "https://graphql.anilist.co"
 
 type (
 	API struct {

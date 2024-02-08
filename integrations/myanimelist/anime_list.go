@@ -14,7 +14,7 @@ type AnimeListArg interface {
 	ApplyList(url.Values)
 }
 
-func (api *API) GetAnimeList(ctx context.Context, args ...AnimeListArg) ([]AnimeListEntry, error) {
+func (api *API) GetCurrentlyWatching(ctx context.Context, args ...AnimeListArg) ([]AnimeListEntry, error) {
 	var path = API_URL + "/animelist/" + api.Username + "/load.json"
 	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
 	v := url.Values{

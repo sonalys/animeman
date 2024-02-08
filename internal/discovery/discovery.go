@@ -31,7 +31,7 @@ type ParsedNyaa struct {
 func (c *Controller) RunDiscovery(ctx context.Context) error {
 	t1 := time.Now()
 	log.Debug().Msgf("discovery started")
-	entries, err := c.dep.AnimeListClient.GetAnimeList(ctx, animelist.ListStatusWatching)
+	entries, err := c.dep.AnimeListClient.GetCurrentlyWatching(ctx)
 	if err != nil {
 		log.Fatal().Msgf("getting MAL list: %s", err)
 	}
@@ -109,22 +109,30 @@ func filterNyaaFeed(entries []nyaa.Entry, latestTag string, animeStatus animelis
 	return episodeFilter(parseNyaaEntries(entries), latestTag, !useBatch)
 }
 
+func ForEach[T any](in []T, f func(T) T) []T {
+	out := make([]T, 0, len(in))
+	for i := range in {
+		out = append(out, f(in[i]))
+	}
+	return out
+}
+
 // DigestAnimeListEntry receives an anime list entry and fetches the anime feed, looking for new content.
 func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.Entry) (count int, err error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	titleQuery := nyaa.OrQuery{parser.TitleStrip(entry.TitleEng), parser.TitleStrip(entry.Title)}
+	titleQuery := nyaa.OrQuery(ForEach(entry.Titles, func(title string) string { return parser.TitleStrip(title) }))
 	sourceQuery := nyaa.OrQuery(c.dep.Config.Sources)
 	qualityQuery := nyaa.OrQuery(c.dep.Config.Qualitites)
 
 	nyaaEntries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
-	log.Debug().Str("entry", entry.GetTitle()).Msgf("found %d torrents", len(nyaaEntries))
+	log.Debug().Str("entry", entry.Titles[0]).Msgf("found %d torrents", len(nyaaEntries))
 	if err != nil {
 		return count, fmt.Errorf("getting nyaa list: %w", err)
 	}
 	// There should always be torrents for entries, if there aren't we can just exit the routine.
 	if len(nyaaEntries) == 0 {
-		log.Error().Msgf("no torrents found for entry '%s'", entry.GetTitle())
+		log.Error().Msgf("no torrents found for entry '%s'", entry.Titles[0])
 		return count, nil
 	}
 	latestTag, err := c.TagGetLatest(ctx, entry)

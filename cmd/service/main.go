@@ -9,6 +9,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/integrations/nyaa"
+	"github.com/sonalys/animeman/internal/anilist"
 	"github.com/sonalys/animeman/internal/configs"
 	"github.com/sonalys/animeman/internal/discovery"
 	"github.com/sonalys/animeman/internal/myanimelist"
@@ -27,6 +28,8 @@ func initializeAnimeList(c configs.AnimeListConfig) discovery.AnimeListSource {
 	switch c.Type {
 	case configs.AnimeListTypeMAL:
 		return myanimelist.New(c.Username)
+	case configs.AnimeListTypeAnilist:
+		return anilist.New(c.Username)
 	default:
 		log.Panic().Msgf("animeListType %s not implemented", c.Type)
 	}
