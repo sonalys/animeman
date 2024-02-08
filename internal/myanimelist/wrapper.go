@@ -2,6 +2,7 @@ package myanimelist
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"time"
 
@@ -37,7 +38,7 @@ func convertMALEntry(in []myanimelist.AnimeListEntry) []animelist.Entry {
 	for i := range in {
 		out = append(out, animelist.Entry{
 			ListStatus:   animelist.ListStatus(in[i].Status),
-			Titles:       []string{in[i].Title, in[i].TitleEng},
+			Titles:       []string{fmt.Sprint(in[i].Title), in[i].TitleEng},
 			AiringStatus: animelist.AiringStatus(in[i].AiringStatus),
 		})
 	}

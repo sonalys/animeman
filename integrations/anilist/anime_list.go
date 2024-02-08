@@ -107,7 +107,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]AnimeListEntry, err
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("fetching anime list: %s", string(utils.Must(io.ReadAll(resp.Body))))
+		return nil, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))
 	}
 	var entries AnimeListResp
 	if err := json.NewDecoder(resp.Body).Decode(&entries); err != nil {
