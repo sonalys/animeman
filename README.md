@@ -3,7 +3,7 @@
 [![Build](https://github.com/sonalys/animeman/actions/workflows/build.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/build.yml)
 [![Tests](https://github.com/sonalys/animeman/actions/workflows/tests.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/tests.yml)
 
-Animeman is a service for fetching your MyAnimeList currently watching animes from Nyaa.si RSS feed.
+Animeman is a service for synchronizing your anime list currently watching with Nyaa and QBittorrent.
 
 Currently it manages qBittorrent through it's WebUI, creating and managing a category of torrents.
 
@@ -20,7 +20,7 @@ It automatically parses the torrent titles for tagging the show, season and epis
 ## How does it work?
 
 0. Tag existing torrents in the configured category
-1. Fetch your **Currently Watching** entries in **MAL**
+1. Fetch your **Currently Watching** entries in **MAL** or **Anilist**
 2. Search for the RSS feed for each entry in **Nyaa.si**
 3. Validate if the episode / season is already present in **qBittorrent**
 4. Add torrent to qBittorrent via WebUI.
@@ -35,20 +35,25 @@ You can set your own config path with the env `CONFIG_PATH`.
 
 ```yaml
 # config.yaml
-sources:
-    - source1
-    - source2
-qualities:
-    - "1080 HEVC" # Only downloads HEVC that are 1080p
-    - "720"
-category: Animes
-downloadPath: /downloads/animes
-createShowFolder: true
-malUser: YOUR_USER
-qBitTorrentHost: http://192.168.1.240:8088 # qBittorrent WebUI Host.
-qBitTorrentUsername: admin # change with qBittorrent credentials.
-qBitTorrentPassword: adminadmin
-pollFrequency: 15m0s # How often should we seek for updates?
+animeList:
+  type: myanimelist # (myanimelist|anilist).
+  username: YOUR_USERNAME # Replace with your username.
+rssConfig:
+  type: nyaa
+  pollFrequency: 5m0s # min 1m0s.
+  sources:
+      - source1 # replace with your sources or remove the sources field to fetch all.
+      - source2
+  qualities:
+      - 1080 # filter for 1080, 720, HEVC or remove to fetch all.
+torrentConfig:
+  type: qbittorrent
+  category: Animes
+  downloadPath: /downloads/animes
+  createShowFolder: true # creates a folder to for the show inside downloadPath.
+  host: http://192.168.1.240:8088 # replace with your qBittorrent WebUI address.
+  username: admin # replace credentials with your own
+  password: adminadmin
 ```
 
 ## Building
