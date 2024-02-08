@@ -86,10 +86,10 @@ func (c *Controller) GetLatestTag(ctx context.Context, entry myanimelist.AnimeLi
 	return getLatestTag(append(torrents1, torrents2...)...), nil
 }
 
-func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry myanimelist.AnimeListEntry, nyaaEntry TaggedNyaa) (bool, error) {
+func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry myanimelist.AnimeListEntry, nyaaEntry TaggedNyaa) error {
 	if nyaaEntry.meta.IsMultiEpisode && entry.AiringStatus == myanimelist.AiringStatusAiring {
 		log.Debug().Msgf("torrent dropped: multi-episode for currently airing")
-		return false, nil
+		return nil
 	}
 	var savePath qbittorrent.SavePath
 	if c.dep.Config.CreateShowFolder {
@@ -105,11 +105,11 @@ func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry myanimelist.An
 		qbittorrent.Category(c.dep.Config.Category),
 	)
 	if err != nil {
-		return false, fmt.Errorf("adding torrents: %w", err)
+		return fmt.Errorf("adding torrents: %w", err)
 	}
 	log.Info().
 		Str("savePath", string(savePath)).
 		Strs("tag", tags).
 		Msgf("torrent added")
-	return true, nil
+	return nil
 }
