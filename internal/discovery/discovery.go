@@ -22,9 +22,7 @@ type TaggedNyaa struct {
 
 func (c *Controller) RunDiscovery(ctx context.Context) error {
 	t1 := time.Now()
-	entries, err := c.dep.AnimeListClient.GetAnimeList(ctx,
-		animelist.ListStatusWatching,
-	)
+	entries, err := c.dep.AnimeListClient.GetAnimeList(ctx, animelist.ListStatusWatching)
 	if err != nil {
 		log.Fatal().Msgf("getting MAL list: %s", err)
 	}
@@ -40,14 +38,11 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		}
 		totalCount += count
 	}
-	if totalCount > 0 {
-		log.Info().Msgf("added %d torrents", totalCount)
-	}
-	log.Info().Str("duration", time.Since(t1).String()).Msgf("discovery finished")
+	log.Info().Int("addedCount", totalCount).Str("duration", time.Since(t1).String()).Msgf("discovery finished")
 	return nil
 }
 
-func filterNyaaBatch(entries []nyaa.Entry) []nyaa.Entry {
+func findNyaaBatch(entries []nyaa.Entry) []nyaa.Entry {
 	for _, entry := range entries {
 		if meta := parser.ParseTitle(entry.Title); meta.IsMultiEpisode {
 			return []nyaa.Entry{entry}
@@ -72,9 +67,12 @@ func buildTaggedNyaaList(entries []nyaa.Entry) []TaggedNyaa {
 	return out
 }
 
-func filterEpisodes(list []TaggedNyaa, latestTag string) []TaggedNyaa {
+func filterEpisodes(list []TaggedNyaa, latestTag string, excludeBatch bool) []TaggedNyaa {
 	out := make([]TaggedNyaa, 0, len(list))
 	for _, nyaaEntry := range list {
+		if excludeBatch && nyaaEntry.meta.IsMultiEpisode {
+			continue
+		}
 		// Make sure we only add episodes ahead of the current ones in the qBittorrent.
 		if compareTags(nyaaEntry.seasonEpisodeTag, latestTag) <= 0 {
 			continue
@@ -83,6 +81,17 @@ func filterEpisodes(list []TaggedNyaa, latestTag string) []TaggedNyaa {
 		out = append(out, nyaaEntry)
 	}
 	return out
+}
+
+func filterNyaaFeed(entries []nyaa.Entry, latestTag string, animeStatus animelist.AiringStatus) []TaggedNyaa {
+	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
+	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
+	if useBatch {
+		entries = findNyaaBatch(entries)
+	}
+	resp := buildTaggedNyaaList(entries)
+	resp = filterEpisodes(resp, latestTag, !useBatch)
+	return resp
 }
 
 func (c *Controller) DigestMALEntry(ctx context.Context, entry animelist.Entry) (count int, err error) {
@@ -106,13 +115,7 @@ func (c *Controller) DigestMALEntry(ctx context.Context, entry animelist.Entry) 
 	if err != nil {
 		return count, fmt.Errorf("getting latest tag: %w", err)
 	}
-	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
-	if latestTag == "" && entry.AiringStatus == animelist.AiringStatusAired {
-		nyaaEntries = filterNyaaBatch(nyaaEntries)
-	}
-	taggedNyaaList := buildTaggedNyaaList(nyaaEntries)
-	taggedNyaaList = filterEpisodes(taggedNyaaList, latestTag)
-	for _, nyaaEntry := range taggedNyaaList {
+	for _, nyaaEntry := range filterNyaaFeed(nyaaEntries, latestTag, entry.AiringStatus) {
 		if err := c.DigestNyaaTorrent(ctx, entry, nyaaEntry); err != nil {
 			log.Error().Msgf("failed to digest nyaa entry: %s", err)
 			continue

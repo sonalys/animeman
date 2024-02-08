@@ -5,6 +5,7 @@ import (
 	"testing"
 
 	"github.com/sonalys/animeman/integrations/nyaa"
+	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/stretchr/testify/require"
 )
 
@@ -64,7 +65,7 @@ func Test_filterEpisodes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := filterEpisodes(tt.args.list, tt.args.latestTag); !reflect.DeepEqual(got, tt.want) {
+			if got := filterEpisodes(tt.args.list, tt.args.latestTag, false); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("filterEpisodes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -85,9 +86,76 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 		}
 		got := buildTaggedNyaaList(input)
 		require.Len(t, got, len(input))
-		latestTag := got[len(got)-1].seasonEpisodeTag
-		for i := range got {
-			require.True(t, compareTags(got[i].seasonEpisodeTag, latestTag) <= 0)
+		for i := 1; i < len(got); i++ {
+			require.True(t, compareTags(got[i-1].seasonEpisodeTag, got[i].seasonEpisodeTag) <= 0)
 		}
+	})
+}
+
+func Test_filterNyaaFeed(t *testing.T) {
+	t.Run("empty", func(t *testing.T) {
+		got := filterNyaaFeed([]nyaa.Entry{}, "", animelist.AiringStatusAiring)
+		require.Empty(t, got)
+	})
+	t.Run("airing: no latestTag", func(t *testing.T) {
+		input := []nyaa.Entry{
+			{Title: "Show3: S03E03"},
+			{Title: "Show3: S03E02"},
+			{Title: "Show3: S03E01"},
+		}
+		got := filterNyaaFeed(input, "", animelist.AiringStatusAiring)
+
+		require.Len(t, got, len(input))
+		for i := 1; i < len(got); i++ {
+			require.True(t, compareTags(got[i-1].seasonEpisodeTag, got[i].seasonEpisodeTag) <= 0)
+		}
+	})
+
+	t.Run("airing: with latestTag", func(t *testing.T) {
+		input := []nyaa.Entry{
+			{Title: "Show3: S03E03"},
+			{Title: "Show3: S03E02"},
+			{Title: "Show3: S03E01"},
+		}
+		got := filterNyaaFeed(input, "Show3 S03E02", animelist.AiringStatusAiring)
+
+		require.Len(t, got, 1)
+		require.Equal(t, buildTaggedNyaaList(input[:1]), got)
+	})
+
+	t.Run("aired: with latestTag", func(t *testing.T) {
+		input := []nyaa.Entry{
+			{Title: "Show3: S03E03"},
+			{Title: "Show3: S03E02"},
+			{Title: "Show3: S03E01"},
+		}
+		got := filterNyaaFeed(input, "Show3 S03E02", animelist.AiringStatusAired)
+
+		require.Len(t, got, 1)
+		require.Equal(t, buildTaggedNyaaList(input[:1]), got)
+	})
+
+	t.Run("aired: with batch, no latestTag", func(t *testing.T) {
+		input := []nyaa.Entry{
+			{Title: "Show3: S03E03"},
+			{Title: "Show3: S03E02"},
+			{Title: "Show3: S03"},
+		}
+		got := filterNyaaFeed(input, "", animelist.AiringStatusAired)
+
+		require.Len(t, got, 1)
+		require.Equal(t, buildTaggedNyaaList(input[2:]), got)
+	})
+
+	t.Run("aired: with batch, with latestTag", func(t *testing.T) {
+		input := []nyaa.Entry{
+			{Title: "Show3: S03E03"},
+			{Title: "Show3: S03E02"},
+			{Title: "Show3: S03"},
+		}
+		got := filterNyaaFeed(input, "Show3 S03E02", animelist.AiringStatusAired)
+
+		require.Len(t, got, 1)
+		require.Equal(t, buildTaggedNyaaList(input[:1]), got)
 	})
 }
