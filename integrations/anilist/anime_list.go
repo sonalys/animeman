@@ -7,14 +7,9 @@ import (
 	"fmt"
 	"io"
 	"net/http"
-	"net/url"
 
 	"github.com/sonalys/animeman/internal/utils"
 )
-
-type AnimeListArg interface {
-	ApplyList(url.Values)
-}
 
 type (
 	ListStatus   string

@@ -10,19 +10,12 @@ import (
 	"github.com/sonalys/animeman/internal/utils"
 )
 
-type AnimeListArg interface {
-	ApplyList(url.Values)
-}
-
-func (api *API) GetCurrentlyWatching(ctx context.Context, args ...AnimeListArg) ([]AnimeListEntry, error) {
+func (api *API) GetCurrentlyWatching(ctx context.Context) ([]AnimeListEntry, error) {
 	var path = API_URL + "/animelist/" + api.Username + "/load.json"
 	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
 	v := url.Values{
 		"offset": []string{"0"},
 		"status": []string{"1"},
-	}
-	for _, arg := range args {
-		arg.ApplyList(v)
 	}
 	req.URL.RawQuery = v.Encode()
 	resp, err := api.client.Do(req)
