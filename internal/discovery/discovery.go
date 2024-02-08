@@ -30,11 +30,11 @@ type ParsedNyaa struct {
 // After finding updates, it will verify episode collision and dispatch it to your torrent client.
 func (c *Controller) RunDiscovery(ctx context.Context) error {
 	t1 := time.Now()
+	log.Debug().Msgf("discovery started")
 	entries, err := c.dep.AnimeListClient.GetAnimeList(ctx, animelist.ListStatusWatching)
 	if err != nil {
 		log.Fatal().Msgf("getting MAL list: %s", err)
 	}
-	log.Info().Msgf("processing %d entries from MAL", len(entries))
 	var totalCount int
 	for _, entry := range entries {
 		count, err := c.DigestAnimeListEntry(ctx, entry)
@@ -46,7 +46,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		}
 		totalCount += count
 	}
-	log.Info().Int("addedCount", totalCount).Str("duration", time.Since(t1).String()).Msgf("discovery finished")
+	log.Info().Int("animeListCount", len(entries)).Int("addedCount", totalCount).Str("duration", time.Since(t1).String()).Msgf("discovery finished")
 	return nil
 }
 

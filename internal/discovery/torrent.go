@@ -68,8 +68,8 @@ func tagCompare(a, b string) int {
 	return 0
 }
 
-// getLatestTag is a pure function implementation for fetching the latest tag from a list of torrent entries.
-func getLatestTag(torrents ...torrentclient.Torrent) string {
+// tagGetLatest is a pure function implementation for fetching the latest tag from a list of torrent entries.
+func tagGetLatest(torrents ...torrentclient.Torrent) string {
 	var latestTag string
 	for _, torrent := range torrents {
 		tags := torrent.Tags
@@ -96,35 +96,27 @@ func (c *Controller) TagGetLatest(ctx context.Context, entry animelist.Entry) (s
 	if err != nil {
 		return "", fmt.Errorf("listing torrents: %w", err)
 	}
-	return getLatestTag(append(torrents1, torrents2...)...), nil
+	return tagGetLatest(append(torrents1, torrents2...)...), nil
+}
+
+// torrentGetPath returns a torrent path, creating a show folder if configured.
+func (c *Controller) torrentGetPath(title string) (path torrentclient.SavePath) {
+	if c.dep.Config.CreateShowFolder {
+		return torrentclient.SavePath(fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, title))
+	}
+	return torrentclient.SavePath(c.dep.Config.DownloadPath)
 }
 
 // DigestNyaaTorrent receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, nyaaEntry ParsedNyaa) error {
-	if nyaaEntry.meta.IsMultiEpisode && entry.AiringStatus == animelist.AiringStatusAiring {
-		log.Debug().Msgf("torrent dropped: multi-episode for currently airing")
-		return nil
-	}
-	var savePath torrentclient.SavePath
-	if c.dep.Config.CreateShowFolder {
-		savePath = torrentclient.SavePath(fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, entry.GetTitle()))
-	} else {
-		savePath = torrentclient.SavePath(c.dep.Config.DownloadPath)
-	}
 	tags := nyaaEntry.meta.TagsBuildTorrent()
-	err := c.dep.TorrentClient.AddTorrent(ctx,
-		tags,
-		savePath,
-		torrentclient.TorrentURL{nyaaEntry.entry.Link},
-		torrentclient.Category(c.dep.Config.Category),
-	)
-	if err != nil {
+	savePath := c.torrentGetPath(entry.GetTitle())
+	torrentURL := torrentclient.TorrentURL{nyaaEntry.entry.Link}
+	category := torrentclient.Category(c.dep.Config.Category)
+	if err := c.dep.TorrentClient.AddTorrent(ctx, tags, savePath, torrentURL, category); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
-	log.Info().
-		Str("savePath", string(savePath)).
-		Strs("tag", tags).
-		Msgf("torrent added")
+	log.Info().Str("savePath", string(savePath)).Strs("tag", tags).Msgf("torrent added")
 	return nil
 }
