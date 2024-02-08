@@ -28,9 +28,9 @@ func main() {
 	config := config.ReadConfig(utils.Coalesce(os.Getenv("CONFIG_PATH"), "config.yaml"))
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	c := discovery.New(discovery.Dependencies{
-		AnimeListClient: myanimelist.New(config.MALUser),
 		NYAA:            nyaa.New(),
-		TorrentClient:   qbittorrent.New(ctx, config.QBitTorrentHost, config.QBitTorrentUsername, config.QBitTorrentPassword),
+		AnimeListClient: myanimelist.New(config.AnimeListConfig.Username),
+		TorrentClient:   qbittorrent.New(ctx, config.TorrentConfig.Host, config.TorrentConfig.Username, config.TorrentConfig.Password),
 		Config: discovery.Config{
 			Sources:          config.Sources,
 			Qualitites:       config.Qualities,
@@ -41,9 +41,9 @@ func main() {
 		},
 	})
 	if err := c.Start(ctx); err != nil {
-		log.Error().Msgf("failed to finish discover: %s", err)
+		log.Error().Msgf("failed to shutdown: %s", err)
 	} else {
-		log.Info().Msg("finished successfully")
+		log.Info().Msg("shutdown successful")
 	}
 	done()
 }
