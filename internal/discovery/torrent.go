@@ -7,10 +7,10 @@ import (
 	"strconv"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/integrations/myanimelist"
-	"github.com/sonalys/animeman/integrations/qbittorrent"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 	"golang.org/x/exp/constraints"
 )
 
@@ -94,10 +94,10 @@ func compareTags(a, b string) int {
 	return 0
 }
 
-func getLatestTag(torrents ...qbittorrent.Torrent) string {
+func getLatestTag(torrents ...torrentclient.Torrent) string {
 	var latestTag string
 	for _, torrent := range torrents {
-		tags := torrent.GetTags()
+		tags := torrent.Tags
 		seasonEpisodeTag := tags[len(tags)-1]
 		if compareTags(seasonEpisodeTag, latestTag) > 0 {
 			latestTag = seasonEpisodeTag
@@ -106,38 +106,38 @@ func getLatestTag(torrents ...qbittorrent.Torrent) string {
 	return latestTag
 }
 
-func (c *Controller) GetLatestTag(ctx context.Context, entry myanimelist.AnimeListEntry) (string, error) {
+func (c *Controller) GetLatestTag(ctx context.Context, entry animelist.Entry) (string, error) {
 	// check if torrent already exists, if so we skip it.
 	title := parser.ParseTitle(entry.Title)
 	titleEng := parser.ParseTitle(entry.TitleEng)
-	torrents1, err := c.dep.QB.List(ctx, qbittorrent.Tag(title.BuildSeriesTag()))
+	torrents1, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(title.BuildSeriesTag()))
 	if err != nil {
 		return "", fmt.Errorf("listing torrents: %w", err)
 	}
-	torrents2, err := c.dep.QB.List(ctx, qbittorrent.Tag(titleEng.BuildSeriesTag()))
+	torrents2, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(titleEng.BuildSeriesTag()))
 	if err != nil {
 		return "", fmt.Errorf("listing torrents: %w", err)
 	}
 	return getLatestTag(append(torrents1, torrents2...)...), nil
 }
 
-func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry myanimelist.AnimeListEntry, nyaaEntry TaggedNyaa) error {
-	if nyaaEntry.meta.IsMultiEpisode && entry.AiringStatus == myanimelist.AiringStatusAiring {
+func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, nyaaEntry TaggedNyaa) error {
+	if nyaaEntry.meta.IsMultiEpisode && entry.AiringStatus == animelist.AiringStatusAiring {
 		log.Debug().Msgf("torrent dropped: multi-episode for currently airing")
 		return nil
 	}
-	var savePath qbittorrent.SavePath
+	var savePath torrentclient.SavePath
 	if c.dep.Config.CreateShowFolder {
-		savePath = qbittorrent.SavePath(fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, entry.GetTitle()))
+		savePath = torrentclient.SavePath(fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, entry.GetTitle()))
 	} else {
-		savePath = qbittorrent.SavePath(c.dep.Config.DownloadPath)
+		savePath = torrentclient.SavePath(c.dep.Config.DownloadPath)
 	}
 	tags := nyaaEntry.meta.BuildTorrentTags()
-	err := c.dep.QB.AddTorrent(ctx,
+	err := c.dep.TorrentClient.AddTorrent(ctx,
 		tags,
 		savePath,
-		qbittorrent.TorrentURL{nyaaEntry.entry.Link},
-		qbittorrent.Category(c.dep.Config.Category),
+		torrentclient.TorrentURL{nyaaEntry.entry.Link},
+		torrentclient.Category(c.dep.Config.Category),
 	)
 	if err != nil {
 		return fmt.Errorf("adding torrents: %w", err)

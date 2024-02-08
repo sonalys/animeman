@@ -7,9 +7,9 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/integrations/myanimelist"
 	"github.com/sonalys/animeman/integrations/nyaa"
-	"github.com/sonalys/animeman/integrations/qbittorrent"
+	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
 
 type (
@@ -22,12 +22,21 @@ type (
 		PollFrequency    time.Duration
 	}
 
+	AnimeListSource interface {
+		GetAnimeList(ctx context.Context, args ...animelist.AnimeListArg) ([]animelist.Entry, error)
+	}
+
+	TorrentClient interface {
+		List(ctx context.Context, args ...torrentclient.ArgListTorrent) ([]torrentclient.Torrent, error)
+		AddTorrent(ctx context.Context, args ...torrentclient.ArgAddTorrent) error
+		AddTorrentTags(ctx context.Context, hashes []string, args ...torrentclient.AddTorrentTagsArg) error
+	}
+
 	Dependencies struct {
-		// TODO: abstract MAL and qBittorrent for interfaces.
-		MAL    *myanimelist.API
-		NYAA   *nyaa.API
-		QB     *qbittorrent.API
-		Config Config
+		NYAA            *nyaa.API
+		AnimeListClient AnimeListSource
+		TorrentClient   TorrentClient
+		Config          Config
 	}
 
 	Controller struct {
@@ -51,7 +60,9 @@ func (c *Controller) Start(ctx context.Context) error {
 	log.Info().Msgf("starting polling with frequency %s", c.dep.Config.PollFrequency.String())
 	timer := time.NewTicker(c.dep.Config.PollFrequency)
 	defer timer.Stop()
-	c.RunDiscovery(ctx)
+	if err := c.RunDiscovery(ctx); err != nil {
+		log.Error().Msgf("discovery failed: %s", err)
+	}
 	for {
 		select {
 		case <-timer.C:

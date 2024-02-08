@@ -1,22 +1,12 @@
-package myanimelist
+package animelist
 
 import (
 	"fmt"
 	"net/url"
 )
 
-type (
-	ListStatus   int
-	AiringStatus int
-	Title        string
-
-	AnimeListEntry struct {
-		Status       ListStatus   `json:"status"`
-		Title        string       `json:"anime_title"`
-		TitleEng     string       `json:"anime_title_eng"`
-		AiringStatus AiringStatus `json:"anime_airing_status"`
-	}
-)
+type ListStatus int
+type AiringStatus int
 
 const (
 	ListStatusWatching    ListStatus = 1
@@ -32,19 +22,22 @@ const (
 	AiringStatusAiring
 )
 
-var statusNames = []string{
-	"Unknown",
-	"Watching",
-	"Completed",
-	"OnHold",
-	"Dropped",
-	"WontWatch",
-	"PlanToWatch",
-	"All",
+type Entry struct {
+	ListStatus   ListStatus
+	Title        string
+	TitleEng     string
+	AiringStatus AiringStatus
 }
 
-func (s ListStatus) Name() string {
-	return statusNames[s]
+type AnimeListArg interface {
+	ApplyList(url.Values)
+}
+
+func (e *Entry) GetTitle() string {
+	if e.TitleEng != "" {
+		return e.TitleEng
+	}
+	return fmt.Sprint(e.Title)
 }
 
 func (s ListStatus) ApplyList(v url.Values) {

@@ -8,11 +8,11 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/integrations/myanimelist"
 	"github.com/sonalys/animeman/integrations/nyaa"
-	"github.com/sonalys/animeman/integrations/qbittorrent"
 	"github.com/sonalys/animeman/internal/config"
 	"github.com/sonalys/animeman/internal/discovery"
+	"github.com/sonalys/animeman/internal/myanimelist"
+	"github.com/sonalys/animeman/internal/qbittorrent"
 	"github.com/sonalys/animeman/internal/utils"
 )
 
@@ -28,9 +28,9 @@ func main() {
 	config := config.ReadConfig(utils.Coalesce(os.Getenv("CONFIG_PATH"), "config.yaml"))
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	c := discovery.New(discovery.Dependencies{
-		MAL:  myanimelist.New(config.MALUser),
-		NYAA: nyaa.New(),
-		QB:   qbittorrent.New(ctx, config.QBitTorrentHost, config.QBitTorrentUsername, config.QBitTorrentPassword),
+		AnimeListClient: myanimelist.New(config.MALUser),
+		NYAA:            nyaa.New(),
+		TorrentClient:   qbittorrent.New(ctx, config.QBitTorrentHost, config.QBitTorrentUsername, config.QBitTorrentPassword),
 		Config: discovery.Config{
 			Sources:          config.Sources,
 			Qualitites:       config.Qualities,

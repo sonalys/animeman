@@ -5,9 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
-	"net/http/cookiejar"
 	"syscall"
-	"time"
 
 	"github.com/rs/zerolog/log"
 )
@@ -20,26 +18,19 @@ type (
 	}
 )
 
-func New(ctx context.Context, host, username, password string) *API {
-	jar, err := cookiejar.New(nil)
-	if err != nil {
-		panic(err)
-	}
+func New(ctx context.Context, client *http.Client, host, username, password string) *API {
 	api := &API{
 		host:     fmt.Sprintf("%s/api/v2", host),
 		username: username,
 		password: password,
-		client: &http.Client{
-			Timeout: 3 * time.Second,
-			Jar:     jar,
-		},
+		client:   client,
 	}
-	var version string
 	api.Wait(ctx)
-	if version, err = api.Version(ctx); err != nil {
+	if version, err := api.Version(ctx); err != nil {
 		log.Fatal().Msgf("failed to connect to qBittorrent: %s", err)
+	} else {
+		log.Info().Msgf("connected to qBittorrent:%s", version)
 	}
-	log.Info().Msgf("connected to qBittorrent:%s", version)
 	return api
 }
 

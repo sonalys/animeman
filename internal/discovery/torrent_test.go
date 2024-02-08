@@ -3,12 +3,12 @@ package discovery
 import (
 	"testing"
 
-	"github.com/sonalys/animeman/integrations/qbittorrent"
+	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
 
 func Test_getLatestTag(t *testing.T) {
 	type args struct {
-		torrents []qbittorrent.Torrent
+		torrents []torrentclient.Torrent
 	}
 	tests := []struct {
 		name string
@@ -18,9 +18,9 @@ func Test_getLatestTag(t *testing.T) {
 		{
 			name: "batch and same season",
 			args: args{
-				torrents: []qbittorrent.Torrent{
-					{Tags: "S3"},
-					{Tags: "S3E2"},
+				torrents: []torrentclient.Torrent{
+					{Tags: []string{"S3"}},
+					{Tags: []string{"S3E2"}},
 				},
 			},
 			want: "S3",
@@ -32,8 +32,8 @@ func Test_getLatestTag(t *testing.T) {
 		{
 			name: "one tag",
 			args: args{
-				torrents: []qbittorrent.Torrent{
-					{Tags: "S01"},
+				torrents: []torrentclient.Torrent{
+					{Tags: []string{"S01"}},
 				},
 			},
 			want: "S01",
@@ -41,10 +41,10 @@ func Test_getLatestTag(t *testing.T) {
 		{
 			name: "same season",
 			args: args{
-				torrents: []qbittorrent.Torrent{
-					{Tags: "S1E1"},
-					{Tags: "S1E2"},
-					{Tags: "S1E3"},
+				torrents: []torrentclient.Torrent{
+					{Tags: []string{"S1E1"}},
+					{Tags: []string{"S1E2"}},
+					{Tags: []string{"S1E3"}},
 				},
 			},
 			want: "S1E3",
@@ -52,10 +52,10 @@ func Test_getLatestTag(t *testing.T) {
 		{
 			name: "different seasons",
 			args: args{
-				torrents: []qbittorrent.Torrent{
-					{Tags: "S3E1"},
-					{Tags: "S2E2"},
-					{Tags: "S1E3"},
+				torrents: []torrentclient.Torrent{
+					{Tags: []string{"S3E1"}},
+					{Tags: []string{"S2E2"}},
+					{Tags: []string{"S1E3"}},
 				},
 			},
 			want: "S3E1",
@@ -63,10 +63,10 @@ func Test_getLatestTag(t *testing.T) {
 		{
 			name: "batch and season",
 			args: args{
-				torrents: []qbittorrent.Torrent{
-					{Tags: "S3"},
-					{Tags: "S2E2"},
-					{Tags: "S1E3"},
+				torrents: []torrentclient.Torrent{
+					{Tags: []string{"S3"}},
+					{Tags: []string{"S2E2"}},
+					{Tags: []string{"S1E3"}},
 				},
 			},
 			want: "S3",
@@ -74,10 +74,10 @@ func Test_getLatestTag(t *testing.T) {
 		{
 			name: "batch and season",
 			args: args{
-				torrents: []qbittorrent.Torrent{
-					{Tags: "S1E1~13"},
-					{Tags: "S1E2"},
-					{Tags: "S1E3"},
+				torrents: []torrentclient.Torrent{
+					{Tags: []string{"S1E1~13"}},
+					{Tags: []string{"S1E2"}},
+					{Tags: []string{"S1E3"}},
 				},
 			},
 			want: "S1E1~13",

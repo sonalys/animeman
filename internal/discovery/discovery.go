@@ -8,10 +8,10 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/integrations/myanimelist"
 	"github.com/sonalys/animeman/integrations/nyaa"
-	"github.com/sonalys/animeman/integrations/qbittorrent"
 	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
 
 type TaggedNyaa struct {
@@ -22,8 +22,8 @@ type TaggedNyaa struct {
 
 func (c *Controller) RunDiscovery(ctx context.Context) error {
 	t1 := time.Now()
-	entries, err := c.dep.MAL.GetAnimeList(ctx,
-		myanimelist.ListStatusWatching,
+	entries, err := c.dep.AnimeListClient.GetAnimeList(ctx,
+		animelist.ListStatusWatching,
 	)
 	if err != nil {
 		log.Fatal().Msgf("getting MAL list: %s", err)
@@ -33,7 +33,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	for _, entry := range entries {
 		count, err := c.DigestMALEntry(ctx, entry)
 		if err != nil {
-			if errors.Is(err, qbittorrent.ErrUnauthorized) || errors.Is(err, context.Canceled) {
+			if errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 				return fmt.Errorf("failed to digest entry: %w", err)
 			}
 			continue
@@ -85,7 +85,7 @@ func filterEpisodes(list []TaggedNyaa, latestTag string) []TaggedNyaa {
 	return out
 }
 
-func (c *Controller) DigestMALEntry(ctx context.Context, entry myanimelist.AnimeListEntry) (count int, err error) {
+func (c *Controller) DigestMALEntry(ctx context.Context, entry animelist.Entry) (count int, err error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
 	titleQuery := nyaa.OrQuery{parser.StripTitle(entry.TitleEng), parser.StripTitle(entry.Title)}
@@ -107,7 +107,7 @@ func (c *Controller) DigestMALEntry(ctx context.Context, entry myanimelist.Anime
 		return count, fmt.Errorf("getting latest tag: %w", err)
 	}
 	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
-	if latestTag == "" && entry.AiringStatus == myanimelist.AiringStatusAired {
+	if latestTag == "" && entry.AiringStatus == animelist.AiringStatusAired {
 		nyaaEntries = filterNyaaBatch(nyaaEntries)
 	}
 	taggedNyaaList := buildTaggedNyaaList(nyaaEntries)
