@@ -95,12 +95,12 @@ func (c *Controller) DigestMALEntry(ctx context.Context, entry myanimelist.Anime
 	nyaaEntries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
 	log.Debug().Str("entry", entry.GetTitle()).Msgf("found %d torrents", len(nyaaEntries))
 	if err != nil {
-		return 0, fmt.Errorf("getting nyaa list: %w", err)
+		return count, fmt.Errorf("getting nyaa list: %w", err)
 	}
 	// There should always be torrents for entries, if there aren't we can just exit the routine.
 	if len(nyaaEntries) == 0 {
 		log.Error().Msgf("no torrents found for entry '%s'", entry.GetTitle())
-		return 0, nil
+		return count, nil
 	}
 	latestTag, err := c.GetLatestTag(ctx, entry)
 	if err != nil {

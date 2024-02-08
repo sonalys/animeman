@@ -61,7 +61,7 @@ func ParseTitle(title string) ParsedTitle {
 
 func (t ParsedTitle) BuildSeasonEpisodeTag() string {
 	resp := fmt.Sprintf("%s S%s", t.Title, t.Season)
-	if !t.IsMultiEpisode {
+	if t.Episode != "" {
 		resp = resp + fmt.Sprintf("E%s", t.Episode)
 	}
 	return resp

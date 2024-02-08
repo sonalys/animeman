@@ -11,9 +11,11 @@ import (
 	"github.com/sonalys/animeman/integrations/qbittorrent"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/utils"
+	"golang.org/x/exp/constraints"
 )
 
 var numberExpr = regexp.MustCompile(`\d+`)
+var batchReplaceExpr = regexp.MustCompile(`(\d+)~(\d+)`)
 
 func strSliceToInt(from []string) []int64 {
 	out := make([]int64, 0, len(from))
@@ -23,11 +25,42 @@ func strSliceToInt(from []string) []int64 {
 	return out
 }
 
-func min(a, b int) int {
-	if a < b {
-		return a
+func min[T constraints.Ordered](values ...T) (min T) {
+	if len(values) == 0 {
+		return
 	}
-	return b
+	min = values[0]
+	for i := range values {
+		if values[i] < min {
+			min = values[i]
+		}
+	}
+	return min
+}
+
+func max[T constraints.Ordered](values ...T) (max T) {
+	if len(values) == 0 {
+		return
+	}
+	max = values[0]
+	for i := range values {
+		if values[i] > max {
+			max = values[i]
+		}
+	}
+	return max
+}
+
+func mergeBatchEpisodes(tag string) string {
+	matches := batchReplaceExpr.FindAllStringSubmatch(tag, -1)
+	if len(matches) == 0 {
+		return tag
+	}
+	values := matches[0][1:]
+	return batchReplaceExpr.ReplaceAllString(
+		tag,
+		fmt.Sprint(max(strSliceToInt(values)...)),
+	)
 }
 
 func compareTags(a, b string) int {
@@ -37,6 +70,8 @@ func compareTags(a, b string) int {
 	if a != "" && b == "" {
 		return 1
 	}
+	a = mergeBatchEpisodes(a)
+	b = mergeBatchEpisodes(b)
 	aNums := strSliceToInt(numberExpr.FindAllString(a, -1))
 	bNums := strSliceToInt(numberExpr.FindAllString(b, -1))
 	lenA, lenB := len(aNums), len(bNums)
