@@ -33,7 +33,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	log.Debug().Msgf("discovery started")
 	entries, err := c.dep.AnimeListClient.GetCurrentlyWatching(ctx)
 	if err != nil {
-		log.Fatal().Msgf("getting MAL list: %s", err)
+		return fmt.Errorf("fetching anime list: %w", err)
 	}
 	var totalCount int
 	for _, entry := range entries {
