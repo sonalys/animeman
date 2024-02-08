@@ -19,6 +19,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context, args ...AnimeListArg) 
 	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
 	v := url.Values{
 		"offset": []string{"0"},
+		"status": []string{"1"},
 	}
 	for _, arg := range args {
 		arg.ApplyList(v)
