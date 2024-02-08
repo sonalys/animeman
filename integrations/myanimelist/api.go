@@ -21,9 +21,10 @@ func New(username string) *API {
 	return &API{
 		Username: username,
 		client: &http.Client{
-			Transport: roundtripper.NewRateLimitedTransport(
-				http.DefaultTransport, rate.NewLimiter(rate.Every(time.Second), 1),
-			),
+			Transport: roundtripper.NewUserAgentTransport(
+				roundtripper.NewRateLimitedTransport(
+					http.DefaultTransport, rate.NewLimiter(rate.Every(time.Second), 1),
+				), "github.com/sonalys/animeman"),
 			Timeout: 10 * time.Second,
 		},
 	}

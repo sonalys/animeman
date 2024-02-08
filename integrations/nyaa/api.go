@@ -35,9 +35,9 @@ func New() *API {
 	return &API{
 		client: &http.Client{
 			Jar: http.DefaultClient.Jar,
-			Transport: roundtripper.NewRateLimitedTransport(
+			Transport: roundtripper.NewUserAgentTransport(roundtripper.NewRateLimitedTransport(
 				http.DefaultTransport, rate.NewLimiter(rate.Every(1*time.Second), 1),
-			),
+			), "github.com/sonalys/animeman"),
 			// Timeout: 10 * time.Second,
 		},
 	}

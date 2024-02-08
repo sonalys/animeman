@@ -12,12 +12,12 @@ type throttledTransport struct {
 	ratelimiter      *rate.Limiter
 }
 
-func (c *throttledTransport) RoundTrip(r *http.Request) (*http.Response, error) {
-	err := c.ratelimiter.Wait(r.Context()) // This is a blocking call. Honors the rate limit
+func (t *throttledTransport) RoundTrip(r *http.Request) (*http.Response, error) {
+	err := t.ratelimiter.Wait(r.Context()) // This is a blocking call. Honors the rate limit
 	if err != nil {
 		return nil, err
 	}
-	return c.roundTripperWrap.RoundTrip(r)
+	return t.roundTripperWrap.RoundTrip(r)
 }
 
 // NewRateLimitedTransport wraps transportWrap with a rate limitter
