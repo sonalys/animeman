@@ -13,7 +13,7 @@ It automatically parses the torrent titles for tagging the show, season and epis
 
 * **Automatic Downloads** weekly releases from your WatchList
 * **Downloads batch releases**: from complete series from your WatchList
-* **Tags**: all torrent entries under the configured category with [`!Serie name`, `S01`, `E01`] as an example
+* **Tags**: all torrent entries under the configured category with [`!Serie name`, `Serie name S01E01`] as an example
 * **Source and quality filter**: you can specify resolution and HEVC tag
 * **Smart episode detection**: you don't need to worry about downloading the same episode twice
 
