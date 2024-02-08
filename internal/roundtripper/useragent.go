@@ -4,7 +4,6 @@ import (
 	"net/http"
 )
 
-// throttledTransport Rate Limited HTTP Client
 type userAgentTransport struct {
 	roundTripperWrap http.RoundTripper
 	userAgent        string
@@ -15,7 +14,7 @@ func (t *userAgentTransport) RoundTrip(r *http.Request) (*http.Response, error) 
 	return t.roundTripperWrap.RoundTrip(r)
 }
 
-// NewRateLimitedTransport wraps transportWrap with a rate limitter
+// NewUserAgentTransport adds an user-agent to all the requests from an http.client.
 func NewUserAgentTransport(wrap http.RoundTripper, userAgent string) http.RoundTripper {
 	return &userAgentTransport{
 		roundTripperWrap: wrap,

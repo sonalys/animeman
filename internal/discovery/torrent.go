@@ -4,54 +4,23 @@ import (
 	"context"
 	"fmt"
 	"regexp"
-	"strconv"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
-	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
-	"golang.org/x/exp/constraints"
 )
 
+// Regexp for detecting numbers.
 var numberExpr = regexp.MustCompile(`\d+`)
+
+// Regexp for detecting batch tag numbers.
+// Example: S02E01~13.
 var batchReplaceExpr = regexp.MustCompile(`(\d+)~(\d+)`)
 
-func strSliceToInt(from []string) []int64 {
-	out := make([]int64, 0, len(from))
-	for _, cur := range from {
-		out = append(out, utils.Must(strconv.ParseInt(cur, 10, 64)))
-	}
-	return out
-}
-
-func min[T constraints.Ordered](values ...T) (min T) {
-	if len(values) == 0 {
-		return
-	}
-	min = values[0]
-	for i := range values {
-		if values[i] < min {
-			min = values[i]
-		}
-	}
-	return min
-}
-
-func max[T constraints.Ordered](values ...T) (max T) {
-	if len(values) == 0 {
-		return
-	}
-	max = values[0]
-	for i := range values {
-		if values[i] > max {
-			max = values[i]
-		}
-	}
-	return max
-}
-
-func mergeBatchEpisodes(tag string) string {
+// tagMergeBatchEpisodes will receive a tag represented by S0E1~12.
+// it will transform it into S0E12 so the episode detection will only download episodes 13 and forward.
+func tagMergeBatchEpisodes(tag string) string {
 	matches := batchReplaceExpr.FindAllStringSubmatch(tag, -1)
 	if len(matches) == 0 {
 		return tag
@@ -63,15 +32,20 @@ func mergeBatchEpisodes(tag string) string {
 	)
 }
 
-func compareTags(a, b string) int {
+// tagCompare receives 2 series tags, Example: S02E01 and S02E02.
+// it will return the comparison of Tag1, Tag2.
+// -1 = Tag1 < Tag2.
+// 0 = Tag1 == Tag2.
+// 1 = Tag1 > Tag2.
+func tagCompare(a, b string) int {
 	if a == "" && b != "" {
 		return -1
 	}
 	if a != "" && b == "" {
 		return 1
 	}
-	a = mergeBatchEpisodes(a)
-	b = mergeBatchEpisodes(b)
+	a = tagMergeBatchEpisodes(a)
+	b = tagMergeBatchEpisodes(b)
 	aNums := strSliceToInt(numberExpr.FindAllString(a, -1))
 	bNums := strSliceToInt(numberExpr.FindAllString(b, -1))
 	lenA, lenB := len(aNums), len(bNums)
@@ -94,34 +68,40 @@ func compareTags(a, b string) int {
 	return 0
 }
 
+// getLatestTag is a pure function implementation for fetching the latest tag from a list of torrent entries.
 func getLatestTag(torrents ...torrentclient.Torrent) string {
 	var latestTag string
 	for _, torrent := range torrents {
 		tags := torrent.Tags
 		seasonEpisodeTag := tags[len(tags)-1]
-		if compareTags(seasonEpisodeTag, latestTag) > 0 {
+		if tagCompare(seasonEpisodeTag, latestTag) > 0 {
 			latestTag = seasonEpisodeTag
 		}
 	}
 	return latestTag
 }
 
-func (c *Controller) GetLatestTag(ctx context.Context, entry animelist.Entry) (string, error) {
+// TagGetLatest will receive an anime list entry and return all torrents listed from the anime.
+func (c *Controller) TagGetLatest(ctx context.Context, entry animelist.Entry) (string, error) {
 	// check if torrent already exists, if so we skip it.
-	title := parser.ParseTitle(entry.Title)
-	titleEng := parser.ParseTitle(entry.TitleEng)
-	torrents1, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(title.BuildSeriesTag()))
+	title := parser.TitleParse(entry.Title)
+	titleEng := parser.TitleParse(entry.TitleEng)
+	// we should consider both title and titleEng, because your anime list has different titles available,
+	// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
+	torrents1, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(title.TagBuildSeries()))
 	if err != nil {
 		return "", fmt.Errorf("listing torrents: %w", err)
 	}
-	torrents2, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(titleEng.BuildSeriesTag()))
+	torrents2, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(titleEng.TagBuildSeries()))
 	if err != nil {
 		return "", fmt.Errorf("listing torrents: %w", err)
 	}
 	return getLatestTag(append(torrents1, torrents2...)...), nil
 }
 
-func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, nyaaEntry TaggedNyaa) error {
+// DigestNyaaTorrent receives an anime list entry and a downloadable torrent.
+// It will configure all necessary metadata and send it to your torrent client.
+func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, nyaaEntry ParsedNyaa) error {
 	if nyaaEntry.meta.IsMultiEpisode && entry.AiringStatus == animelist.AiringStatusAiring {
 		log.Debug().Msgf("torrent dropped: multi-episode for currently airing")
 		return nil
@@ -132,7 +112,7 @@ func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entr
 	} else {
 		savePath = torrentclient.SavePath(c.dep.Config.DownloadPath)
 	}
-	tags := nyaaEntry.meta.BuildTorrentTags()
+	tags := nyaaEntry.meta.TagsBuildTorrent()
 	err := c.dep.TorrentClient.AddTorrent(ctx,
 		tags,
 		savePath,

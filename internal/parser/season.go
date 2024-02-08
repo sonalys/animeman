@@ -16,6 +16,7 @@ var seasonExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(?i:season\s)(\d+)`),
 }
 
+// matchSeason detects season on titles.
 func matchSeason(title string) string {
 	for _, expr := range seasonExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
@@ -30,6 +31,7 @@ func matchSeason(title string) string {
 	return "1"
 }
 
+// matchSeasonIndex is used for removing season from titles.
 func matchSeasonIndex(title string) int {
 	for _, expr := range seasonExpr {
 		matches := expr.FindAllStringSubmatchIndex(title, -1)

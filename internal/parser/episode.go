@@ -20,7 +20,8 @@ var episodeExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(?i:e)` + episodeGroup),
 }
 
-func matchEpisode(title string) (string, bool) {
+// episodeMatch detects episodes on titles.
+func episodeMatch(title string) (string, bool) {
 	for _, expr := range episodeExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 || len(matches[0]) < 2 {
@@ -40,7 +41,8 @@ func matchEpisode(title string) (string, bool) {
 	return "", true
 }
 
-func matchEpisodeIndex(title string) int {
+// episodeIndexMatch is used for filtering episodes out of titles.
+func episodeIndexMatch(title string) int {
 	for _, expr := range episodeExpr {
 		matches := expr.FindAllStringSubmatchIndex(title, -1)
 		if len(matches) == 0 || len(matches[0]) < 2 {

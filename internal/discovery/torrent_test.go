@@ -123,7 +123,7 @@ func Test_mergeBatchEpisodes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := mergeBatchEpisodes(tt.args.tag); got != tt.want {
+			if got := tagMergeBatchEpisodes(tt.args.tag); got != tt.want {
 				t.Errorf("mergeBatchEpisodes() = %v, want %v", got, tt.want)
 			}
 		})
