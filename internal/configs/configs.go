@@ -1,4 +1,4 @@
-package config
+package configs
 
 import (
 	"fmt"
@@ -149,7 +149,7 @@ func GenerateBoilerplateConfig() {
 	}
 }
 
-func ReadConfig(path string) Config {
+func ReadConfig(path string) (Config, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		GenerateBoilerplateConfig()
@@ -159,5 +159,5 @@ func ReadConfig(path string) Config {
 	if err = yaml.NewDecoder(file).Decode(&config); err != nil {
 		log.Fatal().Msgf("could not read config.yaml: %s", err)
 	}
-	return config
+	return config, config.Validate()
 }
