@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"sort"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -40,6 +41,28 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	return nil
 }
 
+type TaggedNyaa struct {
+	meta             parser.ParsedTitle
+	seasonEpisodeTag string
+	entry            nyaa.Entry
+}
+
+func buildTaggedNyaaList(torrents []nyaa.Entry) []TaggedNyaa {
+	out := make([]TaggedNyaa, 0, len(torrents))
+	for _, entry := range torrents {
+		meta := parser.ParseTitle(entry.Title)
+		out = append(out, TaggedNyaa{
+			meta:             meta,
+			seasonEpisodeTag: meta.BuildSeasonEpisodeTag(),
+			entry:            entry,
+		})
+	}
+	sort.Slice(out, func(i, j int) bool {
+		return compareTags(out[i].seasonEpisodeTag, out[j].seasonEpisodeTag) < 0
+	})
+	return out
+}
+
 func (c *Controller) DigestMALEntry(ctx context.Context, entry myanimelist.AnimeListEntry) (count int, err error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
@@ -57,9 +80,19 @@ func (c *Controller) DigestMALEntry(ctx context.Context, entry myanimelist.Anime
 		log.Error().Msgf("no torrents found for entry '%s'", entry.GetTitle())
 		return 0, nil
 	}
-	for _, torrent := range torrents {
-		log.Debug().Str("entry", entry.GetTitle()).Msgf("analyzing torrent '%s'", torrent.Title)
-		added, err := c.DigestNyaaTorrent(ctx, entry, torrent)
+	latestTag, err := c.GetLatestTag(ctx, entry)
+	if err != nil {
+		return count, fmt.Errorf("getting latest tag: %w", err)
+	}
+	taggedNyaaList := buildTaggedNyaaList(torrents)
+	for _, nyaaEntry := range taggedNyaaList {
+		// Make sure we only add episodes ahead of the current ones in the qBittorrent.
+		if compareTags(nyaaEntry.seasonEpisodeTag, latestTag) <= 0 {
+			continue
+		}
+		latestTag = nyaaEntry.seasonEpisodeTag
+		log.Debug().Str("entry", entry.GetTitle()).Msgf("analyzing torrent '%s'", nyaaEntry.meta.Title)
+		added, err := c.DigestNyaaTorrent(ctx, entry, nyaaEntry)
 		if err != nil {
 			log.Error().Msgf("failed to digest nyaa entry: %s", err)
 			continue

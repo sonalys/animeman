@@ -8,7 +8,6 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/integrations/myanimelist"
-	"github.com/sonalys/animeman/integrations/nyaa"
 	"github.com/sonalys/animeman/integrations/qbittorrent"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/utils"
@@ -87,19 +86,9 @@ func (c *Controller) GetLatestTag(ctx context.Context, entry myanimelist.AnimeLi
 	return getLatestTag(append(torrents1, torrents2...)...), nil
 }
 
-func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry myanimelist.AnimeListEntry, torrent nyaa.Entry) (bool, error) {
-	meta := parser.ParseTitle(torrent.Title)
-	if meta.IsMultiEpisode && entry.AiringStatus == myanimelist.AiringStatusAiring {
+func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry myanimelist.AnimeListEntry, nyaaEntry TaggedNyaa) (bool, error) {
+	if nyaaEntry.meta.IsMultiEpisode && entry.AiringStatus == myanimelist.AiringStatusAiring {
 		log.Debug().Msgf("torrent dropped: multi-episode for currently airing")
-		return false, nil
-	}
-	latestTag, err := c.GetLatestTag(ctx, entry)
-	if err != nil {
-		return false, fmt.Errorf("getting latest tag: %w", err)
-	}
-	// Check if qBittorrent client already has an episode after the current one.
-	tagCompare := compareTags(meta.BuildSeasonEpisodeTag(), latestTag)
-	if tagCompare <= 0 {
 		return false, nil
 	}
 	var savePath qbittorrent.SavePath
@@ -108,11 +97,11 @@ func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry myanimelist.An
 	} else {
 		savePath = qbittorrent.SavePath(c.dep.Config.DownloadPath)
 	}
-	tags := meta.BuildTorrentTags()
-	err = c.dep.QB.AddTorrent(ctx,
+	tags := nyaaEntry.meta.BuildTorrentTags()
+	err := c.dep.QB.AddTorrent(ctx,
 		tags,
 		savePath,
-		qbittorrent.TorrentURL{torrent.Link},
+		qbittorrent.TorrentURL{nyaaEntry.entry.Link},
 		qbittorrent.Category(c.dep.Config.Category),
 	)
 	if err != nil {
