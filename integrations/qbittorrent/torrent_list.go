@@ -25,7 +25,7 @@ func (c Category) ApplyListTorrent(v url.Values) {
 
 func (api *API) List(ctx context.Context, args ...ArgListTorrent) ([]Torrent, error) {
 	var path = api.host + "/torrents/info"
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, path, nil)
+	req, err := http.NewRequest(http.MethodGet, path, nil)
 	if err != nil {
 		return nil, fmt.Errorf("list request failed: %w", err)
 	}
@@ -34,7 +34,7 @@ func (api *API) List(ctx context.Context, args ...ArgListTorrent) ([]Torrent, er
 		f.ApplyListTorrent(values)
 	}
 	req.URL.RawQuery = values.Encode()
-	resp, err := api.Do(req)
+	resp, err := api.Do(ctx, req)
 	if err != nil {
 		return nil, fmt.Errorf("could not list torrents: %w", err)
 	}

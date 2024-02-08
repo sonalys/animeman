@@ -1,15 +1,16 @@
 package qbittorrent
 
 import (
+	"context"
 	"io"
 	"net/http"
 
 	"github.com/sonalys/animeman/internal/utils"
 )
 
-func (api *API) Version() (string, error) {
+func (api *API) Version(ctx context.Context) (string, error) {
 	var path = api.host + "/app/version"
-	resp, err := api.Do(utils.Must(http.NewRequest(http.MethodGet, path, nil)))
+	resp, err := api.Do(ctx, utils.Must(http.NewRequest(http.MethodGet, path, nil)))
 	if err != nil {
 		return "", NewErrConnection(err)
 	}

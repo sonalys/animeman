@@ -65,12 +65,12 @@ func (api *API) AddTorrent(ctx context.Context, args ...ArgAddTorrent) error {
 	for _, f := range args {
 		f.ApplyAddTorrent(formdata)
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, path, &b)
+	req, err := http.NewRequest(http.MethodPost, path, &b)
 	if err != nil {
 		return fmt.Errorf("creating request failed: %w", err)
 	}
 	req.Header.Set("Content-Type", formdata.FormDataContentType())
-	resp, err := api.Do(req)
+	resp, err := api.Do(ctx, req)
 	if err != nil {
 		return fmt.Errorf("post torrents/add failed: %w", err)
 	}

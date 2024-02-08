@@ -16,12 +16,12 @@ func (api *API) RemoveTorrentTags(ctx context.Context, hashes []string, args ...
 	for _, f := range args {
 		f.ApplyAddTorrentTags(values)
 	}
-	req, err := http.NewRequestWithContext(ctx, http.MethodPost, path, strings.NewReader(values.Encode()))
+	req, err := http.NewRequest(http.MethodPost, path, strings.NewReader(values.Encode()))
 	if err != nil {
 		return fmt.Errorf("list request failed: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	resp, err := api.Do(req)
+	resp, err := api.Do(ctx, req)
 	if err != nil {
 		return fmt.Errorf("request failed: %w", err)
 	}

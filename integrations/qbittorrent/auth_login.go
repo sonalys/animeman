@@ -1,13 +1,14 @@
 package qbittorrent
 
 import (
+	"context"
 	"fmt"
 	"net/http"
 	"net/url"
 	"strings"
 )
 
-func (api *API) Login(username, password string) error {
+func (api *API) Login(ctx context.Context, username, password string) error {
 	var path = api.host + "/auth/login"
 	data := url.Values{
 		"username": []string{username},
@@ -18,7 +19,7 @@ func (api *API) Login(username, password string) error {
 		return fmt.Errorf("login request creation failed: %w", err)
 	}
 	req.Header.Add("Content-Type", "application/x-www-form-urlencoded")
-	resp, err := api.Do(req)
+	resp, err := api.Do(ctx, req)
 	if err != nil {
 		return fmt.Errorf("login failed: %w", err)
 	}

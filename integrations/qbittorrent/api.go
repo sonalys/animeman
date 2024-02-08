@@ -36,15 +36,14 @@ func New(ctx context.Context, host, username, password string) *API {
 	}
 	var version string
 	api.Wait(ctx)
-	if version, err = api.Version(); err != nil {
+	if version, err = api.Version(ctx); err != nil {
 		log.Fatal().Msgf("failed to connect to qBittorrent: %s", err)
 	}
 	log.Info().Msgf("connected to qBittorrent:%s", version)
 	return api
 }
 
-func (api *API) Do(req *http.Request) (*http.Response, error) {
-	ctx := req.Context()
+func (api *API) Do(ctx context.Context, req *http.Request) (*http.Response, error) {
 	localReq := req.Clone(ctx)
 	resp, err := api.client.Do(localReq)
 	switch {
@@ -53,12 +52,12 @@ func (api *API) Do(req *http.Request) (*http.Response, error) {
 		errors.Is(err, syscall.ECONNRESET):
 		log.Warn().Msgf("qBittorrent disconnected")
 		api.Wait(ctx)
-		return api.Do(req)
+		return api.Do(ctx, req)
 	case err == nil && resp.StatusCode >= 400:
-		if loginErr := api.Login(api.username, api.password); loginErr != nil {
+		if loginErr := api.Login(ctx, api.username, api.password); loginErr != nil {
 			return resp, loginErr
 		}
-		return api.Do(req)
+		return api.Do(ctx, req)
 	}
 	return resp, err
 }
