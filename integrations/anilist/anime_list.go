@@ -8,7 +8,9 @@ import (
 	"io"
 	"net/http"
 
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
 
 type (
@@ -84,7 +86,46 @@ func filter[T any](in []T, f func(T) bool) []T {
 	return out
 }
 
-func (api *API) GetCurrentlyWatching(ctx context.Context) ([]AnimeListEntry, error) {
+func convertStatus(in ListStatus) animelist.ListStatus {
+	switch in {
+	case ListStatusWatching:
+		return animelist.ListStatusWatching
+	case ListStatusCompleted:
+		return animelist.ListStatusCompleted
+	case ListStatusDropped:
+		return animelist.ListStatusDropped
+	case ListStatusPlanning:
+		return animelist.ListStatusPlanToWatch
+	default:
+		log.Fatal().Msgf("unexpected status from anilist: %s", in)
+	}
+	return animelist.ListStatusAll
+}
+
+func convertAiringStatus(in AiringStatus) animelist.AiringStatus {
+	switch in {
+	case AiringStatusAiring:
+		return animelist.AiringStatusAiring
+	case AiringStatusCompleted:
+		return animelist.AiringStatusAired
+	}
+	return animelist.AiringStatus(-1)
+}
+
+func convertEntry(in []AnimeListEntry) []animelist.Entry {
+	out := make([]animelist.Entry, 0, len(in))
+	for i := range in {
+		titles := in[i].Media.Title
+		out = append(out, animelist.Entry{
+			ListStatus:   convertStatus(in[i].Status),
+			Titles:       []string{titles.English, titles.Romaji, titles.Native},
+			AiringStatus: convertAiringStatus(in[i].Media.AiringStatus),
+		})
+	}
+	return out
+}
+
+func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, error) {
 	var path = API_URL + "/animelist/" + api.Username + "/load.json"
 	body := GraphqlQuery{
 		Query: getCurrentlyWatchingQuery,
@@ -115,5 +156,5 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]AnimeListEntry, err
 		})
 		out = append(out, watchingEntries...)
 	}
-	return out, nil
+	return convertEntry(out), nil
 }

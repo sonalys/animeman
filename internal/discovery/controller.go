@@ -45,9 +45,6 @@ type (
 )
 
 func New(dep Dependencies) *Controller {
-	if dep.Config.PollFrequency < 10*time.Second {
-		log.Fatal().Msgf("pollFrequency cannot be less than 10 seconds. was %s", dep.Config.PollFrequency)
-	}
 	return &Controller{
 		dep: dep,
 	}
