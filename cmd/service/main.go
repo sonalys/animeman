@@ -11,9 +11,9 @@ import (
 	"github.com/sonalys/animeman/integrations/anilist"
 	"github.com/sonalys/animeman/integrations/myanimelist"
 	"github.com/sonalys/animeman/integrations/nyaa"
+	"github.com/sonalys/animeman/integrations/qbittorrent"
 	"github.com/sonalys/animeman/internal/configs"
 	"github.com/sonalys/animeman/internal/discovery"
-	"github.com/sonalys/animeman/internal/qbittorrent"
 	"github.com/sonalys/animeman/internal/utils"
 )
 

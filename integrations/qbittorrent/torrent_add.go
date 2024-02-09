@@ -8,68 +8,35 @@ import (
 	"mime/multipart"
 	"net/http"
 	"strings"
+
+	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
 
-type ArgAddTorrent interface {
-	ApplyAddTorrent(*multipart.Writer)
-}
-
-func (t TorrentURL) ApplyAddTorrent(w *multipart.Writer) {
-	field, err := w.CreateFormField("urls")
-	if err != nil {
-		panic(err)
-	}
-	if _, err := io.WriteString(field, strings.Join(t, "\n")); err != nil {
-		panic(err)
-	}
-}
-
-func (t Tags) ApplyAddTorrent(w *multipart.Writer) {
-	field, err := w.CreateFormField("tags")
-	if err != nil {
-		panic(err)
-	}
-	if _, err := io.WriteString(field, strings.Join(t, ",")); err != nil {
-		panic(err)
-	}
-}
-
-func (c Category) ApplyAddTorrent(w *multipart.Writer) {
-	field, err := w.CreateFormField("category")
-	if err != nil {
-		panic(err)
-	}
-	io.WriteString(field, string(c))
-}
-
-func (p Paused) ApplyAddTorrent(w *multipart.Writer) {
-	field, err := w.CreateFormField("paused")
-	if err != nil {
-		panic(err)
-	}
-	io.WriteString(field, fmt.Sprint(p))
-}
-
-func (s SavePath) ApplyAddTorrent(w *multipart.Writer) {
-	field, err := w.CreateFormField("savepath")
-	if err != nil {
-		panic(err)
-	}
-	io.WriteString(field, string(s))
-}
-
-func (api *API) AddTorrent(ctx context.Context, args ...ArgAddTorrent) error {
-	var path = api.host + "/torrents/add"
+func digestArg(arg *torrentclient.AddTorrentConfig) (io.Reader, string) {
 	var b bytes.Buffer
-	formdata := multipart.NewWriter(&b)
-	for _, f := range args {
-		f.ApplyAddTorrent(formdata)
-	}
-	req, err := http.NewRequest(http.MethodPost, path, &b)
+	w := multipart.NewWriter(&b)
+	field := utils.Must(w.CreateFormField("urls"))
+	utils.Must(io.WriteString(field, strings.Join(arg.URLs, "\n")))
+	field = utils.Must(w.CreateFormField("tags"))
+	utils.Must(io.WriteString(field, strings.Join(arg.Tags, ",")))
+	field = utils.Must(w.CreateFormField("category"))
+	utils.Must(io.WriteString(field, fmt.Sprint(arg.Category)))
+	field = utils.Must(w.CreateFormField("paused"))
+	utils.Must(io.WriteString(field, fmt.Sprint(arg.Paused)))
+	field = utils.Must(w.CreateFormField("savepath"))
+	utils.Must(io.WriteString(field, fmt.Sprint(arg.SavePath)))
+	return &b, w.FormDataContentType()
+}
+
+func (api *API) AddTorrent(ctx context.Context, arg *torrentclient.AddTorrentConfig) error {
+	var path = api.host + "/torrents/add"
+	r, contentType := digestArg(arg)
+	req, err := http.NewRequest(http.MethodPost, path, r)
 	if err != nil {
 		return fmt.Errorf("creating request failed: %w", err)
 	}
-	req.Header.Set("Content-Type", formdata.FormDataContentType())
+	req.Header.Set("Content-Type", contentType)
 	resp, err := api.Do(ctx, req)
 	if err != nil {
 		return fmt.Errorf("post torrents/add failed: %w", err)

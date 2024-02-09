@@ -27,9 +27,9 @@ type (
 	}
 
 	TorrentClient interface {
-		List(ctx context.Context, args ...torrentclient.ArgListTorrent) ([]torrentclient.Torrent, error)
-		AddTorrent(ctx context.Context, args ...torrentclient.ArgAddTorrent) error
-		AddTorrentTags(ctx context.Context, hashes []string, args ...torrentclient.AddTorrentTagsArg) error
+		List(ctx context.Context, arg *torrentclient.ListTorrentConfig) ([]torrentclient.Torrent, error)
+		AddTorrent(ctx context.Context, arg *torrentclient.AddTorrentConfig) error
+		AddTorrentTags(ctx context.Context, hashes []string, tags []string) error
 	}
 
 	Dependencies struct {

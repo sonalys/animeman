@@ -12,7 +12,9 @@ import (
 // This function exists for when you already have a collection of Anime categorized torrents.
 // This function will tag all entries from the configured category for smart episode detection and filtering.
 func (c *Controller) UpdateExistingTorrentsTags(ctx context.Context) error {
-	torrents, err := c.dep.TorrentClient.List(ctx, torrentclient.Category(c.dep.Config.Category))
+	torrents, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
+		Category: c.dep.Config.Category,
+	})
 	if err != nil {
 		return fmt.Errorf("listing: %w", err)
 	}

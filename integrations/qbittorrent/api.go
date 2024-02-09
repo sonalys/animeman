@@ -5,9 +5,12 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/http/cookiejar"
 	"syscall"
+	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 type (
@@ -18,7 +21,11 @@ type (
 	}
 )
 
-func New(ctx context.Context, client *http.Client, host, username, password string) *API {
+func New(ctx context.Context, host, username, password string) *API {
+	client := &http.Client{
+		Timeout: 3 * time.Second,
+		Jar:     utils.Must(cookiejar.New(nil)),
+	}
 	api := &API{
 		host:     fmt.Sprintf("%s/api/v2", host),
 		username: username,

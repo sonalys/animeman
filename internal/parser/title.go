@@ -4,8 +4,6 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
-
-	"github.com/sonalys/animeman/integrations/qbittorrent"
 )
 
 // Metadata is a digested metadata struct parsed from titles.
@@ -82,8 +80,8 @@ func (t Metadata) TagBuildSeries() string {
 }
 
 // TagsBuildTorrent builds all tags Animeman needs from your torrent client.
-func (t Metadata) TagsBuildTorrent() qbittorrent.Tags {
-	tags := qbittorrent.Tags{t.TagBuildSeries(), t.TagBuildSeasonEpisode()}
+func (t Metadata) TagsBuildTorrent() []string {
+	tags := []string{t.TagBuildSeries(), t.TagBuildSeasonEpisode()}
 	if t.IsMultiEpisode {
 		tags = append(tags, t.TagBuildBatch())
 	}

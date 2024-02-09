@@ -89,31 +89,36 @@ func (c *Controller) TagGetLatest(ctx context.Context, entry animelist.Entry) (s
 		title := parser.TitleParse(entry.Titles[i])
 		// we should consider both title and titleEng, because your anime list has different titles available,
 		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
-		torrents1, err := c.dep.TorrentClient.List(ctx, torrentclient.Tag(title.TagBuildSeries()))
+		resp, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
+			Tag: title.TagBuildSeries(),
+		})
 		if err != nil {
 			return "", fmt.Errorf("listing torrents: %w", err)
 		}
-		torrents = append(torrents, torrents1...)
+		torrents = append(torrents, resp...)
 	}
 	return tagGetLatest(torrents...), nil
 }
 
 // torrentGetPath returns a torrent path, creating a show folder if configured.
-func (c *Controller) torrentGetPath(title string) (path torrentclient.SavePath) {
+func (c *Controller) torrentGetPath(title string) (path string) {
 	if c.dep.Config.CreateShowFolder {
-		return torrentclient.SavePath(fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, title))
+		return fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, title)
 	}
-	return torrentclient.SavePath(c.dep.Config.DownloadPath)
+	return c.dep.Config.DownloadPath
 }
 
 // DigestNyaaTorrent receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, nyaaEntry ParsedNyaa) error {
-	tags := nyaaEntry.meta.TagsBuildTorrent()
 	savePath := c.torrentGetPath(entry.Titles[0])
-	torrentURL := torrentclient.TorrentURL{nyaaEntry.entry.Link}
-	category := torrentclient.Category(c.dep.Config.Category)
-	if err := c.dep.TorrentClient.AddTorrent(ctx, tags, savePath, torrentURL, category); err != nil {
+	tags := nyaaEntry.meta.TagsBuildTorrent()
+	if err := c.dep.TorrentClient.AddTorrent(ctx, &torrentclient.AddTorrentConfig{
+		Tags:     tags,
+		URLs:     []string{nyaaEntry.entry.Link},
+		Category: c.dep.Config.Category,
+		SavePath: savePath,
+	}); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
 	log.Info().Str("savePath", string(savePath)).Strs("tag", tags).Msgf("torrent added")

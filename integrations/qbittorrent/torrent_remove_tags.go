@@ -8,13 +8,11 @@ import (
 	"strings"
 )
 
-func (api *API) RemoveTorrentTags(ctx context.Context, hashes []string, args ...AddTorrentTagsArg) error {
+func (api *API) RemoveTorrentTags(ctx context.Context, hashes []string, tags []string) error {
 	var path = api.host + "/torrents/removeTags"
 	values := url.Values{
 		"hashes": []string{strings.Join(hashes, "|")},
-	}
-	for _, f := range args {
-		f.ApplyAddTorrentTags(values)
+		"tags":   []string{strings.Join(tags, ",")},
 	}
 	req, err := http.NewRequest(http.MethodPost, path, strings.NewReader(values.Encode()))
 	if err != nil {

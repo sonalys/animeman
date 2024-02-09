@@ -5,8 +5,6 @@ import (
 	"strings"
 )
 
-var ErrUnauthorized = fmt.Errorf("unauthorized")
-
 type (
 	Torrent struct {
 		Name     string `json:"name"`
@@ -14,13 +12,6 @@ type (
 		Hash     string `json:"hash"`
 		Tags     string `json:"tags"`
 	}
-
-	TorrentURL []string
-	Tag        string
-	Tags       []string
-	SavePath   string
-	Category   string
-	Paused     bool
 )
 
 func NewErrConnection(err error) error {
