@@ -4,7 +4,9 @@ import (
 	"context"
 	"fmt"
 
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
 
@@ -13,14 +15,17 @@ import (
 // This function will tag all entries from the configured category for smart episode detection and filtering.
 func (c *Controller) UpdateExistingTorrentsTags(ctx context.Context) error {
 	torrents, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
-		Category: c.dep.Config.Category,
+		Category: &c.dep.Config.Category,
+		Tag:      utils.Pointer(""),
 	})
 	if err != nil {
 		return fmt.Errorf("listing: %w", err)
 	}
 	for _, torrent := range torrents {
 		parsedTitle := parser.TitleParse(torrent.Name)
-		if err := c.dep.TorrentClient.AddTorrentTags(ctx, []string{torrent.Hash}, parsedTitle.TagsBuildTorrent()); err != nil {
+		tags := parsedTitle.TagsBuildTorrent()
+		log.Info().Str("title", parsedTitle.Title).Strs("tags", tags).Msgf("updating torrent tags")
+		if err := c.dep.TorrentClient.AddTorrentTags(ctx, []string{torrent.Hash}, tags); err != nil {
 			return fmt.Errorf("updating tags: %w", err)
 		}
 	}

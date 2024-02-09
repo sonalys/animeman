@@ -7,6 +7,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
@@ -90,7 +91,7 @@ func (c *Controller) TagGetLatest(ctx context.Context, entry animelist.Entry) (s
 		// we should consider both title and titleEng, because your anime list has different titles available,
 		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
 		resp, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
-			Tag: title.TagBuildSeries(),
+			Tag: utils.Pointer(title.TagBuildSeries()),
 		})
 		if err != nil {
 			return "", fmt.Errorf("listing torrents: %w", err)

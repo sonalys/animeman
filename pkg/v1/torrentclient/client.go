@@ -23,7 +23,7 @@ type (
 	}
 
 	ListTorrentConfig struct {
-		Category string
-		Tag      string
+		Category *string
+		Tag      *string
 	}
 )

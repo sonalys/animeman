@@ -27,11 +27,11 @@ func convertTorrent(in []Torrent) []torrentclient.Torrent {
 
 func digestListTorrentArg(arg *torrentclient.ListTorrentConfig) url.Values {
 	v := url.Values{}
-	if arg.Category != "" {
-		v.Set("category", arg.Category)
+	if arg.Category != nil {
+		v.Set("category", *arg.Category)
 	}
-	if arg.Tag != "" {
-		v.Set("tag", arg.Tag)
+	if arg.Tag != nil {
+		v.Set("tag", *arg.Tag)
 	}
 	return v
 }

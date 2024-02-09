@@ -30,6 +30,9 @@ type ParsedNyaa struct {
 // After finding updates, it will verify episode collision and dispatch it to your torrent client.
 func (c *Controller) RunDiscovery(ctx context.Context) error {
 	t1 := time.Now()
+	if err := c.UpdateExistingTorrentsTags(ctx); err != nil {
+		return fmt.Errorf("updating qBittorrent entries: %w", err)
+	}
 	log.Debug().Msgf("discovery started")
 	entries, err := c.dep.AnimeListClient.GetCurrentlyWatching(ctx)
 	if err != nil {
