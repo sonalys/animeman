@@ -111,11 +111,8 @@ services:
 
 There are a couple things that will be iterated:
 
-* Improve batch torrent validation ( example: batches containing only part of the episodes of a season are blocking the download of the subsequent episodes )
 * Use some calendar service like anilist.co for scanning Nyaa only when close to the release date
-* Improve behavior for adding shows that are already released
-* Improve interfaces for allowing other torrent clients
-* Improve interfaces for allowing other RSS feeds and anime lists
+* Improve interfaces for allowing other RSS feeds
 
 ## Contribution
 
