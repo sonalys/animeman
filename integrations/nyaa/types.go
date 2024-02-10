@@ -53,11 +53,24 @@ func filterNotEmpty(entries []string) []string {
 	return notEmpty
 }
 
+func quoteEntriesWithSpace(entries []string) []string {
+	out := make([]string, 0, len(entries))
+	for i := range entries {
+		if strings.Contains(entries[i], " ") {
+			out = append(out, fmt.Sprintf("\"%s\"", entries[i]))
+			continue
+		}
+		out = append(out, entries[i])
+	}
+	return out
+}
+
 func (entries OrQuery) Apply(req *http.Request) {
 	query := req.URL.Query()
 	prevQuery := query.Get("q")
 
 	entries = filterNotEmpty(entries)
+	entries = quoteEntriesWithSpace(entries)
 	curQuery := fmt.Sprintf("(%s)", strings.Join(entries, "|"))
 
 	if prevQuery == "" {

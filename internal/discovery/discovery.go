@@ -112,8 +112,8 @@ func filterNyaaFeed(entries []nyaa.Entry, latestTag string, animeStatus animelis
 	return episodeFilter(parseNyaaEntries(entries), latestTag, !useBatch)
 }
 
-func ForEach[T any](in []T, f func(T) T) []T {
-	out := make([]T, 0, len(in))
+func ForEach[T, T1 any](in []T, f func(T) T1) []T1 {
+	out := make([]T1, 0, len(in))
 	for i := range in {
 		out = append(out, f(in[i]))
 	}
@@ -124,7 +124,7 @@ func ForEach[T any](in []T, f func(T) T) []T {
 func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.Entry) (count int, err error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	titleQuery := nyaa.OrQuery(ForEach(entry.Titles, func(title string) string { return parser.TitleStrip(title) }))
+	titleQuery := nyaa.OrQuery(ForEach(entry.Titles, parser.TitleStrip))
 	sourceQuery := nyaa.OrQuery(c.dep.Config.Sources)
 	qualityQuery := nyaa.OrQuery(c.dep.Config.Qualitites)
 
