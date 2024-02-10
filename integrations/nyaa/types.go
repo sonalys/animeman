@@ -5,6 +5,8 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 type (
@@ -43,34 +45,19 @@ func (q Query) Apply(req *http.Request) {
 	req.URL.RawQuery = query.Encode()
 }
 
-func filterNotEmpty(entries []string) []string {
-	notEmpty := make([]string, 0, len(entries))
-	for i := range entries {
-		if entries[i] != "" {
-			notEmpty = append(notEmpty, entries[i])
-		}
+func quoteSpace(entries string) string {
+	if strings.Contains(entries, " ") {
+		return fmt.Sprintf("\"%s\"", entries)
 	}
-	return notEmpty
-}
-
-func quoteEntriesWithSpace(entries []string) []string {
-	out := make([]string, 0, len(entries))
-	for i := range entries {
-		if strings.Contains(entries[i], " ") {
-			out = append(out, fmt.Sprintf("\"%s\"", entries[i]))
-			continue
-		}
-		out = append(out, entries[i])
-	}
-	return out
+	return entries
 }
 
 func (entries OrQuery) Apply(req *http.Request) {
 	query := req.URL.Query()
 	prevQuery := query.Get("q")
 
-	entries = filterNotEmpty(entries)
-	entries = quoteEntriesWithSpace(entries)
+	entries = utils.Filter(entries, func(s string) bool { return s != "" })
+	entries = utils.ForEach(entries, quoteSpace)
 	curQuery := fmt.Sprintf("(%s)", strings.Join(entries, "|"))
 
 	if prevQuery == "" {

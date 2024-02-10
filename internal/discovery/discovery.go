@@ -10,6 +10,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/integrations/nyaa"
 	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
@@ -112,19 +113,11 @@ func filterNyaaFeed(entries []nyaa.Entry, latestTag string, animeStatus animelis
 	return episodeFilter(parseNyaaEntries(entries), latestTag, !useBatch)
 }
 
-func ForEach[T, T1 any](in []T, f func(T) T1) []T1 {
-	out := make([]T1, 0, len(in))
-	for i := range in {
-		out = append(out, f(in[i]))
-	}
-	return out
-}
-
 // DigestAnimeListEntry receives an anime list entry and fetches the anime feed, looking for new content.
 func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.Entry) (count int, err error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	titleQuery := nyaa.OrQuery(ForEach(entry.Titles, parser.TitleStrip))
+	titleQuery := nyaa.OrQuery(utils.ForEach(entry.Titles, parser.TitleStrip))
 	sourceQuery := nyaa.OrQuery(c.dep.Config.Sources)
 	qualityQuery := nyaa.OrQuery(c.dep.Config.Qualitites)
 
