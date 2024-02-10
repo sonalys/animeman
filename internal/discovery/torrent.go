@@ -111,12 +111,12 @@ func (c *Controller) torrentGetPath(title string) (path string) {
 
 // DigestNyaaTorrent receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
-func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, nyaaEntry ParsedNyaa) error {
+func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, parsedNyaa ParsedNyaa) error {
 	savePath := c.torrentGetPath(entry.Titles[0])
-	tags := nyaaEntry.meta.TagsBuildTorrent()
+	tags := parsedNyaa.meta.TagsBuildTorrent()
 	err := c.dep.TorrentClient.AddTorrent(ctx, &torrentclient.AddTorrentConfig{
 		Tags:     tags,
-		URLs:     []string{nyaaEntry.entry.Link},
+		URLs:     []string{parsedNyaa.entry.Link},
 		Category: c.dep.Config.Category,
 		SavePath: savePath,
 	})

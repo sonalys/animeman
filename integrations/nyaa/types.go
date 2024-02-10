@@ -45,11 +45,8 @@ func (q Query) Apply(req *http.Request) {
 	req.URL.RawQuery = query.Encode()
 }
 
-func quoteSpace(entries string) string {
-	if strings.Contains(entries, " ") {
-		return fmt.Sprintf("\"%s\"", entries)
-	}
-	return entries
+func quote(entries string) string {
+	return fmt.Sprintf("\"%s\"", entries)
 }
 
 func (entries OrQuery) Apply(req *http.Request) {
@@ -57,8 +54,10 @@ func (entries OrQuery) Apply(req *http.Request) {
 	prevQuery := query.Get("q")
 
 	entries = utils.Filter(entries, func(s string) bool { return s != "" })
-	entries = utils.ForEach(entries, quoteSpace)
-	curQuery := fmt.Sprintf("(%s)", strings.Join(entries, "|"))
+	if len(entries) > 1 {
+		entries = utils.ForEach(entries, quote)
+	}
+	curQuery := strings.Join(entries, "|")
 
 	if prevQuery == "" {
 		query.Set("q", curQuery)
