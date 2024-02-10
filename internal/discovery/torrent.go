@@ -70,7 +70,7 @@ func tagCompare(a, b string) int {
 }
 
 // tagGetLatest is a pure function implementation for fetching the latest tag from a list of torrent entries.
-func tagGetLatest(torrents ...torrentclient.Torrent) string {
+func tagGetLatest(torrents []torrentclient.Torrent) string {
 	var latestTag string
 	for _, torrent := range torrents {
 		tags := torrent.Tags
@@ -98,7 +98,7 @@ func (c *Controller) TagGetLatest(ctx context.Context, entry animelist.Entry) (s
 		}
 		torrents = append(torrents, resp...)
 	}
-	return tagGetLatest(torrents...), nil
+	return tagGetLatest(torrents), nil
 }
 
 // torrentGetPath returns a torrent path, creating a show folder if configured.
@@ -114,12 +114,13 @@ func (c *Controller) torrentGetPath(title string) (path string) {
 func (c *Controller) DigestNyaaTorrent(ctx context.Context, entry animelist.Entry, nyaaEntry ParsedNyaa) error {
 	savePath := c.torrentGetPath(entry.Titles[0])
 	tags := nyaaEntry.meta.TagsBuildTorrent()
-	if err := c.dep.TorrentClient.AddTorrent(ctx, &torrentclient.AddTorrentConfig{
+	err := c.dep.TorrentClient.AddTorrent(ctx, &torrentclient.AddTorrentConfig{
 		Tags:     tags,
 		URLs:     []string{nyaaEntry.entry.Link},
 		Category: c.dep.Config.Category,
 		SavePath: savePath,
-	}); err != nil {
+	})
+	if err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
 	log.Info().Str("savePath", string(savePath)).Strs("tag", tags).Msgf("torrent added")

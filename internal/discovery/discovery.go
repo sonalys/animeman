@@ -26,6 +26,15 @@ type ParsedNyaa struct {
 	entry nyaa.Entry
 }
 
+func NewParsedNyaa(entry nyaa.Entry) ParsedNyaa {
+	meta := parser.TitleParse(entry.Title)
+	return ParsedNyaa{
+		meta:             meta,
+		seasonEpisodeTag: meta.TagBuildSeasonEpisode(),
+		entry:            entry,
+	}
+}
+
 // RunDiscovery controls the discovery routine,
 // fetching entries from your anime list and looking for updates in Nyaa.si
 // After finding updates, it will verify episode collision and dispatch it to your torrent client.
@@ -54,36 +63,6 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	return nil
 }
 
-// findNyaaBatch filters Nyaa entries for a single Batch entry.
-func findNyaaBatch(entries []nyaa.Entry) []nyaa.Entry {
-	for _, entry := range entries {
-		if meta := parser.TitleParse(entry.Title); meta.IsMultiEpisode {
-			return []nyaa.Entry{entry}
-		}
-	}
-	return entries
-}
-
-// parseNyaaEntries will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
-// it will also sort the response by season and episode.
-// it's important it returns a crescent season/episode list, so you don't download a recent episode and
-// don't download the oldest ones in case you don't have all episodes since your latestTag.
-func parseNyaaEntries(entries []nyaa.Entry) []ParsedNyaa {
-	out := make([]ParsedNyaa, 0, len(entries))
-	for _, entry := range entries {
-		meta := parser.TitleParse(entry.Title)
-		out = append(out, ParsedNyaa{
-			meta:             meta,
-			seasonEpisodeTag: meta.TagBuildSeasonEpisode(),
-			entry:            entry,
-		})
-	}
-	sort.Slice(out, func(i, j int) bool {
-		return tagCompare(out[i].seasonEpisodeTag, out[j].seasonEpisodeTag) < 0
-	})
-	return out
-}
-
 // episodeFilter will only return ParsedNyaa entries that are more recent than the given latestTag.
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
@@ -103,12 +82,27 @@ func episodeFilter(list []ParsedNyaa, latestTag string, excludeBatch bool) []Par
 	return out
 }
 
+// parseNyaaEntries will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
+// it will also sort the response by season and episode.
+// it's important it returns a crescent season/episode list, so you don't download a recent episode and
+// don't download the oldest ones in case you don't have all episodes since your latestTag.
+func parseNyaaEntries(entries []nyaa.Entry) []ParsedNyaa {
+	resp := utils.ForEach(entries, func(entry nyaa.Entry) ParsedNyaa { return NewParsedNyaa(entry) })
+	sort.Slice(resp, func(i, j int) bool {
+		return tagCompare(resp[i].seasonEpisodeTag, resp[j].seasonEpisodeTag) < 0
+	})
+	return resp
+}
+
 // filterNyaaFeed is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
 func filterNyaaFeed(entries []nyaa.Entry, latestTag string, animeStatus animelist.AiringStatus) []ParsedNyaa {
 	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
 	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
 	if useBatch {
-		entries = findNyaaBatch(entries)
+		batchEntry, ok := utils.Find(entries, func(e nyaa.Entry) bool { return parser.TitleParse(e.Title).IsMultiEpisode })
+		if ok {
+			entries = []nyaa.Entry{*batchEntry}
+		}
 	}
 	return episodeFilter(parseNyaaEntries(entries), latestTag, !useBatch)
 }
