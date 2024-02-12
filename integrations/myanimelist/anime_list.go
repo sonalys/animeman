@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
@@ -33,6 +34,10 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 	req.URL.RawQuery = v.Encode()
 	resp, err := api.client.Do(req)
 	if err != nil {
+		if len(api.cachedAnimeList) > 0 {
+			log.Warn().Msgf("failed to fetch anime list, using cache: %s", err)
+			return api.cachedAnimeList, nil
+		}
 		return nil, fmt.Errorf("fetching response: %w", err)
 	}
 	defer resp.Body.Close()
@@ -40,5 +45,6 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 	if err := json.NewDecoder(resp.Body).Decode(&entries); err != nil {
 		return nil, fmt.Errorf("reading response: %w", err)
 	}
-	return convertEntry(entries), nil
+	api.cachedAnimeList = convertEntry(entries)
+	return api.cachedAnimeList, nil
 }
