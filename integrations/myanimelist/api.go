@@ -5,6 +5,7 @@ import (
 	"time"
 
 	"github.com/sonalys/animeman/internal/roundtripper"
+	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"golang.org/x/time/rate"
 )
 
@@ -13,8 +14,9 @@ const userAgent = "github.com/sonalys/animeman"
 
 type (
 	API struct {
-		Username string
-		client   *http.Client
+		Username        string
+		client          *http.Client
+		cachedAnimeList []animelist.Entry
 	}
 )
 
