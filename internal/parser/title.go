@@ -8,11 +8,12 @@ import (
 
 // Metadata is a digested metadata struct parsed from titles.
 type Metadata struct {
-	Source  string
-	Title   string
-	Episode string
-	Season  string
-	Tags    []string
+	Source             string
+	Title              string
+	Episode            string
+	Season             string
+	Tags               []string
+	VerticalResolution int64
 	// Is true when the title contains no episode information or multiple episodes.
 	// Examples: Show S01, Show S01E01~13.
 	IsMultiEpisode bool
@@ -30,7 +31,7 @@ func TitleStrip(title string) string {
 	for _, expr := range titleCleanupExpr {
 		title = expr.ReplaceAllString(title, "")
 	}
-	if index := matchSeasonIndex(title); index != -1 {
+	if index := seasonIndexMatch(title); index != -1 {
 		title = title[:index]
 	}
 	if index := episodeIndexMatch(title); index != -1 {
@@ -46,7 +47,8 @@ func TitleStrip(title string) string {
 // TitleParse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
 func TitleParse(title string) Metadata {
 	resp := Metadata{
-		Title: TitleStrip(title),
+		Title:              TitleStrip(title),
+		VerticalResolution: qualityMatch(title),
 	}
 	if tags := tagsExpr.FindAllStringSubmatch(title, -1); len(tags) > 0 {
 		resp.Source = tags[0][1]
@@ -56,7 +58,7 @@ func TitleParse(title string) Metadata {
 		}
 	}
 	resp.Episode, resp.IsMultiEpisode = episodeMatch(title)
-	resp.Season = matchSeason(title)
+	resp.Season = seasonMatch(title)
 	return resp
 }
 

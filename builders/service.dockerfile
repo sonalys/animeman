@@ -1,4 +1,4 @@
-FROM golang:1.21 AS builder
+FROM golang:1.22 AS builder
 
 RUN mkdir -p /var/run/secrets && \
   chmod 0700 /var/run/secrets && \

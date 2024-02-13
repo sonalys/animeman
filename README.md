@@ -60,7 +60,7 @@ torrentConfig:
 
 ### Dependencies
 
-You will need at least go 1.21 for building the binary.
+You will need at least go 1.22 for building the binary.
 
 For the image you will need docker.
 

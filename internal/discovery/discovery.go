@@ -89,7 +89,12 @@ func episodeFilter(list []ParsedNyaa, latestTag string, excludeBatch bool) []Par
 func parseNyaaEntries(entries []nyaa.Entry) []ParsedNyaa {
 	resp := utils.ForEach(entries, func(entry nyaa.Entry) ParsedNyaa { return NewParsedNyaa(entry) })
 	sort.Slice(resp, func(i, j int) bool {
-		return tagCompare(resp[i].seasonEpisodeTag, resp[j].seasonEpisodeTag) < 0
+		cmp := tagCompare(resp[i].seasonEpisodeTag, resp[j].seasonEpisodeTag)
+		// For same tag, we compare vertical resolution, prioritizing better quality.
+		if cmp == 0 {
+			return resp[i].meta.VerticalResolution > resp[j].meta.VerticalResolution
+		}
+		return cmp < 0
 	})
 	return resp
 }
@@ -129,7 +134,8 @@ func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.E
 	if err != nil {
 		return count, fmt.Errorf("getting latest tag: %w", err)
 	}
-	for _, nyaaEntry := range filterNyaaFeed(nyaaEntries, latestTag, entry.AiringStatus) {
+	downloadFeed := filterNyaaFeed(nyaaEntries, latestTag, entry.AiringStatus)
+	for _, nyaaEntry := range downloadFeed {
 		if err := c.DigestNyaaTorrent(ctx, entry, nyaaEntry); err != nil {
 			log.Error().Msgf("failed to digest nyaa entry: %s", err)
 			continue
