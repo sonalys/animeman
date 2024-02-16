@@ -56,18 +56,6 @@ torrentConfig:
   password: adminadmin
 ```
 
-## Building
-
-### Dependencies
-
-You will need at least go 1.22 for building the binary.
-
-For the image you will need docker.
-
-To build you can simply run `make build`
-
-For the image you can run `make image`
-
 ## Installation
 
 ### Download
@@ -106,6 +94,18 @@ services:
 ```
 
 `docker compose -f docker-compose.yaml up -d animeman`
+
+## Building
+
+### Dependencies
+
+You will need at least go 1.22 for building the binary.
+
+For the image you will need docker.
+
+To build you can simply run `make build`
+
+For the image you can run `make image`
 
 ## Roadmap
 
