@@ -40,7 +40,7 @@ func TitleStrip(title string) string {
 	title = strings.Split(title, ": ")[0]
 	title = strings.Split(title, ", ")[0]
 	title = strings.Split(title, "- ")[0]
-	title = strings.ReplaceAll(title, "  ", " ")
+	title = regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
 	return strings.TrimSpace(title)
 }
 
