@@ -112,18 +112,31 @@ func filterNyaaFeed(entries []nyaa.Entry, latestTag string, animeStatus animelis
 	return episodeFilter(parseNyaaEntries(entries), latestTag, !useBatch)
 }
 
-// DigestAnimeListEntry receives an anime list entry and fetches the anime feed, looking for new content.
-func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.Entry) (count int, err error) {
+func (c *Controller) nyaaFindAnime(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	titleQuery := nyaa.OrQuery(utils.ForEach(entry.Titles, parser.TitleStrip))
+	strippedTitles := utils.ForEach(entry.Titles, parser.TitleStrip)
+	titleQuery := nyaa.OrQuery(strippedTitles)
 	sourceQuery := nyaa.OrQuery(c.dep.Config.Sources)
 	qualityQuery := nyaa.OrQuery(c.dep.Config.Qualitites)
-
-	nyaaEntries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
-	log.Debug().Str("entry", entry.Titles[0]).Msgf("found %d torrents", len(nyaaEntries))
+	entries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
+	log.Debug().Str("entry", entry.Titles[0]).Msgf("found %d torrents", len(entries))
 	if err != nil {
-		return count, fmt.Errorf("getting nyaa list: %w", err)
+		return nil, fmt.Errorf("getting nyaa list: %w", err)
+	}
+	// Filters only entries after the anime started airing.
+	entries = utils.Filter[nyaa.Entry](entries, func(e nyaa.Entry) bool {
+		publishedDate := utils.Must(time.Parse(time.RFC1123Z, e.PubDate))
+		return publishedDate.After(entry.StartDate)
+	})
+	return entries, nil
+}
+
+// DigestAnimeListEntry receives an anime list entry and fetches the anime feed, looking for new content.
+func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.Entry) (count int, err error) {
+	nyaaEntries, err := c.nyaaFindAnime(ctx, entry)
+	if err != nil {
+		return count, err
 	}
 	// There should always be torrents for entries, if there aren't we can just exit the routine.
 	if len(nyaaEntries) == 0 {

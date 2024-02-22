@@ -16,8 +16,9 @@ type (
 	}
 
 	Entry struct {
-		Title string `xml:"title"`
-		Link  string `xml:"link"`
+		Title   string `xml:"title"`
+		Link    string `xml:"link"`
+		PubDate string `xml:"pubDate"`
 	}
 
 	RSS struct {

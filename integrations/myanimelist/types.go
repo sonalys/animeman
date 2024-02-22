@@ -12,9 +12,10 @@ type (
 	AnimeListEntry struct {
 		Status ListStatus `json:"status"`
 		// Title is any because MAL api sucks. so it sometimes returns int or other types for it.
-		Title        any          `json:"anime_title"`
-		TitleEng     string       `json:"anime_title_eng"`
-		AiringStatus AiringStatus `json:"anime_airing_status"`
+		Title                any          `json:"anime_title"`
+		TitleEng             string       `json:"anime_title_eng"`
+		AiringStatus         AiringStatus `json:"anime_airing_status"`
+		AnimeStartDateString string       `json:"anime_start_date_string"`
 	}
 )
 

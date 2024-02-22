@@ -1,5 +1,7 @@
 package animelist
 
+import "time"
+
 type ListStatus int
 type AiringStatus int
 
@@ -21,4 +23,5 @@ type Entry struct {
 	ListStatus   ListStatus
 	Titles       []string
 	AiringStatus AiringStatus
+	StartDate    time.Time
 }

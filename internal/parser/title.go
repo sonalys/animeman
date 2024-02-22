@@ -25,6 +25,13 @@ var titleCleanupExpr = []*regexp.Regexp{
 	regexp.MustCompile(`\..*$`),
 }
 
+func TitleStripSubtitle(title string) string {
+	title = strings.Split(title, ": ")[0]
+	title = strings.Split(title, ", ")[0]
+	title = strings.Split(title, "- ")[0]
+	return title
+}
+
 // TitleStrip cleans title from sub-titles, tags and season / episode information.
 // Example: [Source] Show: another story - S03E02 [1080p].mkv -> Show.
 func TitleStrip(title string) string {
@@ -37,10 +44,8 @@ func TitleStrip(title string) string {
 	if index := episodeIndexMatch(title); index != -1 {
 		title = title[:index]
 	}
-	title = strings.Split(title, ": ")[0]
-	title = strings.Split(title, ", ")[0]
-	title = strings.Split(title, "- ")[0]
 	title = regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
+	title = TitleStripSubtitle(title)
 	return strings.TrimSpace(title)
 }
 

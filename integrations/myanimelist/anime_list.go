@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/url"
+	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/utils"
@@ -19,6 +20,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			ListStatus:   animelist.ListStatus(in[i].Status),
 			Titles:       []string{fmt.Sprint(in[i].Title), in[i].TitleEng},
 			AiringStatus: animelist.AiringStatus(in[i].AiringStatus),
+			StartDate:    utils.Must(time.Parse("01-02-06", in[i].AnimeStartDateString)),
 		})
 	}
 	return out

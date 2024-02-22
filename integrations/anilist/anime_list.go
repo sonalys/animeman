@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/utils"
@@ -23,7 +24,12 @@ type (
 		Media  struct {
 			Type         string
 			AiringStatus AiringStatus `json:"status"`
-			Title        struct {
+			StartDate    struct {
+				Year  int `json:"year"`
+				Month int `json:"month"`
+				Day   int `json:"day"`
+			} `json:"startDate"`
+			Title struct {
 				Romaji  string `json:"romaji"`
 				English string `json:"english"`
 				Native  string `json:"native"`
@@ -66,6 +72,11 @@ const getCurrentlyWatchingQuery = `query($userName:String,$type:MediaType){
 			entries{
 				status
 				media{
+					startDate{
+						year
+						month
+						day
+					}
 					title{romaji english native}
 					type 
 					status(version:2)
@@ -120,6 +131,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			ListStatus:   convertStatus(in[i].Status),
 			Titles:       []string{titles.English, titles.Romaji, titles.Native},
 			AiringStatus: convertAiringStatus(in[i].Media.AiringStatus),
+			StartDate:    time.Date(in[i].Media.StartDate.Year, time.Month(in[i].Media.StartDate.Month), in[i].Media.StartDate.Day, 0, 0, 0, 0, time.UTC),
 		})
 	}
 	return out
