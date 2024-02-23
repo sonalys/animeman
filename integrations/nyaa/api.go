@@ -19,6 +19,7 @@ type (
 		Title   string `xml:"title"`
 		Link    string `xml:"link"`
 		PubDate string `xml:"pubDate"`
+		Seeders int    `xml:"nyaa:seeders"`
 	}
 
 	RSS struct {

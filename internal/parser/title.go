@@ -13,7 +13,7 @@ type Metadata struct {
 	Episode            string
 	Season             string
 	Tags               []string
-	VerticalResolution int64
+	VerticalResolution int
 	// Is true when the title contains no episode information or multiple episodes.
 	// Examples: Show S01, Show S01E01~13.
 	IsMultiEpisode bool

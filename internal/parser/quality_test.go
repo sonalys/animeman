@@ -8,7 +8,7 @@ func Test_matchQuality(t *testing.T) {
 	tests := []struct {
 		name  string
 		title string
-		want  int64
+		want  int
 	}{
 		{
 			name:  "Ragna Crimson",

@@ -12,12 +12,12 @@ var tagsExpr = regexp.MustCompile(`\[([^\[\]]*)\]`)
 const episodeGroup = `(\d+(?:\.\d+)?|(?:\s?~|-\s?-\s?\d+))`
 
 var episodeExpr = []*regexp.Regexp{
-	// 0x15.
-	regexp.MustCompile(`\d+x` + episodeGroup),
-	// - 15.
-	regexp.MustCompile(`(?i:[^season])\s` + episodeGroup + `(?:\W|$)`),
 	// S02E15.
 	regexp.MustCompile(`(?i:e)` + episodeGroup),
+	// 0x15.
+	regexp.MustCompile(`\d+(?i:x)` + episodeGroup),
+	// Season 1 - 15.
+	regexp.MustCompile(`(?i:[^season])\s` + episodeGroup + `(?:\W|$)`),
 }
 
 // episodeMatch detects episodes on titles.

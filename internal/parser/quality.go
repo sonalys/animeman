@@ -12,7 +12,7 @@ var qualityExpr = []*regexp.Regexp{
 }
 
 // qualityMatch detects quality from title.
-func qualityMatch(title string) int64 {
+func qualityMatch(title string) int {
 	for _, expr := range qualityExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 || len(matches[0]) < 2 {

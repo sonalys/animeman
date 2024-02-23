@@ -3,6 +3,8 @@ package qbittorrent
 import (
 	"fmt"
 	"strings"
+
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 type (
@@ -19,5 +21,5 @@ func NewErrConnection(err error) error {
 }
 
 func (t Torrent) GetTags() []string {
-	return strings.Split(t.Tags, ",")
+	return utils.Map[string, string](strings.Split(t.Tags, ","), func(s string) string { return strings.TrimSpace(s) })
 }

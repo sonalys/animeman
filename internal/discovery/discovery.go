@@ -87,12 +87,15 @@ func episodeFilter(list []ParsedNyaa, latestTag string, excludeBatch bool) []Par
 // it's important it returns a crescent season/episode list, so you don't download a recent episode and
 // don't download the oldest ones in case you don't have all episodes since your latestTag.
 func parseNyaaEntries(entries []nyaa.Entry) []ParsedNyaa {
-	resp := utils.ForEach(entries, func(entry nyaa.Entry) ParsedNyaa { return NewParsedNyaa(entry) })
+	resp := utils.Map(entries, func(entry nyaa.Entry) ParsedNyaa { return NewParsedNyaa(entry) })
 	sort.Slice(resp, func(i, j int) bool {
 		cmp := tagCompare(resp[i].seasonEpisodeTag, resp[j].seasonEpisodeTag)
 		// For same tag, we compare vertical resolution, prioritizing better quality.
 		if cmp == 0 {
-			return resp[i].meta.VerticalResolution > resp[j].meta.VerticalResolution
+			cmp = resp[j].meta.VerticalResolution - resp[i].meta.VerticalResolution
+			if cmp == 0 {
+				cmp = resp[j].entry.Seeders - resp[i].entry.Seeders
+			}
 		}
 		return cmp < 0
 	})
@@ -115,7 +118,7 @@ func filterNyaaFeed(entries []nyaa.Entry, latestTag string, animeStatus animelis
 func (c *Controller) nyaaFindAnime(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	strippedTitles := utils.ForEach(entry.Titles, parser.TitleStrip)
+	strippedTitles := utils.Map(entry.Titles, parser.TitleStrip)
 	titleQuery := nyaa.OrQuery(strippedTitles)
 	sourceQuery := nyaa.OrQuery(c.dep.Config.Sources)
 	qualityQuery := nyaa.OrQuery(c.dep.Config.Qualitites)

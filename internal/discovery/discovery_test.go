@@ -171,4 +171,16 @@ func Test_filterNyaaFeed(t *testing.T) {
 		require.Len(t, got, 1)
 		require.Equal(t, parseNyaaEntries(input[:1]), got)
 	})
+
+	t.Run("same tag and quality, different seeders", func(t *testing.T) {
+		input := []nyaa.Entry{
+			{Title: "Show3: S03E03", Seeders: 1},
+			{Title: "Show3: S03E03", Seeders: 10},
+			{Title: "Show3: S03"},
+		}
+		got := filterNyaaFeed(input, "Show3 S03E02", animelist.AiringStatusAired)
+
+		require.Len(t, got, 1)
+		require.Equal(t, parseNyaaEntries(input[1:2]), got)
+	})
 }

@@ -1,6 +1,6 @@
 package utils
 
-func ForEach[T, T1 any](in []T, f func(T) T1) []T1 {
+func Map[T, T1 any](in []T, f func(T) T1) []T1 {
 	out := make([]T1, 0, len(in))
 	for i := range in {
 		out = append(out, f(in[i]))

@@ -20,6 +20,12 @@ func Test_matchEpisode(t *testing.T) {
 			episode: "",
 			multi:   true,
 		},
+		{
+			name:    "264 bug",
+			title:   "Undead Unluck S01E13 Tatiana 1080p HULU WEB-DL AAC2.0 H 264-VARYG",
+			episode: "13",
+			multi:   false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

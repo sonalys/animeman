@@ -55,7 +55,7 @@ func (entries OrQuery) Apply(req *http.Request) {
 
 	entries = utils.Filter(entries, func(s string) bool { return s != "" })
 	if len(entries) > 1 {
-		entries = utils.ForEach(entries, quote)
+		entries = utils.Map(entries, quote)
 	}
 	curQuery := strings.Join(entries, "|")
 
