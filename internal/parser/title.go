@@ -35,9 +35,6 @@ func TitleStripSubtitle(title string) string {
 // TitleStrip cleans title from sub-titles, tags and season / episode information.
 // Example: [Source] Show: another story - S03E02 [1080p].mkv -> Show.
 func TitleStrip(title string) string {
-	for _, expr := range titleCleanupExpr {
-		title = expr.ReplaceAllString(title, "")
-	}
 	if index := seasonIndexMatch(title); index != -1 {
 		title = title[:index]
 	}
@@ -51,6 +48,9 @@ func TitleStrip(title string) string {
 
 // TitleParse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
 func TitleParse(title string) Metadata {
+	for _, expr := range titleCleanupExpr {
+		title = expr.ReplaceAllString(title, "")
+	}
 	resp := Metadata{
 		Title:              TitleStrip(title),
 		VerticalResolution: qualityMatch(title),
