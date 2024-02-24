@@ -21,8 +21,8 @@ type Metadata struct {
 
 // Regex for removing all annotations from a title, Examples: (Recoded), [1080p], .mkv.
 var titleCleanupExpr = []*regexp.Regexp{
-	regexp.MustCompile(`(\[.*?\]|\(.*?\))`),
-	regexp.MustCompile(`\..*$`),
+	regexp.MustCompile(`(\[.*?\])|(\(.*?\))`),
+	regexp.MustCompile(`\.\w*?$`),
 }
 
 func TitleStripSubtitle(title string) string {
@@ -51,6 +51,7 @@ func TitleParse(title string) Metadata {
 	for _, expr := range titleCleanupExpr {
 		title = expr.ReplaceAllString(title, "")
 	}
+	title = strings.ReplaceAll(title, ".", " ")
 	resp := Metadata{
 		Title:              TitleStrip(title),
 		VerticalResolution: qualityMatch(title),
@@ -62,14 +63,14 @@ func TitleParse(title string) Metadata {
 			resp.Tags = append(resp.Tags, matches[1])
 		}
 	}
-	resp.Episode, resp.IsMultiEpisode = episodeMatch(title)
-	resp.Season = seasonMatch(title)
+	resp.Episode, resp.IsMultiEpisode = EpisodeParse(title)
+	resp.Season = SeasonParse(title)
 	return resp
 }
 
 // TagBuildSeasonEpisode builds a tag for filtering in your torrent client. Example: Show S03E02.
 func (t Metadata) TagBuildSeasonEpisode() string {
-	resp := fmt.Sprintf("%s S%s", t.Title, t.Season)
+	resp := fmt.Sprintf("%s S%s", strings.ToLower(t.Title), t.Season)
 	if t.Episode != "" {
 		resp = resp + fmt.Sprintf("E%s", t.Episode)
 	}
@@ -78,12 +79,12 @@ func (t Metadata) TagBuildSeasonEpisode() string {
 
 // TagBuildBatch is used for when you download a torrent with multiple episodes.
 func (t Metadata) TagBuildBatch() string {
-	return fmt.Sprintf("%s S%s batch", t.Title, t.Season)
+	return fmt.Sprintf("%s S%s batch", strings.ToLower(t.Title), t.Season)
 }
 
 // TagBuildSeries builds a !Serie Name tag for you to be able to search all it's episodes with a tag.
 func (t Metadata) TagBuildSeries() string {
-	return "!" + t.Title
+	return "!" + strings.ToLower(t.Title)
 }
 
 // TagsBuildTorrent builds all tags Animeman needs from your torrent client.

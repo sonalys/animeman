@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"regexp"
+	"strconv"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
@@ -31,6 +32,23 @@ func tagMergeBatchEpisodes(tag string) string {
 		tag,
 		fmt.Sprint(max(strSliceToInt(values)...)),
 	)
+}
+
+// Returns false if same season and episode difference is bigger than 1.
+// otherwise returns true.
+func isNextEpisode(cur parser.Metadata, latest string) bool {
+	latestSeason := parser.SeasonParse(latest)
+	latestEpisode, isMulti := parser.EpisodeParse(latest)
+	// Avoids panic converting 6.5 for example to int.
+	if isMulti {
+		return true
+	}
+	if cur.Season == latestSeason {
+		epCur, _ := strconv.ParseInt(cur.Episode, 10, 64)
+		epLatest, _ := strconv.ParseInt(latestEpisode, 10, 64)
+		return epCur == epLatest+1
+	}
+	return true
 }
 
 // tagCompare receives 2 series tags, Example: S02E01 and S02E02.

@@ -76,6 +76,11 @@ func episodeFilter(list []ParsedNyaa, latestTag string, excludeBatch bool) []Par
 		if tagCompare(nyaaEntry.seasonEpisodeTag, latestTag) <= 0 {
 			continue
 		}
+		// Some providers count episodes from season 1, some from season 2, example:
+		// s02e19 when it should be s02e08. so we add continuity to download only next episode.
+		if latestTag != "" && !isNextEpisode(nyaaEntry.meta, latestTag) {
+			continue
+		}
 		latestTag = nyaaEntry.seasonEpisodeTag
 		out = append(out, nyaaEntry)
 	}
@@ -105,7 +110,7 @@ func parseNyaaEntries(entries []nyaa.Entry) []ParsedNyaa {
 // filterNyaaFeed is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
 func filterNyaaFeed(entries []nyaa.Entry, latestTag string, animeStatus animelist.AiringStatus) []ParsedNyaa {
 	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
-	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
+	useBatch := latestTag == ""
 	if useBatch {
 		batchEntry, ok := utils.Find(entries, func(e nyaa.Entry) bool { return parser.TitleParse(e.Title).IsMultiEpisode })
 		if ok {

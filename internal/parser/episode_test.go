@@ -26,10 +26,16 @@ func Test_matchEpisode(t *testing.T) {
 			episode: "13",
 			multi:   false,
 		},
+		{
+			name:    "all dots",
+			title:   "MASHLE.MAGIC.AND.MUSCLES.S02E19.Mash.Burnedead.and.the.Magical.Maestro.1080p.CR.WEB-DL.AAC2.0.H.264-VARYG.mkv",
+			episode: "19",
+			multi:   false,
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			episode, isMulti := episodeMatch(tt.title)
+			episode, isMulti := EpisodeParse(tt.title)
 			if episode != tt.episode {
 				t.Errorf("episodeMatch() got episode = %v, want %v", episode, tt.episode)
 			}

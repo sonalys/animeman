@@ -24,7 +24,7 @@ func (c *Controller) UpdateExistingTorrentsTags(ctx context.Context) error {
 	for _, torrent := range torrents {
 		parsedTitle := parser.TitleParse(torrent.Name)
 		tags := parsedTitle.TagsBuildTorrent()
-		log.Info().Str("title", parsedTitle.Title).Strs("tags", tags).Msgf("updating torrent tags")
+		log.Info().Any("title", parsedTitle).Strs("tags", tags).Msgf("updating torrent tags")
 		if err := c.dep.TorrentClient.AddTorrentTags(ctx, []string{torrent.Hash}, tags); err != nil {
 			return fmt.Errorf("updating tags: %w", err)
 		}

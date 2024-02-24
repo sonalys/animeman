@@ -32,10 +32,15 @@ func Test_matchSeason(t *testing.T) {
 		},
 		{name: "2x15", title: "Frieren 2x15", want: "2"},
 		{name: "S02E15", title: "Frieren S02E15", want: "2"},
+		{
+			name:  "all dots",
+			title: "MASHLE.MAGIC.AND.MUSCLES.S02E19.Mash.Burnedead.and.the.Magical.Maestro.1080p.CR.WEB-DL.AAC2.0.H.264-VARYG.mkv",
+			want:  "2",
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := seasonMatch(tt.title); got != tt.want {
+			if got := SeasonParse(tt.title); got != tt.want {
 				t.Errorf("seasonMatch() = season '%v', want '%v'", got, tt.want)
 			}
 		})

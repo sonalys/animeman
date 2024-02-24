@@ -20,8 +20,8 @@ var episodeExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(?i:[^season])\s` + episodeGroup + `(?:\W|$)`),
 }
 
-// episodeMatch detects episodes on titles.
-func episodeMatch(title string) (string, bool) {
+// EpisodeParse detects episodes on titles.
+func EpisodeParse(title string) (string, bool) {
 	for _, expr := range episodeExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 || len(matches[0]) < 2 {
