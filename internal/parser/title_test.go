@@ -41,6 +41,17 @@ func TestTitleParse(t *testing.T) {
 				IsMultiEpisode:     false,
 			},
 		},
+		{
+			name:  "undead unluck",
+			title: "Undead.Unluck.S01E20.Anno.Un.1080p.HULU.WEB-DL.AAC2.0.H.264-VARYG.mkv",
+			want: Metadata{
+				Title:              "Undead Unluck",
+				Episode:            "20",
+				Season:             "1",
+				VerticalResolution: 1080,
+				IsMultiEpisode:     false,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
