@@ -31,6 +31,19 @@ func TestTitleParse(t *testing.T) {
 		want  Metadata
 	}{
 		{
+			name:  "half episode",
+			title: "[SubsPlease] Solo Leveling - 07.5 (1080p) [9F8A2A07].mkv",
+			want: Metadata{
+				Title:              "Solo Leveling",
+				Episode:            "7.5",
+				Season:             "1",
+				VerticalResolution: 1080,
+				Source:             "SubsPlease",
+				Tags:               []string{"9F8A2A07"},
+				IsMultiEpisode:     false,
+			},
+		},
+		{
 			name:  "all dots",
 			title: "MASHLE.MAGIC.AND.MUSCLES.S02E19.Mash.Burnedead.and.the.Magical.Maestro.1080p.CR.WEB-DL.AAC2.0.H.264-VARYG.mkv",
 			want: Metadata{

@@ -43,15 +43,20 @@ func TitleStrip(title string) string {
 	}
 	title = regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
 	title = TitleStripSubtitle(title)
+	title = strings.ReplaceAll(title, ".", " ")
+	title = removeTags(title)
 	return strings.TrimSpace(title)
+}
+
+func removeTags(title string) string {
+	for _, expr := range titleCleanupExpr {
+		title = expr.ReplaceAllString(title, "")
+	}
+	return title
 }
 
 // TitleParse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
 func TitleParse(title string) Metadata {
-	for _, expr := range titleCleanupExpr {
-		title = expr.ReplaceAllString(title, "")
-	}
-	title = strings.ReplaceAll(title, ".", " ")
 	resp := Metadata{
 		Title:              TitleStrip(title),
 		VerticalResolution: qualityMatch(title),
@@ -63,6 +68,7 @@ func TitleParse(title string) Metadata {
 			resp.Tags = append(resp.Tags, matches[1])
 		}
 	}
+	title = removeTags(title)
 	resp.Episode, resp.IsMultiEpisode = EpisodeParse(title)
 	resp.Season = SeasonParse(title)
 	return resp

@@ -3,6 +3,7 @@ package parser
 import (
 	"fmt"
 	"regexp"
+	"strings"
 )
 
 // Anything that is inside [].
@@ -28,14 +29,13 @@ func EpisodeParse(title string) (string, bool) {
 			continue
 		}
 		if len(matches) == 1 {
-			episode := parseInt(matches[0][1])
-			return fmt.Sprint(episode), false
+			return strings.TrimLeft(matches[0][1], "0"), false
 		}
-		episode1 := parseInt(matches[0][1])
-		episode2 := parseInt(matches[1][1])
+		episode1 := strings.TrimLeft(matches[0][1], "0")
+		episode2 := strings.TrimLeft(matches[1][1], "0")
 		// Stringify episode number to avoid left digits, example: 02.
 		// Reason: we want an exact match for tags, so E02 and E2 wouldn't match.
-		return fmt.Sprintf("%d~%d", episode1, episode2), true
+		return fmt.Sprintf("%s~%s", episode1, episode2), true
 	}
 	// Some scenarios are like Frieren Season 1
 	return "", true

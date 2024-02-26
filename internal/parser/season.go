@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"regexp"
+	"strings"
 )
 
 var seasonExpr = []*regexp.Regexp{
@@ -23,10 +23,7 @@ func SeasonParse(title string) string {
 		if len(matches) == 0 || len(matches[0]) < 2 {
 			continue
 		}
-		// Stringify season number to avoid left digits, example: 02.
-		// Reason: we want an exact match for tags, so S02 and S2 wouldn't match.
-		season := parseInt(matches[0][1])
-		return fmt.Sprint(season)
+		return strings.TrimLeft(matches[0][1], "0")
 	}
 	return "1"
 }

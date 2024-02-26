@@ -14,7 +14,7 @@ import (
 )
 
 // Regexp for detecting numbers.
-var numberExpr = regexp.MustCompile(`\d+`)
+var numberExpr = regexp.MustCompile(`\d+(\.\d+)?`)
 
 // Regexp for detecting batch tag numbers.
 // Example: S02E01~13.
@@ -30,7 +30,7 @@ func tagMergeBatchEpisodes(tag string) string {
 	values := matches[0][1:]
 	return batchReplaceExpr.ReplaceAllString(
 		tag,
-		fmt.Sprint(max(strSliceToInt(values)...)),
+		fmt.Sprint(max(strSliceToFloat(values)...)),
 	)
 }
 
@@ -44,9 +44,9 @@ func isNextEpisode(cur parser.Metadata, latest string) bool {
 		return true
 	}
 	if cur.Season == latestSeason {
-		epCur, _ := strconv.ParseInt(cur.Episode, 10, 64)
-		epLatest, _ := strconv.ParseInt(latestEpisode, 10, 64)
-		return epCur == epLatest+1
+		epCur, _ := strconv.ParseFloat(cur.Episode, 64)
+		epLatest, _ := strconv.ParseFloat(latestEpisode, 64)
+		return epCur <= epLatest+1
 	}
 	return true
 }
@@ -65,8 +65,8 @@ func tagCompare(a, b string) int {
 	}
 	a = tagMergeBatchEpisodes(a)
 	b = tagMergeBatchEpisodes(b)
-	aNums := strSliceToInt(numberExpr.FindAllString(a, -1))
-	bNums := strSliceToInt(numberExpr.FindAllString(b, -1))
+	aNums := strSliceToFloat(numberExpr.FindAllString(a, -1))
+	bNums := strSliceToFloat(numberExpr.FindAllString(b, -1))
 	lenA, lenB := len(aNums), len(bNums)
 	minSize := min(lenA, lenB)
 	for i := 0; i < minSize; i++ {

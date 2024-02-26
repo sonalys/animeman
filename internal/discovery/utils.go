@@ -7,10 +7,10 @@ import (
 	"golang.org/x/exp/constraints"
 )
 
-func strSliceToInt(from []string) []int64 {
-	out := make([]int64, 0, len(from))
+func strSliceToFloat(from []string) []float64 {
+	out := make([]float64, 0, len(from))
 	for _, cur := range from {
-		out = append(out, utils.Must(strconv.ParseInt(cur, 10, 64)))
+		out = append(out, utils.Must(strconv.ParseFloat(cur, 64)))
 	}
 	return out
 }
