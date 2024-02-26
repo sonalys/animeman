@@ -1,0 +1,131 @@
+package discovery
+
+import (
+	"context"
+	"errors"
+	"fmt"
+	"sort"
+
+	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/integrations/nyaa"
+	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/pkg/v1/torrentclient"
+)
+
+// RunDiscovery controls the discovery routine,
+// fetching entries from your anime list and looking for updates in Nyaa.si
+// After finding updates, it will verify episode collision and dispatch it to your torrent client.
+func (c *Controller) RunDiscovery(ctx context.Context) error {
+	if err := c.TorrentRegenerateTags(ctx); err != nil {
+		return fmt.Errorf("updating qBittorrent entries: %w", err)
+	}
+	log.Debug().Msgf("discovery started")
+	entries, err := c.dep.AnimeListClient.GetCurrentlyWatching(ctx)
+	if err != nil {
+		return fmt.Errorf("fetching anime list: %w", err)
+	}
+	for _, entry := range entries {
+		err := c.DigestAnimeListEntry(ctx, entry)
+		if errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
+			return fmt.Errorf("failed to digest entry: %w", err)
+		}
+	}
+	return nil
+}
+
+// episodeFilterNew will only return ParsedNyaa entries that are more recent than the given latestTag.
+// excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
+// excludeBatch avoids downloading a batch for episodes which you already have.
+func episodeFilterNew(list []parser.ParsedNyaa, latestTag string, excludeBatch bool) []parser.ParsedNyaa {
+	out := make([]parser.ParsedNyaa, 0, len(list))
+	for _, nyaaEntry := range list {
+		if excludeBatch && nyaaEntry.Meta.IsMultiEpisode {
+			continue
+		}
+		// Make sure we only add episodes ahead of the current ones in the qBittorrent.
+		// <= 0 is used to ensure we don't download the same episode multiple times, or older episodes.
+		if tagCompare(nyaaEntry.SeasonEpisodeTag, latestTag) <= 0 {
+			continue
+		}
+		// Some providers count episodes from season 1, some from season 2, example:
+		// s02e19 when it should be s02e08. so we add continuity to download only next episode.
+		if latestTag != "" && !tagIsNextEpisode(nyaaEntry.Meta, latestTag) {
+			continue
+		}
+		latestTag = nyaaEntry.SeasonEpisodeTag
+		out = append(out, nyaaEntry)
+	}
+	return out
+}
+
+// parseAndSort will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
+// it will also sort the response by season and episode.
+// it's important it returns a crescent season/episode list, so you don't download a recent episode and
+// don't download the oldest ones in case you don't have all episodes since your latestTag.
+func parseAndSort(entries []nyaa.Entry) []parser.ParsedNyaa {
+	resp := utils.Map(entries, func(entry nyaa.Entry) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
+	sort.Slice(resp, func(i, j int) bool {
+		cmp := tagCompare(resp[i].SeasonEpisodeTag, resp[j].SeasonEpisodeTag)
+		// For same tag, we compare vertical resolution, prioritizing better quality.
+		if cmp == 0 {
+			cmp = resp[j].Meta.VerticalResolution - resp[i].Meta.VerticalResolution
+			if cmp == 0 {
+				cmp = resp[j].Entry.Seeders - resp[i].Entry.Seeders
+			}
+		}
+		return cmp < 0
+	})
+	return resp
+}
+
+// getDownloadableEntries is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
+func getDownloadableEntries(entries []nyaa.Entry, latestTag string, animeStatus animelist.AiringStatus) []parser.ParsedNyaa {
+	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
+	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
+	parsedEntries := parseAndSort(entries)
+	if useBatch {
+		return utils.Filter(parsedEntries, filterBatchEntries)
+	}
+	return episodeFilterNew(parsedEntries, latestTag, !useBatch)
+}
+
+func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
+	// Build search query for Nyaa.
+	// For title we filter for english and original titles.
+	strippedTitles := utils.Map(entry.Titles, parser.TitleStrip)
+	titleQuery := nyaa.OrQuery(strippedTitles)
+	sourceQuery := nyaa.OrQuery(c.dep.Config.Sources)
+	qualityQuery := nyaa.OrQuery(c.dep.Config.Qualitites)
+	entries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
+	log.Debug().Str("entry", entry.Titles[0]).Msgf("found %d torrents", len(entries))
+	if err != nil {
+		return nil, fmt.Errorf("getting nyaa list: %w", err)
+	}
+	// Filters only entries after the anime started airing.
+	return utils.Filter(entries, filterPublishedAfterDate(entry.StartDate)), nil
+}
+
+// DigestAnimeListEntry receives an anime list entry and fetches the anime feed, looking for new content.
+func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.Entry) (err error) {
+	nyaaEntries, err := c.NyaaSearch(ctx, entry)
+	// There should always be torrents for entries, if there aren't we can just exit the routine.
+	if len(nyaaEntries) == 0 {
+		if err == nil {
+			log.Warn().Msgf("nyaa has no results for '%s'", entry.Titles[0])
+		}
+		return
+	}
+	latestTag, err := c.TorrentGetLatestEpisodes(ctx, entry)
+	if err != nil {
+		return fmt.Errorf("getting latest tag: %w", err)
+	}
+	for _, nyaaEntry := range getDownloadableEntries(nyaaEntries, latestTag, entry.AiringStatus) {
+		if err := c.TorrentDigestNyaa(ctx, entry, nyaaEntry); err != nil {
+			log.Error().Msgf("failed to digest nyaa entry: %s", err)
+			continue
+		}
+	}
+	return
+}

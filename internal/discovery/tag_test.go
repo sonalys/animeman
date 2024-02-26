@@ -4,6 +4,7 @@ import (
 	"testing"
 
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_getLatestTag(t *testing.T) {
@@ -138,4 +139,11 @@ func Test_mergeBatchEpisodes(t *testing.T) {
 			}
 		})
 	}
+}
+
+func Test_tagCompare(t *testing.T) {
+	t.Run("same tag", func(t *testing.T) {
+		tag := "S03E02"
+		require.Zero(t, tagCompare(tag, tag))
+	})
 }
