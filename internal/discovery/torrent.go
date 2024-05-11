@@ -49,7 +49,7 @@ func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.P
 	b.WriteString(parsedNyaa.SeasonEpisodeTag)
 	if parsedNyaa.Meta.VerticalResolution > 0 {
 		b.WriteString(" ")
-		b.WriteString(fmt.Sprintf("[%d]", parsedNyaa.Meta.VerticalResolution))
+		b.WriteString(fmt.Sprintf("[%dp]", parsedNyaa.Meta.VerticalResolution))
 	}
 	return b.String()
 }
