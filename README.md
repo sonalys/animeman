@@ -53,7 +53,7 @@ torrentConfig:
   category: Animes
   downloadPath: /downloads/animes
   createShowFolder: true # creates a folder to for the show inside downloadPath.
-  renameTorrent: true # will rename the torrent in qBittorrent avoiding conflict between multiple sorts with different names for the show.
+  renameTorrent: true # will rename the torrent in qBittorrent avoiding conflict between multiple sources with different names for the show.
   host: http://192.168.1.240:8088 # replace with your qBittorrent WebUI address.
   username: admin # replace credentials with your own
   password: adminadmin
