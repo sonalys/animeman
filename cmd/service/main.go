@@ -54,13 +54,16 @@ func main() {
 	}
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	c := discovery.New(discovery.Dependencies{
-		NYAA:            nyaa.New(),
+		NYAA: nyaa.New(nyaa.Config{
+			ListParameters: config.CustomParameters,
+		}),
 		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
 		Config: discovery.Config{
 			Sources:          config.Sources,
 			Qualitites:       config.Qualities,
 			Category:         config.Category,
+			RenameTorrent:    config.RenameTorrent,
 			DownloadPath:     config.DownloadPath,
 			CreateShowFolder: config.CreateShowFolder,
 			PollFrequency:    config.PollFrequency,

@@ -16,6 +16,11 @@ func (api *API) List(ctx context.Context, args ...ListArg) ([]Entry, error) {
 	for _, f := range args {
 		f.Apply(req)
 	}
+	q := req.URL.Query()
+	for name, value := range api.config.ListParameters {
+		q.Set(name, value)
+	}
+	req.URL.RawQuery = q.Encode()
 	resp, err := api.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching response: %w", err)

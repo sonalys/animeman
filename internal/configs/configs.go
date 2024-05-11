@@ -52,10 +52,11 @@ func (t RSSType) Validate() error {
 }
 
 type RSSConfig struct {
-	Type          RSSType       `yaml:"type"`
-	Sources       []string      `yaml:"sources"`
-	Qualities     []string      `yaml:"qualities"`
-	PollFrequency time.Duration `yaml:"pollFrequency"`
+	Type             RSSType           `yaml:"type"`
+	Sources          []string          `yaml:"sources"`
+	Qualities        []string          `yaml:"qualities"`
+	PollFrequency    time.Duration     `yaml:"pollFrequency"`
+	CustomParameters map[string]string `yaml:"customParameters"`
 }
 
 func (c RSSConfig) Validate() error {
@@ -89,6 +90,7 @@ type TorrentConfig struct {
 	Category         string            `yaml:"category"`
 	DownloadPath     string            `yaml:"downloadPath"`
 	CreateShowFolder bool              `yaml:"createShowFolder"`
+	RenameTorrent    bool              `yaml:"renameTorrent"`
 }
 
 func (c TorrentConfig) Validate() error {
@@ -142,6 +144,8 @@ func GenerateBoilerplateConfig() {
 			Username:         "admin",
 			Password:         "adminadmin",
 			CreateShowFolder: true,
+			RenameTorrent:    true,
+			Type:             TorrentClientTypeQBittorrent,
 		},
 	})
 	if err != nil {

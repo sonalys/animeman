@@ -46,11 +46,14 @@ rssConfig:
       - source2
   qualities:
       - 1080 # filter for 1080, 720, HEVC or remove to fetch all.
+  customParameters:
+    c: 1_2 # you can configure custom query parameters for the rss list call. In this example it will set ?c=1_2.
 torrentConfig:
   type: qbittorrent
   category: Animes
   downloadPath: /downloads/animes
   createShowFolder: true # creates a folder to for the show inside downloadPath.
+  renameTorrent: true # will rename the torrent in qBittorrent avoiding conflict between multiple sorts with different names for the show.
   host: http://192.168.1.240:8088 # replace with your qBittorrent WebUI address.
   username: admin # replace credentials with your own
   password: adminadmin

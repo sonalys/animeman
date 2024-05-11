@@ -3,6 +3,7 @@ package discovery
 import (
 	"context"
 	"fmt"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
@@ -36,6 +37,23 @@ func (c *Controller) TorrentGetDownloadPath(title string) (path string) {
 	return c.dep.Config.DownloadPath
 }
 
+func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.ParsedNyaa) string {
+	var b strings.Builder
+	if parsedNyaa.Meta.Source != "" {
+		b.WriteString("[")
+		b.WriteString(parsedNyaa.Meta.Source)
+		b.WriteString("] ")
+	}
+	b.WriteString(entry.Titles[0])
+	b.WriteString(" ")
+	b.WriteString(parsedNyaa.SeasonEpisodeTag)
+	if parsedNyaa.Meta.VerticalResolution > 0 {
+		b.WriteString(" ")
+		b.WriteString(fmt.Sprintf("[%d]", parsedNyaa.Meta.VerticalResolution))
+	}
+	return b.String()
+}
+
 // TorrentDigestNyaa receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
@@ -46,6 +64,9 @@ func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entr
 		URLs:     []string{parsedNyaa.Entry.Link},
 		Category: c.dep.Config.Category,
 		SavePath: savePath,
+	}
+	if c.dep.Config.RenameTorrent {
+		req.Name = utils.Pointer(c.buildTorrentName(entry, parsedNyaa))
 	}
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)

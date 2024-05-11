@@ -26,6 +26,10 @@ func digestArg(arg *torrentclient.AddTorrentConfig) (io.Reader, string) {
 	utils.Must(io.WriteString(field, fmt.Sprint(arg.Paused)))
 	field = utils.Must(w.CreateFormField("savepath"))
 	utils.Must(io.WriteString(field, fmt.Sprint(arg.SavePath)))
+	if arg.Name != nil {
+		field = utils.Must(w.CreateFormField("rename"))
+		utils.Must(io.WriteString(field, fmt.Sprint(*arg.Name)))
+	}
 	return &b, w.FormDataContentType()
 }
 

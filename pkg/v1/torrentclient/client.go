@@ -17,6 +17,7 @@ type (
 	AddTorrentConfig struct {
 		URLs     []string
 		Tags     []string
+		Name     *string
 		SavePath string
 		Category string
 		Paused   bool

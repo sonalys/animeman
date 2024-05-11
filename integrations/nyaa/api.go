@@ -11,7 +11,12 @@ import (
 const API_URL = "https://nyaa.si/?page=rss"
 
 type (
+	Config struct {
+		ListParameters map[string]string
+	}
+
 	API struct {
+		config Config
 		client *http.Client
 	}
 
@@ -33,8 +38,9 @@ type (
 	}
 )
 
-func New() *API {
+func New(c Config) *API {
 	return &API{
+		config: c,
 		client: &http.Client{
 			Jar: http.DefaultClient.Jar,
 			Transport: roundtripper.NewUserAgentTransport(roundtripper.NewRateLimitedTransport(
