@@ -31,6 +31,7 @@ func Test_matchSeason(t *testing.T) {
 			want:  "1",
 		},
 		{name: "2x15", title: "Frieren 2x15", want: "2"},
+		{name: "2 - 05", title: "Frieren 2 - 05", want: "2"},
 		{name: "S02E15", title: "Frieren S02E15", want: "2"},
 		{
 			name:  "all dots",

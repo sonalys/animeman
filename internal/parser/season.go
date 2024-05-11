@@ -14,6 +14,8 @@ var seasonExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(?i:s)(\d+)`),
 	// Season 1.
 	regexp.MustCompile(`(?i:season\s)(\d+)`),
+	// 3 - 04
+	regexp.MustCompile(`(\d+)\s*-\s*(?:\d+)`),
 }
 
 // SeasonParse detects season on titles.

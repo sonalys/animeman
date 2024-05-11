@@ -11,6 +11,7 @@ func Test_matchEpisode(t *testing.T) {
 	}{
 		{name: "0x15", title: "Frieren 0x15", episode: "15", multi: false},
 		{name: "-15", title: "Frieren - 15", episode: "15", multi: false},
+		{name: "2 - 05", title: "Frieren 2 - 05", episode: "5", multi: false},
 		{name: "S02E15", title: "Frieren S02E15", episode: "15", multi: false},
 		{name: "Season", title: "Frieren Season 2", episode: "", multi: true},
 		{name: "Season with episode", title: "Frieren Season 2 - 15", episode: "15", multi: false},
