@@ -13,14 +13,32 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
 
+// Temporary solution for finding the correct time format for MAL entries.
+// The format changes depending on the user location, and no parameter is given from MAL API to which format is being returned.
+func findCorrectTimeFormat(in []AnimeListEntry) string {
+	masks := []string{"01-02-06", "02-01-06"}
+outer:
+	for _, mask := range masks {
+		for i := range in {
+			_, err := time.Parse(mask, in[i].AnimeStartDateString)
+			if err != nil {
+				continue outer
+			}
+		}
+		return mask
+	}
+	return masks[0]
+}
+
 func convertEntry(in []AnimeListEntry) []animelist.Entry {
 	out := make([]animelist.Entry, 0, len(in))
+	timeFormat := findCorrectTimeFormat(in)
 	for i := range in {
 		out = append(out, animelist.Entry{
 			ListStatus:   animelist.ListStatus(in[i].Status),
 			Titles:       []string{fmt.Sprint(in[i].Title), in[i].TitleEng},
 			AiringStatus: animelist.AiringStatus(in[i].AiringStatus),
-			StartDate:    utils.Must(time.Parse("01-02-06", in[i].AnimeStartDateString)),
+			StartDate:    utils.Must(time.Parse(timeFormat, in[i].AnimeStartDateString)),
 		})
 	}
 	return out
