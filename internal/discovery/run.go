@@ -112,9 +112,6 @@ func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.E
 	nyaaEntries, err := c.NyaaSearch(ctx, entry)
 	// There should always be torrents for entries, if there aren't we can just exit the routine.
 	if len(nyaaEntries) == 0 {
-		if err == nil {
-			log.Warn().Msgf("nyaa has no results for '%s'", entry.Titles[0])
-		}
 		return
 	}
 	latestTag, err := c.TorrentGetLatestEpisodes(ctx, entry)
