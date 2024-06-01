@@ -95,9 +95,9 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
 	strippedTitles := utils.Map(entry.Titles, parser.TitleStrip)
-	titleQuery := nyaa.OrQuery(strippedTitles)
-	sourceQuery := nyaa.OrQuery(c.dep.Config.Sources)
-	qualityQuery := nyaa.OrQuery(c.dep.Config.Qualitites)
+	titleQuery := nyaa.QueryOr(strippedTitles)
+	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
+	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)
 	entries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
 	log.Debug().Str("entry", entry.Titles[0]).Msgf("found %d torrents", len(entries))
 	if err != nil {

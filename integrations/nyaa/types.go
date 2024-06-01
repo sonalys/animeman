@@ -12,7 +12,7 @@ import (
 type (
 	SourceType int
 	Query      string
-	OrQuery    []string
+	QueryOr    []string
 	Category   string
 	User       string
 )
@@ -49,7 +49,7 @@ func quote(entries string) string {
 	return fmt.Sprintf("\"%s\"", entries)
 }
 
-func (entries OrQuery) Apply(req *http.Request) {
+func (entries QueryOr) Apply(req *http.Request) {
 	query := req.URL.Query()
 	prevQuery := query.Get("q")
 
