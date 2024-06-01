@@ -6,19 +6,6 @@ import (
 	"strings"
 )
 
-// Metadata is a digested metadata struct parsed from titles.
-type Metadata struct {
-	Source             string
-	Title              string
-	Episode            string
-	Season             string
-	Tags               []string
-	VerticalResolution int
-	// Is true when the title contains no episode information or multiple episodes.
-	// Examples: Show S01, Show S01E01~13.
-	IsMultiEpisode bool
-}
-
 // Regex for removing all annotations from a title, Examples: (Recoded), [1080p], .mkv.
 var titleCleanupExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(\[.*?\])|(\(.*?\))`),

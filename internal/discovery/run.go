@@ -51,7 +51,7 @@ func episodeFilterNew(list []parser.ParsedNyaa, latestTag string, excludeBatch b
 		}
 		// Some providers count episodes from season 1, some from season 2, example:
 		// s02e19 when it should be s02e08. so we add continuity to download only next episode.
-		if latestTag != "" && !tagIsNextEpisode(nyaaEntry.Meta, latestTag) {
+		if latestTag != "" && !nyaaEntry.Meta.TagIsNextEpisode(latestTag) {
 			continue
 		}
 		latestTag = nyaaEntry.SeasonEpisodeTag
