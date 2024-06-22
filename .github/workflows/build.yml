@@ -51,14 +51,10 @@ jobs:
       - name: Test
         run: go test -v ./...
 
-      - name: Get version from tag
-        id: vars
-        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/}
-
       - name: Build
         run: |
           chmod +x builders/release.sh
-          ./builders/release.sh ${{ steps.vars.outputs.version }}
+          ./builders/release.sh ${{ github.ref_name }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
@@ -66,16 +62,27 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
 
-      - name: Build and push
+      - name: Build docker image for amd64
         uses: docker/build-push-action@v5
         with:
           context: .
-          file: ./builders/service.dockerfile
+          file: ./builders/Dockerfile.linux.amd64
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-          platforms: linux/amd64,linux/arm64
+          platforms: linux/amd64
+
+      - name: Build docker image for arm64
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          file: ./builders/Dockerfile.linux.arm64
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+          platforms: linux/arm64
 
       - name: Create Github Release
         uses: ncipollo/release-action@v1
