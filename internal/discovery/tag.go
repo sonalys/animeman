@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"strconv"
 
+	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
@@ -76,8 +77,10 @@ func tagGetLatest(torrents []torrentclient.Torrent) string {
 	for _, torrent := range torrents {
 		tags := torrent.Tags
 		seasonEpisodeTag := tags[len(tags)-1]
-		if tagCompare(seasonEpisodeTag, latestTag) > 0 {
-			latestTag = seasonEpisodeTag
+		meta := parser.TitleParse(seasonEpisodeTag)
+		tag := meta.TagBuildSeasonEpisode()
+		if tagCompare(tag, latestTag) > 0 {
+			latestTag = tag
 		}
 	}
 	return latestTag

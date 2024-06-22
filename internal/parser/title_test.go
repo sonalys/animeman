@@ -32,6 +32,19 @@ func TestTitleParse(t *testing.T) {
 	}{
 		{
 			name:  "lv2",
+			title: "[SubsPlease] Boku no Hero Academia - 140 (1080p) [CAE71930].mkv",
+			want: Metadata{
+				Title:              "Boku no Hero Academia",
+				Episode:            "140",
+				Season:             "1",
+				VerticalResolution: 1080,
+				IsMultiEpisode:     false,
+				Source:             "SubsPlease",
+				Tags:               []string{"CAE71930"},
+			},
+		},
+		{
+			name:  "lv2",
 			title: "[SubsPlease] Lv2 kara Cheat datta Motoyuusha Kouho no Mattari Isekai Life - 07 (1080p) [5E653DF8]",
 			want: Metadata{
 				Title:              "Lv2 kara Cheat datta Motoyuusha Kouho no Mattari Isekai Life",
@@ -53,6 +66,19 @@ func TestTitleParse(t *testing.T) {
 				VerticalResolution: 1080,
 				Source:             "SubsPlease",
 				Tags:               []string{"9F8A2A07"},
+				IsMultiEpisode:     false,
+			},
+		},
+		{
+			name:  "half episode at the end of string",
+			title: "[SubsPlease] Solo Leveling - 07.5",
+			want: Metadata{
+				Title:              "Solo Leveling",
+				Episode:            "7.5",
+				Season:             "1",
+				VerticalResolution: -1,
+				Source:             "SubsPlease",
+				Tags:               []string{},
 				IsMultiEpisode:     false,
 			},
 		},

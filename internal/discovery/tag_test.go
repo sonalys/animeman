@@ -17,6 +17,17 @@ func Test_getLatestTag(t *testing.T) {
 		want string
 	}{
 		{
+			name: "batch and season",
+			args: args{
+				torrents: []torrentclient.Torrent{
+					{Tags: []string{"S1E1~13"}},
+					{Tags: []string{"S1E2"}},
+					{Tags: []string{"S1E3"}},
+				},
+			},
+			want: "S1E1~13",
+		},
+		{
 			name: "same season half episode",
 			args: args{
 				torrents: []torrentclient.Torrent{
@@ -24,7 +35,7 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"solo leveling S1E7.5"}},
 				},
 			},
-			want: "solo leveling S1E7.5",
+			want: "S1E7.5",
 		},
 		{
 			name: "batch and same season",
@@ -47,7 +58,7 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S01"}},
 				},
 			},
-			want: "S01",
+			want: "S1",
 		},
 		{
 			name: "same season",
@@ -81,17 +92,6 @@ func Test_getLatestTag(t *testing.T) {
 				},
 			},
 			want: "S3",
-		},
-		{
-			name: "batch and season",
-			args: args{
-				torrents: []torrentclient.Torrent{
-					{Tags: []string{"S1E1~13"}},
-					{Tags: []string{"S1E2"}},
-					{Tags: []string{"S1E3"}},
-				},
-			},
-			want: "S1E1~13",
 		},
 	}
 	for _, tt := range tests {

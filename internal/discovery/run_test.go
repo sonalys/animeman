@@ -137,7 +137,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E01", animelist.AiringStatusAiring)
+		got := getDownloadableEntries(animelist.Entry{}, input, "S03E01", animelist.AiringStatusAiring)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[0:1]), got)
 	})
@@ -149,7 +149,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAiring)
+		got := getDownloadableEntries(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAiring)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[1:2]), got)
 	})
@@ -159,7 +159,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAired)
+		got := getDownloadableEntries(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[:1]), got)
 	})
@@ -188,7 +188,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAired)
+		got := getDownloadableEntries(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[:1]), got)
 	})
@@ -198,7 +198,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E03", Seeders: 10},
 			{Title: "Show3: S03"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAired)
+		got := getDownloadableEntries(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[1:2]), got)
 	})
