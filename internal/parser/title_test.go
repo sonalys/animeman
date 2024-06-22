@@ -31,6 +31,19 @@ func TestTitleParse(t *testing.T) {
 		want  Metadata
 	}{
 		{
+			name:  "lv2",
+			title: "[SubsPlease] Lv2 kara Cheat datta Motoyuusha Kouho no Mattari Isekai Life - 07 (1080p) [5E653DF8]",
+			want: Metadata{
+				Title:              "Lv2 kara Cheat datta Motoyuusha Kouho no Mattari Isekai Life",
+				Episode:            "7",
+				Season:             "1",
+				VerticalResolution: 1080,
+				IsMultiEpisode:     false,
+				Source:             "SubsPlease",
+				Tags:               []string{"5E653DF8"},
+			},
+		},
+		{
 			name:  "half episode",
 			title: "[SubsPlease] Solo Leveling - 07.5 (1080p) [9F8A2A07].mkv",
 			want: Metadata{
