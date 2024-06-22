@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -90,7 +91,7 @@ type TorrentConfig struct {
 	Category         string            `yaml:"category"`
 	DownloadPath     string            `yaml:"downloadPath"`
 	CreateShowFolder bool              `yaml:"createShowFolder"`
-	RenameTorrent    bool              `yaml:"renameTorrent"`
+	RenameTorrent    *bool             `yaml:"renameTorrent,omitempty"`
 }
 
 func (c TorrentConfig) Validate() error {
@@ -144,7 +145,7 @@ func GenerateBoilerplateConfig() {
 			Username:         "admin",
 			Password:         "adminadmin",
 			CreateShowFolder: true,
-			RenameTorrent:    true,
+			RenameTorrent:    utils.Pointer(true),
 			Type:             TorrentClientTypeQBittorrent,
 		},
 	})

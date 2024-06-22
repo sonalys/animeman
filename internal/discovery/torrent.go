@@ -58,6 +58,7 @@ func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.P
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
 	savePath := c.TorrentGetDownloadPath(entry.Titles[0])
+	parsedNyaa.Meta.Title = parser.TitleStrip(parsedNyaa.Meta.Title, true)
 	tags := parsedNyaa.Meta.TagsBuildTorrent()
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
