@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"regexp"
 	"sort"
+	"strings"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/integrations/nyaa"
@@ -60,20 +62,69 @@ func episodeFilterNew(list []parser.ParsedNyaa, latestTag string, excludeBatch b
 	return out
 }
 
+var notWordDigitOrSpace = regexp.MustCompile("[^a-zA-Z 0-9]")
+
+// calculateTitleSimilarityScore returns a value between 0 and 1 for how similar the titles are.
+func calculateTitleSimilarityScore(originalTitle, title string) float64 {
+	originalTitle = strings.ToLower(originalTitle)
+	title = strings.ToLower(title)
+	originalTitle = notWordDigitOrSpace.ReplaceAllString(originalTitle, "")
+	title = notWordDigitOrSpace.ReplaceAllString(title, "")
+
+	originalTitleWords := strings.Split(originalTitle, " ")
+	titleWords := strings.Split(title, " ")
+	wordCount := len(titleWords)
+
+	var match int
+outer:
+	for _, curWord := range titleWords {
+		for i, target := range originalTitleWords {
+			if curWord == target {
+				match++
+				originalTitleWords = append(originalTitleWords[:i], originalTitleWords[i+1:]...)
+				continue outer
+			}
+		}
+	}
+	return float64(match) / float64(wordCount)
+}
+
 // parseAndSort will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
 // it will also sort the response by season and episode.
 // it's important it returns a crescent season/episode list, so you don't download a recent episode and
 // don't download the oldest ones in case you don't have all episodes since your latestTag.
-func parseAndSort(entries []nyaa.Entry) []parser.ParsedNyaa {
+func parseAndSort(animeListEntry animelist.Entry, entries []nyaa.Entry) []parser.ParsedNyaa {
 	resp := utils.Map(entries, func(entry nyaa.Entry) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
 	sort.Slice(resp, func(i, j int) bool {
 		cmp := tagCompare(resp[i].SeasonEpisodeTag, resp[j].SeasonEpisodeTag)
+		if cmp != 0 {
+			return cmp < 0
+		}
 		// For same tag, we compare vertical resolution, prioritizing better quality.
-		if cmp == 0 {
-			cmp = resp[j].Meta.VerticalResolution - resp[i].Meta.VerticalResolution
-			if cmp == 0 {
-				cmp = resp[j].Entry.Seeders - resp[i].Entry.Seeders
+		cmp = resp[j].Meta.VerticalResolution - resp[i].Meta.VerticalResolution
+		if cmp != 0 {
+			return cmp < 0
+		}
+		var scoreI, scoreJ float64
+		// Then we prioritize by title proximity score.
+		for _, title := range animeListEntry.Titles {
+			curScoreI := calculateTitleSimilarityScore(title, resp[i].Meta.Title)
+			curScoreJ := calculateTitleSimilarityScore(title, resp[j].Meta.Title)
+			if curScoreI > scoreI {
+				scoreI = curScoreI
 			}
+			if curScoreJ > scoreJ {
+				scoreJ = curScoreJ
+			}
+		}
+		cmp = int((scoreJ - scoreI) * 100)
+		if cmp != 0 {
+			return cmp < 0
+		}
+		// Then prioritize number of seeds
+		cmp = resp[j].Entry.Seeders - resp[i].Entry.Seeders
+		if cmp != 0 {
+			return cmp < 0
 		}
 		return cmp < 0
 	})
@@ -81,10 +132,10 @@ func parseAndSort(entries []nyaa.Entry) []parser.ParsedNyaa {
 }
 
 // getDownloadableEntries is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
-func getDownloadableEntries(entries []nyaa.Entry, latestTag string, animeStatus animelist.AiringStatus) []parser.ParsedNyaa {
+func getDownloadableEntries(animeListEntry animelist.Entry, entries []nyaa.Entry, latestTag string, animeStatus animelist.AiringStatus) []parser.ParsedNyaa {
 	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
 	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
-	parsedEntries := parseAndSort(entries)
+	parsedEntries := parseAndSort(animeListEntry, entries)
 	if useBatch {
 		return utils.Filter(parsedEntries, filterBatchEntries)
 	}
@@ -94,7 +145,7 @@ func getDownloadableEntries(entries []nyaa.Entry, latestTag string, animeStatus 
 func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	strippedTitles := utils.Map(entry.Titles, parser.TitleStrip)
+	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.TitleStrip(title, true) })
 	titleQuery := nyaa.QueryOr(strippedTitles)
 	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
 	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)
@@ -118,7 +169,7 @@ func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.E
 	if err != nil {
 		return fmt.Errorf("getting latest tag: %w", err)
 	}
-	for _, nyaaEntry := range getDownloadableEntries(nyaaEntries, latestTag, entry.AiringStatus) {
+	for _, nyaaEntry := range getDownloadableEntries(entry, nyaaEntries, latestTag, entry.AiringStatus) {
 		if err := c.TorrentDigestNyaa(ctx, entry, nyaaEntry); err != nil {
 			log.Error().Msgf("failed to digest nyaa entry: %s", err)
 			continue

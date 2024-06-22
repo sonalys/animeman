@@ -86,7 +86,7 @@ func Test_filterEpisodes(t *testing.T) {
 
 func Test_buildTaggedNyaaList(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		got := parseAndSort([]nyaa.Entry{})
+		got := parseAndSort(animelist.Entry{}, []nyaa.Entry{})
 		require.Empty(t, got)
 	})
 	t.Run("sort by tag", func(t *testing.T) {
@@ -96,7 +96,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 			{Title: "Show3: S03E01"},
 			{Title: "Show3: S03"},
 		}
-		got := parseAndSort(input)
+		got := parseAndSort(animelist.Entry{}, input)
 		require.Len(t, got, len(input))
 		for i := 1; i < len(got); i++ {
 			require.True(t, tagCompare(got[i-1].SeasonEpisodeTag, got[i].SeasonEpisodeTag) <= 0)
@@ -106,7 +106,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 
 func Test_filterNyaaFeed(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		got := getDownloadableEntries([]nyaa.Entry{}, "", animelist.AiringStatusAiring)
+		got := getDownloadableEntries(animelist.Entry{}, []nyaa.Entry{}, "", animelist.AiringStatusAiring)
 		require.Empty(t, got)
 	})
 	t.Run("airing: no latestTag", func(t *testing.T) {
@@ -115,7 +115,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(input, "", animelist.AiringStatusAiring)
+		got := getDownloadableEntries(animelist.Entry{}, input, "", animelist.AiringStatusAiring)
 		require.Len(t, got, len(input))
 		for i := 1; i < len(got); i++ {
 			require.True(t, tagCompare(got[i-1].SeasonEpisodeTag, got[i].SeasonEpisodeTag) <= 0)
@@ -127,9 +127,9 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(input, "Show3 S03E02", animelist.AiringStatusAiring)
+		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAiring)
 		require.Len(t, got, 1)
-		require.Equal(t, parseAndSort(input[:1]), got)
+		require.Equal(t, parseAndSort(animelist.Entry{}, input[:1]), got)
 	})
 	t.Run("airing: with repeated tag", func(t *testing.T) {
 		input := []nyaa.Entry{
@@ -137,9 +137,9 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(input, "Show3 S03E01", animelist.AiringStatusAiring)
+		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E01", animelist.AiringStatusAiring)
 		require.Len(t, got, 1)
-		require.Equal(t, parseAndSort(input[0:1]), got)
+		require.Equal(t, parseAndSort(animelist.Entry{}, input[0:1]), got)
 	})
 
 	t.Run("airing: with latestTag and quality", func(t *testing.T) {
@@ -149,9 +149,9 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(input, "Show3 S03E02", animelist.AiringStatusAiring)
+		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAiring)
 		require.Len(t, got, 1)
-		require.Equal(t, parseAndSort(input[1:2]), got)
+		require.Equal(t, parseAndSort(animelist.Entry{}, input[1:2]), got)
 	})
 	t.Run("aired: with latestTag", func(t *testing.T) {
 		input := []nyaa.Entry{
@@ -159,9 +159,9 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(input, "Show3 S03E02", animelist.AiringStatusAired)
+		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
-		require.Equal(t, parseAndSort(input[:1]), got)
+		require.Equal(t, parseAndSort(animelist.Entry{}, input[:1]), got)
 	})
 	t.Run("aired: with batch, no latestTag", func(t *testing.T) {
 		input := []nyaa.Entry{
@@ -169,18 +169,18 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03"},
 		}
-		got := getDownloadableEntries(input, "", animelist.AiringStatusAired)
+		got := getDownloadableEntries(animelist.Entry{}, input, "", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
-		require.Equal(t, parseAndSort(input[2:]), got)
+		require.Equal(t, parseAndSort(animelist.Entry{}, input[2:]), got)
 	})
 	t.Run("aired: with batch, different qualities", func(t *testing.T) {
 		input := []nyaa.Entry{
 			{Title: "Show3: S03 1220x760"},
 			{Title: "Show3: S03 1080p"},
 		}
-		got := getDownloadableEntries(input, "", animelist.AiringStatusAired)
+		got := getDownloadableEntries(animelist.Entry{}, input, "", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
-		require.Equal(t, parseAndSort(input[1:]), got)
+		require.Equal(t, parseAndSort(animelist.Entry{}, input[1:]), got)
 	})
 	t.Run("aired: with batch, with latestTag", func(t *testing.T) {
 		input := []nyaa.Entry{
@@ -188,9 +188,9 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03"},
 		}
-		got := getDownloadableEntries(input, "Show3 S03E02", animelist.AiringStatusAired)
+		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
-		require.Equal(t, parseAndSort(input[:1]), got)
+		require.Equal(t, parseAndSort(animelist.Entry{}, input[:1]), got)
 	})
 	t.Run("same tag and quality, different seeders", func(t *testing.T) {
 		input := []nyaa.Entry{
@@ -198,8 +198,22 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E03", Seeders: 10},
 			{Title: "Show3: S03"},
 		}
-		got := getDownloadableEntries(input, "Show3 S03E02", animelist.AiringStatusAired)
+		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
-		require.Equal(t, parseAndSort(input[1:2]), got)
+		require.Equal(t, parseAndSort(animelist.Entry{}, input[1:2]), got)
+	})
+}
+
+func Test_calculateTitleSimilarityScore(t *testing.T) {
+	t.Run("exact match in lower case", func(t *testing.T) {
+		score := calculateTitleSimilarityScore("My pony academy: the story continues", "My Pony Academy the story continues")
+		require.EqualValues(t, score, 1)
+	})
+
+	t.Run("closer match should have higher score", func(t *testing.T) {
+		originalTitle := "My pony academy: the battle continues"
+		scoreA := calculateTitleSimilarityScore(originalTitle, "My Pony Academy")
+		scoreB := calculateTitleSimilarityScore(originalTitle, "My Pony Academy 2: second battle")
+		require.Greater(t, scoreA, scoreB)
 	})
 }
