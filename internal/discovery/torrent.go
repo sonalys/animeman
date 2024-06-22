@@ -16,10 +16,12 @@ import (
 func (c *Controller) TorrentGetLatestEpisodes(ctx context.Context, entry animelist.Entry) (string, error) {
 	var torrents []torrentclient.Torrent
 	for i := range entry.Titles {
-		// we should consider both title and titleEng, because your anime list has different titles available,
+		// we should consider both metadata and titleEng, because your anime list has different titles available,
 		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
+		metadata := parser.TitleParse(entry.Titles[i])
+		metadata.Title = parser.TitleStrip(metadata.Title, true)
 		resp, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
-			Tag: utils.Pointer(parser.TitleParse(entry.Titles[i]).TagBuildSeries()),
+			Tag: utils.Pointer(metadata.TagBuildSeries()),
 		})
 		if err != nil {
 			return "", fmt.Errorf("listing torrents: %w", err)
