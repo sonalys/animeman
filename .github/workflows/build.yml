@@ -51,10 +51,14 @@ jobs:
       - name: Test
         run: go test -v ./...
 
+      - name: Get version from tag
+        id: vars
+        run: echo ::set-output name=version::${GITHUB_REF#refs/tags/}
+
       - name: Build
         run: |
           chmod +x builders/release.sh
-          ./builders/release.sh
+          ./builders/release.sh ${{ steps.vars.outputs.version }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3

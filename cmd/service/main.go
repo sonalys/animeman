@@ -17,6 +17,8 @@ import (
 	"github.com/sonalys/animeman/internal/utils"
 )
 
+var version = "development"
+
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{
 		Out: os.Stderr,
@@ -47,7 +49,7 @@ func initializeTorrentClient(ctx context.Context, c configs.TorrentConfig) disco
 }
 
 func main() {
-	log.Info().Msg("starting Animeman")
+	log.Info().Msgf("starting Animeman [%s]", version)
 	config, err := configs.ReadConfig(utils.Coalesce(os.Getenv("CONFIG_PATH"), "config.yaml"))
 	if err != nil {
 		log.Fatal().Msgf("config is not valid: %s", err)

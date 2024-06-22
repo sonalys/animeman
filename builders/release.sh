@@ -1,10 +1,42 @@
-	
-GOOS=windows GOARCH=amd64 go build -o ./bin/windows/amd64/animeman.exe ./cmd/service/main.go
-GOOS=linux GOARCH=amd64 go build -o ./bin/linux/amd64/animeman ./cmd/service/main.go
-GOOS=linux GOARCH=arm64 go build -o ./bin/linux/arm64/animeman ./cmd/service/main.go
+#!/bin/bash
 
-mkdir releases
+# Check if version is provided
+if [ -z "$1" ]; then
+  echo "No version provided. Usage: ./build.sh <version>"
+  exit 1
+fi
 
-zip releases/animeman_Windows_amd64.zip bin/windows/amd64/animeman.exe
-zip releases/animeman_Linux_amd64.zip bin/linux/amd64/animeman
-zip releases/animeman_Linux_arm64.zip bin/linux/arm64/animeman
+VERSION=$1
+
+# Define the build targets
+declare -A targets=(
+  ["windows/amd64"]="animeman.exe"
+  ["linux/amd64"]="animeman"
+  ["linux/arm64"]="animeman"
+)
+
+# Build for each target
+for target in "${!targets[@]}"; do
+  OS=$(echo $target | cut -d '/' -f 1)
+  ARCH=$(echo $target | cut -d '/' -f 2)
+  OUTPUT="./bin/${target}/${targets[$target]}"
+
+  echo "Building for $OS/$ARCH..."
+  GOOS=$OS GOARCH=$ARCH go build -ldflags="-X 'main.version=${VERSION}'" -o $OUTPUT ./cmd/service/main.go
+done
+
+# Create releases directory
+mkdir -p releases
+
+# Package the binaries
+for target in "${!targets[@]}"; do
+  OS=$(echo $target | cut -d '/' -f 1)
+  ARCH=$(echo $target | cut -d '/' -f 2)
+  OUTPUT="./bin/${target}/${targets[$target]}"
+  ZIP_NAME="releases/animeman_${OS}_${ARCH}.zip"
+
+  echo "Packaging $OUTPUT into $ZIP_NAME..."
+  zip -j $ZIP_NAME $OUTPUT
+done
+
+echo "Build and packaging completed with version ${VERSION}"
