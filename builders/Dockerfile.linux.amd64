@@ -1,0 +1,9 @@
+FROM scratch
+
+COPY ./builders/passwd /etc/passwd
+COPY /etc/ssl/certs/ca-certificates.crt /etc/ssl/certs/
+COPY bin/linux/amd64/animeman /animeman
+
+USER nobody
+
+ENTRYPOINT ["/animeman"]
