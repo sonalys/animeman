@@ -61,21 +61,20 @@ func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.P
 func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
 	savePath := c.TorrentGetDownloadPath(entry.Titles[0])
 	parsedNyaa.Meta.Title = parser.TitleStrip(parsedNyaa.Meta.Title, true)
-	var req torrentclient.AddTorrentConfig
-	if c.dep.Config.RenameTorrent {
-		req.Name = utils.Pointer(c.buildTorrentName(entry, parsedNyaa))
-	}
-	req = torrentclient.AddTorrentConfig{
-		Name:     req.Name,
-		Tags:     parsedNyaa.Meta.TagsBuildTorrent(),
+	tags := parsedNyaa.Meta.TagsBuildTorrent()
+	req := &torrentclient.AddTorrentConfig{
+		Tags:     tags,
 		URLs:     []string{parsedNyaa.Entry.Link},
 		Category: c.dep.Config.Category,
 		SavePath: savePath,
 	}
-	if err := c.dep.TorrentClient.AddTorrent(ctx, &req); err != nil {
+	if c.dep.Config.RenameTorrent {
+		req.Name = utils.Pointer(c.buildTorrentName(entry, parsedNyaa))
+	}
+	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
-	log.Info().Str("savePath", string(savePath)).Strs("tag", req.Tags).Msgf("torrent added")
+	log.Info().Str("savePath", string(savePath)).Strs("tag", tags).Msgf("torrent added")
 	return nil
 }
 
