@@ -44,8 +44,8 @@ func removeTags(title string) string {
 	return title
 }
 
-// TitleParse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
-func TitleParse(title string) Metadata {
+// Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
+func Parse(title string) Metadata {
 	resp := Metadata{
 		Title:              TitleStrip(title, false),
 		VerticalResolution: qualityMatch(title),

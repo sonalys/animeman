@@ -18,7 +18,7 @@ func (c *Controller) TorrentGetLatestEpisodes(ctx context.Context, entry animeli
 	for i := range entry.Titles {
 		// we should consider both metadata and titleEng, because your anime list has different titles available,
 		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
-		metadata := parser.TitleParse(entry.Titles[i])
+		metadata := parser.Parse(entry.Titles[i])
 		metadata.Title = parser.TitleStrip(metadata.Title, true)
 		resp, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
 			Tag: utils.Pointer(metadata.TagBuildSeries()),
@@ -90,9 +90,10 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
 		return fmt.Errorf("listing: %w", err)
 	}
 	for _, torrent := range torrents {
-		parsedTitle := parser.TitleParse(torrent.Name)
-		tags := parsedTitle.TagsBuildTorrent()
-		log.Info().Any("metadata", parsedTitle).Strs("tags", tags).Msgf("updating torrent tags")
+		meta := parser.Parse(torrent.Name)
+		meta.Title = parser.TitleStripSubtitle(meta.Title)
+		tags := meta.TagsBuildTorrent()
+		log.Info().Any("metadata", meta).Strs("tags", tags).Msgf("updating torrent tags")
 		if err := c.dep.TorrentClient.AddTorrentTags(ctx, []string{torrent.Hash}, tags); err != nil {
 			return fmt.Errorf("updating tags: %w", err)
 		}

@@ -14,7 +14,7 @@ type ParsedNyaa struct {
 }
 
 func NewParsedNyaa(entry nyaa.Entry) ParsedNyaa {
-	meta := TitleParse(entry.Title)
+	meta := Parse(entry.Title)
 	return ParsedNyaa{
 		Meta:             meta,
 		SeasonEpisodeTag: meta.TagBuildSeasonEpisode(),
