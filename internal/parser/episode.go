@@ -9,10 +9,10 @@ import (
 // Anything that is inside [].
 var tagsExpr = regexp.MustCompile(`\[([^\[\]]*)\]`)
 
-const episodeRegexExpr = `(\d+(?:\.\d+)?)`
+const episodeRegexExpr = `(\d+(?:\.\d(?:\D|$))?)`
 
 // Examples: 6, 6.5, 1~12, 1 ~ 12, 1-12, 1 - 12.
-const episodeGroup = `(?:` + episodeRegexExpr + `(?:\s*[~-]\s*` + episodeRegexExpr + `)?)`
+const episodeGroup = `(?:` + episodeRegexExpr + `(?:\s*[~\-]\s*` + episodeRegexExpr + `)?)`
 
 var episodeExpr = []*regexp.Regexp{
 	// Title - 05.
@@ -21,6 +21,12 @@ var episodeExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)e` + episodeGroup),
 	// 0x15.
 	regexp.MustCompile(`(?i)\W\d+x` + episodeGroup),
+}
+
+func trimNumber(s string) string {
+	s = strings.TrimLeft(s, "0")
+	s = strings.Trim(s, " ")
+	return s
 }
 
 // EpisodeParse detects episodes on titles.
@@ -32,10 +38,10 @@ func EpisodeParse(title string) (string, bool) {
 		}
 		group := matches[0]
 		if group[2] == "" {
-			return strings.TrimLeft(group[1], "0"), false
+			return trimNumber(group[1]), false
 		}
-		episode1 := strings.TrimLeft(group[1], "0")
-		episode2 := strings.TrimLeft(group[2], "0")
+		episode1 := trimNumber(group[1])
+		episode2 := trimNumber(group[2])
 		// Stringify episode number to avoid left digits, example: 02.
 		// Reason: we want an exact match for tags, so E02 and E2 wouldn't match.
 		return fmt.Sprintf("%s~%s", episode1, episode2), true

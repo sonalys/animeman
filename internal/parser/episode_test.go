@@ -9,8 +9,9 @@ func Test_matchEpisode(t *testing.T) {
 		episode string
 		multi   bool
 	}{
-		{name: "S1E7.5", title: "solo leveling S1E7.5", episode: "7.5", multi: false},
 		{name: "S1E1~13", title: "S1E1~13", episode: "1~13", multi: true},
+		{name: "episode resolution", title: "S02E06.720p", episode: "6", multi: false},
+		{name: "S1E7.5", title: "solo leveling S1E7.5 ", episode: "7.5", multi: false},
 		{name: "0x15", title: "Frieren 0x15", episode: "15", multi: false},
 		{name: "-15", title: "Frieren - 15", episode: "15", multi: false},
 		{name: "2 - 05", title: "Frieren 2 - 05", episode: "5", multi: false},

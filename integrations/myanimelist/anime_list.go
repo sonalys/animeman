@@ -30,13 +30,24 @@ outer:
 	return masks[0]
 }
 
+func convertTitles(in ...string) []string {
+	out := make([]string, 0, len(in))
+	for i := range in {
+		if in[i] == "" {
+			continue
+		}
+		out = append(out, in[i])
+	}
+	return out
+}
+
 func convertEntry(in []AnimeListEntry) []animelist.Entry {
 	out := make([]animelist.Entry, 0, len(in))
 	timeFormat := findCorrectTimeFormat(in)
 	for i := range in {
 		out = append(out, animelist.Entry{
 			ListStatus:   animelist.ListStatus(in[i].Status),
-			Titles:       []string{fmt.Sprint(in[i].Title), in[i].TitleEng},
+			Titles:       convertTitles(fmt.Sprint(in[i].Title), in[i].TitleEng),
 			AiringStatus: animelist.AiringStatus(in[i].AiringStatus),
 			StartDate:    utils.Must(time.Parse(timeFormat, in[i].AnimeStartDateString)),
 		})
