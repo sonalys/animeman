@@ -21,6 +21,18 @@ func Test_filterEpisodes(t *testing.T) {
 		want []parser.ParsedNyaa
 	}{
 		{
+			name: "nier automata",
+			args: args{
+				latestTag: "!nier-automata s1e18",
+				list: []parser.ParsedNyaa{
+					{SeasonEpisodeTag: "!nier-automata s1e16"},
+					{SeasonEpisodeTag: "!nier-automata s1e17"},
+					{SeasonEpisodeTag: "!nier-automata s1e18"},
+				},
+			},
+			want: []parser.ParsedNyaa{},
+		},
+		{
 			name: "empty",
 			args: args{},
 			want: []parser.ParsedNyaa{},

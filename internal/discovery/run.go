@@ -29,8 +29,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		return fmt.Errorf("fetching anime list: %w", err)
 	}
 	for _, entry := range entries {
-		err := c.DigestAnimeListEntry(ctx, entry)
-		if errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
+		if err := c.DigestAnimeListEntry(ctx, entry); errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 			return fmt.Errorf("failed to digest entry: %w", err)
 		}
 	}

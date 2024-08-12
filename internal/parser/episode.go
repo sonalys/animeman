@@ -9,10 +9,10 @@ import (
 // Anything that is inside [].
 var tagsExpr = regexp.MustCompile(`\[([^\[\]]*)\]`)
 
-const episodeRegexExpr = `(\d+(?:\.\d+)?)`
+const episodeRegexExpr = `(\d+(?:\.\d(?:\D|$))?)`
 
 // Examples: 6, 6.5, 1~12, 1 ~ 12, 1-12, 1 - 12.
-const episodeGroup = `(?:` + episodeRegexExpr + `(?:\s*[~-]\s*` + episodeRegexExpr + `)?)`
+const episodeGroup = `(?:` + episodeRegexExpr + `(?:\s*[~\-]\s*` + episodeRegexExpr + `)?)`
 
 var episodeExpr = []*regexp.Regexp{
 	// Title - 05.
