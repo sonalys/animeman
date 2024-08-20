@@ -122,3 +122,7 @@ There are a couple things that will be iterated:
 Feel free to fork and open pull requests
 
 Tests or roadmap features are very welcome, thanks.
+
+## Disclaimer
+
+This tool is intended as a proof-of-concept, and is not intended for any illegal activities.
