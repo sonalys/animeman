@@ -18,7 +18,7 @@ func (c *Controller) TorrentGetLatestEpisodes(ctx context.Context, entry animeli
 	for i := range entry.Titles {
 		// we should consider both metadata and titleEng, because your anime list has different titles available,
 		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
-		metadata := parser.Parse(entry.Titles[i], parser.RemoveDots())
+		metadata := parser.Parse(entry.Titles[i])
 		resp, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
 			Tag: utils.Pointer(metadata.TagBuildSeries()),
 		})
