@@ -19,9 +19,32 @@ func TitleStripSubtitle(title string) string {
 	return title
 }
 
+type titleCleanOptions struct {
+	removeDots bool
+}
+
+type TitleStripOptions interface {
+	applyTitleStripOptions(*titleCleanOptions)
+}
+
+type optRemoveDots struct{}
+
+func (o optRemoveDots) applyTitleStripOptions(opts *titleCleanOptions) {
+	opts.removeDots = true
+}
+
+func RemoveDots() TitleStripOptions {
+	return optRemoveDots{}
+}
+
 // TitleStrip cleans title from sub-titles, tags and season / episode information.
 // Example: [Source] Show: another story - S03E02 [1080p].mkv -> Show.
-func TitleStrip(title string, cleanSubtitle bool) string {
+func TitleStrip(title string, opts ...TitleStripOptions) string {
+	options := titleCleanOptions{}
+	for _, opt := range opts {
+		opt.applyTitleStripOptions(&options)
+	}
+
 	if index := seasonIndexMatch(title); index != -1 {
 		title = title[:index]
 	}
@@ -29,8 +52,9 @@ func TitleStrip(title string, cleanSubtitle bool) string {
 		title = title[:index]
 	}
 	title = regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
-	if cleanSubtitle {
-		title = TitleStripSubtitle(title)
+	title = TitleStripSubtitle(title)
+	if options.removeDots {
+		title = strings.ReplaceAll(title, ".", " ")
 	}
 	title = strings.ReplaceAll(title, "\"", "")
 	title = removeTags(title)
@@ -45,9 +69,9 @@ func removeTags(title string) string {
 }
 
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
-func Parse(title string) Metadata {
+func Parse(title string, opts ...TitleStripOptions) Metadata {
 	resp := Metadata{
-		Title:              TitleStrip(title, false),
+		Title:              TitleStrip(title, opts...),
 		VerticalResolution: qualityMatch(title),
 	}
 	if tags := tagsExpr.FindAllStringSubmatch(title, -1); len(tags) > 0 {

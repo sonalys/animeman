@@ -18,8 +18,7 @@ func (c *Controller) TorrentGetLatestEpisodes(ctx context.Context, entry animeli
 	for i := range entry.Titles {
 		// we should consider both metadata and titleEng, because your anime list has different titles available,
 		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
-		metadata := parser.Parse(entry.Titles[i])
-		metadata.Title = parser.TitleStrip(metadata.Title, true)
+		metadata := parser.Parse(entry.Titles[i], parser.RemoveDots())
 		resp, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
 			Tag: utils.Pointer(metadata.TagBuildSeries()),
 		})
@@ -60,8 +59,10 @@ func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.P
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
 	savePath := c.TorrentGetDownloadPath(entry.Titles[0])
-	parsedNyaa.Meta.Title = parser.TitleStrip(parsedNyaa.Meta.Title, true)
-	tags := parsedNyaa.Meta.TagsBuildTorrent()
+	meta := parsedNyaa.Meta.Clone()
+	meta.Title = parser.TitleStrip(meta.Title)
+	tags := meta.TagsBuildTorrent()
+
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
 		URLs:     []string{parsedNyaa.Entry.Link},

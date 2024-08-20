@@ -19,7 +19,7 @@ func TestTitleStrip(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := TitleStrip(tt.title, false); got != tt.want {
+			if got := TitleStrip(tt.title); got != tt.want {
 				t.Errorf("TitleStrip() = %v, want %v", got, tt.want)
 			}
 		})
@@ -30,6 +30,7 @@ func TestTitleParse(t *testing.T) {
 	tests := []struct {
 		name  string
 		title string
+		opts  []TitleStripOptions
 		want  Metadata
 	}{
 		{
@@ -87,6 +88,7 @@ func TestTitleParse(t *testing.T) {
 		{
 			name:  "all dots",
 			title: "MASHLE.MAGIC.AND.MUSCLES.S02E19.Mash.Burnedead.and.the.Magical.Maestro.1080p.CR.WEB-DL.AAC2.0.H.264-VARYG.mkv",
+			opts:  []TitleStripOptions{RemoveDots()},
 			want: Metadata{
 				Title:              "MASHLE MAGIC AND MUSCLES",
 				Episode:            "19",
@@ -98,6 +100,7 @@ func TestTitleParse(t *testing.T) {
 		{
 			name:  "undead unluck",
 			title: "Undead.Unluck.S01E20.Anno.Un.1080p.HULU.WEB-DL.AAC2.0.H.264-VARYG.mkv",
+			opts:  []TitleStripOptions{RemoveDots()},
 			want: Metadata{
 				Title:              "Undead Unluck",
 				Episode:            "20",
@@ -109,7 +112,7 @@ func TestTitleParse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := Parse(tt.title)
+			got := Parse(tt.title, tt.opts...)
 			require.Equal(t, tt.want, got)
 		})
 	}

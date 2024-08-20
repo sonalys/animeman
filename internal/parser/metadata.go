@@ -31,3 +31,15 @@ func (m *Metadata) TagIsNextEpisode(latest string) bool {
 	}
 	return true
 }
+
+func (m Metadata) Clone() Metadata {
+	return Metadata{
+		Source:             m.Source,
+		Title:              m.Title,
+		Episode:            m.Episode,
+		Season:             m.Season,
+		Tags:               append([]string{}, m.Tags...),
+		VerticalResolution: m.VerticalResolution,
+		IsMultiEpisode:     m.IsMultiEpisode,
+	}
+}

@@ -144,7 +144,7 @@ func getDownloadableEntries(animeListEntry animelist.Entry, entries []nyaa.Entry
 func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.TitleStrip(title, true) })
+	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.TitleStrip(title) })
 	titleQuery := nyaa.QueryOr(strippedTitles)
 	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
 	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)
