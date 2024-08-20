@@ -32,7 +32,6 @@ func TitleStrip(title string, cleanSubtitle bool) string {
 	if cleanSubtitle {
 		title = TitleStripSubtitle(title)
 	}
-	title = strings.ReplaceAll(title, ".", " ")
 	title = strings.ReplaceAll(title, "\"", "")
 	title = removeTags(title)
 	return strings.TrimSpace(title)
