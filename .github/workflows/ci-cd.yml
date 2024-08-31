@@ -9,6 +9,7 @@ on:
 env:
   TAG_VERSION: ${{ github.ref_name }}
   REGISTRY: ghcr.io
+  GO_VERSION: 1.23
 
 jobs:
   test:
@@ -66,12 +67,10 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.22"
+          go-version: ${{ env.GO_VERSION }}
 
       - name: Build
-        run: |
-          chmod +x builders/release.sh
-          ./builders/release.sh ${{ env.TAG_VERSION}}
+        run: sh ./builders/release.sh ${{ env.TAG_VERSION}}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
