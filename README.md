@@ -20,12 +20,14 @@ It automatically parses the torrent titles for tagging the show, season and epis
 ## How does it work?
 
 0. Tag existing torrents in the configured category
-1. Fetch your **Currently Watching** entries in **MAL** or **Anilist**
-2. Search for the RSS feed for each entry in **Nyaa.si**
+1. Fetch your **Currently Watching** entries from **MAL** or **Anilist**
+2. Search in the RSS feed for each entry in **Nyaa.si**
 3. Validate if the episode / season is already present in **qBittorrent**
-4. Add torrent to qBittorrent via WebUI.
+4. Add torrent to qBittorrent via the WebUI API
 
-The purpose of this tool is to download the latest RSS entry for each episode, so you can't prioritize quality or source for now. If you want series from one source or quality only, be sure to configure that.
+The purpose of this tool is to download the latest RSS entry for each episode.
+It prioritizes the highest provided quality, respecting your filter.
+If there are multiple sources for the same quality, it should choose the one with the highest number of seeders.
 
 ## Configuration
 
