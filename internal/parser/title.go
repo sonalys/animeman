@@ -16,6 +16,7 @@ func TitleStripSubtitle(title string) string {
 	title = strings.Split(title, ": ")[0]
 	title = strings.Split(title, ", ")[0]
 	title = strings.Split(title, "- ")[0]
+	title = strings.Split(title, ". ")[0]
 	return title
 }
 

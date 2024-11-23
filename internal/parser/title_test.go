@@ -13,6 +13,7 @@ func TestTitleStrip(t *testing.T) {
 		want  string
 	}{
 		{name: "\"quoted\" title", title: "\"quoted\" title", want: "quoted title"},
+		{name: "title. subtitle", title: "title. subtitle", want: "title"},
 		{name: "title.with.dots", title: "title.with.dots", want: "title.with.dots"},
 		{name: "empty", title: "", want: ""},
 		{name: "multiple spaces", title: "My     cool   anime", want: "My cool anime"},
