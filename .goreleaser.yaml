@@ -27,6 +27,13 @@ builds:
       - windows
       - darwin
 
+dockers:
+  - image_templates:
+      - "ghcr.io/sonalys/animeman:latest"
+      - "ghcr.io/sonalys/animeman:{{ .Tag }}"
+      - "ghcr.io/sonalys/animeman:{{ .Major }}"
+    dockerfile: ""
+
 archives:
   - format: tar.gz
     # this name template makes the OS and Arch compatible with the results of `uname`.
