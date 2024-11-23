@@ -1,6 +1,6 @@
 # Animeman
 
-[![Build](https://github.com/sonalys/animeman/actions/workflows/build.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/build.yml)
+[![Release](https://github.com/sonalys/animeman/actions/workflows/goreleaser.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/goreleaser.yml)
 [![Tests](https://github.com/sonalys/animeman/actions/workflows/tests.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/tests.yml)
 
 Animeman is a service for synchronizing your anime list currently watching with Nyaa and QBittorrent.
