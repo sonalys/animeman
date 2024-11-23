@@ -32,7 +32,6 @@ dockers:
       - "ghcr.io/sonalys/animeman:latest"
       - "ghcr.io/sonalys/animeman:{{ .Tag }}"
       - "ghcr.io/sonalys/animeman:{{ .Major }}"
-    dockerfile: ""
 
 archives:
   - format: tar.gz
