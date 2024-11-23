@@ -101,14 +101,30 @@ func (t Metadata) TagBuildSeasonEpisode() string {
 	return resp
 }
 
+func filterAlphanumeric(s string) string {
+	var result strings.Builder
+	result.Grow(len(s))
+	for i := 0; i < len(s); i++ {
+		b := s[i]
+		if ('a' <= b && b <= 'z') || ('A' <= b && b <= 'Z') || ('0' <= b && b <= '9') || b == ' ' {
+			result.WriteByte(b)
+		}
+	}
+	return result.String()
+}
+
+func (t Metadata) buildTitle() string {
+	return strings.ToLower(filterAlphanumeric(t.Title))
+}
+
 // TagBuildBatch is used for when you download a torrent with multiple episodes.
 func (t Metadata) TagBuildBatch() string {
-	return fmt.Sprintf("%s S%s batch", strings.ToLower(t.Title), t.Season)
+	return fmt.Sprintf("%s S%s batch", t.buildTitle(), t.Season)
 }
 
 // TagBuildSeries builds a !Serie Name tag for you to be able to search all it's episodes with a tag.
 func (t Metadata) TagBuildSeries() string {
-	return "!" + strings.ToLower(t.Title)
+	return "!" + t.buildTitle()
 }
 
 // TagsBuildTorrent builds all tags Animeman needs from your torrent client.
