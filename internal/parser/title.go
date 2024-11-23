@@ -89,7 +89,7 @@ func Parse(title string, opts ...TitleStripOptions) Metadata {
 
 // TagBuildTitleSeasonEpisode builds a tag for filtering in your torrent client. Example: Show S03E02.
 func (t Metadata) TagBuildTitleSeasonEpisode() string {
-	return fmt.Sprintf("%s %s", strings.ToLower(t.Title), t.TagBuildSeasonEpisode())
+	return fmt.Sprintf("%s %s", t.buildTitle(), t.TagBuildSeasonEpisode())
 }
 
 // TagBuildTitleSeasonEpisode builds a tag for filtering in your torrent client. Example: Show S03E02.
