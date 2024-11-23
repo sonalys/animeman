@@ -30,12 +30,17 @@ builds:
 dockers:
   - image_templates:
       - "ghcr.io/sonalys/animeman:{{ .Tag }}-amd64"
+      - "ghcr.io/sonalys/animeman:{{ .Major }}-amd64"
+      - "ghcr.io/sonalys/animeman:latest-amd64"
     use: buildx
     build_flag_templates:
       - "--pull"
       - "--platform=linux/amd64"
+    goarch: amd64
   - image_templates:
       - "ghcr.io/sonalys/animeman:{{ .Tag }}-arm64"
+      - "ghcr.io/sonalys/animeman:{{ .Major }}-arm64"
+      - "ghcr.io/sonalys/animeman:latest-arm64"
     use: buildx
     build_flag_templates:
       - "--pull"
@@ -47,6 +52,16 @@ docker_manifests:
     image_templates:
       - "ghcr.io/sonalys/animeman:{{ .Tag }}-amd64"
       - "ghcr.io/sonalys/animeman:{{ .Tag }}-arm64"
+
+  - name_template: "ghcr.io/sonalys/animeman:{{ .Major }}"
+    image_templates:
+      - "ghcr.io/sonalys/animeman:{{ .Major }}-amd64"
+      - "ghcr.io/sonalys/animeman:{{ .Major }}-arm64"
+
+  - name_template: "ghcr.io/sonalys/animeman:latest"
+    image_templates:
+      - "ghcr.io/sonalys/animeman:latest-amd64"
+      - "ghcr.io/sonalys/animeman:latest-arm64"
 
 archives:
   - format: tar.gz
