@@ -154,7 +154,10 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 		return nil, fmt.Errorf("getting nyaa list: %w", err)
 	}
 	// Filters only entries after the anime started airing.
-	return utils.Filter(entries, filterPublishedAfterDate(entry.StartDate)), nil
+	return utils.Filter(entries,
+		filterPublishedAfterDate(entry.StartDate),
+		filterTitleMatch(entry),
+	), nil
 }
 
 // DigestAnimeListEntry receives an anime list entry and fetches the anime feed, looking for new content.
