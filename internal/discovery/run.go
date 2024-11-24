@@ -131,7 +131,12 @@ func parseAndSort(animeListEntry animelist.Entry, entries []nyaa.Entry) []parser
 }
 
 // getDownloadableEntries is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
-func getDownloadableEntries(animeListEntry animelist.Entry, entries []nyaa.Entry, latestTag string, animeStatus animelist.AiringStatus) []parser.ParsedNyaa {
+func getDownloadableEntries(
+	animeListEntry animelist.Entry,
+	entries []nyaa.Entry,
+	latestTag string,
+	animeStatus animelist.AiringStatus,
+) []parser.ParsedNyaa {
 	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
 	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
 	parsedEntries := parseAndSort(animeListEntry, entries)

@@ -17,6 +17,7 @@ outer:
 				continue outer
 			}
 		}
+		out = append(out, in[i])
 	}
 	return out
 }
