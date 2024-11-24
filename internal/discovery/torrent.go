@@ -56,14 +56,16 @@ func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.P
 	return b.String()
 }
 
-// TorrentDigestNyaa receives an anime list entry and a downloadable torrent.
+// AddTorrentEntry receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
-func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
+func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
 	logger := zerolog.Ctx(ctx)
-	savePath := c.TorrentGetDownloadPath(entry.Titles[0])
+	savePath := c.TorrentGetDownloadPath(animeListEntry.Titles[0])
 	meta := parsedNyaa.Meta.Clone()
 	meta.Title = parser.TitleStrip(meta.Title)
 	tags := meta.TagsBuildTorrent()
+
+	*logger = logger.With().Str("savePath", string(savePath)).Any("meta", meta).Logger()
 
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
@@ -72,12 +74,12 @@ func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entr
 		SavePath: savePath,
 	}
 	if c.dep.Config.RenameTorrent {
-		req.Name = utils.Pointer(c.buildTorrentName(entry, parsedNyaa))
+		req.Name = utils.Pointer(c.buildTorrentName(animeListEntry, parsedNyaa))
 	}
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
-	logger.Info().Str("savePath", string(savePath)).Strs("tag", tags).Msgf("torrent added")
+	logger.Info().Msg("torrent added")
 	return nil
 }
 

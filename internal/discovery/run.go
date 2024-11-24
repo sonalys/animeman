@@ -7,6 +7,7 @@ import (
 	"regexp"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -21,21 +22,27 @@ import (
 // fetching entries from your anime list and looking for updates in Nyaa.si
 // After finding updates, it will verify episode collision and dispatch it to your torrent client.
 func (c *Controller) RunDiscovery(ctx context.Context) error {
+	t1 := time.Now()
+	log.Debug().Msgf("discovery started")
+
 	if err := c.TorrentRegenerateTags(ctx); err != nil {
 		return fmt.Errorf("updating qBittorrent entries: %w", err)
 	}
-	log.Debug().Msgf("discovery started")
+
 	entries, err := c.dep.AnimeListClient.GetCurrentlyWatching(ctx)
 	if err != nil {
 		return fmt.Errorf("fetching anime list: %w", err)
 	}
+
 	for _, entry := range entries {
 		logger := log.With().Any("titles", entry.Titles).Logger()
 		ctx := logger.WithContext(ctx)
-		if err := c.DigestAnimeListEntry(ctx, entry); errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
+		if err := c.DiscoverEntry(ctx, entry); errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 			return fmt.Errorf("failed to digest entry: %w", err)
 		}
 	}
+
+	log.Debug().Int("entries", len(entries)).Dur("duration", time.Since(t1)).Msg("discovery finished")
 	return nil
 }
 
@@ -158,48 +165,54 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	titleQuery := nyaa.QueryOr(strippedTitles)
 	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
 	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)
+
 	entries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
-	logger.Debug().Int("count", len(entries)).Msg("found nyaa results for entry")
 	if err != nil {
 		return nil, fmt.Errorf("getting nyaa list: %w", err)
 	}
+	logger.Debug().Int("count", len(entries)).Msg("found nyaa results for entry")
 	// Filters only entries after the anime started airing.
 	viableResults := utils.Filter(entries,
 		filterPublishedAfterDate(entry.StartDate),
 		filterTitleMatch(entry),
 	)
-	logger.Debug().Int("count", len(entries)).Msg("viable nyaa entries")
+	if len(viableResults) > 0 {
+		logger.Debug().Int("count", len(viableResults)).Msg("found viable nyaa entries")
+	}
 	return viableResults, nil
 }
 
-// DigestAnimeListEntry receives an anime list entry and fetches the anime feed, looking for new content.
-func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.Entry) (err error) {
+// DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.
+func (c *Controller) DiscoverEntry(ctx context.Context, animeListEntry animelist.Entry) (err error) {
 	logger := zerolog.Ctx(ctx)
 
-	nyaaEntries, err := c.NyaaSearch(ctx, entry)
+	nyaaEntries, err := c.NyaaSearch(ctx, animeListEntry)
 	// There should always be torrents for entries, if there aren't we can just exit the routine.
 	if len(nyaaEntries) == 0 {
-		logger.Debug().Any("title", entry.Titles).Msg("no nyaa entries found")
+		logger.Debug().Any("title", animeListEntry.Titles).Msg("no nyaa entries found")
 		return
 	}
-	latestTag, err := c.TorrentGetLatestEpisodes(ctx, entry)
+
+	latestTag, err := c.TorrentGetLatestEpisodes(ctx, animeListEntry)
 	if err != nil {
 		return fmt.Errorf("getting latest tag: %w", err)
 	}
 	*logger = logger.With().Str("latestTag", latestTag).Logger()
 
 	logger.Debug().Msg("looking for torrent candidates")
-	candidates := getDownloadableEntries(entry, nyaaEntries, latestTag, entry.AiringStatus)
-	if len(candidates) == 0 {
+	torrentCandidates := getDownloadableEntries(animeListEntry, nyaaEntries, latestTag, animeListEntry.AiringStatus)
+
+	if len(torrentCandidates) == 0 {
 		logger.Debug().Msg("no torrent candidates found")
 		return
 	}
-	for _, nyaaEntry := range candidates {
-		if err := c.TorrentDigestNyaa(ctx, entry, nyaaEntry); err != nil {
+
+	for _, parsedNyaaEntry := range torrentCandidates {
+		if err := c.AddTorrentEntry(ctx, animeListEntry, parsedNyaaEntry); err != nil {
 			logger.Error().Msgf("failed to digest nyaa entry: %s", err)
 			continue
 		}
 	}
-	logger.Debug().Msg("discovery finished")
+
 	return
 }
