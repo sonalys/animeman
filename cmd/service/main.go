@@ -54,6 +54,7 @@ func main() {
 	if err != nil {
 		log.Fatal().Msgf("config is not valid: %s", err)
 	}
+	zerolog.SetGlobalLevel(config.LogLevel.Convert())
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	c := discovery.New(discovery.Dependencies{
 		NYAA: nyaa.New(nyaa.Config{

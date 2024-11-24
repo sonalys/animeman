@@ -5,6 +5,7 @@ import (
 	"os"
 	"time"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/utils"
 	"gopkg.in/yaml.v3"
@@ -104,10 +105,30 @@ func (c TorrentConfig) Validate() error {
 	return nil
 }
 
+type LogLevel string
+
+const (
+	LogLevelDebug LogLevel = "debug"
+	LogLevelInfo  LogLevel = "info"
+	LogLevelError LogLevel = "error"
+)
+
 type Config struct {
 	AnimeListConfig `yaml:"animeList"`
 	RSSConfig       `yaml:"rssConfig"`
 	TorrentConfig   `yaml:"torrentConfig"`
+	LogLevel        LogLevel `yaml:"logLevel"`
+}
+
+func (l LogLevel) Convert() zerolog.Level {
+	switch l {
+	case LogLevelDebug:
+		return zerolog.DebugLevel
+	case LogLevelError:
+		return zerolog.ErrorLevel
+	default:
+		return zerolog.InfoLevel
+	}
 }
 
 func (c Config) Validate() error {

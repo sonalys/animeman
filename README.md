@@ -37,6 +37,7 @@ You can set your own config path with the env `CONFIG_PATH`.
 
 ```yaml
 # config.yaml
+logLevel: info # (debug,info,error).
 animeList:
   type: myanimelist # (myanimelist|anilist).
   username: YOUR_USERNAME # Replace with your username.

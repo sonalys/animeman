@@ -22,12 +22,14 @@ func filterPublishedAfterDate(t time.Time) func(e nyaa.Entry) bool {
 
 // Guarantees that the main title matches for the anime list entry and the nyaa entry.
 func filterTitleMatch(alEntry animelist.Entry) func(e nyaa.Entry) bool {
+	parsedTitles := utils.Map(alEntry.Titles, func(title string) string {
+		return parser.Parse(title).Title
+	})
 	return func(e nyaa.Entry) bool {
 		meta := parser.Parse(e.Title)
 
-		for _, title := range alEntry.Titles {
-			alMeta := parser.Parse(title)
-			if strings.EqualFold(meta.Title, alMeta.Title) {
+		for _, parsedTitle := range parsedTitles {
+			if strings.EqualFold(meta.Title, parsedTitle) {
 				return true
 			}
 		}

@@ -141,6 +141,7 @@ func getDownloadableEntries(
 	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
 	parsedEntries := parseAndSort(animeListEntry, entries)
 	if useBatch {
+		log.Debug().Msg("anime is already aired, no downloaded entries. activating batch search")
 		return utils.Filter(parsedEntries, filterBatchEntries)
 	}
 	return episodeFilterNew(parsedEntries, latestTag, !useBatch)
@@ -154,7 +155,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
 	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)
 	entries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
-	log.Debug().Str("entry", entry.Titles[0]).Msgf("found %d torrents", len(entries))
+	log.Debug().Str("entry", entry.Titles[0]).Msgf("found %d torrent candidates", len(entries))
 	if err != nil {
 		return nil, fmt.Errorf("getting nyaa list: %w", err)
 	}
@@ -170,17 +171,20 @@ func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.E
 	nyaaEntries, err := c.NyaaSearch(ctx, entry)
 	// There should always be torrents for entries, if there aren't we can just exit the routine.
 	if len(nyaaEntries) == 0 {
+		log.Debug().Any("title", entry.Titles).Msg("no nyaa entries found")
 		return
 	}
 	latestTag, err := c.TorrentGetLatestEpisodes(ctx, entry)
 	if err != nil {
 		return fmt.Errorf("getting latest tag: %w", err)
 	}
+	log.Debug().Str("latestTag", latestTag).Msg("looking for torrent candidates")
 	for _, nyaaEntry := range getDownloadableEntries(entry, nyaaEntries, latestTag, entry.AiringStatus) {
 		if err := c.TorrentDigestNyaa(ctx, entry, nyaaEntry); err != nil {
 			log.Error().Msgf("failed to digest nyaa entry: %s", err)
 			continue
 		}
 	}
+	log.Debug().Msg("discovery finished")
 	return
 }

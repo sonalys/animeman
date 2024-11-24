@@ -21,12 +21,3 @@ outer:
 	}
 	return out
 }
-
-func Find[T any](in []T, f func(T) bool) (*T, bool) {
-	for i := range in {
-		if f(in[i]) {
-			return &in[i], true
-		}
-	}
-	return nil, false
-}
