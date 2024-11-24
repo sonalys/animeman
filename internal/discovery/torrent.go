@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"strings"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/utils"
@@ -58,6 +59,7 @@ func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.P
 // TorrentDigestNyaa receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
+	logger := zerolog.Ctx(ctx)
 	savePath := c.TorrentGetDownloadPath(entry.Titles[0])
 	meta := parsedNyaa.Meta.Clone()
 	meta.Title = parser.TitleStrip(meta.Title)
@@ -75,7 +77,7 @@ func (c *Controller) TorrentDigestNyaa(ctx context.Context, entry animelist.Entr
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
-	log.Info().Str("savePath", string(savePath)).Strs("tag", tags).Msgf("torrent added")
+	logger.Info().Str("savePath", string(savePath)).Strs("tag", tags).Msgf("torrent added")
 	return nil
 }
 

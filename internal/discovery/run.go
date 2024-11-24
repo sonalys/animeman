@@ -8,6 +8,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/integrations/nyaa"
 	"github.com/sonalys/animeman/internal/parser"
@@ -29,6 +30,8 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		return fmt.Errorf("fetching anime list: %w", err)
 	}
 	for _, entry := range entries {
+		logger := log.With().Any("titles", entry.Titles).Logger()
+		ctx := logger.WithContext(ctx)
 		if err := c.DigestAnimeListEntry(ctx, entry); errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 			return fmt.Errorf("failed to digest entry: %w", err)
 		}
@@ -148,6 +151,7 @@ func getDownloadableEntries(
 }
 
 func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
+	logger := zerolog.Ctx(ctx)
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
 	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.TitleStrip(title) })
@@ -155,36 +159,47 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
 	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)
 	entries, err := c.dep.NYAA.List(ctx, titleQuery, sourceQuery, qualityQuery)
-	log.Debug().Str("entry", entry.Titles[0]).Msgf("found %d torrent candidates", len(entries))
+	logger.Debug().Int("count", len(entries)).Msg("found nyaa results for entry")
 	if err != nil {
 		return nil, fmt.Errorf("getting nyaa list: %w", err)
 	}
 	// Filters only entries after the anime started airing.
-	return utils.Filter(entries,
+	viableResults := utils.Filter(entries,
 		filterPublishedAfterDate(entry.StartDate),
 		filterTitleMatch(entry),
-	), nil
+	)
+	logger.Debug().Int("count", len(entries)).Msg("viable nyaa entries")
+	return viableResults, nil
 }
 
 // DigestAnimeListEntry receives an anime list entry and fetches the anime feed, looking for new content.
 func (c *Controller) DigestAnimeListEntry(ctx context.Context, entry animelist.Entry) (err error) {
+	logger := zerolog.Ctx(ctx)
+
 	nyaaEntries, err := c.NyaaSearch(ctx, entry)
 	// There should always be torrents for entries, if there aren't we can just exit the routine.
 	if len(nyaaEntries) == 0 {
-		log.Debug().Any("title", entry.Titles).Msg("no nyaa entries found")
+		logger.Debug().Any("title", entry.Titles).Msg("no nyaa entries found")
 		return
 	}
 	latestTag, err := c.TorrentGetLatestEpisodes(ctx, entry)
 	if err != nil {
 		return fmt.Errorf("getting latest tag: %w", err)
 	}
-	log.Debug().Str("latestTag", latestTag).Msg("looking for torrent candidates")
-	for _, nyaaEntry := range getDownloadableEntries(entry, nyaaEntries, latestTag, entry.AiringStatus) {
+	*logger = logger.With().Str("latestTag", latestTag).Logger()
+
+	logger.Debug().Msg("looking for torrent candidates")
+	candidates := getDownloadableEntries(entry, nyaaEntries, latestTag, entry.AiringStatus)
+	if len(candidates) == 0 {
+		logger.Debug().Msg("no torrent candidates found")
+		return
+	}
+	for _, nyaaEntry := range candidates {
 		if err := c.TorrentDigestNyaa(ctx, entry, nyaaEntry); err != nil {
-			log.Error().Msgf("failed to digest nyaa entry: %s", err)
+			logger.Error().Msgf("failed to digest nyaa entry: %s", err)
 			continue
 		}
 	}
-	log.Debug().Msg("discovery finished")
+	logger.Debug().Msg("discovery finished")
 	return
 }
