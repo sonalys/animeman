@@ -6,16 +6,18 @@ type ListStatus int
 type AiringStatus int
 
 const (
-	ListStatusWatching    ListStatus = 1
-	ListStatusCompleted   ListStatus = 2
-	ListStatusOnHold      ListStatus = 3
-	ListStatusDropped     ListStatus = 4
-	ListStatusPlanToWatch ListStatus = 6
-	ListStatusAll         ListStatus = 7
+	ListStatusUnknown ListStatus = iota
+	ListStatusWatching
+	ListStatusCompleted
+	ListStatusOnHold
+	ListStatusDropped
+	ListStatusPlanToWatch
+	ListStatusAll
 )
 
 const (
-	AiringStatusAired AiringStatus = iota
+	AiringStatusUnknown AiringStatus = iota
+	AiringStatusAired
 	AiringStatusAiring
 )
 

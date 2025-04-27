@@ -118,7 +118,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 
 func Test_filterNyaaFeed(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		got := getDownloadableEntries(animelist.Entry{}, []nyaa.Entry{}, "", animelist.AiringStatusAiring)
+		got := filterEpisodes(animelist.Entry{}, []nyaa.Entry{}, "", animelist.AiringStatusAiring)
 		require.Empty(t, got)
 	})
 	t.Run("airing: no latestTag", func(t *testing.T) {
@@ -127,7 +127,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "", animelist.AiringStatusAiring)
+		got := filterEpisodes(animelist.Entry{}, input, "", animelist.AiringStatusAiring)
 		require.Len(t, got, len(input))
 		for i := 1; i < len(got); i++ {
 			require.True(t, tagCompare(got[i-1].SeasonEpisodeTag, got[i].SeasonEpisodeTag) <= 0)
@@ -139,7 +139,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAiring)
+		got := filterEpisodes(animelist.Entry{}, input, "Show3 S03E02", animelist.AiringStatusAiring)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[:1]), got)
 	})
@@ -149,7 +149,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "S03E01", animelist.AiringStatusAiring)
+		got := filterEpisodes(animelist.Entry{}, input, "S03E01", animelist.AiringStatusAiring)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[0:1]), got)
 	})
@@ -161,7 +161,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAiring)
+		got := filterEpisodes(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAiring)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[1:2]), got)
 	})
@@ -171,7 +171,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
+		got := filterEpisodes(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[:1]), got)
 	})
@@ -181,7 +181,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "", animelist.AiringStatusAired)
+		got := filterEpisodes(animelist.Entry{}, input, "", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[2:]), got)
 	})
@@ -190,7 +190,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03 1220x760"},
 			{Title: "Show3: S03 1080p"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "", animelist.AiringStatusAired)
+		got := filterEpisodes(animelist.Entry{}, input, "", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[1:]), got)
 	})
@@ -200,7 +200,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
+		got := filterEpisodes(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[:1]), got)
 	})
@@ -210,7 +210,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E03", Seeders: 10},
 			{Title: "Show3: S03"},
 		}
-		got := getDownloadableEntries(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
+		got := filterEpisodes(animelist.Entry{}, input, "S03E02", animelist.AiringStatusAired)
 		require.Len(t, got, 1)
 		require.Equal(t, parseAndSort(animelist.Entry{}, input[1:2]), got)
 	})

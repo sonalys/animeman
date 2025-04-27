@@ -13,8 +13,8 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
 
-// TorrentGetLatestEpisodes will receive an anime list entry and return all torrents listed from the anime.
-func (c *Controller) TorrentGetLatestEpisodes(ctx context.Context, entry animelist.Entry) (string, error) {
+// findLatestTag will receive an anime list entry and return all torrents listed from the anime.
+func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (string, error) {
 	var torrents []torrentclient.Torrent
 	for i := range entry.Titles {
 		// we should consider both metadata and titleEng, because your anime list has different titles available,

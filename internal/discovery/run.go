@@ -140,8 +140,8 @@ func parseAndSort(animeListEntry animelist.Entry, entries []nyaa.Entry) []parser
 	return resp
 }
 
-// getDownloadableEntries is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
-func getDownloadableEntries(
+// filterEpisodes is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
+func filterEpisodes(
 	animeListEntry animelist.Entry,
 	entries []nyaa.Entry,
 	latestTag string,
@@ -183,32 +183,35 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 }
 
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.
-func (c *Controller) DiscoverEntry(ctx context.Context, animeListEntry animelist.Entry) (err error) {
+func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) (err error) {
 	logger := zerolog.Ctx(ctx)
 
-	nyaaEntries, err := c.NyaaSearch(ctx, animeListEntry)
-	// There should always be torrents for entries, if there aren't we can just exit the routine.
-	if len(nyaaEntries) == 0 {
-		logger.Debug().Any("title", animeListEntry.Titles).Msg("no nyaa entries found")
+	torrentResults, err := c.NyaaSearch(ctx, anime)
+	if err != nil {
+		return fmt.Errorf("searching torrent for anime: %w", err)
+	}
+
+	if len(torrentResults) == 0 {
+		logger.Debug().Any("title", anime.Titles).Msg("no nyaa entries found")
 		return
 	}
 
-	latestTag, err := c.TorrentGetLatestEpisodes(ctx, animeListEntry)
+	latestTag, err := c.findLatestTag(ctx, anime)
 	if err != nil {
-		return fmt.Errorf("getting latest tag: %w", err)
+		return fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 	*logger = logger.With().Str("latestTag", latestTag).Logger()
 
 	logger.Debug().Msg("looking for torrent candidates")
-	torrentCandidates := getDownloadableEntries(animeListEntry, nyaaEntries, latestTag, animeListEntry.AiringStatus)
+	episodesTorrents := filterEpisodes(anime, torrentResults, latestTag, anime.AiringStatus)
 
-	if len(torrentCandidates) == 0 {
-		logger.Debug().Msg("no torrent candidates found")
+	if len(episodesTorrents) == 0 {
+		logger.Debug().Msg("no new episodes found")
 		return
 	}
 
-	for _, parsedNyaaEntry := range torrentCandidates {
-		if err := c.AddTorrentEntry(ctx, animeListEntry, parsedNyaaEntry); err != nil {
+	for _, episodeTorrent := range episodesTorrents {
+		if err := c.AddTorrentEntry(ctx, anime, episodeTorrent); err != nil {
 			logger.Error().Msgf("failed to digest nyaa entry: %s", err)
 			continue
 		}
