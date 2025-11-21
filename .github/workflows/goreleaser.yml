@@ -5,15 +5,14 @@ on:
     tags:
       - "*"
 
-permissions:
-  contents: write
-
-env:
-  GO_VERSION: 1.25
-
 jobs:
   goreleaser:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: write
+    env:
+      GO_VERSION: 1.25
     steps:
       - name: Checkout
         uses: actions/checkout@v4
