@@ -30,9 +30,9 @@ builds:
       - amd64
       - arm64
 
-dockers:
+dockers_v2:
   - dockerfile: Dockerfile
-    image_templates:
-      - "ghcr.io/sonalys/animeman:{{ .Tag }}"
-      - "ghcr.io/sonalys/animeman:{{ .Major }}"
-      - "ghcr.io/sonalys/animeman:latest"
+    tags:
+      - "v{{ .Version }}"
+      - "{{ if not .IsNightly }}latest{{ end }}"
+      - "v{{ .Major }}"
