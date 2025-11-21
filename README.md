@@ -3,10 +3,8 @@
 [![Release](https://github.com/sonalys/animeman/actions/workflows/goreleaser.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/goreleaser.yml)
 [![Tests](https://github.com/sonalys/animeman/actions/workflows/tests.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/tests.yml)
 
-Animeman is a service for synchronizing your anime list currently watching with Nyaa and QBittorrent.
-
-Currently it manages qBittorrent through it's WebUI, creating and managing a category of torrents.
-
+Animeman is a service for synchronizing your anime list currently watching with Nyaa and QBittorrent.  
+Currently it manages qBittorrent through it's WebUI, creating and managing a category of torrents.  
 It automatically parses the torrent titles for tagging the show, season and episodes, while also searching in Nyaa.si for new releases.
 
 ## Features
@@ -31,8 +29,7 @@ If there are multiple sources for the same quality, it should choose the one wit
 
 ## Configuration
 
-Animeman will generate a boilerplate config for the first time.
-
+Animeman will generate a boilerplate config for the first time.  
 You can set your own config path with the env `CONFIG_PATH`.
 
 ```yaml
@@ -66,8 +63,7 @@ torrentConfig:
 
 ### Download
 
-You can download the latest release [here](https://github.com/sonalys/animeman/releases).
-
+You can download the latest release [here](https://github.com/sonalys/animeman/releases).  
 You can run a first time for generating a boilerplate config, then you configure your `config.yaml`.
 
 ### Linux CLI
@@ -105,12 +101,9 @@ services:
 
 ### Dependencies
 
-You will need at least go 1.22 for building the binary.
-
-For the image you will need docker.
-
-To build you can simply run `make build`
-
+You will need at least go 1.22 for building the binary.  
+For the image you will need docker.  
+To build you can simply run `make build`  
 For the image you can run `make image`
 
 ## Roadmap
@@ -122,8 +115,7 @@ There are a couple things that will be iterated:
 
 ## Contribution
 
-Feel free to fork and open pull requests
-
+Feel free to fork and open pull requests  
 Tests or roadmap features are very welcome, thanks.
 
 ## Disclaimer
