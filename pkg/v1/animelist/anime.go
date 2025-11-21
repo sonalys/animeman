@@ -26,4 +26,5 @@ type Entry struct {
 	Titles       []string
 	AiringStatus AiringStatus
 	StartDate    time.Time
+	NumEpisodes  int
 }

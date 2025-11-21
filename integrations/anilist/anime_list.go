@@ -24,6 +24,7 @@ type (
 		Media  struct {
 			Type         string
 			AiringStatus AiringStatus `json:"status"`
+			Episodes     int          `json:"episodes"`
 			StartDate    struct {
 				Year  int `json:"year"`
 				Month int `json:"month"`
@@ -80,22 +81,13 @@ const getCurrentlyWatchingQuery = `query($userName:String,$type:MediaType){
 					title{romaji english native}
 					type 
 					status(version:2)
+					episodes
 				}
 			}
 		}
 	}
 }
 `
-
-func filter[T any](in []T, f func(T) bool) []T {
-	out := make([]T, 0, len(in))
-	for i := range in {
-		if f(in[i]) {
-			out = append(out, in[i])
-		}
-	}
-	return out
-}
 
 func convertStatus(in ListStatus) animelist.ListStatus {
 	switch in {
@@ -132,6 +124,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			Titles:       []string{titles.English, titles.Romaji, titles.Native},
 			AiringStatus: convertAiringStatus(in[i].Media.AiringStatus),
 			StartDate:    time.Date(in[i].Media.StartDate.Year, time.Month(in[i].Media.StartDate.Month), in[i].Media.StartDate.Day, 0, 0, 0, 0, time.UTC),
+			NumEpisodes:  in[i].Media.Episodes,
 		})
 	}
 	return out
@@ -163,7 +156,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 	}
 	var out []AnimeListEntry
 	for _, list := range entries.Data.MediaListCollection.Lists {
-		watchingEntries := filter(list.Entries, func(entry AnimeListEntry) bool {
+		watchingEntries := utils.Filter(list.Entries, func(entry AnimeListEntry) bool {
 			return entry.Status == ListStatusWatching
 		})
 		out = append(out, watchingEntries...)

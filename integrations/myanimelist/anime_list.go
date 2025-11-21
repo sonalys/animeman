@@ -50,6 +50,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			Titles:       convertTitles(fmt.Sprint(in[i].Title), in[i].TitleEng),
 			AiringStatus: animelist.AiringStatus(in[i].AiringStatus),
 			StartDate:    utils.Must(time.Parse(timeFormat, in[i].AnimeStartDateString)),
+			NumEpisodes:  in[i].NumEpisodes,
 		})
 	}
 	return out

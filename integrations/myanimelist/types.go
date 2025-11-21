@@ -16,6 +16,7 @@ type (
 		TitleEng             string       `json:"anime_title_eng"`
 		AiringStatus         AiringStatus `json:"anime_airing_status"`
 		AnimeStartDateString string       `json:"anime_start_date_string"`
+		NumEpisodes          int          `json:"anime_num_episodes"`
 	}
 )
 
