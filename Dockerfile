@@ -1,4 +1,4 @@
-FROM --platform=$TARGETPLATFORM alpine:latest AS alpine
+FROM alpine:latest AS alpine
 RUN apk add -U --no-cache ca-certificates
 
 FROM scratch

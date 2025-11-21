@@ -25,62 +25,14 @@ builds:
     goos:
       - linux
       - windows
+      - darwin
+    goarch:
+      - amd64
+      - arm64
 
 dockers:
-  - id: docker_amd64
+  - dockerfile: Dockerfile
     image_templates:
-      - "ghcr.io/sonalys/animeman:{{ .Tag }}-amd64"
-      - "ghcr.io/sonalys/animeman:{{ .Major }}-amd64"
-      - "ghcr.io/sonalys/animeman:latest-amd64"
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/amd64"
-
-  - id: docker_arm64
-    image_templates:
-      - "ghcr.io/sonalys/animeman:{{ .Tag }}-arm64"
-      - "ghcr.io/sonalys/animeman:{{ .Major }}-arm64"
-      - "ghcr.io/sonalys/animeman:latest-arm64"
-    use: buildx
-    build_flag_templates:
-      - "--pull"
-      - "--platform=linux/arm64"
-
-docker_manifests:
-  - name_template: "ghcr.io/sonalys/animeman:{{ .Tag }}"
-    image_templates:
-      - "ghcr.io/sonalys/animeman:{{ .Tag }}-amd64"
-      - "ghcr.io/sonalys/animeman:{{ .Tag }}-arm64"
-
-  - name_template: "ghcr.io/sonalys/animeman:{{ .Major }}"
-    image_templates:
-      - "ghcr.io/sonalys/animeman:{{ .Major }}-amd64"
-      - "ghcr.io/sonalys/animeman:{{ .Major }}-arm64"
-
-  - name_template: "ghcr.io/sonalys/animeman:latest"
-    image_templates:
-      - "ghcr.io/sonalys/animeman:latest-amd64"
-      - "ghcr.io/sonalys/animeman:latest-arm64"
-
-archives:
-  - format: tar.gz
-    # this name template makes the OS and Arch compatible with the results of `uname`.
-    name_template: >-
-      {{ .ProjectName }}_
-      {{- title .Os }}_
-      {{- if eq .Arch "amd64" }}x86_64
-      {{- else if eq .Arch "386" }}i386
-      {{- else }}{{ .Arch }}{{ end }}
-      {{- if .Arm }}v{{ .Arm }}{{ end }}
-    # use zip for windows archives
-    format_overrides:
-      - goos: windows
-        format: zip
-
-changelog:
-  sort: asc
-  filters:
-    exclude:
-      - "^docs:"
-      - "^test:"
+      - "ghcr.io/sonalys/animeman:{{ .Tag }}"
+      - "ghcr.io/sonalys/animeman:{{ .Major }}"
+      - "ghcr.io/sonalys/animeman:latest"
