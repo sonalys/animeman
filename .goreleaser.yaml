@@ -32,6 +32,8 @@ builds:
 
 dockers_v2:
   - dockerfile: Dockerfile
+    images:
+      - "ghcr.io/sonalys/animeman"
     tags:
       - "v{{ .Version }}"
       - "{{ if not .IsNightly }}latest{{ end }}"
