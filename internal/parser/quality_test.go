@@ -35,7 +35,7 @@ func Test_matchQuality(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := qualityMatch(tt.title); got != tt.want {
+			if got := parseVerticalResolution(tt.title); got != tt.want {
 				t.Errorf("qualityMatch() = got '%v', want '%v'", got, tt.want)
 			}
 		})

@@ -18,8 +18,8 @@ type Metadata struct {
 // Returns false if same season and episode difference is bigger than 1.
 // otherwise returns true.
 func (m *Metadata) TagIsNextEpisode(latest string) bool {
-	latestSeason := SeasonParse(latest)
-	latestEpisode, isMulti := EpisodeParse(latest)
+	latestSeason := ParseSeason(latest)
+	latestEpisode, isMulti := ParseEpisode(latest)
 	// Avoids panic converting 6.5 for example to int.
 	if isMulti {
 		return true

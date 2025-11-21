@@ -5,7 +5,6 @@ go 1.25
 require (
 	github.com/rs/zerolog v1.34.0
 	github.com/stretchr/testify v1.8.4
-	golang.org/x/exp v0.0.0-20251113190631-e25ba8c21ef6
 	golang.org/x/time v0.14.0
 	gopkg.in/yaml.v3 v3.0.1
 )

@@ -62,7 +62,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 	logger := zerolog.Ctx(ctx)
 	savePath := c.TorrentGetDownloadPath(animeListEntry.Titles[0])
 	meta := parsedNyaa.Meta.Clone()
-	meta.Title = parser.TitleStrip(meta.Title)
+	meta.Title = parser.StripTitle(meta.Title)
 	tags := meta.TagsBuildTorrent()
 
 	*logger = logger.With().Str("savePath", string(savePath)).Any("meta", meta).Logger()
@@ -96,7 +96,7 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
 	}
 	for _, torrent := range torrents {
 		meta := parser.Parse(torrent.Name)
-		meta.Title = parser.TitleStripSubtitle(meta.Title)
+		meta.Title = parser.StripTitleSubtitle(meta.Title)
 		tags := meta.TagsBuildTorrent()
 		log.Info().Any("metadata", meta).Strs("tags", tags).Msgf("updating torrent tags")
 		if err := c.dep.TorrentClient.AddTorrentTags(ctx, []string{torrent.Hash}, tags); err != nil {

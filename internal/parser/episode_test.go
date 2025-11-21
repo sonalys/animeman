@@ -39,7 +39,7 @@ func Test_matchEpisode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			episode, isMulti := EpisodeParse(tt.title)
+			episode, isMulti := ParseEpisode(tt.title)
 			if episode != tt.episode {
 				t.Errorf("episodeMatch() got episode = %v, want %v", episode, tt.episode)
 			}

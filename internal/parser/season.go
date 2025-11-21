@@ -18,8 +18,8 @@ var seasonExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(\d+)\s*-\s*(?:\d+)`),
 }
 
-// SeasonParse detects season on titles.
-func SeasonParse(title string) string {
+// ParseSeason detects season on titles.
+func ParseSeason(title string) string {
 	for _, expr := range seasonExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 || len(matches[0]) < 2 {

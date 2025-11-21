@@ -11,8 +11,8 @@ var qualityExpr = []*regexp.Regexp{
 	regexp.MustCompile(`\d{3,4}x(\d{3,4})`),
 }
 
-// qualityMatch detects quality from title.
-func qualityMatch(title string) int {
+// parseVerticalResolution detects quality from title.
+func parseVerticalResolution(title string) int {
 	for _, expr := range qualityExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 || len(matches[0]) < 2 {

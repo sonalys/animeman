@@ -29,8 +29,8 @@ func trimNumber(s string) string {
 	return s
 }
 
-// EpisodeParse detects episodes on titles.
-func EpisodeParse(title string) (string, bool) {
+// ParseEpisode detects episodes on titles.
+func ParseEpisode(title string) (string, bool) {
 	for _, expr := range episodeExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 {

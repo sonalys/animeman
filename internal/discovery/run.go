@@ -46,10 +46,10 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	return nil
 }
 
-// episodeFilterNew will only return ParsedNyaa entries that are more recent than the given latestTag.
+// filterNewEpisodes will only return ParsedNyaa entries that are more recent than the given latestTag.
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
-func episodeFilterNew(list []parser.ParsedNyaa, latestTag string, excludeBatch bool) []parser.ParsedNyaa {
+func filterNewEpisodes(list []parser.ParsedNyaa, latestTag string, excludeBatch bool) []parser.ParsedNyaa {
 	out := make([]parser.ParsedNyaa, 0, len(list))
 	for _, nyaaEntry := range list {
 		if excludeBatch && nyaaEntry.Meta.IsMultiEpisode {
@@ -98,46 +98,46 @@ outer:
 	return float64(match) / float64(wordCount)
 }
 
-// parseAndSort will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
+// parseAndSortResults will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
 // it will also sort the response by season and episode.
 // it's important it returns a crescent season/episode list, so you don't download a recent episode and
 // don't download the oldest ones in case you don't have all episodes since your latestTag.
-func parseAndSort(animeListEntry animelist.Entry, entries []nyaa.Entry) []parser.ParsedNyaa {
-	resp := utils.Map(entries, func(entry nyaa.Entry) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
-	sort.Slice(resp, func(i, j int) bool {
-		cmp := tagCompare(resp[i].SeasonEpisodeTag, resp[j].SeasonEpisodeTag)
+func parseAndSortResults(animeListEntry animelist.Entry, entries []nyaa.Entry) []parser.ParsedNyaa {
+	parsedEntries := utils.Map(entries, func(entry nyaa.Entry) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
+
+	smallerFunc := func(i, j int) bool {
+		first := parsedEntries[i]
+		second := parsedEntries[j]
+
+		// Sort first by season/episode tag.
+		cmp := tagCompare(first.SeasonEpisodeTag, second.SeasonEpisodeTag)
 		if cmp != 0 {
 			return cmp < 0
 		}
-		// For same tag, we compare vertical resolution, prioritizing better quality.
-		cmp = resp[j].Meta.VerticalResolution - resp[i].Meta.VerticalResolution
+		// Then resolution.
+		cmp = second.Meta.VerticalResolution - first.Meta.VerticalResolution
 		if cmp != 0 {
 			return cmp < 0
 		}
-		var scoreI, scoreJ float64
-		// Then we prioritize by title proximity score.
-		for _, title := range animeListEntry.Titles {
-			curScoreI := calculateTitleSimilarityScore(title, resp[i].Meta.Title)
-			curScoreJ := calculateTitleSimilarityScore(title, resp[j].Meta.Title)
-			if curScoreI > scoreI {
-				scoreI = curScoreI
-			}
-			if curScoreJ > scoreJ {
-				scoreJ = curScoreJ
-			}
+		// Then title similarity.
+		titleSimilarityI := utils.Max(utils.Map(animeListEntry.Titles, func(curTitle string) float64 {
+			return calculateTitleSimilarityScore(curTitle, first.Meta.Title)
+		})...)
+		titleSimilarityJ := utils.Max(utils.Map(animeListEntry.Titles, func(curTitle string) float64 {
+			return calculateTitleSimilarityScore(curTitle, second.Meta.Title)
+		})...)
+
+		if titleSimilarityI != titleSimilarityJ {
+			return titleSimilarityI > titleSimilarityJ
 		}
-		cmp = int((scoreJ - scoreI) * 100)
-		if cmp != 0 {
-			return cmp < 0
-		}
+
 		// Then prioritize number of seeds
-		cmp = resp[j].Entry.Seeders - resp[i].Entry.Seeders
-		if cmp != 0 {
-			return cmp < 0
-		}
-		return cmp < 0
-	})
-	return resp
+		return first.Entry.Seeders > second.Entry.Seeders
+	}
+
+	sort.Slice(parsedEntries, smallerFunc)
+
+	return parsedEntries
 }
 
 // filterEpisodes is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
@@ -149,19 +149,19 @@ func filterEpisodes(
 ) []parser.ParsedNyaa {
 	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
 	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
-	parsedEntries := parseAndSort(animeListEntry, entries)
+	parsedEntries := parseAndSortResults(animeListEntry, entries)
 	if useBatch {
 		log.Debug().Msg("anime is already aired, no downloaded entries. activating batch search")
 		return utils.Filter(parsedEntries, filterBatchEntries)
 	}
-	return episodeFilterNew(parsedEntries, latestTag, !useBatch)
+	return filterNewEpisodes(parsedEntries, latestTag, !useBatch)
 }
 
 func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
 	logger := zerolog.Ctx(ctx)
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.TitleStrip(title) })
+	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.StripTitle(title) })
 	titleQuery := nyaa.QueryOr(strippedTitles)
 	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
 	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)

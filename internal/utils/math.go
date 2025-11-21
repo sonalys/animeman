@@ -1,8 +1,10 @@
 package utils
 
-import "golang.org/x/exp/constraints"
+import (
+	"cmp"
+)
 
-func Min[T constraints.Ordered](values ...T) (min T) {
+func Min[T cmp.Ordered](values ...T) (min T) {
 	if len(values) == 0 {
 		return
 	}
@@ -15,7 +17,7 @@ func Min[T constraints.Ordered](values ...T) (min T) {
 	return min
 }
 
-func Max[T constraints.Ordered](values ...T) (max T) {
+func Max[T cmp.Ordered](values ...T) (max T) {
 	if len(values) == 0 {
 		return
 	}

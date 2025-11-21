@@ -12,7 +12,7 @@ var titleCleanupExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(\[.*?\])|(\(.*?\))`),
 }
 
-func TitleStripSubtitle(title string) string {
+func StripTitleSubtitle(title string) string {
 	title = strings.Split(title, ": ")[0]
 	title = strings.Split(title, ", ")[0]
 	title = strings.Split(title, "- ")[0]
@@ -38,9 +38,9 @@ func RemoveDots() TitleStripOptions {
 	return optRemoveDots{}
 }
 
-// TitleStrip cleans title from sub-titles, tags and season / episode information.
+// StripTitle cleans title from sub-titles, tags and season / episode information.
 // Example: [Source] Show: another story - S03E02 [1080p].mkv -> Show.
-func TitleStrip(title string, opts ...TitleStripOptions) string {
+func StripTitle(title string, opts ...TitleStripOptions) string {
 	options := titleCleanOptions{}
 	for _, opt := range opts {
 		opt.applyTitleStripOptions(&options)
@@ -53,7 +53,7 @@ func TitleStrip(title string, opts ...TitleStripOptions) string {
 		title = title[:index]
 	}
 	title = regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
-	title = TitleStripSubtitle(title)
+	title = StripTitleSubtitle(title)
 	if options.removeDots {
 		title = strings.ReplaceAll(title, ".", " ")
 	}
@@ -72,8 +72,8 @@ func removeTags(title string) string {
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
 func Parse(title string, opts ...TitleStripOptions) Metadata {
 	resp := Metadata{
-		Title:              TitleStrip(title, opts...),
-		VerticalResolution: qualityMatch(title),
+		Title:              StripTitle(title, opts...),
+		VerticalResolution: parseVerticalResolution(title),
 	}
 	if tags := tagsExpr.FindAllStringSubmatch(title, -1); len(tags) > 0 {
 		resp.Source = tags[0][1]
@@ -83,8 +83,8 @@ func Parse(title string, opts ...TitleStripOptions) Metadata {
 		}
 	}
 	title = removeTags(title)
-	resp.Episode, resp.IsMultiEpisode = EpisodeParse(title)
-	resp.Season = SeasonParse(title)
+	resp.Episode, resp.IsMultiEpisode = ParseEpisode(title)
+	resp.Season = ParseSeason(title)
 	return resp
 }
 
