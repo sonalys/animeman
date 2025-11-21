@@ -38,5 +38,3 @@ dockers_v2:
       - "v{{ .Version }}"
       - "{{ if not .IsNightly }}latest{{ end }}"
       - "v{{ .Major }}"
-    flags:
-      - "--push"
