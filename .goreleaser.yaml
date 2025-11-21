@@ -25,10 +25,10 @@ builds:
     goos:
       - linux
       - windows
-      - darwin
 
 dockers:
-  - image_templates:
+  - id: docker_amd64
+    image_templates:
       - "ghcr.io/sonalys/animeman:{{ .Tag }}-amd64"
       - "ghcr.io/sonalys/animeman:{{ .Major }}-amd64"
       - "ghcr.io/sonalys/animeman:latest-amd64"
@@ -36,8 +36,9 @@ dockers:
     build_flag_templates:
       - "--pull"
       - "--platform=linux/amd64"
-    goarch: amd64
-  - image_templates:
+
+  - id: docker_arm64
+    image_templates:
       - "ghcr.io/sonalys/animeman:{{ .Tag }}-arm64"
       - "ghcr.io/sonalys/animeman:{{ .Major }}-arm64"
       - "ghcr.io/sonalys/animeman:latest-arm64"
@@ -45,7 +46,6 @@ dockers:
     build_flag_templates:
       - "--pull"
       - "--platform=linux/arm64"
-    goarch: arm64
 
 docker_manifests:
   - name_template: "ghcr.io/sonalys/animeman:{{ .Tag }}"
