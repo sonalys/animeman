@@ -40,48 +40,52 @@ func tagMergeBatchEpisodes(tag string) string {
 // -1 = Tag1 < Tag2.
 // 0 = Tag1 == Tag2.
 // 1 = Tag1 > Tag2.
-func tagCompare(a, b string) int {
-	if a == "" && b != "" {
+func tagCompare(a, b parser.SeasonEpisodeTag) int {
+	if a.LastSeason() < b.LastSeason() {
 		return -1
 	}
-	if a != "" && b == "" {
+
+	if a.LastSeason() > b.LastSeason() {
 		return 1
 	}
-	a = tagMergeBatchEpisodes(a)
-	b = tagMergeBatchEpisodes(b)
-	aNums := utils.Map(numberExpr.FindAllString(a, -1), strToFloat64)
-	bNums := utils.Map(numberExpr.FindAllString(b, -1), strToFloat64)
-	lenA, lenB := len(aNums), len(bNums)
-	minSize := min(lenA, lenB)
-	for i := 0; i < minSize; i++ {
-		if aNums[i] > bNums[i] {
-			return 1
-		}
-		if aNums[i] < bNums[i] {
-			return -1
-		}
-	}
-	// Case for S3 and S3E2, we want the smaller one, which is more inclusive.
-	if lenA < lenB {
+
+	if a.IsMultiEpisode() && !b.IsMultiEpisode() {
 		return 1
 	}
-	if lenA > lenB {
+
+	if b.IsMultiEpisode() && !a.IsMultiEpisode() {
 		return -1
 	}
+
+	if a.LastEpisode() < b.LastEpisode() {
+		return -1
+	}
+
+	if a.LastEpisode() > b.LastEpisode() {
+		return 1
+	}
+
 	return 0
 }
 
 // tagGetLatest is a pure function implementation for fetching the latest tag from a list of torrent entries.
-func tagGetLatest(torrents []torrentclient.Torrent) string {
-	var latestTag string
+func tagGetLatest(torrents []torrentclient.Torrent) parser.SeasonEpisodeTag {
+	if len(torrents) == 0 {
+		return parser.SeasonEpisodeTag{}
+	}
+
+	var latestTag parser.SeasonEpisodeTag
+
 	for _, torrent := range torrents {
 		tags := torrent.Tags
 		seasonEpisodeTag := tags[len(tags)-1]
 		meta := parser.Parse(seasonEpisodeTag)
-		tag := meta.TagBuildSeasonEpisode()
-		if tagCompare(tag, latestTag) > 0 {
+		tag := meta.SeasonEpisodeTag
+
+		if latestTag.IsZero() || tagCompare(tag, latestTag) > 0 {
 			latestTag = tag
 		}
 	}
+
 	return latestTag
 }

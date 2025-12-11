@@ -10,7 +10,7 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
 
-func filterBatchEntries(e parser.ParsedNyaa) bool { return e.Meta.IsMultiEpisode }
+func filterBatchEntries(e parser.ParsedNyaa) bool { return e.Meta.SeasonEpisodeTag.IsMultiEpisode() }
 
 // filterPublishedAfterDate creates a filter for nyaa.Entry only after a date t.
 func filterPublishedAfterDate(t time.Time) func(e nyaa.Entry) bool {

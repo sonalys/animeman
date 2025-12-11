@@ -1,8 +1,8 @@
 package parser
 
 import (
-	"fmt"
 	"regexp"
+	"strconv"
 	"strings"
 )
 
@@ -23,14 +23,20 @@ var episodeExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(?i)\W\d+x` + episodeGroup),
 }
 
-func trimNumber(s string) string {
+func trimNumber(s string) float64 {
 	s = strings.TrimLeft(s, "0")
 	s = strings.Trim(s, " ")
-	return s
+
+	episodeNumber, err := strconv.ParseFloat(s, 64)
+	if err != nil {
+		return -1
+	}
+
+	return episodeNumber
 }
 
 // ParseEpisode detects episodes on titles.
-func ParseEpisode(title string) (string, bool) {
+func ParseEpisode(title string) []float64 {
 	for _, expr := range episodeExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 {
@@ -38,16 +44,19 @@ func ParseEpisode(title string) (string, bool) {
 		}
 		group := matches[0]
 		if group[2] == "" {
-			return trimNumber(group[1]), false
+			return []float64{trimNumber(group[1])}
 		}
-		episode1 := trimNumber(group[1])
-		episode2 := trimNumber(group[2])
+
+		firstEpisode := trimNumber(group[1])
+		lastEpisode := trimNumber(group[2])
+
 		// Stringify episode number to avoid left digits, example: 02.
 		// Reason: we want an exact match for tags, so E02 and E2 wouldn't match.
-		return fmt.Sprintf("%s~%s", episode1, episode2), true
+		return []float64{firstEpisode, lastEpisode}
 	}
-	// Some scenarios are like Frieren Season 1
-	return "", true
+
+	// Some scenarios are like Title Season 1
+	return []float64{}
 }
 
 // episodeIndexMatch is used for filtering episodes out of titles.

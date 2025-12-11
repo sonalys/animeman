@@ -7,8 +7,6 @@ import "github.com/sonalys/animeman/integrations/nyaa"
 type ParsedNyaa struct {
 	// Metadata parsed from title.
 	Meta Metadata
-	// Example: S02E03.
-	SeasonEpisodeTag string
 	// Nyaa entry.
 	Entry nyaa.Entry
 }
@@ -16,8 +14,7 @@ type ParsedNyaa struct {
 func NewParsedNyaa(entry nyaa.Entry) ParsedNyaa {
 	meta := Parse(entry.Title)
 	return ParsedNyaa{
-		Meta:             meta,
-		SeasonEpisodeTag: meta.TagBuildSeasonEpisode(),
-		Entry:            entry,
+		Meta:  meta,
+		Entry: entry,
 	}
 }

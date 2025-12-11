@@ -38,11 +38,12 @@ func TestTitleParse(t *testing.T) {
 			name:  "simple",
 			title: "[Provider] Show name - 140 (1080p) [file-hash].mkv",
 			want: Metadata{
-				Title:              "Show name",
-				Episode:            "140",
-				Season:             "1",
+				Title: "Show name",
+				SeasonEpisodeTag: SeasonEpisodeTag{
+					Season:  []int{1},
+					Episode: []float64{140},
+				},
 				VerticalResolution: 1080,
-				IsMultiEpisode:     false,
 				Source:             "Provider",
 				Tags:               []string{"file-hash"},
 			},
@@ -51,11 +52,12 @@ func TestTitleParse(t *testing.T) {
 			name:  "simple",
 			title: "[Provider] Show name - 07 (1080p) [file-hash]",
 			want: Metadata{
-				Title:              "Show name",
-				Episode:            "7",
-				Season:             "1",
+				Title: "Show name",
+				SeasonEpisodeTag: SeasonEpisodeTag{
+					Season:  []int{1},
+					Episode: []float64{7},
+				},
 				VerticalResolution: 1080,
-				IsMultiEpisode:     false,
 				Source:             "Provider",
 				Tags:               []string{"file-hash"},
 			},
@@ -64,26 +66,28 @@ func TestTitleParse(t *testing.T) {
 			name:  "half episode",
 			title: "[Provider] Show name - 07.5 (1080p) [9F8A2A07].mkv",
 			want: Metadata{
-				Title:              "Show name",
-				Episode:            "7.5",
-				Season:             "1",
+				Title: "Show name",
+				SeasonEpisodeTag: SeasonEpisodeTag{
+					Season:  []int{1},
+					Episode: []float64{7.5},
+				},
 				VerticalResolution: 1080,
 				Source:             "Provider",
 				Tags:               []string{"9F8A2A07"},
-				IsMultiEpisode:     false,
 			},
 		},
 		{
 			name:  "half episode at the end of string",
 			title: "[Provider] Show name - 07.5",
 			want: Metadata{
-				Title:              "Show name",
-				Episode:            "7.5",
-				Season:             "1",
+				Title: "Show name",
+				SeasonEpisodeTag: SeasonEpisodeTag{
+					Season:  []int{1},
+					Episode: []float64{7.5},
+				},
 				VerticalResolution: -1,
 				Source:             "Provider",
 				Tags:               []string{},
-				IsMultiEpisode:     false,
 			},
 		},
 		{
@@ -91,11 +95,12 @@ func TestTitleParse(t *testing.T) {
 			title: "Show.name.S02E19.subtitle.here.1080p.WEB-DL.AAC2.0.H.264-VARYG.mkv",
 			opts:  []TitleStripOptions{RemoveDots()},
 			want: Metadata{
-				Title:              "Show name",
-				Episode:            "19",
-				Season:             "2",
+				Title: "Show name",
+				SeasonEpisodeTag: SeasonEpisodeTag{
+					Season:  []int{2},
+					Episode: []float64{19},
+				},
 				VerticalResolution: 1080,
-				IsMultiEpisode:     false,
 			},
 		},
 		{
@@ -103,11 +108,12 @@ func TestTitleParse(t *testing.T) {
 			title: "Show.name.S01E20.Anno.Un.1080p.HULU.WEB-DL.AAC2.0.H.264-VARYG.mkv",
 			opts:  []TitleStripOptions{RemoveDots()},
 			want: Metadata{
-				Title:              "Show name",
-				Episode:            "20",
-				Season:             "1",
+				Title: "Show name",
+				SeasonEpisodeTag: SeasonEpisodeTag{
+					Season:  []int{1},
+					Episode: []float64{20},
+				},
 				VerticalResolution: 1080,
-				IsMultiEpisode:     false,
 			},
 		},
 	}

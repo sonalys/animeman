@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/utils"
@@ -14,20 +13,25 @@ import (
 )
 
 // findLatestTag will receive an anime list entry and return all torrents listed from the anime.
-func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (string, error) {
-	var torrents []torrentclient.Torrent
+func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (parser.SeasonEpisodeTag, error) {
+	torrents := make([]torrentclient.Torrent, 0, 100)
+
 	for i := range entry.Titles {
 		// we should consider both metadata and titleEng, because your anime list has different titles available,
 		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
 		metadata := parser.Parse(entry.Titles[i])
+
 		resp, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
 			Tag: utils.Pointer(metadata.TagBuildSeries()),
 		})
+
 		if err != nil {
-			return "", fmt.Errorf("listing torrents: %w", err)
+			return parser.SeasonEpisodeTag{}, fmt.Errorf("listing torrents: %w", err)
 		}
+
 		torrents = append(torrents, resp...)
 	}
+
 	return tagGetLatest(torrents), nil
 }
 
@@ -41,31 +45,34 @@ func (c *Controller) TorrentGetDownloadPath(title string) (path string) {
 
 func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.ParsedNyaa) string {
 	var b strings.Builder
+
 	if parsedNyaa.Meta.Source != "" {
 		b.WriteString("[")
 		b.WriteString(parsedNyaa.Meta.Source)
 		b.WriteString("] ")
 	}
+
 	b.WriteString(entry.Titles[0])
 	b.WriteString(" ")
-	b.WriteString(parsedNyaa.SeasonEpisodeTag)
+	b.WriteString(parsedNyaa.Meta.SeasonEpisodeTag.BuildTag())
+
 	if parsedNyaa.Meta.VerticalResolution > 0 {
 		b.WriteString(" ")
-		b.WriteString(fmt.Sprintf("[%dp]", parsedNyaa.Meta.VerticalResolution))
+		fmt.Fprintf(&b, "[%dp]", parsedNyaa.Meta.VerticalResolution)
 	}
+
 	return b.String()
 }
 
 // AddTorrentEntry receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
-	logger := zerolog.Ctx(ctx)
+	logger := getLogger(ctx)
+
 	savePath := c.TorrentGetDownloadPath(animeListEntry.Titles[0])
 	meta := parsedNyaa.Meta.Clone()
 	meta.Title = parser.StripTitle(meta.Title)
 	tags := meta.TagsBuildTorrent()
-
-	*logger = logger.With().Str("savePath", string(savePath)).Any("meta", meta).Logger()
 
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
@@ -79,7 +86,11 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
-	logger.Info().Msg("torrent added")
+
+	logger.
+		Info().
+		Msg("torrent added")
+
 	return nil
 }
 
@@ -92,16 +103,24 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
 		Tag:      utils.Pointer(""),
 	})
 	if err != nil {
-		return fmt.Errorf("listing: %w", err)
+		return fmt.Errorf("listing torrents: %w", err)
 	}
+
 	for _, torrent := range torrents {
 		meta := parser.Parse(torrent.Name)
 		meta.Title = parser.StripTitleSubtitle(meta.Title)
 		tags := meta.TagsBuildTorrent()
-		log.Info().Any("metadata", meta).Strs("tags", tags).Msgf("updating torrent tags")
+
+		log.
+			Info().
+			Any("metadata", meta).
+			Strs("tags", tags).
+			Msgf("updating torrent tags")
+
 		if err := c.dep.TorrentClient.AddTorrentTags(ctx, []string{torrent.Hash}, tags); err != nil {
 			return fmt.Errorf("updating tags: %w", err)
 		}
 	}
+
 	return nil
 }

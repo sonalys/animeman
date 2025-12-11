@@ -2,7 +2,7 @@ package parser
 
 import (
 	"regexp"
-	"strings"
+	"strconv"
 )
 
 var seasonExpr = []*regexp.Regexp{
@@ -19,15 +19,21 @@ var seasonExpr = []*regexp.Regexp{
 }
 
 // ParseSeason detects season on titles.
-func ParseSeason(title string) string {
+func ParseSeason(title string) int {
 	for _, expr := range seasonExpr {
 		matches := expr.FindAllStringSubmatch(title, -1)
 		if len(matches) == 0 || len(matches[0]) < 2 {
 			continue
 		}
-		return strings.TrimLeft(matches[0][1], "0")
+
+		seasonNumber, err := strconv.ParseInt(matches[0][1], 10, 64)
+		if err != nil {
+			seasonNumber = 1
+		}
+
+		return int(seasonNumber)
 	}
-	return "1"
+	return 1
 }
 
 // seasonIndexMatch is used for removing season from titles.

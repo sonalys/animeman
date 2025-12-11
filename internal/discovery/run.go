@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/integrations/nyaa"
 	"github.com/sonalys/animeman/internal/parser"
@@ -23,7 +22,10 @@ import (
 // After finding updates, it will verify episode collision and dispatch it to your torrent client.
 func (c *Controller) RunDiscovery(ctx context.Context) error {
 	t1 := time.Now()
-	log.Debug().Msgf("discovery started")
+
+	log.
+		Debug().
+		Msgf("discovery started")
 
 	if err := c.TorrentRegenerateTags(ctx); err != nil {
 		return fmt.Errorf("updating qBittorrent entries: %w", err)
@@ -42,32 +44,44 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		}
 	}
 
-	log.Debug().Int("entries", len(entries)).Dur("duration", time.Since(t1)).Msg("discovery finished")
+	log.
+		Debug().
+		Int("entries", len(entries)).
+		Dur("duration", time.Since(t1)).
+		Msg("discovery finished")
 	return nil
 }
 
 // filterNewEpisodes will only return ParsedNyaa entries that are more recent than the given latestTag.
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
-func filterNewEpisodes(list []parser.ParsedNyaa, latestTag string, excludeBatch bool) []parser.ParsedNyaa {
+func filterNewEpisodes(list []parser.ParsedNyaa, latestTag parser.SeasonEpisodeTag) []parser.ParsedNyaa {
 	out := make([]parser.ParsedNyaa, 0, len(list))
+
+	currentTag := latestTag
+
 	for _, nyaaEntry := range list {
-		if excludeBatch && nyaaEntry.Meta.IsMultiEpisode {
+		// Avoid re-downloading episodes we already have, on batches.
+		if !latestTag.IsZero() && nyaaEntry.Meta.SeasonEpisodeTag.IsMultiEpisode() {
 			continue
 		}
+
 		// Make sure we only add episodes ahead of the current ones in the qBittorrent.
 		// <= 0 is used to ensure we don't download the same episode multiple times, or older episodes.
-		if tagCompare(nyaaEntry.SeasonEpisodeTag, latestTag) <= 0 {
+		if tagCompare(nyaaEntry.Meta.SeasonEpisodeTag, currentTag) <= 0 {
 			continue
 		}
+
 		// Some providers count episodes from season 1, some from season 2, example:
 		// s02e19 when it should be s02e08. so we add continuity to download only next episode.
-		if latestTag != "" && !nyaaEntry.Meta.TagIsNextEpisode(latestTag) {
+		if currentTag.IsZero() && !currentTag.Before(nyaaEntry.Meta.SeasonEpisodeTag) {
 			continue
 		}
-		latestTag = nyaaEntry.SeasonEpisodeTag
+
+		currentTag = nyaaEntry.Meta.SeasonEpisodeTag
 		out = append(out, nyaaEntry)
 	}
+
 	return out
 }
 
@@ -110,7 +124,7 @@ func parseAndSortResults(animeListEntry animelist.Entry, entries []nyaa.Entry) [
 		second := parsedEntries[j]
 
 		// Sort first by season/episode tag.
-		cmp := tagCompare(first.SeasonEpisodeTag, second.SeasonEpisodeTag)
+		cmp := tagCompare(first.Meta.SeasonEpisodeTag, second.Meta.SeasonEpisodeTag)
 		if cmp != 0 {
 			return cmp < 0
 		}
@@ -144,21 +158,22 @@ func parseAndSortResults(animeListEntry animelist.Entry, entries []nyaa.Entry) [
 func filterEpisodes(
 	animeListEntry animelist.Entry,
 	entries []nyaa.Entry,
-	latestTag string,
+	latestTag parser.SeasonEpisodeTag,
 	animeStatus animelist.AiringStatus,
 ) []parser.ParsedNyaa {
-	// If we don't have any episodes, and show is released, try to find a batch for all episodes.
-	useBatch := latestTag == "" && animeStatus == animelist.AiringStatusAired
 	parsedEntries := parseAndSortResults(animeListEntry, entries)
-	if useBatch {
-		log.Debug().Msg("anime is already aired, no downloaded entries. activating batch search")
-		return utils.Filter(parsedEntries, filterBatchEntries)
+	newEpisodes := filterNewEpisodes(parsedEntries, latestTag)
+
+	if latestTag.IsZero() && animeStatus == animelist.AiringStatusAired {
+		return utils.Filter(newEpisodes, filterBatchEntries)
 	}
-	return filterNewEpisodes(parsedEntries, latestTag, !useBatch)
+
+	return newEpisodes
 }
 
 func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
-	logger := zerolog.Ctx(ctx)
+	logger := getLogger(ctx)
+
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
 	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.StripTitle(title) })
@@ -170,21 +185,31 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	if err != nil {
 		return nil, fmt.Errorf("getting nyaa list: %w", err)
 	}
-	logger.Debug().Int("count", len(entries)).Msg("found nyaa results for entry")
+
+	logger.
+		Debug().
+		Int("count", len(entries)).
+		Msg("found nyaa results for entry")
+
 	// Filters only entries after the anime started airing.
 	viableResults := utils.Filter(entries,
 		filterPublishedAfterDate(entry.StartDate),
 		filterTitleMatch(entry),
 	)
+
 	if len(viableResults) > 0 {
-		logger.Debug().Int("count", len(viableResults)).Msg("found viable nyaa entries")
+		logger.
+			Debug().
+			Int("count", len(viableResults)).
+			Msg("found viable nyaa entries")
 	}
+
 	return viableResults, nil
 }
 
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.
-func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) (err error) {
-	logger := zerolog.Ctx(ctx)
+func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) error {
+	logger := getLogger(ctx)
 
 	torrentResults, err := c.NyaaSearch(ctx, anime)
 	if err != nil {
@@ -192,30 +217,47 @@ func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) (
 	}
 
 	if len(torrentResults) == 0 {
-		logger.Debug().Any("title", anime.Titles).Msg("no nyaa entries found")
-		return
+
+		logger.
+			Debug().
+			Any("title", anime.Titles).
+			Msg("could not find any torrent candidates")
+
+		return nil
 	}
+
+	logger.
+		Debug().
+		Int("count", len(torrentResults)).
+		Msg("searched nyaa.si for torrent candidates")
 
 	latestTag, err := c.findLatestTag(ctx, anime)
 	if err != nil {
 		return fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
-	*logger = logger.With().Str("latestTag", latestTag).Logger()
 
-	logger.Debug().Msg("looking for torrent candidates")
+	logger.
+		Debug().
+		Str("latestTag", latestTag.BuildTag()).
+		Msg("identified latest tag on qBittorrent")
+
 	episodesTorrents := filterEpisodes(anime, torrentResults, latestTag, anime.AiringStatus)
 
 	if len(episodesTorrents) == 0 {
-		logger.Debug().Msg("no new episodes found")
-		return
+		logger.
+			Debug().
+			Int("searchResults", len(torrentResults)).
+			Str("latestTag", latestTag.BuildTag()).
+			Msg("no new episodes identified")
+
+		return nil
 	}
 
 	for _, episodeTorrent := range episodesTorrents {
 		if err := c.AddTorrentEntry(ctx, anime, episodeTorrent); err != nil {
-			logger.Error().Msgf("failed to digest nyaa entry: %s", err)
-			continue
+			return fmt.Errorf("adding torrent to client: %w", err)
 		}
 	}
 
-	return
+	return nil
 }

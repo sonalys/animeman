@@ -9,16 +9,6 @@ import (
 )
 
 type (
-	Config struct {
-		Sources          []string
-		Qualitites       []string
-		Category         string
-		RenameTorrent    bool
-		DownloadPath     string
-		CreateShowFolder bool
-		PollFrequency    time.Duration
-	}
-
 	Dependencies struct {
 		NYAA            *nyaa.API
 		AnimeListClient AnimeListSource
