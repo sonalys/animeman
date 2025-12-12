@@ -11,19 +11,19 @@ func TestTitleStrip(t *testing.T) {
 		name  string
 		title string
 		want  string
+		opts  []TitleStripOptions
 	}{
-		{name: "ending with number", title: "title 3", want: "title"},
-		{name: "ending with number", title: "title 30", want: "title"},
-		{name: "ending with number", title: "title 300", want: "title"},
+		{name: "no trailing numbers", title: "anime 33", want: "anime"},
+		{name: "title.with.dots", title: "title.with.dots", want: "title with dots"},
+		{name: "dr. stein", title: "dr. stein", want: "dr. stein"},
 		{name: "\"quoted\" title", title: "\"quoted\" title", want: "quoted title"},
-		{name: "title. subtitle", title: "title. subtitle", want: "title"},
-		{name: "title.with.dots", title: "title.with.dots", want: "title.with.dots"},
+		{name: "title. subtitle", title: "title. subtitle", want: "title. subtitle"},
 		{name: "empty", title: "", want: ""},
 		{name: "multiple spaces", title: "My     cool   anime", want: "My cool anime"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := StripTitle(tt.title); got != tt.want {
+			if got := StripTitle(tt.title, tt.opts...); got != tt.want {
 				t.Errorf("TitleStrip(\"%s\") = %v, want %v", tt.title, got, tt.want)
 			}
 		})
@@ -96,7 +96,6 @@ func TestTitleParse(t *testing.T) {
 		{
 			name:  "all dots",
 			title: "Show.name.S02E19.subtitle.here.1080p.WEB-DL.AAC2.0.H.264-VARYG.mkv",
-			opts:  []TitleStripOptions{RemoveDots()},
 			want: Metadata{
 				Title: "Show name",
 				SeasonEpisodeTag: SeasonEpisodeTag{
@@ -109,7 +108,6 @@ func TestTitleParse(t *testing.T) {
 		{
 			name:  "all dots 2",
 			title: "Show.name.S01E20.Anno.Un.1080p.HULU.WEB-DL.AAC2.0.H.264-VARYG.mkv",
-			opts:  []TitleStripOptions{RemoveDots()},
 			want: Metadata{
 				Title: "Show name",
 				SeasonEpisodeTag: SeasonEpisodeTag{
@@ -122,7 +120,6 @@ func TestTitleParse(t *testing.T) {
 		{
 			name:  "lowercase",
 			title: "show s02e02",
-			opts:  []TitleStripOptions{RemoveDots()},
 			want: Metadata{
 				Title: "show",
 				SeasonEpisodeTag: SeasonEpisodeTag{

@@ -12,30 +12,12 @@ var titleCleanupExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(\[.*?\])|(\(.*?\))`),
 }
 
-func StripTitleSubtitle(title string) string {
-	title = strings.Split(title, ": ")[0]
-	title = strings.Split(title, ", ")[0]
-	title = strings.Split(title, "- ")[0]
-	title = strings.Split(title, ". ")[0]
-	return title
-}
-
 type titleCleanOptions struct {
 	removeDots bool
 }
 
 type TitleStripOptions interface {
 	applyTitleStripOptions(*titleCleanOptions)
-}
-
-type optRemoveDots struct{}
-
-func (o optRemoveDots) applyTitleStripOptions(opts *titleCleanOptions) {
-	opts.removeDots = true
-}
-
-func RemoveDots() TitleStripOptions {
-	return optRemoveDots{}
 }
 
 // StripTitle cleans title from sub-titles, tags and season / episode information.
@@ -47,6 +29,8 @@ func StripTitle(title string, opts ...TitleStripOptions) string {
 		opt.applyTitleStripOptions(&options)
 	}
 
+	title = removeDotSpacing(title)
+
 	if index := seasonIndexMatch(title); index != -1 {
 		title = title[:index]
 	}
@@ -55,17 +39,25 @@ func StripTitle(title string, opts ...TitleStripOptions) string {
 		title = title[:index]
 	}
 
-	title = regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
-	title = StripTitleSubtitle(title)
-
-	if options.removeDots {
-		title = strings.ReplaceAll(title, ".", " ")
-	}
-
-	title = strings.ReplaceAll(title, "\"", "")
+	title = removeSpaces(title)
+	title = removeQuotation(title)
 	title = removeTags(title)
+	title = removeTrailingNumbers(title)
+	title = strings.TrimSpace(title)
 
-	return strings.TrimSpace(title)
+	return title
+}
+
+func removeTrailingNumbers(title string) string {
+	return strings.TrimRightFunc(title, func(r rune) bool {
+		return r >= '0' && r <= '9'
+	})
+}
+
+func removeDotSpacing(title string) string {
+	dotReplaceRegexp := regexp.MustCompile(`([^ ])\.([^ ])`)
+	title = dotReplaceRegexp.ReplaceAllString(title, "$1 $2")
+	return title
 }
 
 func removeTags(title string) string {
@@ -74,6 +66,14 @@ func removeTags(title string) string {
 	}
 
 	return title
+}
+
+func removeSpaces(title string) string {
+	return regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
+}
+
+func removeQuotation(title string) string {
+	return strings.ReplaceAll(title, "\"", "")
 }
 
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
