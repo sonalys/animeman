@@ -7,6 +7,6 @@ ARG TARGETPLATFORM
 
 COPY --from=alpine /etc/ssl/certs /etc/ssl/certs
 COPY --from=alpine /usr/share/ca-certificates /usr/share/ca-certificates
-COPY ${TARGETPLATFORM}/animeman /usr/bin
+COPY ${TARGETPLATFORM}/animeman /usr/bin/animeman
 
 ENTRYPOINT ["/usr/bin/animeman"]
