@@ -37,8 +37,6 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	}
 
 	for _, entry := range entries {
-		logger := log.With().Any("titles", entry.Titles).Logger()
-		ctx := logger.WithContext(ctx)
 		if err := c.DiscoverEntry(ctx, entry); errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 			return fmt.Errorf("failed to digest entry: %w", err)
 		}
@@ -196,20 +194,31 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	}
 
 	// Filters only entries after the anime started airing.
-	viableResults := utils.Filter(entries,
+	entries = utils.Filter(entries,
 		filterPublishedAfterDate(entry.StartDate),
-		filterTitleMatch(strippedTitles),
 	)
 
-	if len(viableResults) == 0 {
+	if len(entries) == 0 {
 		logger.
 			Debug().
 			Time("afterDate", entry.StartDate).
-			Strs("strippedTitles", strippedTitles).
-			Msg("no nyaa result matching filter criteria")
+			Msg("no nyaa result matching startDate filter")
 	}
 
-	return viableResults, nil
+	titleFilteredEntries := utils.Filter(entries,
+		filterTitleMatch(strippedTitles),
+	)
+
+	if len(titleFilteredEntries) == 0 {
+		logger.
+			Debug().
+			Strs("titles", strippedTitles).
+			Msg("no nyaa result matching title filter, ignoring filter")
+
+		return entries, nil
+	}
+
+	return titleFilteredEntries, nil
 }
 
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.

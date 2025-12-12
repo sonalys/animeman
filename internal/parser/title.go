@@ -42,6 +42,7 @@ func RemoveDots() TitleStripOptions {
 // Example: [Source] Show: another story - S03E02 [1080p].mkv -> Show.
 func StripTitle(title string, opts ...TitleStripOptions) string {
 	options := titleCleanOptions{}
+
 	for _, opt := range opts {
 		opt.applyTitleStripOptions(&options)
 	}
@@ -49,16 +50,21 @@ func StripTitle(title string, opts ...TitleStripOptions) string {
 	if index := seasonIndexMatch(title); index != -1 {
 		title = title[:index]
 	}
+
 	if index := episodeIndexMatch(title); index != -1 {
 		title = title[:index]
 	}
+
 	title = regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
 	title = StripTitleSubtitle(title)
+
 	if options.removeDots {
 		title = strings.ReplaceAll(title, ".", " ")
 	}
+
 	title = strings.ReplaceAll(title, "\"", "")
 	title = removeTags(title)
+
 	return strings.TrimSpace(title)
 }
 
@@ -66,6 +72,7 @@ func removeTags(title string) string {
 	for _, expr := range titleCleanupExpr {
 		title = expr.ReplaceAllString(title, "")
 	}
+
 	return title
 }
 
