@@ -227,10 +227,10 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 }
 
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.
-func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) error {
+func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) error {
 	logger := getLogger(ctx)
 
-	torrentResults, err := c.NyaaSearch(ctx, anime)
+	torrentResults, err := c.NyaaSearch(ctx, entry)
 	if err != nil {
 		return fmt.Errorf("searching torrent for anime: %w", err)
 	}
@@ -244,7 +244,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) e
 		Int("count", len(torrentResults)).
 		Msg("nyaa.si returned torrent candidates")
 
-	latestTag, err := c.findLatestTag(ctx, anime)
+	latestTag, err := c.findLatestTag(ctx, entry)
 	if err != nil {
 		return fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
@@ -254,7 +254,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) e
 		Str("latestTag", latestTag.BuildTag()).
 		Msg("identified latest tag on qBittorrent")
 
-	episodesTorrents := filterEpisodes(anime, torrentResults, latestTag, anime.AiringStatus)
+	episodesTorrents := filterEpisodes(entry, torrentResults, latestTag, entry.AiringStatus)
 
 	if len(episodesTorrents) == 0 {
 		logger.
@@ -267,7 +267,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) e
 	}
 
 	for _, episodeTorrent := range episodesTorrents {
-		if err := c.AddTorrentEntry(ctx, anime, episodeTorrent); err != nil {
+		if err := c.AddTorrentEntry(ctx, entry, episodeTorrent); err != nil {
 			return fmt.Errorf("adding torrent to client: %w", err)
 		}
 	}

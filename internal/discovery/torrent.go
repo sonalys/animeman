@@ -43,7 +43,7 @@ func (c *Controller) TorrentGetDownloadPath(title string) (path string) {
 	return c.dep.Config.DownloadPath
 }
 
-func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.ParsedNyaa) string {
+func (c *Controller) buildTorrentName(title string, parsedNyaa parser.ParsedNyaa) string {
 	var b strings.Builder
 
 	if parsedNyaa.Meta.Source != "" {
@@ -52,7 +52,7 @@ func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.P
 		b.WriteString("] ")
 	}
 
-	b.WriteString(entry.Titles[0])
+	b.WriteString(title)
 	b.WriteString(" ")
 	b.WriteString(parsedNyaa.Meta.SeasonEpisodeTag.BuildTag())
 
@@ -69,7 +69,8 @@ func (c *Controller) buildTorrentName(entry animelist.Entry, parsedNyaa parser.P
 func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
 	logger := getLogger(ctx)
 
-	savePath := c.TorrentGetDownloadPath(animeListEntry.Titles[0])
+	selectedTitle := animeListEntry.Titles[0]
+
 	meta := parsedNyaa.Meta.Clone()
 	meta.Title = parser.StripTitle(meta.Title)
 	tags := meta.TagsBuildTorrent()
@@ -78,11 +79,13 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 		Tags:     tags,
 		URLs:     []string{parsedNyaa.Entry.Link},
 		Category: c.dep.Config.Category,
-		SavePath: savePath,
+		SavePath: c.TorrentGetDownloadPath(selectedTitle),
 	}
+
 	if c.dep.Config.RenameTorrent {
-		req.Name = utils.Pointer(c.buildTorrentName(animeListEntry, parsedNyaa))
+		req.Name = utils.Pointer(c.buildTorrentName(selectedTitle, parsedNyaa))
 	}
+
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
@@ -90,8 +93,8 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 	logger.
 		Info().
 		Str("title", parsedNyaa.Entry.Title).
-		Str("entry", meta.Title).
-		Str("path", savePath).
+		Str("entry", selectedTitle).
+		Str("path", req.SavePath).
 		Int("detectedQuality", meta.VerticalResolution).
 		Msg("torrent added")
 
