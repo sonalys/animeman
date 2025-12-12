@@ -89,6 +89,10 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 
 	logger.
 		Info().
+		Str("title", parsedNyaa.Entry.Title).
+		Str("entry", meta.Title).
+		Str("path", savePath).
+		Int("detectedQuality", meta.VerticalResolution).
 		Msg("torrent added")
 
 	return nil

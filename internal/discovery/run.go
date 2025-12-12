@@ -39,6 +39,11 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	}
 
 	for _, entry := range entries {
+		log.
+			Debug().
+			Strs("title", entry.Titles).
+			Msgf("processing entry")
+
 		if err := c.DiscoverEntry(ctx, entry); errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 			return fmt.Errorf("failed to digest entry: %w", err)
 		}
@@ -231,19 +236,13 @@ func (c *Controller) DiscoverEntry(ctx context.Context, anime animelist.Entry) e
 	}
 
 	if len(torrentResults) == 0 {
-
-		logger.
-			Debug().
-			Any("title", anime.Titles).
-			Msg("could not find any torrent candidates")
-
 		return nil
 	}
 
 	logger.
 		Debug().
 		Int("count", len(torrentResults)).
-		Msg("searched nyaa.si for torrent candidates")
+		Msg("nyaa.si returned torrent candidates")
 
 	latestTag, err := c.findLatestTag(ctx, anime)
 	if err != nil {
