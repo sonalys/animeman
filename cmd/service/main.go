@@ -23,6 +23,8 @@ func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{
 		Out: os.Stderr,
 	})
+
+	zerolog.DefaultContextLogger = &log.Logger
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 }
 

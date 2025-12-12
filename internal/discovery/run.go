@@ -27,6 +27,8 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		Debug().
 		Msgf("discovery started")
 
+	ctx = log.Logger.WithContext(ctx)
+
 	if err := c.TorrentRegenerateTags(ctx); err != nil {
 		return fmt.Errorf("updating qBittorrent entries: %w", err)
 	}
