@@ -108,6 +108,7 @@ func (c TorrentConfig) Validate() error {
 type LogLevel string
 
 const (
+	LogLevelTrace LogLevel = "trace"
 	LogLevelDebug LogLevel = "debug"
 	LogLevelInfo  LogLevel = "info"
 	LogLevelError LogLevel = "error"
@@ -122,6 +123,8 @@ type Config struct {
 
 func (l LogLevel) Convert() zerolog.Level {
 	switch l {
+	case LogLevelTrace:
+		return zerolog.TraceLevel
 	case LogLevelDebug:
 		return zerolog.DebugLevel
 	case LogLevelError:
