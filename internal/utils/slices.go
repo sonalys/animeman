@@ -1,7 +1,12 @@
 package utils
 
-func Map[T, T1 any](in []T, f func(T) T1) []T1 {
-	out := make([]T1, 0, len(in))
+import (
+	"maps"
+	"slices"
+)
+
+func Map[T1, T2 any](in []T1, f func(T1) T2) []T2 {
+	out := make([]T2, 0, len(in))
 	for i := range in {
 		out = append(out, f(in[i]))
 	}
@@ -20,4 +25,14 @@ outer:
 		out = append(out, in[i])
 	}
 	return out
+}
+
+func Deduplicate[T comparable](from []T) []T {
+	set := make(map[T]struct{}, len(from))
+
+	for i := range from {
+		set[from[i]] = struct{}{}
+	}
+
+	return slices.Collect(maps.Keys(set))
 }

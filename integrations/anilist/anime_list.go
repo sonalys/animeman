@@ -119,43 +119,52 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 	out := make([]animelist.Entry, 0, len(in))
 	for i := range in {
 		titles := in[i].Media.Title
-		out = append(out, animelist.Entry{
-			ListStatus:   convertStatus(in[i].Status),
-			Titles:       []string{titles.English, titles.Romaji, titles.Native},
-			AiringStatus: convertAiringStatus(in[i].Media.AiringStatus),
-			StartDate:    time.Date(in[i].Media.StartDate.Year, time.Month(in[i].Media.StartDate.Month), in[i].Media.StartDate.Day, 0, 0, 0, 0, time.UTC),
-			NumEpisodes:  in[i].Media.Episodes,
-		})
+
+		out = append(out, animelist.NewEntry(
+			[]string{titles.English, titles.Romaji, titles.Native},
+			convertStatus(in[i].Status),
+			convertAiringStatus(in[i].Media.AiringStatus),
+			time.Date(in[i].Media.StartDate.Year, time.Month(in[i].Media.StartDate.Month), in[i].Media.StartDate.Day, 0, 0, 0, 0, time.UTC),
+			in[i].Media.Episodes,
+		))
 	}
 	return out
 }
 
 func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, error) {
 	var path = API_URL + "/animelist/" + api.Username + "/load.json"
-	body := GraphqlQuery{
+
+	reqBody := GraphqlQuery{
 		Query: getCurrentlyWatchingQuery,
 		Variables: map[string]any{
 			"userName": api.Username,
 			"type":     "ANIME",
 		},
 	}
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(utils.Must(json.Marshal(body)))))
+
+	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(utils.Must(json.Marshal(reqBody)))))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
+
 	resp, err := api.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching response: %w", err)
 	}
+
 	defer resp.Body.Close()
+
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))
 	}
-	var entries AnimeListResp
-	if err := json.NewDecoder(resp.Body).Decode(&entries); err != nil {
+
+	var respBody AnimeListResp
+	if err := json.NewDecoder(resp.Body).Decode(&respBody); err != nil {
 		return nil, fmt.Errorf("reading response: %w", err)
 	}
-	var out []AnimeListEntry
-	for _, list := range entries.Data.MediaListCollection.Lists {
+
+	out := make([]AnimeListEntry, 0, len(respBody.Data.MediaListCollection.Lists))
+
+	for _, list := range respBody.Data.MediaListCollection.Lists {
 		watchingEntries := utils.Filter(list.Entries, func(entry AnimeListEntry) bool {
 			return entry.Status == ListStatusWatching
 		})

@@ -169,9 +169,17 @@ func filterEpisodes(
 	parsedEntries := parseAndSortResults(animeListEntry, entries)
 	newEpisodes := filterNewEpisodes(parsedEntries, latestTag)
 
-	if latestTag.IsZero() && animeStatus == animelist.AiringStatusAired {
-		return utils.Filter(newEpisodes, filterBatchEntries)
+	batchOnly := latestTag.IsZero() && animeStatus == animelist.AiringStatusAired
+
+	if batchOnly {
+		newEpisodes = utils.Filter(newEpisodes, filterBatchEntries)
 	}
+
+	log.
+		Trace().
+		Int("newEpisodes", len(newEpisodes)).
+		Bool("batchOnly", batchOnly).
+		Msg("filtered viable torrent candidates for new episodes")
 
 	return newEpisodes
 }
@@ -181,8 +189,9 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.StripTitle(title) })
-	titleQuery := nyaa.QueryOr(strippedTitles)
+	strippedTitles := utils.Map(entry.Titles, func(title string) string { return strings.ToLower(parser.StripTitle(title)) })
+	titleQuery := nyaa.QueryOr(utils.Deduplicate(strippedTitles))
+
 	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
 	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)
 
@@ -194,26 +203,14 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	logger.
 		Debug().
 		Int("count", len(entries)).
-		Msg("found nyaa results for entry")
+		Msg("searched nyaa for torrent candidates")
 
 	if len(entries) == 0 {
 		return nil, nil
 	}
 
-	// Filters only entries after the anime started airing.
 	entries = utils.Filter(entries,
-		filterPublishedAfterDate(entry.StartDate),
-	)
-
-	if len(entries) == 0 {
-		logger.
-			Debug().
-			Time("afterDate", entry.StartDate).
-			Msg("no nyaa result matching startDate filter")
-	}
-
-	entries = utils.Filter(entries,
-		filterTitleMatch(entry),
+		filterMetadata(entry),
 	)
 
 	if len(entries) == 0 {
@@ -239,20 +236,17 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 		return nil
 	}
 
-	logger.
-		Debug().
-		Int("count", len(torrentResults)).
-		Msg("nyaa.si returned torrent candidates")
-
 	latestTag, err := c.findLatestTag(ctx, entry)
 	if err != nil {
 		return fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 
-	logger.
-		Debug().
-		Str("latestTag", latestTag.BuildTag()).
-		Msg("identified latest tag on qBittorrent")
+	if !latestTag.IsZero() {
+		logger.
+			Debug().
+			Str("latestTag", latestTag.BuildTag()).
+			Msg("identified latest tag on qBittorrent")
+	}
 
 	episodesTorrents := filterEpisodes(entry, torrentResults, latestTag, entry.AiringStatus)
 

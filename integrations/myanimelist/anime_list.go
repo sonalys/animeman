@@ -45,13 +45,13 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 	out := make([]animelist.Entry, 0, len(in))
 	timeFormat := findCorrectTimeFormat(in)
 	for i := range in {
-		out = append(out, animelist.Entry{
-			ListStatus:   animelist.ListStatus(in[i].Status),
-			Titles:       convertTitles(fmt.Sprint(in[i].Title), in[i].TitleEng),
-			AiringStatus: animelist.AiringStatus(in[i].AiringStatus),
-			StartDate:    utils.Must(time.Parse(timeFormat, in[i].AnimeStartDateString)),
-			NumEpisodes:  in[i].NumEpisodes,
-		})
+		out = append(out, animelist.NewEntry(
+			convertTitles(fmt.Sprint(in[i].Title), in[i].TitleEng),
+			animelist.ListStatus(in[i].Status),
+			animelist.AiringStatus(in[i].AiringStatus),
+			utils.Must(time.Parse(timeFormat, in[i].AnimeStartDateString)),
+			in[i].NumEpisodes,
+		))
 	}
 	return out
 }
