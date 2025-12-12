@@ -12,6 +12,9 @@ func TestTitleStrip(t *testing.T) {
 		title string
 		want  string
 	}{
+		{name: "ending with number", title: "title 3", want: "title"},
+		{name: "ending with number", title: "title 30", want: "title"},
+		{name: "ending with number", title: "title 300", want: "title"},
 		{name: "\"quoted\" title", title: "\"quoted\" title", want: "quoted title"},
 		{name: "title. subtitle", title: "title. subtitle", want: "title"},
 		{name: "title.with.dots", title: "title.with.dots", want: "title.with.dots"},
@@ -21,7 +24,7 @@ func TestTitleStrip(t *testing.T) {
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := StripTitle(tt.title); got != tt.want {
-				t.Errorf("TitleStrip() = %v, want %v", got, tt.want)
+				t.Errorf("TitleStrip(\"%s\") = %v, want %v", tt.title, got, tt.want)
 			}
 		})
 	}

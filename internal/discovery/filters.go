@@ -16,8 +16,7 @@ func filterBatchEntries(e parser.ParsedNyaa) bool { return e.Meta.SeasonEpisodeT
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.
 func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
-	originalTitles := utils.Map(entry.Titles, func(title string) string { return strings.ToLower(title) })
-	strippedTitles := utils.Map(originalTitles, func(title string) string { return parser.StripTitle(title) })
+	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.StripTitle(title) })
 
 	return func(nyaaEntry nyaa.Entry) bool {
 		publishedDate := utils.Must(time.Parse(time.RFC1123Z, nyaaEntry.PubDate))
@@ -35,7 +34,7 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
 		meta := parser.Parse(nyaaEntry.Title)
 
 		// Check if nyaa entry episode is greater than the animelist episode count.
-		if meta.SeasonEpisodeTag.LastEpisode() > float64(entry.NumEpisodes) {
+		if entry.NumEpisodes > 0 && meta.SeasonEpisodeTag.LastEpisode() > float64(entry.NumEpisodes) {
 			log.
 				Trace().
 				Float64("lastEpisode", meta.SeasonEpisodeTag.LastEpisode()).
