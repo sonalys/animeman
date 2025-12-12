@@ -191,17 +191,22 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 		Int("count", len(entries)).
 		Msg("found nyaa results for entry")
 
+	if len(entries) == 0 {
+		return nil, nil
+	}
+
 	// Filters only entries after the anime started airing.
 	viableResults := utils.Filter(entries,
 		filterPublishedAfterDate(entry.StartDate),
-		filterTitleMatch(entry),
+		filterTitleMatch(strippedTitles),
 	)
 
-	if len(viableResults) > 0 {
+	if len(viableResults) == 0 {
 		logger.
 			Debug().
-			Int("count", len(viableResults)).
-			Msg("found viable nyaa entries")
+			Time("afterDate", entry.StartDate).
+			Strs("strippedTitles", strippedTitles).
+			Msg("no nyaa result matching filter criteria")
 	}
 
 	return viableResults, nil

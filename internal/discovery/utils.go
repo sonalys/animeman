@@ -7,7 +7,6 @@ import (
 	"github.com/sonalys/animeman/integrations/nyaa"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/utils"
-	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
 
 func filterBatchEntries(e parser.ParsedNyaa) bool { return e.Meta.SeasonEpisodeTag.IsMultiEpisode() }
@@ -20,16 +19,13 @@ func filterPublishedAfterDate(t time.Time) func(e nyaa.Entry) bool {
 	}
 }
 
-// Guarantees that the main title matches for the anime list entry and the nyaa entry.
-func filterTitleMatch(alEntry animelist.Entry) func(e nyaa.Entry) bool {
-	parsedTitles := utils.Map(alEntry.Titles, func(title string) string {
-		return parser.Parse(title).Title
-	})
-	return func(e nyaa.Entry) bool {
-		meta := parser.Parse(e.Title)
+// filterTitleMatch guarantees that the main title matches for the anime list entry and the nyaa entry.
+func filterTitleMatch(strippedTitles []string) func(e nyaa.Entry) bool {
+	return func(nyaaEntry nyaa.Entry) bool {
+		gotStrippedTitle := parser.StripTitle(nyaaEntry.Title)
 
-		for _, parsedTitle := range parsedTitles {
-			if strings.EqualFold(meta.Title, parsedTitle) {
+		for _, title := range strippedTitles {
+			if strings.EqualFold(gotStrippedTitle, title) {
 				return true
 			}
 		}
