@@ -205,20 +205,18 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 			Msg("no nyaa result matching startDate filter")
 	}
 
-	titleFilteredEntries := utils.Filter(entries,
-		filterTitleMatch(strippedTitles),
+	entries = utils.Filter(entries,
+		filterTitleMatch(entry),
 	)
 
-	if len(titleFilteredEntries) == 0 {
+	if len(entries) == 0 {
 		logger.
 			Debug().
 			Strs("titles", strippedTitles).
-			Msg("no nyaa result matching title filter, ignoring filter")
-
-		return entries, nil
+			Msg("no nyaa result matching title filter")
 	}
 
-	return titleFilteredEntries, nil
+	return entries, nil
 }
 
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.

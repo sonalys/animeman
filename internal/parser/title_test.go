@@ -116,6 +116,19 @@ func TestTitleParse(t *testing.T) {
 				VerticalResolution: 1080,
 			},
 		},
+		{
+			name:  "lowercase",
+			title: "show s02e02",
+			opts:  []TitleStripOptions{RemoveDots()},
+			want: Metadata{
+				Title: "show",
+				SeasonEpisodeTag: SeasonEpisodeTag{
+					Season:  []int{2},
+					Episode: []float64{2},
+				},
+				VerticalResolution: -1,
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
