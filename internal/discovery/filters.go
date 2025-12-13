@@ -1,6 +1,7 @@
 package discovery
 
 import (
+	"regexp"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -57,7 +58,7 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
 
 		// Try to match stripped title afterwards.
 		for _, strippedTitle := range strippedTitles {
-			if utils.HasPrefixFold(meta.Title, strippedTitle) {
+			if matchTitle(meta.Title, strippedTitle) {
 				log.
 					Trace().
 					Str("nyaaTitle", meta.Title).
@@ -76,4 +77,13 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
 
 		return false
 	}
+}
+
+func matchTitle(gotTitle, originalTitle string) bool {
+	re := regexp.MustCompile(`[*\-:;.\\/ ]`)
+
+	gotTitle = re.ReplaceAllString(gotTitle, "")
+	originalTitle = re.ReplaceAllString(originalTitle, "")
+
+	return utils.HasPrefixFold(gotTitle, originalTitle)
 }
