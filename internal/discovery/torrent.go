@@ -64,15 +64,34 @@ func (c *Controller) buildTorrentName(title string, parsedNyaa parser.ParsedNyaa
 	return b.String()
 }
 
+// selectIdealTitle avoids kanji titles for example, preferring english ones.
+func selectIdealTitle(titles []string) string {
+	if len(titles) == 0 {
+		return ""
+	}
+
+	for _, title := range titles {
+		if strings.ContainsFunc(strings.ToLower(title), func(r rune) bool {
+			return r >= 'a' && r <= 'z'
+		}) {
+			return title
+		}
+	}
+
+	return titles[0]
+}
+
 // AddTorrentEntry receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
 	logger := getLogger(ctx)
 
-	selectedTitle := animeListEntry.Titles[0]
+	selectedTitle := selectIdealTitle(animeListEntry.Titles)
 
 	meta := parsedNyaa.Meta.Clone()
-	meta.Title = parser.StripTitle(meta.Title)
+	// Use nyaa metadata, but with anime list title.
+	// This behavior avoids different sources creating different tags and downloading the same episode twice.
+	meta.Title = selectedTitle
 	tags := meta.TagsBuildTorrent()
 
 	req := &torrentclient.AddTorrentConfig{
