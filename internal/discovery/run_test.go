@@ -106,8 +106,8 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 	})
 	t.Run("sort by tag", func(t *testing.T) {
 		input := []nyaa.Entry{
-			{Title: "Show3: S03E03"},
 			{Title: "Show3: S03E02"},
+			{Title: "Show3: S03E03"},
 			{Title: "Show3: S03E01"},
 			{Title: "Show3: S03"},
 		}

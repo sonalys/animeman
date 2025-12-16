@@ -133,15 +133,18 @@ func parseAndSortResults(animeListEntry animelist.Entry, entries []nyaa.Entry) [
 		if cmp != 0 {
 			return cmp < 0
 		}
+
 		// Then resolution.
 		cmp = second.Meta.VerticalResolution - first.Meta.VerticalResolution
 		if cmp != 0 {
 			return cmp < 0
 		}
+
 		// Then title similarity.
 		titleSimilarityI := utils.Max(utils.Map(animeListEntry.Titles, func(curTitle string) float64 {
 			return calculateTitleSimilarityScore(curTitle, first.Meta.Title)
 		})...)
+
 		titleSimilarityJ := utils.Max(utils.Map(animeListEntry.Titles, func(curTitle string) float64 {
 			return calculateTitleSimilarityScore(curTitle, second.Meta.Title)
 		})...)
@@ -239,13 +242,6 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 	latestTag, err := c.findLatestTag(ctx, entry)
 	if err != nil {
 		return fmt.Errorf("finding latest anime season episode tag: %w", err)
-	}
-
-	if !latestTag.IsZero() {
-		logger.
-			Debug().
-			Str("latestTag", latestTag.BuildTag()).
-			Msg("identified latest tag on qBittorrent")
 	}
 
 	episodesTorrents := filterEpisodes(entry, torrentResults, latestTag, entry.AiringStatus)

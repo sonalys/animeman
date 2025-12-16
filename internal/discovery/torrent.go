@@ -14,16 +14,23 @@ import (
 
 // findLatestTag will receive an anime list entry and return all torrents listed from the anime.
 func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (parser.SeasonEpisodeTag, error) {
+	logger := getLogger(ctx)
 	torrents := make([]torrentclient.Torrent, 0, 100)
 
-	for i := range entry.Titles {
-		// we should consider both metadata and titleEng, because your anime list has different titles available,
-		// some torrent sources will use one, some will use the other, so to avoid duplication we check for both.
-		metadata := parser.Parse(entry.Titles[i])
+	for _, title := range entry.Titles {
+		req := &torrentclient.ListTorrentConfig{
+			Tag: utils.Pointer(parser.BuildTitleTag(title)),
+		}
+		resp, err := c.dep.TorrentClient.List(ctx, req)
 
-		resp, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
-			Tag: utils.Pointer(metadata.TagBuildSeries()),
-		})
+		if len(resp) == 0 {
+			continue
+		}
+
+		logger.
+			Trace().
+			Str("tag", *req.Tag).
+			Msg("identified entry tag on torrent client")
 
 		if err != nil {
 			return parser.SeasonEpisodeTag{}, fmt.Errorf("listing torrents: %w", err)
@@ -32,7 +39,15 @@ func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (
 		torrents = append(torrents, resp...)
 	}
 
-	return tagGetLatest(torrents), nil
+	latestTag := tagGetLatest(torrents)
+	if !latestTag.IsZero() {
+		logger.
+			Debug().
+			Str("latestTag", latestTag.BuildTag()).
+			Msg("identified latest tag on torrent client")
+	}
+
+	return latestTag, nil
 }
 
 // TorrentGetDownloadPath returns a torrent path, creating a show folder if configured.

@@ -120,11 +120,16 @@ func (t Metadata) buildTitle() string {
 
 // TagBuildSeries builds a !Serie Name tag for you to be able to search all it's episodes with a tag.
 func (t Metadata) TagBuildSeries() string {
-	return "!" + t.buildTitle()
+	return BuildTitleTag(t.Title)
 }
 
 // TagsBuildTorrent builds all tags Animeman needs from your torrent client.
 func (t Metadata) TagsBuildTorrent() []string {
 	tags := []string{t.TagBuildSeries(), t.TagBuildTitleSeasonEpisode()}
 	return tags
+}
+
+// BuildTitleTag builds the torrent series tag. Example: !serie name.
+func BuildTitleTag(title string) string {
+	return "!" + strings.ToLower(filterAlphanumeric(title))
 }

@@ -44,26 +44,16 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
 			return false
 		}
 
-		for _, originalTitle := range entry.Titles {
+		titles := append(entry.Titles, strippedTitles...)
+		titles = utils.Deduplicate(titles)
+
+		for _, originalTitle := range titles {
 			if utils.HasPrefixFold(meta.Title, originalTitle) {
 				log.
 					Trace().
 					Str("nyaaTitle", meta.Title).
 					Str("matchingTitlePrefix", originalTitle).
 					Msg("torrent candidate matched original title prefix")
-
-				return true
-			}
-		}
-
-		// Try to match stripped title afterwards.
-		for _, strippedTitle := range strippedTitles {
-			if matchTitle(meta.Title, strippedTitle) {
-				log.
-					Trace().
-					Str("nyaaTitle", meta.Title).
-					Str("matchingTitlePrefix", strippedTitle).
-					Msg("torrent candidate matched stripped title prefix")
 
 				return true
 			}
