@@ -115,7 +115,7 @@ func Test_getLatestTag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := tagGetLatest(tt.args.torrents); tagCompare(got, tt.want) != 0 {
+			if got := getLatestTag(tt.args.torrents); tagCompare(got, tt.want) != 0 {
 				t.Errorf("getLatestTag() = %v, want %v", got, tt.want)
 			}
 		})

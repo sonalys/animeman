@@ -39,7 +39,7 @@ func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (
 		torrents = append(torrents, resp...)
 	}
 
-	latestTag := tagGetLatest(torrents)
+	latestTag := getLatestTag(torrents)
 	if !latestTag.IsZero() {
 		logger.
 			Debug().
@@ -107,7 +107,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 	// Use nyaa metadata, but with anime list title.
 	// This behavior avoids different sources creating different tags and downloading the same episode twice.
 	meta.Title = selectedTitle
-	tags := meta.TagsBuildTorrent()
+	tags := meta.BuildTorrentTags()
 
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
@@ -149,7 +149,7 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
 
 	for _, torrent := range torrents {
 		meta := parser.Parse(torrent.Name)
-		tags := meta.TagsBuildTorrent()
+		tags := meta.BuildTorrentTags()
 
 		log.
 			Info().

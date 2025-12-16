@@ -68,8 +68,8 @@ func tagCompare(a, b parser.SeasonEpisodeTag) int {
 	return 0
 }
 
-// tagGetLatest is a pure function implementation for fetching the latest tag from a list of torrent entries.
-func tagGetLatest(torrents []torrentclient.Torrent) parser.SeasonEpisodeTag {
+// getLatestTag is a pure function implementation for fetching the latest tag from a list of torrent entries.
+func getLatestTag(torrents []torrentclient.Torrent) parser.SeasonEpisodeTag {
 	if len(torrents) == 0 {
 		return parser.SeasonEpisodeTag{}
 	}
