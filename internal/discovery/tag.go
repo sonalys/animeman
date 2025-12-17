@@ -10,9 +10,6 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
 
-// Regexp for detecting numbers.
-var numberExpr = regexp.MustCompile(`\d+(\.\d+)?`)
-
 // Regexp for detecting batch tag numbers.
 // Example: S02E01~13.
 var batchReplaceExpr = regexp.MustCompile(`(\d+)~(\d+)`)
