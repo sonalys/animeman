@@ -39,6 +39,14 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	}
 
 	for _, entry := range entries {
+		if !entry.StartDate.IsZero() && entry.StartDate.After(time.Now()) {
+			log.
+				Debug().
+				Strs("title", entry.Titles).
+				Msgf("skipping entry as it hasn't aired yet")
+			continue
+		}
+
 		log.
 			Debug().
 			Strs("title", entry.Titles).
