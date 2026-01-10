@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"strings"
+	"unicode"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
@@ -92,15 +93,23 @@ func selectIdealTitle(titles []string) string {
 		return ""
 	}
 
-	for _, title := range titles {
-		if strings.ContainsFunc(strings.ToLower(title), func(r rune) bool {
-			return r >= 'a' && r <= 'z'
-		}) {
-			return title
+	for _, t := range titles {
+		if isASCII(t) {
+			return t
 		}
 	}
 
+	// Fallback to first element if no ASCII title is found
 	return titles[0]
+}
+
+func isASCII(s string) bool {
+	for _, c := range s {
+		if c > unicode.MaxASCII {
+			return false
+		}
+	}
+	return true
 }
 
 // AddTorrentEntry receives an anime list entry and a downloadable torrent.
