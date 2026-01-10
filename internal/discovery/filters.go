@@ -21,7 +21,8 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
 	return func(nyaaEntry nyaa.Entry) bool {
 		publishedDate := utils.Must(time.Parse(time.RFC1123Z, nyaaEntry.PubDate))
 
-		if publishedDate.Before(entry.StartDate) {
+		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
+		if publishedDate.Before(entry.StartDate.AddDate(0, 0, -2)) {
 			log.
 				Trace().
 				Time("publishedDate", publishedDate).
@@ -54,6 +55,18 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
 					Str("nyaaTitle", meta.Title).
 					Str("matchingTitlePrefix", originalTitle).
 					Msg("torrent candidate matched original title prefix")
+
+				return true
+			}
+
+			strippedTitle := parser.StripTitle(originalTitle)
+
+			if utils.HasPrefixFold(meta.Title, strippedTitle) {
+				log.
+					Trace().
+					Str("nyaaTitle", meta.Title).
+					Str("strippedTitle", strippedTitle).
+					Msg("torrent candidate matched stripped original title prefix")
 
 				return true
 			}
