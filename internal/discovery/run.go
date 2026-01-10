@@ -68,31 +68,25 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 // filterNewEpisodes will only return ParsedNyaa entries that are more recent than the given latestTag.
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
-func filterNewEpisodes(list []parser.ParsedNyaa, latestTag parser.SeasonEpisodeTag) []parser.ParsedNyaa {
-	out := make([]parser.ParsedNyaa, 0, len(list))
+func filterNewEpisodes(results []parser.ParsedNyaa, latestTag parser.SeasonEpisodeTag) []parser.ParsedNyaa {
+	out := make([]parser.ParsedNyaa, 0, len(results))
 
 	currentTag := latestTag
 
-	for _, nyaaEntry := range list {
+	for _, nyaaEntry := range results {
+		switch {
 		// Avoid re-downloading episodes we already have, on batches.
-		if !latestTag.IsZero() && nyaaEntry.Meta.SeasonEpisodeTag.IsMultiEpisode() {
-			continue
-		}
-
+		case !latestTag.IsZero() && nyaaEntry.Meta.SeasonEpisodeTag.IsMultiEpisode():
 		// Make sure we only add episodes ahead of the current ones in the qBittorrent.
 		// <= 0 is used to ensure we don't download the same episode multiple times, or older episodes.
-		if tagCompare(nyaaEntry.Meta.SeasonEpisodeTag, currentTag) <= 0 {
-			continue
-		}
-
+		case tagCompare(nyaaEntry.Meta.SeasonEpisodeTag, currentTag) <= 0:
 		// Some providers count episodes from season 1, some from season 2, example:
 		// s02e19 when it should be s02e08. so we add continuity to download only next episode.
-		if currentTag.IsZero() && !currentTag.Before(nyaaEntry.Meta.SeasonEpisodeTag) {
-			continue
+		case currentTag.IsZero() && !currentTag.Before(nyaaEntry.Meta.SeasonEpisodeTag):
+		default:
+			currentTag = nyaaEntry.Meta.SeasonEpisodeTag
+			out = append(out, nyaaEntry)
 		}
-
-		currentTag = nyaaEntry.Meta.SeasonEpisodeTag
-		out = append(out, nyaaEntry)
 	}
 
 	return out

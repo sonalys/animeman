@@ -20,6 +20,10 @@ type SeasonEpisodeTag struct {
 }
 
 func (t SeasonEpisodeTag) FirstSeason() int {
+	if t.IsZero() {
+		return 0
+	}
+
 	if len(t.Season) == 0 {
 		return 1
 	}
@@ -36,6 +40,10 @@ func (t SeasonEpisodeTag) FirstSeason() int {
 }
 
 func (t SeasonEpisodeTag) LastSeason() int {
+	if t.IsZero() {
+		return 0
+	}
+
 	if len(t.Season) == 0 {
 		return 1
 	}
@@ -52,6 +60,10 @@ func (t SeasonEpisodeTag) LastSeason() int {
 }
 
 func (t SeasonEpisodeTag) FirstEpisode() float64 {
+	if t.IsZero() {
+		return 0
+	}
+
 	if len(t.Episode) == 0 {
 		return 1
 	}
@@ -68,6 +80,10 @@ func (t SeasonEpisodeTag) FirstEpisode() float64 {
 }
 
 func (t SeasonEpisodeTag) LastEpisode() float64 {
+	if t.IsZero() {
+		return 0
+	}
+
 	if len(t.Episode) == 0 {
 		return 1
 	}

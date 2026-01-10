@@ -168,4 +168,12 @@ func Test_tagCompare(t *testing.T) {
 		}
 		require.Zero(t, tagCompare(tag, tag))
 	})
+
+	t.Run("first episode and zero tag", func(t *testing.T) {
+		tag := parser.SeasonEpisodeTag{
+			Season:  []int{1},
+			Episode: []float64{1},
+		}
+		require.Greater(t, tagCompare(tag, parser.SeasonEpisodeTag{}), 0)
+	})
 }
