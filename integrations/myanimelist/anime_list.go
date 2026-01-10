@@ -4,6 +4,7 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"io"
 	"net/http"
 	"net/url"
 	"time"
@@ -58,14 +59,30 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 
 func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, error) {
 	var path = API_URL + "/animelist/" + api.Username + "/load.json"
+
 	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
 	v := url.Values{
 		"offset": []string{"0"},
 		"status": []string{"1"},
 	}
 	req.URL.RawQuery = v.Encode()
+
+	t1 := time.Now()
+
 	resp, err := api.client.Do(req)
 	if err != nil {
+		return nil, fmt.Errorf("fetching response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	log.
+		Trace().
+		Str("url", req.URL.String()).
+		Int("status_code", resp.StatusCode).
+		Dur("duration", time.Since(t1)).
+		Msg("rss search finished")
+
+	if resp.StatusCode >= 300 {
 		if len(api.cachedAnimeList) > 0 {
 			log.
 				Warn().
@@ -73,13 +90,15 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 				Msg("myanimelist.net api errored, using cached response")
 			return api.cachedAnimeList, nil
 		}
-		return nil, fmt.Errorf("fetching response: %w", err)
+
+		return nil, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))
 	}
-	defer resp.Body.Close()
+
 	var entries []AnimeListEntry
 	if err := json.NewDecoder(resp.Body).Decode(&entries); err != nil {
 		return nil, fmt.Errorf("reading response: %w", err)
 	}
+
 	api.cachedAnimeList = convertEntry(entries)
 	return api.cachedAnimeList, nil
 }
