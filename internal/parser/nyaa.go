@@ -8,13 +8,13 @@ type ParsedNyaa struct {
 	// Metadata parsed from title.
 	Meta Metadata
 	// Nyaa entry.
-	Entry nyaa.Entry
+	Result nyaa.Entry
 }
 
 func NewParsedNyaa(entry nyaa.Entry) ParsedNyaa {
 	meta := Parse(entry.Title)
 	return ParsedNyaa{
-		Meta:  meta,
-		Entry: entry,
+		Meta:   meta,
+		Result: entry,
 	}
 }

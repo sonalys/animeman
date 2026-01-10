@@ -6,6 +6,7 @@ import (
 	"strconv"
 
 	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
@@ -37,7 +38,7 @@ func tagMergeBatchEpisodes(tag string) string {
 // -1 = Tag1 < Tag2.
 // 0 = Tag1 == Tag2.
 // 1 = Tag1 > Tag2.
-func tagCompare(a, b parser.SeasonEpisodeTag) int {
+func tagCompare(a, b tags.Tag) int {
 	if a.LastSeason() < b.LastSeason() {
 		return -1
 	}
@@ -66,18 +67,18 @@ func tagCompare(a, b parser.SeasonEpisodeTag) int {
 }
 
 // getLatestTag is a pure function implementation for fetching the latest tag from a list of torrent entries.
-func getLatestTag(torrents []torrentclient.Torrent) parser.SeasonEpisodeTag {
+func getLatestTag(torrents []torrentclient.Torrent) tags.Tag {
 	if len(torrents) == 0 {
-		return parser.SeasonEpisodeTag{}
+		return tags.Tag{}
 	}
 
-	var latestTag parser.SeasonEpisodeTag
+	var latestTag tags.Tag
 
 	for _, torrent := range torrents {
 		tags := torrent.Tags
 		seasonEpisodeTag := tags[len(tags)-1]
 		meta := parser.Parse(seasonEpisodeTag)
-		tag := meta.SeasonEpisodeTag
+		tag := meta.Tag
 
 		if latestTag.IsZero() || tagCompare(tag, latestTag) > 0 {
 			latestTag = tag

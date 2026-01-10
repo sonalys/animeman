@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"regexp"
 	"strings"
+
+	"github.com/sonalys/animeman/internal/tags"
 )
 
 // Regex for removing all annotations from a title, Examples: (Recoded), [1080p], .mkv.
@@ -86,25 +88,25 @@ func Parse(title string, opts ...TitleStripOptions) Metadata {
 	resp := Metadata{
 		Title:              StripTitle(title, opts...),
 		VerticalResolution: parseVerticalResolution(title),
-		SeasonEpisodeTag:   SeasonEpisodeTag{},
+		Tag:                tags.Tag{},
 	}
 	if tags := tagsExpr.FindAllStringSubmatch(title, -1); len(tags) > 0 {
 		resp.Source = tags[0][1]
-		resp.Tags = make([]string, 0, len(tags[1:]))
+		resp.Labels = make([]string, 0, len(tags[1:]))
 		for _, matches := range tags[1:] {
-			resp.Tags = append(resp.Tags, matches[1])
+			resp.Labels = append(resp.Labels, matches[1])
 		}
 	}
 	title = removeTags(title)
 
-	resp.SeasonEpisodeTag.Episode = ParseEpisode(title)
-	resp.SeasonEpisodeTag.Season = []int{ParseSeason(title)}
+	resp.Tag.Episodes = ParseEpisode(title)
+	resp.Tag.Seasons = []int{ParseSeason(title)}
 	return resp
 }
 
 // TagBuildTitleSeasonEpisode builds a tag for filtering in your torrent client. Example: Show S03E02.
 func (t Metadata) TagBuildTitleSeasonEpisode() string {
-	return fmt.Sprintf("%s %s", t.buildTitle(), t.SeasonEpisodeTag.BuildTag())
+	return fmt.Sprintf("%s %s", t.buildTitle(), t.Tag.String())
 }
 
 func filterAlphanumeric(s string) string {
@@ -130,7 +132,7 @@ func (t Metadata) BuildSeriesTag() string {
 
 // BuildTorrentTags builds all tags Animeman needs from your torrent client.
 func (t Metadata) BuildTorrentTags() []string {
-	tags := []string{t.BuildSeriesTag(), t.SeasonEpisodeTag.BuildTag()}
+	tags := []string{t.BuildSeriesTag(), t.Tag.String()}
 	return tags
 }
 

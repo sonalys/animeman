@@ -5,6 +5,7 @@ import (
 	"errors"
 	"fmt"
 	"regexp"
+	"slices"
 	"sort"
 	"strings"
 	"time"
@@ -12,6 +13,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/integrations/nyaa"
 	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
@@ -68,7 +70,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 // filterNewEpisodes will only return ParsedNyaa entries that are more recent than the given latestTag.
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
-func filterNewEpisodes(results []parser.ParsedNyaa, latestTag parser.SeasonEpisodeTag) []parser.ParsedNyaa {
+func filterNewEpisodes(results []parser.ParsedNyaa, latestTag tags.Tag) []parser.ParsedNyaa {
 	out := make([]parser.ParsedNyaa, 0, len(results))
 
 	currentTag := latestTag
@@ -76,15 +78,15 @@ func filterNewEpisodes(results []parser.ParsedNyaa, latestTag parser.SeasonEpiso
 	for _, nyaaEntry := range results {
 		switch {
 		// Avoid re-downloading episodes we already have, on batches.
-		case !latestTag.IsZero() && nyaaEntry.Meta.SeasonEpisodeTag.IsMultiEpisode():
+		case !latestTag.IsZero() && nyaaEntry.Meta.Tag.IsMultiEpisode():
 		// Make sure we only add episodes ahead of the current ones in the qBittorrent.
 		// <= 0 is used to ensure we don't download the same episode multiple times, or older episodes.
-		case tagCompare(nyaaEntry.Meta.SeasonEpisodeTag, currentTag) <= 0:
+		case tagCompare(nyaaEntry.Meta.Tag, currentTag) <= 0:
 		// Some providers count episodes from season 1, some from season 2, example:
 		// s02e19 when it should be s02e08. so we add continuity to download only next episode.
-		case currentTag.IsZero() && !currentTag.Before(nyaaEntry.Meta.SeasonEpisodeTag):
+		case currentTag.IsZero() && !currentTag.Before(nyaaEntry.Meta.Tag):
 		default:
-			currentTag = nyaaEntry.Meta.SeasonEpisodeTag
+			currentTag = nyaaEntry.Meta.Tag
 			out = append(out, nyaaEntry)
 		}
 	}
@@ -119,21 +121,36 @@ outer:
 	return float64(match) / float64(wordCount)
 }
 
-// parseAndSortResults will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
+func parseResults(results []nyaa.Entry) []parser.ParsedNyaa {
+	return utils.Map(results, func(entry nyaa.Entry) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
+}
+
+// sortResults will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
 // it will also sort the response by season and episode.
 // it's important it returns a crescent season/episode list, so you don't download a recent episode and
 // don't download the oldest ones in case you don't have all episodes since your latestTag.
-func parseAndSortResults(animeListEntry animelist.Entry, entries []nyaa.Entry) []parser.ParsedNyaa {
-	parsedEntries := utils.Map(entries, func(entry nyaa.Entry) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
-
+func sortResults(entry animelist.Entry, results []parser.ParsedNyaa) []parser.ParsedNyaa {
 	smallerFunc := func(i, j int) bool {
-		first := parsedEntries[i]
-		second := parsedEntries[j]
+		first := results[i]
+		second := results[j]
 
 		// Sort first by season/episode tag.
-		cmp := tagCompare(first.Meta.SeasonEpisodeTag, second.Meta.SeasonEpisodeTag)
+		cmp := tagCompare(first.Meta.Tag, second.Meta.Tag)
 		if cmp != 0 {
 			return cmp < 0
+		}
+
+		// Then title similarity.
+		titleSimilarityI := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
+			return calculateTitleSimilarityScore(curTitle, first.Meta.Title)
+		})...)
+
+		titleSimilarityJ := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
+			return calculateTitleSimilarityScore(curTitle, second.Meta.Title)
+		})...)
+
+		if titleSimilarityI != titleSimilarityJ {
+			return titleSimilarityI > titleSimilarityJ
 		}
 
 		// Then resolution.
@@ -142,42 +159,33 @@ func parseAndSortResults(animeListEntry animelist.Entry, entries []nyaa.Entry) [
 			return cmp < 0
 		}
 
-		// Then title similarity.
-		titleSimilarityI := utils.Max(utils.Map(animeListEntry.Titles, func(curTitle string) float64 {
-			return calculateTitleSimilarityScore(curTitle, first.Meta.Title)
-		})...)
-
-		titleSimilarityJ := utils.Max(utils.Map(animeListEntry.Titles, func(curTitle string) float64 {
-			return calculateTitleSimilarityScore(curTitle, second.Meta.Title)
-		})...)
-
-		if titleSimilarityI != titleSimilarityJ {
-			return titleSimilarityI > titleSimilarityJ
-		}
-
 		// Then prioritize number of seeds
-		return first.Entry.Seeders > second.Entry.Seeders
+		return first.Result.Seeders > second.Result.Seeders
 	}
 
-	sort.Slice(parsedEntries, smallerFunc)
+	sort.Slice(results, smallerFunc)
 
-	return parsedEntries
+	return results
 }
 
-// filterEpisodes is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
-func filterEpisodes(
-	animeListEntry animelist.Entry,
-	entries []nyaa.Entry,
-	latestTag parser.SeasonEpisodeTag,
-	animeStatus animelist.AiringStatus,
+// filterRelevantResults is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
+func filterRelevantResults(
+	entry animelist.Entry,
+	results []parser.ParsedNyaa,
+	latestTag tags.Tag,
 ) []parser.ParsedNyaa {
-	parsedEntries := parseAndSortResults(animeListEntry, entries)
-	newEpisodes := filterNewEpisodes(parsedEntries, latestTag)
+	results = slices.Clone(results)
+	// Requires sorted input, since we use tag progression.
+	results = sortResults(entry, results)
 
-	batchOnly := latestTag.IsZero() && animeStatus == animelist.AiringStatusAired
+	batchOnly := latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired
+	newEpisodes := filterNewEpisodes(results, latestTag)
 
 	if batchOnly {
-		newEpisodes = utils.Filter(newEpisodes, filterBatchEntries)
+		batchResults := utils.Filter(newEpisodes, filterBatchEntries)
+		if len(batchResults) > 0 {
+			newEpisodes = batchResults
+		}
 	}
 
 	log.
@@ -246,19 +254,20 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 		return fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 
-	episodesTorrents := filterEpisodes(entry, torrentResults, latestTag, entry.AiringStatus)
+	parsedTorrents := parseResults(torrentResults)
+	parsedTorrents = filterRelevantResults(entry, parsedTorrents, latestTag)
 
-	if len(episodesTorrents) == 0 {
+	if len(parsedTorrents) == 0 {
 		logger.
 			Debug().
 			Int("searchResults", len(torrentResults)).
-			Str("latestTag", latestTag.BuildTag()).
+			Str("latestTag", latestTag.String()).
 			Msg("no new episodes identified")
 
 		return nil
 	}
 
-	for _, episodeTorrent := range episodesTorrents {
+	for _, episodeTorrent := range parsedTorrents {
 		if err := c.AddTorrentEntry(ctx, entry, episodeTorrent); err != nil {
 			return fmt.Errorf("adding torrent to client: %w", err)
 		}

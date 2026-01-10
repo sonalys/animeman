@@ -3,7 +3,7 @@ package discovery
 import (
 	"testing"
 
-	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 	"github.com/stretchr/testify/require"
 )
@@ -15,7 +15,7 @@ func Test_getLatestTag(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want parser.SeasonEpisodeTag
+		want tags.Tag
 	}{
 		{
 			name: "batch and season",
@@ -26,9 +26,9 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S1E3"}},
 				},
 			},
-			want: parser.SeasonEpisodeTag{
-				Season:  []int{1},
-				Episode: []float64{1, 13},
+			want: tags.Tag{
+				Seasons:  []int{1},
+				Episodes: []float64{1, 13},
 			},
 		},
 		{
@@ -39,9 +39,9 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"solo leveling S1E7.5"}},
 				},
 			},
-			want: parser.SeasonEpisodeTag{
-				Season:  []int{1},
-				Episode: []float64{7.5},
+			want: tags.Tag{
+				Seasons:  []int{1},
+				Episodes: []float64{7.5},
 			},
 		},
 		{
@@ -52,13 +52,13 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S3E2"}},
 				},
 			},
-			want: parser.SeasonEpisodeTag{
-				Season: []int{3},
+			want: tags.Tag{
+				Seasons: []int{3},
 			},
 		},
 		{
 			name: "empty",
-			want: parser.SeasonEpisodeTag{},
+			want: tags.Tag{},
 		},
 		{
 			name: "one tag",
@@ -67,8 +67,8 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S01"}},
 				},
 			},
-			want: parser.SeasonEpisodeTag{
-				Season: []int{1},
+			want: tags.Tag{
+				Seasons: []int{1},
 			},
 		},
 		{
@@ -80,9 +80,9 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S1E3"}},
 				},
 			},
-			want: parser.SeasonEpisodeTag{
-				Season:  []int{1},
-				Episode: []float64{3},
+			want: tags.Tag{
+				Seasons:  []int{1},
+				Episodes: []float64{3},
 			},
 		},
 		{
@@ -94,9 +94,9 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S1E3"}},
 				},
 			},
-			want: parser.SeasonEpisodeTag{
-				Season:  []int{3},
-				Episode: []float64{1},
+			want: tags.Tag{
+				Seasons:  []int{3},
+				Episodes: []float64{1},
 			},
 		},
 		{
@@ -108,8 +108,20 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S1E3"}},
 				},
 			},
-			want: parser.SeasonEpisodeTag{
-				Season: []int{3},
+			want: tags.Tag{
+				Seasons: []int{3},
+			},
+		},
+		{
+			name: "batches of different seasons",
+			args: args{
+				torrents: []torrentclient.Torrent{
+					{Tags: []string{"S3"}},
+					{Tags: []string{"S4"}},
+				},
+			},
+			want: tags.Tag{
+				Seasons: []int{4},
 			},
 		},
 	}
@@ -162,18 +174,43 @@ func Test_mergeBatchEpisodes(t *testing.T) {
 
 func Test_tagCompare(t *testing.T) {
 	t.Run("same tag", func(t *testing.T) {
-		tag := parser.SeasonEpisodeTag{
-			Season:  []int{3},
-			Episode: []float64{2},
+		tag := tags.Tag{
+			Seasons:  []int{3},
+			Episodes: []float64{2},
 		}
 		require.Zero(t, tagCompare(tag, tag))
 	})
 
 	t.Run("first episode and zero tag", func(t *testing.T) {
-		tag := parser.SeasonEpisodeTag{
-			Season:  []int{1},
-			Episode: []float64{1},
+		tag := tags.Tag{
+			Seasons:  []int{1},
+			Episodes: []float64{1},
 		}
-		require.Greater(t, tagCompare(tag, parser.SeasonEpisodeTag{}), 0)
+		require.Greater(t, tagCompare(tag, tags.Tag{}), 0)
+	})
+
+	t.Run("batch different season", func(t *testing.T) {
+		tagA := tags.Tag{
+			Seasons: []int{2},
+		}
+
+		tagB := tags.Tag{
+			Seasons: []int{3},
+		}
+
+		require.Equal(t, tagCompare(tagA, tagB), -1)
+	})
+
+	t.Run("batch and single", func(t *testing.T) {
+		tagA := tags.Tag{
+			Seasons: []int{2},
+		}
+
+		tagB := tags.Tag{
+			Seasons:  []int{2},
+			Episodes: []float64{1},
+		}
+
+		require.Equal(t, tagCompare(tagA, tagB), 1)
 	})
 }

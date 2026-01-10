@@ -11,7 +11,7 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
 
-func filterBatchEntries(e parser.ParsedNyaa) bool { return e.Meta.SeasonEpisodeTag.IsMultiEpisode() }
+func filterBatchEntries(e parser.ParsedNyaa) bool { return e.Meta.Tag.IsMultiEpisode() }
 
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.
@@ -35,10 +35,10 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
 		meta := parser.Parse(nyaaEntry.Title)
 
 		// Check if nyaa entry episode is greater than the animelist episode count.
-		if entry.NumEpisodes > 0 && meta.SeasonEpisodeTag.LastEpisode() > float64(entry.NumEpisodes) {
+		if entry.NumEpisodes > 0 && meta.Tag.LastEpisode() > float64(entry.NumEpisodes) {
 			log.
 				Trace().
-				Float64("lastEpisode", meta.SeasonEpisodeTag.LastEpisode()).
+				Float64("lastEpisode", meta.Tag.LastEpisode()).
 				Int("episodeCount", entry.NumEpisodes).
 				Msg("discarding torrent candidate due to numEpisodes and metadata mismatch")
 

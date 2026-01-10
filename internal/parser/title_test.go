@@ -3,6 +3,7 @@ package parser
 import (
 	"testing"
 
+	"github.com/sonalys/animeman/internal/tags"
 	"github.com/stretchr/testify/require"
 )
 
@@ -20,6 +21,7 @@ func TestTitleStrip(t *testing.T) {
 		{name: "title. subtitle", title: "title. subtitle", want: "title. subtitle"},
 		{name: "empty", title: "", want: ""},
 		{name: "multiple spaces", title: "My     cool   anime", want: "My cool anime"},
+		{name: "dash trim", title: "my title -", want: "my title"},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
@@ -42,13 +44,13 @@ func TestTitleParse(t *testing.T) {
 			title: "[Provider] Show name - 140 (1080p) [file-hash].mkv",
 			want: Metadata{
 				Title: "Show name",
-				SeasonEpisodeTag: SeasonEpisodeTag{
-					Season:  []int{1},
-					Episode: []float64{140},
+				Tag: tags.Tag{
+					Seasons:  []int{1},
+					Episodes: []float64{140},
 				},
 				VerticalResolution: 1080,
 				Source:             "Provider",
-				Tags:               []string{"file-hash"},
+				Labels:             []string{"file-hash"},
 			},
 		},
 		{
@@ -56,13 +58,13 @@ func TestTitleParse(t *testing.T) {
 			title: "[Provider] Show name - 07 (1080p) [file-hash]",
 			want: Metadata{
 				Title: "Show name",
-				SeasonEpisodeTag: SeasonEpisodeTag{
-					Season:  []int{1},
-					Episode: []float64{7},
+				Tag: tags.Tag{
+					Seasons:  []int{1},
+					Episodes: []float64{7},
 				},
 				VerticalResolution: 1080,
 				Source:             "Provider",
-				Tags:               []string{"file-hash"},
+				Labels:             []string{"file-hash"},
 			},
 		},
 		{
@@ -70,13 +72,13 @@ func TestTitleParse(t *testing.T) {
 			title: "[Provider] Show name - 07.5 (1080p) [9F8A2A07].mkv",
 			want: Metadata{
 				Title: "Show name",
-				SeasonEpisodeTag: SeasonEpisodeTag{
-					Season:  []int{1},
-					Episode: []float64{7.5},
+				Tag: tags.Tag{
+					Seasons:  []int{1},
+					Episodes: []float64{7.5},
 				},
 				VerticalResolution: 1080,
 				Source:             "Provider",
-				Tags:               []string{"9F8A2A07"},
+				Labels:             []string{"9F8A2A07"},
 			},
 		},
 		{
@@ -84,13 +86,13 @@ func TestTitleParse(t *testing.T) {
 			title: "[Provider] Show name - 07.5",
 			want: Metadata{
 				Title: "Show name",
-				SeasonEpisodeTag: SeasonEpisodeTag{
-					Season:  []int{1},
-					Episode: []float64{7.5},
+				Tag: tags.Tag{
+					Seasons:  []int{1},
+					Episodes: []float64{7.5},
 				},
 				VerticalResolution: -1,
 				Source:             "Provider",
-				Tags:               []string{},
+				Labels:             []string{},
 			},
 		},
 		{
@@ -98,9 +100,9 @@ func TestTitleParse(t *testing.T) {
 			title: "Show.name.S02E19.subtitle.here.1080p.WEB-DL.AAC2.0.H.264-VARYG.mkv",
 			want: Metadata{
 				Title: "Show name",
-				SeasonEpisodeTag: SeasonEpisodeTag{
-					Season:  []int{2},
-					Episode: []float64{19},
+				Tag: tags.Tag{
+					Seasons:  []int{2},
+					Episodes: []float64{19},
 				},
 				VerticalResolution: 1080,
 			},
@@ -110,9 +112,9 @@ func TestTitleParse(t *testing.T) {
 			title: "Show.name.S01E20.Anno.Un.1080p.HULU.WEB-DL.AAC2.0.H.264-VARYG.mkv",
 			want: Metadata{
 				Title: "Show name",
-				SeasonEpisodeTag: SeasonEpisodeTag{
-					Season:  []int{1},
-					Episode: []float64{20},
+				Tag: tags.Tag{
+					Seasons:  []int{1},
+					Episodes: []float64{20},
 				},
 				VerticalResolution: 1080,
 			},
@@ -122,9 +124,9 @@ func TestTitleParse(t *testing.T) {
 			title: "show s02e02",
 			want: Metadata{
 				Title: "show",
-				SeasonEpisodeTag: SeasonEpisodeTag{
-					Season:  []int{2},
-					Episode: []float64{2},
+				Tag: tags.Tag{
+					Seasons:  []int{2},
+					Episodes: []float64{2},
 				},
 				VerticalResolution: -1,
 			},

@@ -7,13 +7,14 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
 
 // findLatestTag will receive an anime list entry and return all torrents listed from the anime.
-func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (parser.SeasonEpisodeTag, error) {
+func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (tags.Tag, error) {
 	logger := getLogger(ctx)
 	torrents := make([]torrentclient.Torrent, 0, 100)
 
@@ -33,7 +34,7 @@ func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (
 			Msg("identified entry tag on torrent client")
 
 		if err != nil {
-			return parser.SeasonEpisodeTag{}, fmt.Errorf("listing torrents: %w", err)
+			return tags.Tag{}, fmt.Errorf("listing torrents: %w", err)
 		}
 
 		torrents = append(torrents, resp...)
@@ -43,7 +44,7 @@ func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (
 	if !latestTag.IsZero() {
 		logger.
 			Debug().
-			Str("latestTag", latestTag.BuildTag()).
+			Str("latestTag", latestTag.String()).
 			Msg("identified latest tag on torrent client")
 	}
 
@@ -68,8 +69,14 @@ func (c *Controller) buildTorrentName(title string, parsedNyaa parser.ParsedNyaa
 	}
 
 	b.WriteString(title)
-	b.WriteString(" ")
-	b.WriteString(parsedNyaa.Meta.SeasonEpisodeTag.BuildTag())
+
+	tag := parsedNyaa.Meta.Tag
+
+	// Avoid printing S1 on titles, since lots of shows and movies dont require this notation.
+	if tag.LastEpisode() > 0 {
+		b.WriteString(" ")
+		b.WriteString(tag.String())
+	}
 
 	if parsedNyaa.Meta.VerticalResolution > 0 {
 		b.WriteString(" ")
@@ -111,7 +118,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
-		URLs:     []string{parsedNyaa.Entry.Link},
+		URLs:     []string{parsedNyaa.Result.Link},
 		Category: c.dep.Config.Category,
 		SavePath: c.TorrentGetDownloadPath(selectedTitle),
 	}
@@ -126,7 +133,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 
 	logger.
 		Info().
-		Str("title", parsedNyaa.Entry.Title).
+		Str("title", parsedNyaa.Result.Title).
 		Str("entry", selectedTitle).
 		Str("path", req.SavePath).
 		Int("detectedQuality", meta.VerticalResolution).
