@@ -154,6 +154,14 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
+		if len(api.cachedAnimeList) > 0 {
+			log.
+				Warn().
+				Err(err).
+				Msg("anilist.co api errored, using cached response")
+			return api.cachedAnimeList, nil
+		}
+
 		return nil, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))
 	}
 
@@ -170,5 +178,9 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 		})
 		out = append(out, watchingEntries...)
 	}
-	return convertEntry(out), nil
+
+	response := convertEntry(out)
+	api.cachedAnimeList = response
+
+	return response, nil
 }

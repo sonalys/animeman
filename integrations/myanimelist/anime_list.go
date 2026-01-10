@@ -67,7 +67,10 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 	resp, err := api.client.Do(req)
 	if err != nil {
 		if len(api.cachedAnimeList) > 0 {
-			log.Warn().Msgf("failed to fetch anime list, using cache: %s", err)
+			log.
+				Warn().
+				Err(err).
+				Msg("myanimelist.net api errored, using cached response")
 			return api.cachedAnimeList, nil
 		}
 		return nil, fmt.Errorf("fetching response: %w", err)
