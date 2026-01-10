@@ -11,7 +11,7 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
 
-func filterBatchEntries(e parser.ParsedNyaa) bool { return e.Meta.Tag.IsMultiEpisode() }
+func filterBatchEntries(e parser.ParsedNyaa) bool { return e.ExtractedMetadata.Tag.IsMultiEpisode() }
 
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.

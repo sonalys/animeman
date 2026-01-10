@@ -78,15 +78,15 @@ func filterNewEpisodes(results []parser.ParsedNyaa, latestTag tags.Tag) []parser
 	for _, nyaaEntry := range results {
 		switch {
 		// Avoid re-downloading episodes we already have, on batches.
-		case !latestTag.IsZero() && nyaaEntry.Meta.Tag.IsMultiEpisode():
+		case !latestTag.IsZero() && nyaaEntry.ExtractedMetadata.Tag.IsMultiEpisode():
 		// Make sure we only add episodes ahead of the current ones in the qBittorrent.
 		// <= 0 is used to ensure we don't download the same episode multiple times, or older episodes.
-		case tagCompare(nyaaEntry.Meta.Tag, currentTag) <= 0:
+		case tagCompare(nyaaEntry.ExtractedMetadata.Tag, currentTag) <= 0:
 		// Some providers count episodes from season 1, some from season 2, example:
 		// s02e19 when it should be s02e08. so we add continuity to download only next episode.
-		case currentTag.IsZero() && !currentTag.Before(nyaaEntry.Meta.Tag):
+		case currentTag.IsZero() && !currentTag.Before(nyaaEntry.ExtractedMetadata.Tag):
 		default:
-			currentTag = nyaaEntry.Meta.Tag
+			currentTag = nyaaEntry.ExtractedMetadata.Tag
 			out = append(out, nyaaEntry)
 		}
 	}
@@ -135,18 +135,18 @@ func sortResults(entry animelist.Entry, results []parser.ParsedNyaa) []parser.Pa
 		second := results[j]
 
 		// Sort first by season/episode tag.
-		cmp := tagCompare(first.Meta.Tag, second.Meta.Tag)
+		cmp := tagCompare(first.ExtractedMetadata.Tag, second.ExtractedMetadata.Tag)
 		if cmp != 0 {
 			return cmp < 0
 		}
 
 		// Then title similarity.
 		titleSimilarityI := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
-			return calculateTitleSimilarityScore(curTitle, first.Meta.Title)
+			return calculateTitleSimilarityScore(curTitle, first.ExtractedMetadata.Title)
 		})...)
 
 		titleSimilarityJ := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
-			return calculateTitleSimilarityScore(curTitle, second.Meta.Title)
+			return calculateTitleSimilarityScore(curTitle, second.ExtractedMetadata.Title)
 		})...)
 
 		if titleSimilarityI != titleSimilarityJ {
@@ -154,13 +154,13 @@ func sortResults(entry animelist.Entry, results []parser.ParsedNyaa) []parser.Pa
 		}
 
 		// Then resolution.
-		cmp = second.Meta.VerticalResolution - first.Meta.VerticalResolution
+		cmp = second.ExtractedMetadata.VerticalResolution - first.ExtractedMetadata.VerticalResolution
 		if cmp != 0 {
 			return cmp < 0
 		}
 
 		// Then prioritize number of seeds
-		return first.Result.Seeders > second.Result.Seeders
+		return first.NyaaTorrent.Seeders > second.NyaaTorrent.Seeders
 	}
 
 	sort.Slice(results, smallerFunc)

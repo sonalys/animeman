@@ -62,15 +62,15 @@ func (c *Controller) TorrentGetDownloadPath(title string) (path string) {
 func (c *Controller) buildTorrentName(title string, parsedNyaa parser.ParsedNyaa) string {
 	var b strings.Builder
 
-	if parsedNyaa.Meta.Source != "" {
+	if parsedNyaa.ExtractedMetadata.Source != "" {
 		b.WriteString("[")
-		b.WriteString(parsedNyaa.Meta.Source)
+		b.WriteString(parsedNyaa.ExtractedMetadata.Source)
 		b.WriteString("] ")
 	}
 
 	b.WriteString(title)
 
-	tag := parsedNyaa.Meta.Tag
+	tag := parsedNyaa.ExtractedMetadata.Tag
 
 	// Avoid printing S1 on titles, since lots of shows and movies dont require this notation.
 	if tag.LastEpisode() > 0 {
@@ -78,9 +78,9 @@ func (c *Controller) buildTorrentName(title string, parsedNyaa parser.ParsedNyaa
 		b.WriteString(tag.String())
 	}
 
-	if parsedNyaa.Meta.VerticalResolution > 0 {
+	if parsedNyaa.ExtractedMetadata.VerticalResolution > 0 {
 		b.WriteString(" ")
-		fmt.Fprintf(&b, "[%dp]", parsedNyaa.Meta.VerticalResolution)
+		fmt.Fprintf(&b, "[%dp]", parsedNyaa.ExtractedMetadata.VerticalResolution)
 	}
 
 	return b.String()
@@ -110,7 +110,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 
 	selectedTitle := selectIdealTitle(animeListEntry.Titles)
 
-	meta := parsedNyaa.Meta.Clone()
+	meta := parsedNyaa.ExtractedMetadata.Clone()
 	// Use nyaa metadata, but with anime list title.
 	// This behavior avoids different sources creating different tags and downloading the same episode twice.
 	meta.Title = selectedTitle
@@ -118,7 +118,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
-		URLs:     []string{parsedNyaa.Result.Link},
+		URLs:     []string{parsedNyaa.NyaaTorrent.Link},
 		Category: c.dep.Config.Category,
 		SavePath: c.TorrentGetDownloadPath(selectedTitle),
 	}
@@ -133,7 +133,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 
 	logger.
 		Info().
-		Str("title", parsedNyaa.Result.Title).
+		Str("title", parsedNyaa.NyaaTorrent.Title).
 		Str("entry", selectedTitle).
 		Str("path", req.SavePath).
 		Int("detectedQuality", meta.VerticalResolution).

@@ -27,9 +27,9 @@ func Test_filterEpisodes(t *testing.T) {
 			args: args{
 				latestTag: tags.SeasonEpisode(1, 18),
 				list: []parser.ParsedNyaa{
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(1, 16)}},
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(1, 17)}},
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(1, 18)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(1, 16)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(1, 17)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(1, 18)}},
 				},
 			},
 			want: []parser.ParsedNyaa{},
@@ -44,13 +44,13 @@ func Test_filterEpisodes(t *testing.T) {
 			args: args{
 				latestTag: tags.Zero,
 				list: []parser.ParsedNyaa{
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
 				},
 			},
 			want: []parser.ParsedNyaa{
-				{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-				{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
+				{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
+				{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
 			},
 		},
 		{
@@ -58,12 +58,12 @@ func Test_filterEpisodes(t *testing.T) {
 			args: args{
 				latestTag: tags.SeasonEpisode(3, 1),
 				list: []parser.ParsedNyaa{
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
 				},
 			},
 			want: []parser.ParsedNyaa{
-				{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
+				{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
 			},
 		},
 		{
@@ -71,8 +71,8 @@ func Test_filterEpisodes(t *testing.T) {
 			args: args{
 				latestTag: tags.Tag{Seasons: []int{3}},
 				list: []parser.ParsedNyaa{
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
 				},
 			},
 			want: []parser.ParsedNyaa{},
@@ -82,8 +82,8 @@ func Test_filterEpisodes(t *testing.T) {
 			args: args{
 				latestTag: tags.SeasonEpisode(3, 2),
 				list: []parser.ParsedNyaa{
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-					{Meta: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
+					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
 				},
 			},
 			want: []parser.ParsedNyaa{},
@@ -118,7 +118,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 		require.Len(t, got, len(input))
 
 		for i := 1; i < len(got); i++ {
-			require.True(t, tagCompare(got[i-1].Meta.Tag, got[i].Meta.Tag) <= 0)
+			require.True(t, tagCompare(got[i-1].ExtractedMetadata.Tag, got[i].ExtractedMetadata.Tag) <= 0)
 		}
 	})
 }
@@ -145,7 +145,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 
 		require.Len(t, got, len(input))
 		for i := 1; i < len(got); i++ {
-			require.True(t, tagCompare(got[i-1].Meta.Tag, got[i].Meta.Tag) <= 0)
+			require.True(t, tagCompare(got[i-1].ExtractedMetadata.Tag, got[i].ExtractedMetadata.Tag) <= 0)
 		}
 	})
 
