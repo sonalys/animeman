@@ -51,6 +51,7 @@ func quote(entries string) string {
 
 func (entries QueryOr) Apply(req *http.Request) {
 	query := req.URL.Query()
+
 	prevQuery := query.Get("q")
 
 	entries = utils.Filter(entries, func(s string) bool { return s != "" })

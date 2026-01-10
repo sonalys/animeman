@@ -32,10 +32,6 @@ type (
 			Entries []Entry `xml:"item"`
 		} `xml:"channel"`
 	}
-
-	ListArg interface {
-		Apply(*http.Request)
-	}
 )
 
 func New(c Config) *API {
