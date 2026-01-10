@@ -200,10 +200,18 @@ func filterRelevantResults(
 func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
 	logger := getLogger(ctx)
 
+	titleSanitization := strings.NewReplacer(
+		"-", " ",
+		"\"", " ",
+		"'", " ",
+		"(", " ",
+		")", " ",
+	)
+
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	strippedTitles := utils.Map(entry.Titles, func(title string) string { return strings.ToLower(parser.StripTitle(title)) })
-	titleQuery := nyaa.QueryOr(utils.Deduplicate(strippedTitles))
+	sanitizedTitles := utils.Map(entry.Titles, func(title string) string { return titleSanitization.Replace(strings.ToLower(title)) })
+	titleQuery := nyaa.QueryOr(utils.Deduplicate(sanitizedTitles))
 
 	sourceQuery := nyaa.QueryOr(c.dep.Config.Sources)
 	qualityQuery := nyaa.QueryOr(c.dep.Config.Qualitites)
@@ -229,7 +237,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	if len(entries) == 0 {
 		logger.
 			Debug().
-			Strs("titles", strippedTitles).
+			Strs("titles", sanitizedTitles).
 			Msg("no nyaa result matching title filter")
 	}
 
