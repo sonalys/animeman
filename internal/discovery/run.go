@@ -178,6 +178,10 @@ func filterEpisodes(
 	animeStatus animelist.AiringStatus,
 ) []parser.ParsedNyaa {
 	parsedEntries := parseAndSortResults(animeListEntry, entries)
+	if latestTag.IsZero() {
+		return parsedEntries
+	}
+
 	newEpisodes := filterNewEpisodes(parsedEntries, latestTag)
 
 	batchOnly := latestTag.IsZero() && animeStatus == animelist.AiringStatusAired
