@@ -49,13 +49,18 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		}
 
 		log.
-			Debug().
-			Strs("title", entry.Titles).
-			Msgf("processing entry")
+			Trace().
+			Str("title", selectIdealTitle(entry.Titles)).
+			Msgf("starting discovery for entry")
 
 		if err := c.DiscoverEntry(ctx, entry); errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 			return fmt.Errorf("failed to digest entry: %w", err)
 		}
+
+		log.
+			Debug().
+			Str("title", selectIdealTitle(entry.Titles)).
+			Msgf("discovery finished for entry")
 	}
 
 	log.
@@ -63,6 +68,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		Int("entries", len(entries)).
 		Dur("duration", time.Since(t1)).
 		Msg("discovery finished")
+
 	return nil
 }
 
@@ -153,15 +159,12 @@ func filterRelevantResults(
 	results = sortResults(entry, results)
 
 	newEpisodes := filterNewEpisodes(results, latestTag)
-	if len(newEpisodes) == 0 {
-		return nil
-	}
 
 	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
 		batchResults := utils.Filter(newEpisodes, func(entry parser.ParsedNyaa) bool { return entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 		if len(batchResults) > 0 {
 			log.
-				Trace().
+				Debug().
 				Msg("batch detected for aired show, prioritizing batch torrent over individual episodes")
 
 			newEpisodes = batchResults[len(batchResults)-1:]
@@ -171,8 +174,17 @@ func filterRelevantResults(
 		newEpisodes = utils.Filter(newEpisodes, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 	}
 
+	if len(newEpisodes) == 0 {
+		log.
+			Debug().
+			Stringer("latestTag", latestTag).
+			Msg("no new episodes detected")
+
+		return nil
+	}
+
 	log.
-		Trace().
+		Debug().
 		Int("newEpisodes", len(newEpisodes)).
 		Msg("newer episodes detected")
 
@@ -206,7 +218,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 
 	logger.
 		Debug().
-		Int("count", len(entries)).
+		Int("results", len(entries)).
 		Msg("searched nyaa for torrent candidates")
 
 	if len(entries) == 0 {
@@ -221,7 +233,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 		logger.
 			Debug().
 			Strs("titles", sanitizedTitles).
-			Msg("no nyaa result matching title filter")
+			Msg("no results passed the metadata filter")
 	}
 
 	return entries, nil
@@ -240,6 +252,9 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 	torrentResults = utils.Filter(torrentResults, func(e nyaa.Entry) bool { return e.Seeders > 0 })
 
 	if len(torrentResults) == 0 {
+		logger.
+			Trace().
+			Msg("no seeded torrent results")
 		return nil
 	}
 
@@ -263,10 +278,12 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 			return fmt.Errorf("adding torrent to client: %w", err)
 		}
 
+		meta := episodeTorrent.ExtractedMetadata
+
 		logger.
 			Info().
-			Int("verticalResolution", episodeTorrent.ExtractedMetadata.VerticalResolution).
-			Stringer("tag", episodeTorrent.ExtractedMetadata.Tag).
+			Int("verticalResolution", meta.VerticalResolution).
+			Stringer("tag", meta.Tag).
 			Msg("new episode added")
 	}
 
