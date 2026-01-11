@@ -29,5 +29,7 @@ func (l *loggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 }
 
 func NewLoggerTransport(wrap http.RoundTripper) http.RoundTripper {
-	return &loggerTransport{}
+	return &loggerTransport{
+		wrap: wrap,
+	}
 }

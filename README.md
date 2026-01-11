@@ -20,7 +20,11 @@ It automatically parses the torrent titles for tagging the show, season and epis
 0. Tag existing torrents in the configured category
 1. Fetch your **Currently Watching** entries from **MAL** or **Anilist**
 2. Search in the RSS feed for each entry in **Nyaa.si**
-3. Validate if the episode / season is already present in **qBittorrent**
+3. Scan through results searching for all newewer episodes than **qBittorrent**  
+  It doesn't search for specific episodes, it uses all results from a single page to retrieve new episodes.  
+  This might not work well for shows with more episodes than nyaa.si page size.  
+  Changing this approach is not viable at the moment, 
+  as it would require Animeman more requests about each episode information.
 4. Add torrent to qBittorrent via the WebUI API
 
 The purpose of this tool is to download the latest RSS entry for each episode.
