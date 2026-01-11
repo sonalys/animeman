@@ -213,4 +213,12 @@ func Test_tagCompare(t *testing.T) {
 
 		require.Equal(t, tagCompare(tagA, tagB), 1)
 	})
+
+	t.Run("batch and zero", func(t *testing.T) {
+		tagA := tags.Tag{
+			Seasons: []int{1},
+		}
+
+		require.Equal(t, tagCompare(tagA, tags.Zero), 1)
+	})
 }

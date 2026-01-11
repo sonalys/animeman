@@ -91,7 +91,7 @@ func Test_filterEpisodes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := filterNewEpisodes(tt.args.list, tt.args.latestTag); !reflect.DeepEqual(got, tt.want) {
+			if got := filterEpisodes(tt.args.list, tt.args.latestTag); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("filterEpisodes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -104,6 +104,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 		got = sortResults(animelist.Entry{}, got)
 		require.Empty(t, got)
 	})
+
 	t.Run("sort by tag", func(t *testing.T) {
 		input := []nyaa.Item{
 			{Title: "Show3: S03E02"},
@@ -119,6 +120,23 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 
 		for i := 1; i < len(got); i++ {
 			require.True(t, tagCompare(got[i-1].ExtractedMetadata.Tag, got[i].ExtractedMetadata.Tag) <= 0)
+		}
+	})
+
+	t.Run("sort by seeds", func(t *testing.T) {
+		input := []nyaa.Item{
+			{Title: "Show3: S03E01", Seeders: 1},
+			{Title: "Show3: S03E01", Seeders: 3},
+			{Title: "Show3: S03E01", Seeders: 2},
+		}
+
+		got := parseResults(input)
+		got = sortResults(animelist.Entry{}, got)
+
+		require.Len(t, got, len(input))
+
+		for i := 1; i < len(got); i++ {
+			require.LessOrEqual(t, got[i].NyaaTorrent.Seeders, got[i-1].NyaaTorrent.Seeders)
 		}
 	})
 }

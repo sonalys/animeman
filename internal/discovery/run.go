@@ -72,28 +72,22 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	return nil
 }
 
-// filterNewEpisodes will only return ParsedNyaa entries that are more recent than the given latestTag.
+// filterEpisodes will only return ParsedNyaa entries that are more recent than the given latestTag.
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
-func filterNewEpisodes(results []parser.ParsedNyaa, latestTag tags.Tag) []parser.ParsedNyaa {
+func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) []parser.ParsedNyaa {
 	out := make([]parser.ParsedNyaa, 0, len(results))
 
-	currentTag := latestTag
+	latestTag := initialTag
 
 	for _, nyaaEntry := range results {
-		switch {
-		// Avoid re-downloading episodes we already have, on batches.
-		case !latestTag.IsZero() && nyaaEntry.ExtractedMetadata.Tag.IsMultiEpisode():
-		// Make sure we only add episodes ahead of the current ones in the qBittorrent.
-		// <= 0 is used to ensure we don't download the same episode multiple times, or older episodes.
-		case tagCompare(nyaaEntry.ExtractedMetadata.Tag, currentTag) <= 0:
-		// Some providers count episodes from season 1, some from season 2, example:
-		// s02e19 when it should be s02e08. so we add continuity to download only next episode.
-		case currentTag.IsZero() && !currentTag.Before(nyaaEntry.ExtractedMetadata.Tag):
-		default:
-			currentTag = nyaaEntry.ExtractedMetadata.Tag
-			out = append(out, nyaaEntry)
+		meta := nyaaEntry.ExtractedMetadata.Tag
+		if !latestTag.IsZero() && tagCompare(meta, latestTag) <= 0 {
+			continue
 		}
+
+		latestTag = meta
+		out = append(out, nyaaEntry)
 	}
 
 	return out
@@ -157,24 +151,23 @@ func filterRelevantResults(
 	results = slices.Clone(results)
 	// Requires sorted input, since we use tag progression.
 	results = sortResults(entry, results)
-
-	newEpisodes := filterNewEpisodes(results, latestTag)
+	results = filterEpisodes(results, latestTag)
 
 	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
-		batchResults := utils.Filter(newEpisodes, func(entry parser.ParsedNyaa) bool { return entry.ExtractedMetadata.Tag.IsMultiEpisode() })
+		batchResults := utils.Filter(results, func(entry parser.ParsedNyaa) bool { return entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 		if len(batchResults) > 0 {
 			log.
 				Debug().
 				Msg("batch detected for aired show, prioritizing batch torrent over individual episodes")
 
-			newEpisodes = batchResults[len(batchResults)-1:]
+			results = batchResults[len(batchResults)-1:]
 		}
 	} else {
 		// Remove batches when there are latest tags, avoid episode download duplication.
-		newEpisodes = utils.Filter(newEpisodes, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
+		results = utils.Filter(results, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 	}
 
-	if len(newEpisodes) == 0 {
+	if len(results) == 0 {
 		log.
 			Debug().
 			Stringer("latestTag", latestTag).
@@ -185,10 +178,10 @@ func filterRelevantResults(
 
 	log.
 		Debug().
-		Int("newEpisodes", len(newEpisodes)).
+		Int("results", len(results)).
 		Msg("newer episodes detected")
 
-	return newEpisodes
+	return results
 }
 
 func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Item, error) {

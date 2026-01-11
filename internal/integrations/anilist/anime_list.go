@@ -64,6 +64,7 @@ const (
 const (
 	AiringStatusAiring    AiringStatus = "AIRING"
 	AiringStatusCompleted AiringStatus = "COMPLETED"
+	AiringStatusFinished  AiringStatus = "FINISHED"
 )
 
 const getCurrentlyWatchingQuery = `query($userName:String,$type:MediaType){ 
@@ -109,7 +110,7 @@ func convertAiringStatus(in AiringStatus) animelist.AiringStatus {
 	switch in {
 	case AiringStatusAiring:
 		return animelist.AiringStatusAiring
-	case AiringStatusCompleted:
+	case AiringStatusCompleted, AiringStatusFinished:
 		return animelist.AiringStatusAired
 	}
 	return animelist.AiringStatus(-1)
