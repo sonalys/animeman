@@ -218,8 +218,19 @@ func Test_filterNyaaFeed(t *testing.T) {
 		parsed := parseResults(input)
 		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero)
 
-		require.Len(t, got, 1)
 		require.Equal(t, parsed[2:], got)
+	})
+
+	t.Run("aired: with batch and multi episode, no latestTag", func(t *testing.T) {
+		input := []nyaa.Entry{
+			{Title: "Show3: S03E01-13"},
+			{Title: "Show3: S03"},
+		}
+
+		parsed := parseResults(input)
+		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero)
+
+		require.Equal(t, parsed[1:], got)
 	})
 
 	t.Run("aired: with batch, different qualities", func(t *testing.T) {

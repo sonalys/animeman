@@ -184,7 +184,7 @@ func filterRelevantResults(
 	if batchOnly {
 		batchResults := utils.Filter(newEpisodes, filterBatchEntries)
 		if len(batchResults) > 0 {
-			newEpisodes = batchResults
+			newEpisodes = batchResults[len(batchResults)-1:]
 		}
 	}
 

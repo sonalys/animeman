@@ -55,6 +55,21 @@ func tagCompare(a, b tags.Tag) int {
 		return -1
 	}
 
+	aLastEpisode := a.LastEpisode()
+	bLastEpisode := b.LastEpisode()
+
+	if aLastEpisode == bLastEpisode {
+		return 0
+	}
+
+	if aLastEpisode == 0 {
+		return 1
+	}
+
+	if bLastEpisode == 0 {
+		return -1
+	}
+
 	if a.LastEpisode() < b.LastEpisode() {
 		return -1
 	}

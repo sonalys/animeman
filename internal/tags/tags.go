@@ -90,7 +90,7 @@ func (t Tag) LastEpisode() float64 {
 	}
 
 	if len(t.Episodes) == 0 {
-		return 1
+		return 0
 	}
 
 	lastEpisode := t.Episodes[0]
@@ -147,5 +147,5 @@ func (t Tag) IsZero() bool {
 }
 
 func (t Tag) IsMultiEpisode() bool {
-	return len(t.Episodes) == 0 || len(t.Episodes) > 1
+	return len(t.Episodes) != 1
 }
