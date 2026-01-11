@@ -4,7 +4,6 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"regexp"
 	"slices"
 	"sort"
 	"strings"
@@ -94,33 +93,6 @@ func filterNewEpisodes(results []parser.ParsedNyaa, latestTag tags.Tag) []parser
 	return out
 }
 
-var notWordDigitOrSpace = regexp.MustCompile("[^a-zA-Z 0-9]")
-
-// calculateTitleSimilarityScore returns a value between 0 and 1 for how similar the titles are.
-func calculateTitleSimilarityScore(originalTitle, title string) float64 {
-	originalTitle = strings.ToLower(originalTitle)
-	title = strings.ToLower(title)
-	originalTitle = notWordDigitOrSpace.ReplaceAllString(originalTitle, "")
-	title = notWordDigitOrSpace.ReplaceAllString(title, "")
-
-	originalTitleWords := strings.Split(originalTitle, " ")
-	titleWords := strings.Split(title, " ")
-	wordCount := len(titleWords)
-
-	var match int
-outer:
-	for _, curWord := range titleWords {
-		for i, target := range originalTitleWords {
-			if curWord == target {
-				match++
-				originalTitleWords = append(originalTitleWords[:i], originalTitleWords[i+1:]...)
-				continue outer
-			}
-		}
-	}
-	return float64(match) / float64(wordCount)
-}
-
 func parseResults(results []nyaa.Entry) []parser.ParsedNyaa {
 	return utils.Map(results, func(entry nyaa.Entry) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
 }
@@ -140,13 +112,15 @@ func sortResults(entry animelist.Entry, results []parser.ParsedNyaa) []parser.Pa
 			return cmp < 0
 		}
 
+		const ignoreCharset = ",.;:-()[]'`\""
+
 		// Then title similarity.
 		titleSimilarityI := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
-			return calculateTitleSimilarityScore(curTitle, first.ExtractedMetadata.Title)
+			return utils.CalculateTextSimilarity(curTitle, first.ExtractedMetadata.Title, ignoreCharset)
 		})...)
 
 		titleSimilarityJ := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
-			return calculateTitleSimilarityScore(curTitle, second.ExtractedMetadata.Title)
+			return utils.CalculateTextSimilarity(curTitle, second.ExtractedMetadata.Title, ignoreCharset)
 		})...)
 
 		if titleSimilarityI != titleSimilarityJ {

@@ -274,17 +274,3 @@ func Test_filterNyaaFeed(t *testing.T) {
 		require.Equal(t, parsed[1:2], got)
 	})
 }
-
-func Test_calculateTitleSimilarityScore(t *testing.T) {
-	t.Run("exact match in lower case", func(t *testing.T) {
-		score := calculateTitleSimilarityScore("My pony academy: the story continues", "My Pony Academy the story continues")
-		require.EqualValues(t, score, 1)
-	})
-
-	t.Run("closer match should have higher score", func(t *testing.T) {
-		originalTitle := "My pony academy: the battle continues"
-		scoreA := calculateTitleSimilarityScore(originalTitle, "My Pony Academy")
-		scoreB := calculateTitleSimilarityScore(originalTitle, "My Pony Academy 2: second battle")
-		require.Greater(t, scoreA, scoreB)
-	})
-}
