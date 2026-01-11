@@ -228,6 +228,9 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 		return fmt.Errorf("searching torrent for anime: %w", err)
 	}
 
+	// Remove results without seeders.
+	torrentResults = utils.Filter(torrentResults, func(e nyaa.Entry) bool { return e.Seeders > 0 })
+
 	if len(torrentResults) == 0 {
 		return nil
 	}
