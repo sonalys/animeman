@@ -99,8 +99,8 @@ func filterNewEpisodes(results []parser.ParsedNyaa, latestTag tags.Tag) []parser
 	return out
 }
 
-func parseResults(results []nyaa.Entry) []parser.ParsedNyaa {
-	return utils.Map(results, func(entry nyaa.Entry) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
+func parseResults(results []nyaa.Item) []parser.ParsedNyaa {
+	return utils.Map(results, func(entry nyaa.Item) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
 }
 
 // sortResults will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
@@ -191,7 +191,7 @@ func filterRelevantResults(
 	return newEpisodes
 }
 
-func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Entry, error) {
+func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Item, error) {
 	logger := getLogger(ctx)
 
 	titleSanitization := strings.NewReplacer(
@@ -243,18 +243,19 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) error {
 	logger := getLogger(ctx)
 
-	torrentResults, err := c.NyaaSearch(ctx, entry)
+	searchResults, err := c.NyaaSearch(ctx, entry)
 	if err != nil {
 		return fmt.Errorf("searching torrent for anime: %w", err)
 	}
 
 	// Remove results without seeders.
-	torrentResults = utils.Filter(torrentResults, func(e nyaa.Entry) bool { return e.Seeders > 0 })
+	torrentResults := utils.Filter(searchResults, func(e nyaa.Item) bool { return e.Seeders > 0 })
 
 	if len(torrentResults) == 0 {
 		logger.
 			Trace().
 			Msg("no seeded torrent results")
+
 		return nil
 	}
 

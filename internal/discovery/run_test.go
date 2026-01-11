@@ -100,12 +100,12 @@ func Test_filterEpisodes(t *testing.T) {
 
 func Test_buildTaggedNyaaList(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		got := parseResults([]nyaa.Entry{})
+		got := parseResults([]nyaa.Item{})
 		got = sortResults(animelist.Entry{}, got)
 		require.Empty(t, got)
 	})
 	t.Run("sort by tag", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E03"},
 			{Title: "Show3: S03E01"},
@@ -134,7 +134,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("airing: no latestTag", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E03"},
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
@@ -150,7 +150,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("airing: with latestTag", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E03"},
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
@@ -166,7 +166,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("airing: with repeated tag", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
@@ -180,7 +180,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("airing: with latestTag and quality", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E03 720p"},
 			{Title: "Show3: S03E03 1080p"},
 			{Title: "Show3: S03E02"},
@@ -195,7 +195,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("aired: with latestTag", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E03"},
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03E01"},
@@ -209,7 +209,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("aired: with batch, no latestTag", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E03"},
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03"},
@@ -222,7 +222,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("aired: with batch and multi episode, no latestTag", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E01-13"},
 			{Title: "Show3: S03"},
 		}
@@ -234,7 +234,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("aired: with batch, different qualities", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03 1220x760"},
 			{Title: "Show3: S03 1080p"},
 		}
@@ -247,7 +247,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("aired: with batch, with latestTag", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E03"},
 			{Title: "Show3: S03E02"},
 			{Title: "Show3: S03"},
@@ -261,7 +261,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	})
 
 	t.Run("same tag and quality, different seeders", func(t *testing.T) {
-		input := []nyaa.Entry{
+		input := []nyaa.Item{
 			{Title: "Show3: S03E03", Seeders: 1},
 			{Title: "Show3: S03E03", Seeders: 10},
 			{Title: "Show3: S03"},

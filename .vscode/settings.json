@@ -1,8 +1,0 @@
-{
-    "yaml.schemas": {
-        "file:///home/raicon/.vscode/extensions/continue.continue-1.2.7-linux-x64/config-yaml-schema.json": [
-            ".continue/**/*.yaml"
-        ],
-        "https://www.schemastore.org/github-workflow.json": "file:///home/raicon/github/sonalys/animeman/.github/workflows/goreleaser.yml"
-    }
-}

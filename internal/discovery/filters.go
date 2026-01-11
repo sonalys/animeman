@@ -13,10 +13,10 @@ import (
 
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.
-func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
+func filterMetadata(entry animelist.Entry) func(e nyaa.Item) bool {
 	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.StripTitle(title) })
 
-	return func(nyaaEntry nyaa.Entry) bool {
+	return func(nyaaEntry nyaa.Item) bool {
 		publishedDate := utils.Must(time.Parse(time.RFC1123Z, nyaaEntry.PubDate))
 
 		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.

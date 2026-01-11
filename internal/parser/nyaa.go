@@ -8,10 +8,10 @@ type ParsedNyaa struct {
 	// Metadata parsed from title.
 	ExtractedMetadata Metadata
 	// Nyaa entry.
-	NyaaTorrent nyaa.Entry
+	NyaaTorrent nyaa.Item
 }
 
-func NewParsedNyaa(entry nyaa.Entry) ParsedNyaa {
+func NewParsedNyaa(entry nyaa.Item) ParsedNyaa {
 	meta := Parse(entry.Title)
 	return ParsedNyaa{
 		ExtractedMetadata: meta,

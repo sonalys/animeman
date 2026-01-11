@@ -34,7 +34,7 @@ func (opt ListOptions) Query() string {
 	return b.String()
 }
 
-func (api *API) List(ctx context.Context, options ListOptions) ([]Entry, error) {
+func (api *API) List(ctx context.Context, options ListOptions) ([]Item, error) {
 	var path = API_URL
 
 	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
@@ -63,5 +63,5 @@ func (api *API) List(ctx context.Context, options ListOptions) ([]Entry, error) 
 		return nil, fmt.Errorf("reading response: %w", err)
 	}
 
-	return feed.Channel.Entries, nil
+	return feed.Channel.Items, nil
 }

@@ -1,0 +1,15 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Launch Package",
+            "type": "go",
+            "request": "launch",
+            "mode": "debug",
+            "env": {
+                "CONFIG_PATH": "${workspaceFolder}/config.yaml"
+            },
+            "program": "${workspaceFolder}/cmd/service/main.go"
+        },
+    ]
+}
