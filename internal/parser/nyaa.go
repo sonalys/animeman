@@ -1,6 +1,6 @@
 package parser
 
-import "github.com/sonalys/animeman/integrations/nyaa"
+import "github.com/sonalys/animeman/internal/integrations/nyaa"
 
 // ParsedNyaa holds a parsed entry from Nyaa.
 // Used for smart episode detection.

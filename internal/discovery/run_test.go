@@ -5,7 +5,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/sonalys/animeman/integrations/nyaa"
+	"github.com/sonalys/animeman/internal/integrations/nyaa"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
