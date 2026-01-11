@@ -7,9 +7,7 @@ import (
 	"io"
 	"net/http"
 	"strings"
-	"time"
 
-	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/utils"
 )
 
@@ -50,20 +48,11 @@ func (api *API) List(ctx context.Context, options ListOptions) ([]Entry, error) 
 
 	req.URL.RawQuery = q.Encode()
 
-	t1 := time.Now()
-
 	resp, err := api.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching response: %w", err)
 	}
 	defer resp.Body.Close()
-
-	log.
-		Trace().
-		Str("url", req.URL.String()).
-		Int("status_code", resp.StatusCode).
-		Dur("duration", time.Since(t1)).
-		Msg("rss search finished")
 
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("request failed: %s", string(utils.Must(io.ReadAll(resp.Body))))
