@@ -47,6 +47,14 @@ func tagCompare(a, b tags.Tag) int {
 		return 1
 	}
 
+	if a.FirstSeason() < b.FirstSeason() {
+		return 1
+	}
+
+	if a.FirstSeason() > b.FirstSeason() {
+		return -1
+	}
+
 	if a.IsMultiEpisode() && !b.IsMultiEpisode() {
 		return 1
 	}

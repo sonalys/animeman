@@ -81,12 +81,24 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) []parser.P
 	latestTag := initialTag
 
 	for _, nyaaEntry := range results {
-		meta := nyaaEntry.ExtractedMetadata.Tag
-		if !latestTag.IsZero() && tagCompare(meta, latestTag) <= 0 {
-			continue
+		currentTag := nyaaEntry.ExtractedMetadata.Tag
+
+		if !latestTag.IsZero() {
+			if latestTag.IsMultiEpisode() && latestTag.Contains(currentTag) {
+				continue
+			}
+
+			// This scenario can happen when we are filtering for batches, and the subsequent batch contains the previous batch.
+			// Example: S01E01-13, followed by S01.
+			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
+			if currentTag.IsMultiEpisode() && currentTag.Contains(latestTag) {
+				out = utils.Filter(out, func(previous parser.ParsedNyaa) bool { return !currentTag.Contains(previous.ExtractedMetadata.Tag) })
+			} else if tagCompare(currentTag, latestTag) <= 0 {
+				continue
+			}
 		}
 
-		latestTag = meta
+		latestTag = currentTag
 		out = append(out, nyaaEntry)
 	}
 
@@ -151,7 +163,6 @@ func filterRelevantResults(
 	results = slices.Clone(results)
 	// Requires sorted input, since we use tag progression.
 	results = sortResults(entry, results)
-	results = filterEpisodes(results, latestTag)
 
 	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
 		batchResults := utils.Filter(results, func(entry parser.ParsedNyaa) bool { return entry.ExtractedMetadata.Tag.IsMultiEpisode() })
@@ -159,13 +170,13 @@ func filterRelevantResults(
 			log.
 				Debug().
 				Msg("batch detected for aired show, prioritizing batch torrent over individual episodes")
-
-			results = batchResults[len(batchResults)-1:]
 		}
 	} else {
 		// Remove batches when there are latest tags, avoid episode download duplication.
 		results = utils.Filter(results, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 	}
+
+	results = filterEpisodes(results, latestTag)
 
 	if len(results) == 0 {
 		log.

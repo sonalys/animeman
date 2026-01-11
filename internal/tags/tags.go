@@ -149,3 +149,14 @@ func (t Tag) IsZero() bool {
 func (t Tag) IsMultiEpisode() bool {
 	return len(t.Episodes) != 1
 }
+
+func (t Tag) Contains(other Tag) bool {
+	if t.FirstSeason() <= other.FirstSeason() &&
+		t.LastSeason() >= other.LastSeason() &&
+		(t.FirstEpisode() <= other.LastEpisode() &&
+			t.LastEpisode() >= other.LastEpisode()) || len(t.Episodes) == 0 && len(other.Episodes) > 0 {
+		return true
+	}
+
+	return false
+}
