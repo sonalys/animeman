@@ -115,8 +115,6 @@ func isASCII(s string) bool {
 // AddTorrentEntry receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animelist.Entry, parsedNyaa parser.ParsedNyaa) error {
-	logger := getLogger(ctx)
-
 	selectedTitle := selectIdealTitle(animeListEntry.Titles)
 
 	meta := parsedNyaa.ExtractedMetadata.Clone()
@@ -139,14 +137,6 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry animeli
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
-
-	logger.
-		Info().
-		Str("title", parsedNyaa.NyaaTorrent.Title).
-		Str("entry", selectedTitle).
-		Str("path", req.SavePath).
-		Int("detectedQuality", meta.VerticalResolution).
-		Msg("torrent added")
 
 	return nil
 }

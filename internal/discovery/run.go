@@ -240,6 +240,13 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 		return fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 
+	if !latestTag.IsZero() {
+		logger.
+			Debug().
+			Str("latestTag", latestTag.String()).
+			Msg("detected latest tag")
+	}
+
 	parsedTorrents := parseResults(torrentResults)
 	parsedTorrents = filterRelevantResults(entry, parsedTorrents, latestTag)
 
@@ -247,7 +254,6 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 		logger.
 			Debug().
 			Int("searchResults", len(torrentResults)).
-			Str("latestTag", latestTag.String()).
 			Msg("no new episodes identified")
 
 		return nil
@@ -257,6 +263,12 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 		if err := c.AddTorrentEntry(ctx, entry, episodeTorrent); err != nil {
 			return fmt.Errorf("adding torrent to client: %w", err)
 		}
+
+		logger.
+			Info().
+			Int("verticalResolution", episodeTorrent.ExtractedMetadata.VerticalResolution).
+			Stringer("tag", episodeTorrent.ExtractedMetadata.Tag).
+			Msg("new episode added")
 	}
 
 	return nil
