@@ -67,20 +67,11 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 	}
 	req.URL.RawQuery = v.Encode()
 
-	t1 := time.Now()
-
 	resp, err := api.client.Do(req)
 	if err != nil {
 		return nil, fmt.Errorf("fetching response: %w", err)
 	}
 	defer resp.Body.Close()
-
-	log.
-		Trace().
-		Str("url", req.URL.String()).
-		Int("status_code", resp.StatusCode).
-		Dur("duration", time.Since(t1)).
-		Msg("rss search finished")
 
 	if resp.StatusCode >= 300 {
 		if len(api.cachedAnimeList) > 0 {

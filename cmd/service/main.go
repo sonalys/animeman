@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
@@ -14,10 +16,22 @@ import (
 	"github.com/sonalys/animeman/integrations/qbittorrent"
 	"github.com/sonalys/animeman/internal/configs"
 	"github.com/sonalys/animeman/internal/discovery"
+	"github.com/sonalys/animeman/internal/roundtripper"
 	"github.com/sonalys/animeman/internal/utils"
+	"golang.org/x/time/rate"
 )
 
-var version = "development"
+const (
+	userAgent = "github.com/sonalys/animeman"
+)
+
+var (
+	version          = "development"
+	defaultTransport = roundtripper.NewUserAgentTransport(
+		roundtripper.NewLoggerTransport(http.DefaultTransport),
+		userAgent,
+	)
+)
 
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{
@@ -29,11 +43,19 @@ func init() {
 }
 
 func initializeAnimeList(c configs.AnimeListConfig) discovery.AnimeListSource {
+	httpClient := &http.Client{
+		Transport: roundtripper.NewRateLimitedTransport(
+			defaultTransport,
+			rate.NewLimiter(rate.Every(time.Second), 1),
+		),
+		Timeout: 15 * time.Second,
+	}
+
 	switch c.Type {
 	case configs.AnimeListTypeMAL:
-		return myanimelist.New(c.Username)
+		return myanimelist.New(httpClient, c.Username)
 	case configs.AnimeListTypeAnilist:
-		return anilist.New(c.Username)
+		return anilist.New(httpClient, c.Username)
 	default:
 		log.Panic().Msgf("animeListType %s not implemented", c.Type)
 	}
@@ -52,16 +74,31 @@ func initializeTorrentClient(ctx context.Context, c configs.TorrentConfig) disco
 
 func main() {
 	log.Info().Msgf("starting Animeman [%s]", version)
+
 	config, err := configs.ReadConfig(utils.Coalesce(os.Getenv("CONFIG_PATH"), "config.yaml"))
 	if err != nil {
 		log.Fatal().Msgf("config is not valid: %s", err)
 	}
+
 	zerolog.SetGlobalLevel(config.LogLevel.Convert())
+
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
+
+	nyaaClient := &http.Client{
+		Jar: http.DefaultClient.Jar,
+		Transport: roundtripper.NewRateLimitedTransport(
+			defaultTransport,
+			rate.NewLimiter(rate.Every(time.Second), 1),
+		),
+		Timeout: 15 * time.Second,
+	}
+
+	nyaaConfig := nyaa.Config{
+		ListParameters: config.CustomParameters,
+	}
+
 	c := discovery.New(discovery.Dependencies{
-		NYAA: nyaa.New(nyaa.Config{
-			ListParameters: config.CustomParameters,
-		}),
+		NYAA:            nyaa.New(nyaaClient, nyaaConfig),
 		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
 		Config: discovery.Config{

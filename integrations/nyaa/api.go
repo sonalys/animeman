@@ -2,10 +2,6 @@ package nyaa
 
 import (
 	"net/http"
-	"time"
-
-	"github.com/sonalys/animeman/internal/roundtripper"
-	"golang.org/x/time/rate"
 )
 
 const API_URL = "https://nyaa.si/?page=rss"
@@ -34,15 +30,9 @@ type (
 	}
 )
 
-func New(c Config) *API {
+func New(client *http.Client, c Config) *API {
 	return &API{
 		config: c,
-		client: &http.Client{
-			Jar: http.DefaultClient.Jar,
-			Transport: roundtripper.NewUserAgentTransport(roundtripper.NewRateLimitedTransport(
-				http.DefaultTransport, rate.NewLimiter(rate.Every(1*time.Second), 1),
-			), "github.com/sonalys/animeman"),
-			// Timeout: 10 * time.Second,
-		},
+		client: client,
 	}
 }
