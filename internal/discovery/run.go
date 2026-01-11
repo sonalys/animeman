@@ -152,21 +152,29 @@ func filterRelevantResults(
 	// Requires sorted input, since we use tag progression.
 	results = sortResults(entry, results)
 
-	batchOnly := latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired
 	newEpisodes := filterNewEpisodes(results, latestTag)
+	if len(newEpisodes) == 0 {
+		return nil
+	}
 
-	if batchOnly {
-		batchResults := utils.Filter(newEpisodes, filterBatchEntries)
+	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
+		batchResults := utils.Filter(newEpisodes, func(entry parser.ParsedNyaa) bool { return entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 		if len(batchResults) > 0 {
+			log.
+				Trace().
+				Msg("batch detected for aired show, prioritizing batch torrent over individual episodes")
+
 			newEpisodes = batchResults[len(batchResults)-1:]
 		}
+	} else {
+		// Remove batches when there are latest tags, avoid episode download duplication.
+		newEpisodes = utils.Filter(newEpisodes, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 	}
 
 	log.
 		Trace().
 		Int("newEpisodes", len(newEpisodes)).
-		Bool("batchOnly", batchOnly).
-		Msg("filtered viable torrent candidates for new episodes")
+		Msg("newer episodes detected")
 
 	return newEpisodes
 }
@@ -249,15 +257,6 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 
 	parsedTorrents := parseResults(torrentResults)
 	parsedTorrents = filterRelevantResults(entry, parsedTorrents, latestTag)
-
-	if len(parsedTorrents) == 0 {
-		logger.
-			Debug().
-			Int("searchResults", len(torrentResults)).
-			Msg("no new episodes identified")
-
-		return nil
-	}
 
 	for _, episodeTorrent := range parsedTorrents {
 		if err := c.AddTorrentEntry(ctx, entry, episodeTorrent); err != nil {

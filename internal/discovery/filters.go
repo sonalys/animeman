@@ -11,8 +11,6 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
 
-func filterBatchEntries(e parser.ParsedNyaa) bool { return e.ExtractedMetadata.Tag.IsMultiEpisode() }
-
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.
 func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
@@ -50,12 +48,6 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Entry) bool {
 
 		for _, originalTitle := range titles {
 			if utils.MatchPrefixFlexible(meta.Title, originalTitle, ",.:`'\";-") {
-				log.
-					Trace().
-					Str("nyaaTitle", meta.Title).
-					Str("matchingTitlePrefix", originalTitle).
-					Msg("torrent candidate matched original title prefix")
-
 				return true
 			}
 		}
