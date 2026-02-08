@@ -1,6 +1,7 @@
 package animelist
 
 import (
+	"slices"
 	"time"
 
 	"github.com/sonalys/animeman/internal/utils"
@@ -41,7 +42,7 @@ func NewEntry(
 	numEpisodes int,
 ) Entry {
 	titles = utils.Filter(titles, func(s string) bool { return len(s) > 0 })
-	titles = utils.Deduplicate(titles)
+	titles = slices.Compact(titles)
 
 	return Entry{
 		Titles:       titles,

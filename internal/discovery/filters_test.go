@@ -3,6 +3,7 @@ package discovery
 import (
 	"testing"
 
+	"github.com/sonalys/animeman/internal/utils"
 	"github.com/stretchr/testify/require"
 )
 
@@ -40,7 +41,7 @@ func Test_matchTitle(t *testing.T) {
 
 	for _, tC := range testCases {
 		t.Run(tC.name, func(t *testing.T) {
-			match := matchTitle(tC.a, tC.b)
+			match := utils.MatchPrefixFlexible(tC.a, tC.b, ignoreCharset)
 			require.Equal(t, tC.want, match)
 		})
 	}

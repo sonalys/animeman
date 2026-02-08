@@ -209,7 +209,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
 	sanitizedTitles := utils.Map(entry.Titles, func(title string) string { return titleSanitization.Replace(strings.ToLower(title)) })
-	sanitizedTitles = utils.Deduplicate(sanitizedTitles)
+	sanitizedTitles = slices.Compact(sanitizedTitles)
 
 	entries, err := c.dep.NYAA.List(ctx, nyaa.ListOptions{
 		Titles:              sanitizedTitles,
@@ -288,6 +288,8 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 		logger.
 			Info().
 			Int("verticalResolution", meta.VerticalResolution).
+			Str("title", meta.Title).
+			Stringer("latestTag", latestTag).
 			Stringer("tag", meta.Tag).
 			Msg("new episode added")
 	}
