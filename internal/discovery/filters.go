@@ -14,8 +14,6 @@ import (
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.
 func filterMetadata(entry animelist.Entry) func(e nyaa.Item) bool {
-	strippedTitles := utils.Map(entry.Titles, func(title string) string { return parser.StripTitle(title) })
-
 	return func(nyaaEntry nyaa.Item) bool {
 		publishedDate := utils.Must(time.Parse(time.RFC1123Z, nyaaEntry.PubDate))
 
@@ -43,10 +41,7 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Item) bool {
 			return false
 		}
 
-		titles := append(entry.Titles, strippedTitles...)
-		titles = utils.Deduplicate(titles)
-
-		for _, originalTitle := range titles {
+		for _, originalTitle := range entry.Titles {
 			if utils.MatchPrefixFlexible(meta.Title, originalTitle, ",.:`'\";-") {
 				return true
 			}
@@ -55,7 +50,7 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Item) bool {
 		log.
 			Trace().
 			Str("nyaaTitle", meta.Title).
-			Strs("expectedTitlePrefixes", strippedTitles).
+			Strs("expectedTitlePrefixes", entry.Titles).
 			Msg("discarding torrent candidate due to mismatching titles")
 
 		return false
