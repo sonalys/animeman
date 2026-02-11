@@ -3,17 +3,17 @@ package domain
 import (
 	"fmt"
 
+	"github.com/gofrs/uuid/v5"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type User struct {
-	ID           string
+	ID           uuid.UUID
 	Username     string
 	PasswordHash []byte
 }
 
 func NewUser(
-	id string,
 	email string,
 	password []byte,
 ) (*User, error) {
@@ -23,8 +23,20 @@ func NewUser(
 	}
 
 	return &User{
-		ID:           id,
+		ID:           uuid.Must(uuid.NewV7()),
 		Username:     email,
 		PasswordHash: hashedPassword,
 	}, nil
+}
+
+func (u User) CreateProwlarrConfiguration(
+	host string,
+	apiKey string,
+) *ProwlarrConfiguration {
+	return &ProwlarrConfiguration{
+		ID:      uuid.Must(uuid.NewV7()),
+		OwnerID: u.ID,
+		Host:    host,
+		APIKey:  apiKey,
+	}
 }

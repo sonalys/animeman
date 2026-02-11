@@ -13,4 +13,11 @@ type (
 		Update(ctx context.Context, id string, update func(user *domain.User) error) error
 		Delete(ctx context.Context, id string) error
 	}
+
+	ProwlarrRepository interface {
+		CreateConfig(ctx context.Context, config *domain.ProwlarrConfiguration) error
+		GetConfigByOwner(ctx context.Context, owner string) (*domain.ProwlarrConfiguration, error)
+		UpdateConfig(ctx context.Context, id string, update func(config *domain.ProwlarrConfiguration) error) error
+		DeleteConfig(ctx context.Context, id string) error
+	}
 )

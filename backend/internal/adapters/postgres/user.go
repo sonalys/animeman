@@ -5,6 +5,7 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/gofrs/uuid/v5"
 	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -18,19 +19,18 @@ type userRepository struct {
 	conn *pgxpool.Pool
 }
 
-func (u userRepository) Create(ctx context.Context, user *domain.User) error {
-	queries := sqlcgen.New(u.conn)
+func (r userRepository) Create(ctx context.Context, user *domain.User) error {
+	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateUserParams{
-		ID:           user.ID,
+		ID:           user.ID.String(),
 		Username:     user.Username,
 		PasswordHash: string(user.PasswordHash),
 	}
 
-	err := queries.CreateUser(ctx, params)
+	_, err := queries.CreateUser(ctx, params)
 	if err != nil {
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		if pgErr, ok := errors.AsType[*pgconn.PgError](err); ok && pgErr.Code == "23505" {
 			switch pgErr.ConstraintName {
 			case "unique_username":
 				return apperr.New(err, codes.AlreadyExists, "username already exists")
@@ -42,36 +42,36 @@ func (u userRepository) Create(ctx context.Context, user *domain.User) error {
 	return nil
 }
 
-func (u userRepository) Delete(ctx context.Context, id string) error {
-	queries := sqlcgen.New(u.conn)
+func (r userRepository) Delete(ctx context.Context, id string) error {
+	queries := sqlcgen.New(r.conn)
 
 	if err := queries.DeleteUser(ctx, id); err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return apperr.New(err, codes.NotFound, "user not found")
+			return apperr.New(err, codes.NotFound, "not found")
 		default:
-			return apperr.New(err, codes.Internal, "could not get user")
+			return apperr.New(err, codes.Internal, "internal error")
 		}
 	}
 
 	return nil
 }
 
-func (u userRepository) Get(ctx context.Context, id string) (*domain.User, error) {
-	queries := sqlcgen.New(u.conn)
+func (r userRepository) Get(ctx context.Context, id string) (*domain.User, error) {
+	queries := sqlcgen.New(r.conn)
 
-	userModel, err := queries.GetUser(ctx, id)
+	userModel, err := queries.GetUserById(ctx, id)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return nil, apperr.New(err, codes.NotFound, "user not found")
+			return nil, apperr.New(err, codes.NotFound, "not found")
 		default:
-			return nil, apperr.New(err, codes.Internal, "could not get user")
+			return nil, apperr.New(err, codes.Internal, "internal error")
 		}
 	}
 
 	user := &domain.User{
-		ID:           userModel.ID,
+		ID:           uuid.FromStringOrNil(userModel.ID),
 		Username:     userModel.Username,
 		PasswordHash: []byte(userModel.PasswordHash),
 	}
@@ -79,8 +79,8 @@ func (u userRepository) Get(ctx context.Context, id string) (*domain.User, error
 	return user, nil
 }
 
-func (u userRepository) Update(ctx context.Context, id string, update func(user *domain.User) error) error {
-	tx, err := u.conn.BeginTx(ctx, pgx.TxOptions{})
+func (r userRepository) Update(ctx context.Context, id string, update func(user *domain.User) error) error {
+	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return apperr.New(err, codes.Internal, "could not start transaction")
 	}
@@ -88,18 +88,18 @@ func (u userRepository) Update(ctx context.Context, id string, update func(user 
 
 	queries := sqlcgen.New(tx)
 
-	userModel, err := queries.GetUser(ctx, id)
+	userModel, err := queries.GetUserById(ctx, id)
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
-			return apperr.New(err, codes.NotFound, "user not found")
+			return apperr.New(err, codes.NotFound, "not found")
 		default:
-			return apperr.New(err, codes.Internal, "could not get user")
+			return apperr.New(err, codes.Internal, "internal error")
 		}
 	}
 
 	user := &domain.User{
-		ID:           userModel.ID,
+		ID:           uuid.FromStringOrNil(userModel.ID),
 		Username:     userModel.Username,
 		PasswordHash: []byte(userModel.PasswordHash),
 	}
@@ -108,19 +108,17 @@ func (u userRepository) Update(ctx context.Context, id string, update func(user 
 		return err
 	}
 
-	updateParams := sqlcgen.UpdateUserParams{
-		ID:           user.ID,
-		Username:     user.Username,
+	updateParams := sqlcgen.UpdateUserPasswordParams{
+		ID:           user.ID.String(),
 		PasswordHash: string(user.PasswordHash),
 	}
 
-	if err = queries.UpdateUser(ctx, updateParams); err != nil {
+	if _, err = queries.UpdateUserPassword(ctx, updateParams); err != nil {
 		if errors.Is(err, sql.ErrNoRows) {
-			return apperr.New(err, codes.NotFound, "user not found")
+			return apperr.New(err, codes.NotFound, "not found")
 		}
 
-		var pgErr *pgconn.PgError
-		if errors.As(err, &pgErr) && pgErr.Code == "23505" {
+		if pgErr, ok := errors.AsType[*pgconn.PgError](err); ok && pgErr.Code == "23505" {
 			switch pgErr.ConstraintName {
 			case "unique_username":
 				return apperr.New(err, codes.AlreadyExists, "username already exists")

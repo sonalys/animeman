@@ -42,6 +42,12 @@ func (c Client) UserRepository() ports.UserRepository {
 	}
 }
 
+func (c Client) ProwlarrRepository() ports.ProwlarrRepository {
+	return prowlarrRepository{
+		conn: c.conn,
+	}
+}
+
 func waitConnection(ctx context.Context, conn *pgxpool.Pool) error {
 	for {
 		if err := conn.Ping(ctx); err == nil {

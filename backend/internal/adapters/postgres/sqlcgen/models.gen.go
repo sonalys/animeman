@@ -4,6 +4,125 @@
 
 package sqlcgen
 
+import (
+	"database/sql/driver"
+	"fmt"
+)
+
+type AnimeListSource string
+
+const (
+	AnimeListSourceMal     AnimeListSource = "mal"
+	AnimeListSourceAnilist AnimeListSource = "anilist"
+)
+
+func (e *AnimeListSource) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AnimeListSource(s)
+	case string:
+		*e = AnimeListSource(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AnimeListSource: %T", src)
+	}
+	return nil
+}
+
+type NullAnimeListSource struct {
+	AnimeListSource AnimeListSource
+	Valid           bool // Valid is true if AnimeListSource is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAnimeListSource) Scan(value interface{}) error {
+	if value == nil {
+		ns.AnimeListSource, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AnimeListSource.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAnimeListSource) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AnimeListSource), nil
+}
+
+type TorrentClientSource string
+
+const (
+	TorrentClientSourceQbittorrent TorrentClientSource = "qbittorrent"
+)
+
+func (e *TorrentClientSource) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = TorrentClientSource(s)
+	case string:
+		*e = TorrentClientSource(s)
+	default:
+		return fmt.Errorf("unsupported scan type for TorrentClientSource: %T", src)
+	}
+	return nil
+}
+
+type NullTorrentClientSource struct {
+	TorrentClientSource TorrentClientSource
+	Valid               bool // Valid is true if TorrentClientSource is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullTorrentClientSource) Scan(value interface{}) error {
+	if value == nil {
+		ns.TorrentClientSource, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.TorrentClientSource.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullTorrentClientSource) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.TorrentClientSource), nil
+}
+
+type AnimeList struct {
+	ID             string
+	OwnerID        string
+	RemoteUsername string
+	Source         AnimeListSource
+}
+
+type ImportConfiguration struct {
+	ID                      string
+	OwnerID                 string
+	AnimeListID             string
+	TorrentClientID         string
+	ProwlarrConfigurationID string
+}
+
+type ProwlarrConfiguration struct {
+	ID      string
+	OwnerID string
+	Host    string
+	ApiKey  string
+}
+
+type TorrentClient struct {
+	ID       string
+	OwnerID  string
+	Source   TorrentClientSource
+	Host     string
+	Username string
+	Password string
+}
+
 type User struct {
 	ID           string
 	Username     string
