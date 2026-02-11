@@ -7,11 +7,15 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
-type User struct {
-	ID           uuid.UUID
-	Username     string
-	PasswordHash []byte
-}
+type (
+	UserID struct{ uuid.UUID }
+
+	User struct {
+		ID           UserID
+		Username     string
+		PasswordHash []byte
+	}
+)
 
 func NewUser(
 	email string,
@@ -23,7 +27,7 @@ func NewUser(
 	}
 
 	return &User{
-		ID:           uuid.Must(uuid.NewV7()),
+		ID:           UserID{uuid.Must(uuid.NewV7())},
 		Username:     email,
 		PasswordHash: hashedPassword,
 	}, nil
@@ -34,7 +38,7 @@ func (u User) CreateProwlarrConfiguration(
 	apiKey string,
 ) *ProwlarrConfiguration {
 	return &ProwlarrConfiguration{
-		ID:      uuid.Must(uuid.NewV7()),
+		ID:      ProwlarrConfigID{uuid.Must(uuid.NewV7())},
 		OwnerID: u.ID,
 		Host:    host,
 		APIKey:  apiKey,

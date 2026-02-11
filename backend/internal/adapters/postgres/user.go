@@ -42,10 +42,10 @@ func (r userRepository) Create(ctx context.Context, user *domain.User) error {
 	return nil
 }
 
-func (r userRepository) Delete(ctx context.Context, id string) error {
+func (r userRepository) Delete(ctx context.Context, id domain.UserID) error {
 	queries := sqlcgen.New(r.conn)
 
-	if err := queries.DeleteUser(ctx, id); err != nil {
+	if err := queries.DeleteUser(ctx, id.String()); err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
 			return apperr.New(err, codes.NotFound, "not found")
@@ -57,10 +57,10 @@ func (r userRepository) Delete(ctx context.Context, id string) error {
 	return nil
 }
 
-func (r userRepository) Get(ctx context.Context, id string) (*domain.User, error) {
+func (r userRepository) Get(ctx context.Context, id domain.UserID) (*domain.User, error) {
 	queries := sqlcgen.New(r.conn)
 
-	userModel, err := queries.GetUserById(ctx, id)
+	userModel, err := queries.GetUserById(ctx, id.String())
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -71,7 +71,7 @@ func (r userRepository) Get(ctx context.Context, id string) (*domain.User, error
 	}
 
 	user := &domain.User{
-		ID:           uuid.FromStringOrNil(userModel.ID),
+		ID:           domain.UserID{uuid.FromStringOrNil(userModel.ID)},
 		Username:     userModel.Username,
 		PasswordHash: []byte(userModel.PasswordHash),
 	}
@@ -79,7 +79,7 @@ func (r userRepository) Get(ctx context.Context, id string) (*domain.User, error
 	return user, nil
 }
 
-func (r userRepository) Update(ctx context.Context, id string, update func(user *domain.User) error) error {
+func (r userRepository) Update(ctx context.Context, id domain.UserID, update func(user *domain.User) error) error {
 	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return apperr.New(err, codes.Internal, "could not start transaction")
@@ -88,7 +88,7 @@ func (r userRepository) Update(ctx context.Context, id string, update func(user 
 
 	queries := sqlcgen.New(tx)
 
-	userModel, err := queries.GetUserById(ctx, id)
+	userModel, err := queries.GetUserById(ctx, id.String())
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -99,7 +99,7 @@ func (r userRepository) Update(ctx context.Context, id string, update func(user 
 	}
 
 	user := &domain.User{
-		ID:           uuid.FromStringOrNil(userModel.ID),
+		ID:           domain.UserID{uuid.FromStringOrNil(userModel.ID)},
 		Username:     userModel.Username,
 		PasswordHash: []byte(userModel.PasswordHash),
 	}

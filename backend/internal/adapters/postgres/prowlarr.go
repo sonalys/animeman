@@ -43,10 +43,10 @@ func (r prowlarrRepository) CreateConfig(ctx context.Context, config *domain.Pro
 	return nil
 }
 
-func (r prowlarrRepository) GetConfigByOwner(ctx context.Context, owner string) (*domain.ProwlarrConfiguration, error) {
+func (r prowlarrRepository) GetConfigByOwner(ctx context.Context, owner domain.UserID) (*domain.ProwlarrConfiguration, error) {
 	queries := sqlcgen.New(r.conn)
 
-	prowlarrConfigModel, err := queries.GetProwlarrConfigurationByOwner(ctx, owner)
+	prowlarrConfigModel, err := queries.GetProwlarrConfigurationByOwner(ctx, owner.String())
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -57,8 +57,8 @@ func (r prowlarrRepository) GetConfigByOwner(ctx context.Context, owner string) 
 	}
 
 	prowlarrConfiguration := &domain.ProwlarrConfiguration{
-		ID:      uuid.FromStringOrNil(prowlarrConfigModel.ID),
-		OwnerID: uuid.FromStringOrNil(prowlarrConfigModel.OwnerID),
+		ID:      domain.ProwlarrConfigID{uuid.FromStringOrNil(prowlarrConfigModel.ID)},
+		OwnerID: domain.UserID{uuid.FromStringOrNil(prowlarrConfigModel.OwnerID)},
 		Host:    prowlarrConfigModel.Host,
 		APIKey:  prowlarrConfigModel.ApiKey,
 	}
@@ -66,7 +66,7 @@ func (r prowlarrRepository) GetConfigByOwner(ctx context.Context, owner string) 
 	return prowlarrConfiguration, nil
 }
 
-func (r prowlarrRepository) UpdateConfig(ctx context.Context, id string, update func(config *domain.ProwlarrConfiguration) error) error {
+func (r prowlarrRepository) UpdateConfig(ctx context.Context, id domain.ProwlarrConfigID, update func(config *domain.ProwlarrConfiguration) error) error {
 	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return apperr.New(err, codes.Internal, "could not start transaction")
@@ -75,7 +75,7 @@ func (r prowlarrRepository) UpdateConfig(ctx context.Context, id string, update 
 
 	queries := sqlcgen.New(tx)
 
-	prowlarrConfigModel, err := queries.GetProwlarrConfigurationByOwner(ctx, id)
+	prowlarrConfigModel, err := queries.GetProwlarrConfigurationByOwner(ctx, id.String())
 	if err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
@@ -86,8 +86,8 @@ func (r prowlarrRepository) UpdateConfig(ctx context.Context, id string, update 
 	}
 
 	prowlarrConfiguration := &domain.ProwlarrConfiguration{
-		ID:      uuid.FromStringOrNil(prowlarrConfigModel.ID),
-		OwnerID: uuid.FromStringOrNil(prowlarrConfigModel.OwnerID),
+		ID:      domain.ProwlarrConfigID{uuid.FromStringOrNil(prowlarrConfigModel.ID)},
+		OwnerID: domain.UserID{uuid.FromStringOrNil(prowlarrConfigModel.OwnerID)},
 		Host:    prowlarrConfigModel.Host,
 		APIKey:  prowlarrConfigModel.ApiKey,
 	}
@@ -97,7 +97,7 @@ func (r prowlarrRepository) UpdateConfig(ctx context.Context, id string, update 
 	}
 
 	updateParams := sqlcgen.UpdateProwlarrConfigurationParams{
-		ID:     id,
+		ID:     id.String(),
 		Host:   prowlarrConfigModel.Host,
 		ApiKey: prowlarrConfiguration.APIKey,
 	}
@@ -123,10 +123,10 @@ func (r prowlarrRepository) UpdateConfig(ctx context.Context, id string, update 
 	return nil
 }
 
-func (r prowlarrRepository) DeleteConfig(ctx context.Context, id string) error {
+func (r prowlarrRepository) DeleteConfig(ctx context.Context, id domain.ProwlarrConfigID) error {
 	queries := sqlcgen.New(r.conn)
 
-	if err := queries.DeleteProwlarrConfiguration(ctx, id); err != nil {
+	if err := queries.DeleteProwlarrConfiguration(ctx, id.String()); err != nil {
 		switch {
 		case errors.Is(err, sql.ErrNoRows):
 			return apperr.New(err, codes.NotFound, "not found")
