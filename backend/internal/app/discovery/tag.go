@@ -6,9 +6,11 @@ import (
 	"strconv"
 
 	"github.com/sonalys/animeman/internal/domain"
-	"github.com/sonalys/animeman/internal/parser"
-	"github.com/sonalys/animeman/internal/tags"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/errutils"
+	"github.com/sonalys/animeman/internal/utils/genericmath"
+	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // Regexp for detecting batch tag numbers.
@@ -16,7 +18,7 @@ import (
 var batchReplaceExpr = regexp.MustCompile(`(\d+)~(\d+)`)
 
 func strToFloat64(cur string) float64 {
-	return utils.Must(strconv.ParseFloat(cur, 64))
+	return errutils.Must(strconv.ParseFloat(cur, 64))
 }
 
 // tagMergeBatchEpisodes will receive a tag represented by S0E1~12.
@@ -29,7 +31,7 @@ func tagMergeBatchEpisodes(tag string) string {
 	values := matches[0][1:]
 	return batchReplaceExpr.ReplaceAllString(
 		tag,
-		fmt.Sprint(utils.Max(utils.Map(values, strToFloat64)...)),
+		fmt.Sprint(genericmath.Max(sliceutils.Map(values, strToFloat64)...)),
 	)
 }
 

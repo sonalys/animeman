@@ -8,9 +8,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/domain"
-	"github.com/sonalys/animeman/internal/parser"
-	"github.com/sonalys/animeman/internal/tags"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // findLatestTag will receive an anime list entry and return all torrents listed from the anime.
@@ -20,7 +19,7 @@ func (c *Controller) findLatestTag(ctx context.Context, entry domain.Entry) (tag
 
 	for _, title := range entry.Titles {
 		req := &domain.ListTorrentConfig{
-			Tag: utils.Pointer(parser.BuildTitleTag(title)),
+			Tag: new(parser.BuildTitleTag(title)),
 		}
 		resp, err := c.dep.TorrentClient.List(ctx, req)
 
@@ -130,7 +129,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry domain.
 	}
 
 	if c.dep.Config.RenameTorrent {
-		req.Name = utils.Pointer(c.buildTorrentName(selectedTitle, parsedNyaa))
+		req.Name = new(c.buildTorrentName(selectedTitle, parsedNyaa))
 	}
 
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
@@ -146,7 +145,7 @@ func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry domain.
 func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
 	torrents, err := c.dep.TorrentClient.List(ctx, &domain.ListTorrentConfig{
 		Category: &c.dep.Config.Category,
-		Tag:      utils.Pointer(""),
+		Tag:      new(""),
 	})
 	if err != nil {
 		return fmt.Errorf("listing torrents: %w", err)

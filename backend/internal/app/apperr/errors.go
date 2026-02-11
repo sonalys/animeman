@@ -21,15 +21,15 @@ func New(cause error, code codes.Code, msg string, args ...any) Error {
 	}
 }
 
-func (e *Error) Error() string {
-	return fmt.Sprintf("[%s] %s", e.StatusCode, e.Message)
+func (e Error) Error() string {
+	return fmt.Sprintf("[%s] %s: %s", e.StatusCode, e.Message, e.Cause)
 }
 
-func (e *Error) Unwrap() error {
+func (e Error) Unwrap() error {
 	return e.Cause
 }
 
-func (e *Error) Code() codes.Code {
+func (e Error) Code() codes.Code {
 	return e.StatusCode
 }
 

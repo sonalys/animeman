@@ -1,4 +1,4 @@
-package utils
+package sliceutils
 
 func Map[T1, T2 any](in []T1, f func(T1) T2) []T2 {
 	out := make([]T2, 0, len(in))

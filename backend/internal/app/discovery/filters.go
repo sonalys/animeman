@@ -7,15 +7,16 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/adapters/nyaa"
 	"github.com/sonalys/animeman/internal/domain"
-	"github.com/sonalys/animeman/internal/parser"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/errutils"
+	"github.com/sonalys/animeman/internal/utils/parser"
+	utils "github.com/sonalys/animeman/internal/utils/stringutils"
 )
 
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.
 func filterMetadata(entry domain.Entry) func(e nyaa.Item) bool {
 	return func(nyaaEntry nyaa.Item) bool {
-		publishedDate := utils.Must(time.Parse(time.RFC1123Z, nyaaEntry.PubDate))
+		publishedDate := errutils.Must(time.Parse(time.RFC1123Z, nyaaEntry.PubDate))
 
 		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
 		if publishedDate.Before(entry.StartDate.AddDate(0, 0, -2)) {

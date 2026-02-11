@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (api *API) Login(ctx context.Context, username, password string) error {
+func (api *Client) Login(ctx context.Context, username, password string) error {
 	var path = api.host + "/auth/login"
 	data := url.Values{
 		"username": []string{username},

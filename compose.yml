@@ -1,0 +1,52 @@
+services:
+  postgres:
+    image: postgres:18
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: animeman
+      POSTGRES_PASSWORD: animeman
+      POSTGRES_DB: animeman
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U animeman -d animeman"]
+      interval: 5s     # How often to check
+      timeout: 5s      # How long to wait for a response
+      retries: 5       # How many failures before giving up
+      start_period: 2s # Give DB time to initialize before first check
+    # ----------------------
+
+  # This is your Go backend
+  api:
+    build: 
+      context: backend
+      dockerfile: ./deployment/Dockerfile
+      args:
+        - VERSION=dev
+    container_name: api
+    depends_on:
+      - postgres
+      - migrate
+    environment:
+      - DATABASE_CONN=postgres://animeman:animeman@postgres:5432/animeman?sslmode=disable
+      - CONFIG_PATH=/etc/app/config.yaml
+    ports:
+      - "8080:8080"
+    volumes:
+      - ./backend/.config:/etc/app:ro
+
+  migrate:
+    image: migrate/migrate
+    volumes:
+      - ./backend/internal/adapters/postgres/migrations:/migrations:z
+    # Connects to 'db' service using internal Docker network
+    command: -path=/migrations/ -database "postgres://animeman:animeman@postgres:5432/animeman?sslmode=disable" up
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+volumes:
+  postgres_data:

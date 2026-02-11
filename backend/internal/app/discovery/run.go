@@ -12,9 +12,11 @@ import (
 	"github.com/sonalys/animeman/internal/adapters/nyaa"
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain"
-	"github.com/sonalys/animeman/internal/parser"
-	"github.com/sonalys/animeman/internal/tags"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/genericmath"
+	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
+	utils "github.com/sonalys/animeman/internal/utils/stringutils"
+	"github.com/sonalys/animeman/internal/utils/tags"
 	"google.golang.org/grpc/codes"
 )
 
@@ -92,7 +94,7 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) []parser.P
 			// Example: S01E01-13, followed by S01.
 			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
 			if currentTag.IsMultiEpisode() && currentTag.Contains(latestTag) {
-				out = utils.Filter(out, func(previous parser.ParsedNyaa) bool { return !currentTag.Contains(previous.ExtractedMetadata.Tag) })
+				out = sliceutils.Filter(out, func(previous parser.ParsedNyaa) bool { return !currentTag.Contains(previous.ExtractedMetadata.Tag) })
 			} else if tagCompare(currentTag, latestTag) <= 0 {
 				continue
 			}
@@ -106,7 +108,7 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) []parser.P
 }
 
 func parseResults(results []nyaa.Item) []parser.ParsedNyaa {
-	return utils.Map(results, func(entry nyaa.Item) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
+	return sliceutils.Map(results, func(entry nyaa.Item) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
 }
 
 // sortResults will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
@@ -127,11 +129,11 @@ func sortResults(entry domain.Entry, results []parser.ParsedNyaa) []parser.Parse
 		const ignoreCharset = ",.;:-()[]'`\""
 
 		// Then title similarity.
-		titleSimilarityI := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
+		titleSimilarityI := genericmath.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
 			return utils.CalculateTextSimilarity(curTitle, first.ExtractedMetadata.Title, ignoreCharset)
 		})...)
 
-		titleSimilarityJ := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
+		titleSimilarityJ := genericmath.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
 			return utils.CalculateTextSimilarity(curTitle, second.ExtractedMetadata.Title, ignoreCharset)
 		})...)
 
@@ -165,7 +167,7 @@ func filterRelevantResults(
 	results = sortResults(entry, results)
 
 	if latestTag.IsZero() && entry.AiringStatus == domain.AiringStatusAired {
-		batchResults := utils.Filter(results, func(entry parser.ParsedNyaa) bool { return entry.ExtractedMetadata.Tag.IsMultiEpisode() })
+		batchResults := sliceutils.Filter(results, func(entry parser.ParsedNyaa) bool { return entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 		if len(batchResults) > 0 {
 			log.
 				Debug().
@@ -173,7 +175,7 @@ func filterRelevantResults(
 		}
 	} else {
 		// Remove batches when there are latest tags, avoid episode download duplication.
-		results = utils.Filter(results, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
+		results = sliceutils.Filter(results, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 	}
 
 	results = filterEpisodes(results, latestTag)
@@ -208,7 +210,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry domain.Entry) ([]nyaa
 
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	sanitizedTitles := utils.Map(entry.Titles, func(title string) string { return titleSanitization.Replace(strings.ToLower(title)) })
+	sanitizedTitles := sliceutils.Map(entry.Titles, func(title string) string { return titleSanitization.Replace(strings.ToLower(title)) })
 	sanitizedTitles = slices.Compact(sanitizedTitles)
 
 	entries, err := c.dep.NYAA.List(ctx, nyaa.ListOptions{
@@ -229,7 +231,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry domain.Entry) ([]nyaa
 		return nil, nil
 	}
 
-	entries = utils.Filter(entries,
+	entries = sliceutils.Filter(entries,
 		filterMetadata(entry),
 	)
 
@@ -253,7 +255,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry domain.Entry) erro
 	}
 
 	// Remove results without seeders.
-	torrentResults := utils.Filter(searchResults, func(e nyaa.Item) bool { return e.Seeders > 0 })
+	torrentResults := sliceutils.Filter(searchResults, func(e nyaa.Item) bool { return e.Seeders > 0 })
 
 	if len(torrentResults) == 0 {
 		logger.

@@ -11,7 +11,8 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/domain"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/errutils"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 type (
@@ -143,7 +144,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]domain.Entry, error
 		},
 	}
 
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(utils.Must(json.Marshal(reqBody)))))
+	req := errutils.Must(http.NewRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(errutils.Must(json.Marshal(reqBody)))))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 
@@ -162,7 +163,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]domain.Entry, error
 			return api.cachedAnimeList, nil
 		}
 
-		return nil, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))
+		return nil, fmt.Errorf("invalid response: %s", string(errutils.Must(io.ReadAll(resp.Body))))
 	}
 
 	var respBody AnimeListResp
@@ -173,7 +174,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]domain.Entry, error
 	out := make([]AnimeListEntry, 0, len(respBody.Data.MediaListCollection.Lists))
 
 	for _, list := range respBody.Data.MediaListCollection.Lists {
-		watchingEntries := utils.Filter(list.Entries, func(entry AnimeListEntry) bool {
+		watchingEntries := sliceutils.Filter(list.Entries, func(entry AnimeListEntry) bool {
 			return entry.Status == ListStatusWatching
 		})
 		out = append(out, watchingEntries...)

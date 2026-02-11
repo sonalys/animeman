@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func (api *API) RemoveTorrentTags(ctx context.Context, hashes []string, tags []string) error {
+func (api *Client) RemoveTorrentTags(ctx context.Context, hashes []string, tags []string) error {
 	var path = api.host + "/torrents/removeTags"
 	values := url.Values{
 		"hashes": []string{strings.Join(hashes, "|")},

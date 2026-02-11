@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/sonalys/animeman/internal/domain"
-	"github.com/sonalys/animeman/internal/tags"
+	"github.com/sonalys/animeman/internal/utils/tags"
 	"github.com/stretchr/testify/require"
 )
 

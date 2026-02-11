@@ -6,7 +6,7 @@ import (
 	"net/url"
 	"strings"
 
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 type (
@@ -54,9 +54,9 @@ func (entries QueryOr) Apply(req *http.Request) {
 
 	prevQuery := query.Get("q")
 
-	entries = utils.Filter(entries, func(s string) bool { return s != "" })
+	entries = sliceutils.Filter(entries, func(s string) bool { return s != "" })
 	if len(entries) > 1 {
-		entries = utils.Map(entries, quote)
+		entries = sliceutils.Map(entries, quote)
 	}
 	curQuery := strings.Join(entries, "|")
 

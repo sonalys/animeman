@@ -7,9 +7,9 @@
             "request": "launch",
             "mode": "debug",
             "env": {
-                "CONFIG_PATH": "${workspaceFolder}/config.yaml"
+                "CONFIG_PATH": "${workspaceFolder}/backend/.config/config.yaml"
             },
-            "program": "${workspaceFolder}/cmd/service/main.go"
+            "program": "${workspaceFolder}/backend/cmd/server/main.go"
         },
     ]
 }

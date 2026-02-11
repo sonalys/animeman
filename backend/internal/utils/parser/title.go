@@ -5,7 +5,7 @@ import (
 	"regexp"
 	"strings"
 
-	"github.com/sonalys/animeman/internal/tags"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // Regex for removing all annotations from a title, Examples: (Recoded), [1080p], .mkv.

@@ -8,7 +8,7 @@ import (
 
 type User struct {
 	ID           string
-	Email        string
+	Username     string
 	PasswordHash []byte
 }
 
@@ -24,7 +24,7 @@ func NewUser(
 
 	return &User{
 		ID:           id,
-		Email:        email,
+		Username:     email,
 		PasswordHash: hashedPassword,
 	}, nil
 }

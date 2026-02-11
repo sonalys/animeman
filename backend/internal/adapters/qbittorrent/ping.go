@@ -7,7 +7,7 @@ import (
 	"github.com/rs/zerolog/log"
 )
 
-func (api *API) Wait(ctx context.Context) {
+func (api *Client) Wait(ctx context.Context) {
 	log.Info().Msgf("probing for qBittorrent")
 	for {
 		if ctx.Err() != nil {

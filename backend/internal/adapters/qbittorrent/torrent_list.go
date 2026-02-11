@@ -9,7 +9,7 @@ import (
 	"net/url"
 
 	"github.com/sonalys/animeman/internal/domain"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/errutils"
 )
 
 func convertTorrent(in []Torrent) []domain.Torrent {
@@ -36,7 +36,7 @@ func digestListTorrentArg(arg *domain.ListTorrentConfig) url.Values {
 	return v
 }
 
-func (api *API) List(ctx context.Context, arg *domain.ListTorrentConfig) ([]domain.Torrent, error) {
+func (api *Client) List(ctx context.Context, arg *domain.ListTorrentConfig) ([]domain.Torrent, error) {
 	var path = api.host + "/torrents/info"
 	req, err := http.NewRequest(http.MethodGet, path, nil)
 	if err != nil {
@@ -48,7 +48,7 @@ func (api *API) List(ctx context.Context, arg *domain.ListTorrentConfig) ([]doma
 		return nil, fmt.Errorf("could not list torrents: %w", err)
 	}
 	defer resp.Body.Close()
-	rawBody := utils.Must(io.ReadAll(resp.Body))
+	rawBody := errutils.Must(io.ReadAll(resp.Body))
 	var respBody []Torrent
 	if err := json.Unmarshal(rawBody, &respBody); err != nil {
 		return nil, fmt.Errorf("could not read response: %s: %w", string(rawBody), err)

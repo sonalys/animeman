@@ -5,11 +5,11 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/cmd/server/configs"
 	"github.com/sonalys/animeman/internal/adapters/anilist"
 	"github.com/sonalys/animeman/internal/adapters/myanimelist"
 	"github.com/sonalys/animeman/internal/app/discovery"
-	"github.com/sonalys/animeman/internal/configs"
-	"github.com/sonalys/animeman/internal/roundtripper"
+	"github.com/sonalys/animeman/internal/utils/roundtripper"
 	"golang.org/x/time/rate"
 )
 

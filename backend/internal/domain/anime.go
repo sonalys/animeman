@@ -4,7 +4,7 @@ import (
 	"slices"
 	"time"
 
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 type ListStatus int
@@ -41,7 +41,7 @@ func NewEntry(
 	startDate time.Time,
 	numEpisodes int,
 ) Entry {
-	titles = utils.Filter(titles, func(s string) bool { return len(s) > 0 })
+	titles = sliceutils.Filter(titles, func(s string) bool { return len(s) > 0 })
 	titles = slices.Compact(titles)
 
 	return Entry{

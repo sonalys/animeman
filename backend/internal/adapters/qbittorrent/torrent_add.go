@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/sonalys/animeman/internal/domain"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/errutils"
 )
 
 func digestArg(arg *domain.AddTorrentConfig) (io.Reader, string) {
@@ -18,26 +18,26 @@ func digestArg(arg *domain.AddTorrentConfig) (io.Reader, string) {
 
 	w := multipart.NewWriter(&b)
 
-	field := utils.Must(w.CreateFormField("urls"))
-	utils.Must(io.WriteString(field, strings.Join(arg.URLs, "\n")))
-	field = utils.Must(w.CreateFormField("tags"))
-	utils.Must(io.WriteString(field, strings.Join(arg.Tags, ",")))
-	field = utils.Must(w.CreateFormField("category"))
-	utils.Must(io.WriteString(field, fmt.Sprint(arg.Category)))
-	field = utils.Must(w.CreateFormField("paused"))
-	utils.Must(io.WriteString(field, fmt.Sprint(arg.Paused)))
-	field = utils.Must(w.CreateFormField("savepath"))
-	utils.Must(io.WriteString(field, fmt.Sprint(arg.SavePath)))
+	field := errutils.Must(w.CreateFormField("urls"))
+	errutils.Must(io.WriteString(field, strings.Join(arg.URLs, "\n")))
+	field = errutils.Must(w.CreateFormField("tags"))
+	errutils.Must(io.WriteString(field, strings.Join(arg.Tags, ",")))
+	field = errutils.Must(w.CreateFormField("category"))
+	errutils.Must(io.WriteString(field, fmt.Sprint(arg.Category)))
+	field = errutils.Must(w.CreateFormField("paused"))
+	errutils.Must(io.WriteString(field, fmt.Sprint(arg.Paused)))
+	field = errutils.Must(w.CreateFormField("savepath"))
+	errutils.Must(io.WriteString(field, fmt.Sprint(arg.SavePath)))
 
 	if arg.Name != nil {
-		field = utils.Must(w.CreateFormField("rename"))
-		utils.Must(io.WriteString(field, fmt.Sprint(*arg.Name)))
+		field = errutils.Must(w.CreateFormField("rename"))
+		errutils.Must(io.WriteString(field, fmt.Sprint(*arg.Name)))
 	}
 
 	return &b, w.FormDataContentType()
 }
 
-func (api *API) AddTorrent(ctx context.Context, arg *domain.AddTorrentConfig) error {
+func (api *Client) AddTorrent(ctx context.Context, arg *domain.AddTorrentConfig) error {
 	var path = api.host + "/torrents/add"
 	r, contentType := digestArg(arg)
 

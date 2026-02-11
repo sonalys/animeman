@@ -1,22 +1,15 @@
-IMG = ghcr.io/sonalys/animeman
-ARCH := $(shell go env GOARCH)
+.PHONY: up
+up: ## Start the infrastructure in the background
+	docker compose up
 
-ifeq ($(ARCH),x86_64)
-	ARCHITECTURE := amd64
-else ifeq ($(ARCH),aarch64)
-	ARCHITECTURE := arm64
-else
-	$(error Unsupported architecture: $(ARCH))
-endif
+.PHONY: down
+down: ## Stop all containers
+	docker compose down
 
-run:
-	go run cmd/service/main.go
+.PHONY: logs
+logs: ## Tail container logs
+	docker compose logs -f
 
-build:
-	CGO_ENABLED=0 go build -o ./bin/animeman ./cmd/service/main.go
-
-image:
-	docker build -t ${IMG}:latest -f builders/Dockerfile.linux.$(ARCHITECTURE) .
-
-push:
-	docker push ${IMG}
+.PHONY: help
+help: ## Show this help message
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-15s\033[0m %s\n", $$1, $$2}'

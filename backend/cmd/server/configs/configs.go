@@ -7,7 +7,7 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/optional"
 	"gopkg.in/yaml.v3"
 )
 
@@ -105,6 +105,10 @@ func (c TorrentConfig) Validate() error {
 	return nil
 }
 
+type PostgresConfig struct {
+	ConnStr string `yaml:"connectionString"`
+}
+
 type LogLevel string
 
 const (
@@ -116,8 +120,9 @@ const (
 
 type Config struct {
 	AnimeListConfig `yaml:"animeList"`
-	RSSConfig       `yaml:"rssConfig"`
-	TorrentConfig   `yaml:"torrentConfig"`
+	RSSConfig       `yaml:"rss"`
+	TorrentConfig   `yaml:"torrent"`
+	PostgresConfig  `yaml:"postgres"`
 	LogLevel        LogLevel `yaml:"logLevel"`
 }
 
@@ -136,13 +141,13 @@ func (l LogLevel) Convert() zerolog.Level {
 
 func (c Config) Validate() error {
 	if err := c.AnimeListConfig.Validate(); err != nil {
-		return fmt.Errorf("domain.%w", err)
+		return fmt.Errorf("animeList.%w", err)
 	}
 	if err := c.RSSConfig.Validate(); err != nil {
-		return fmt.Errorf("rssConfig.%w", err)
+		return fmt.Errorf("rss.%w", err)
 	}
 	if err := c.TorrentConfig.Validate(); err != nil {
-		return fmt.Errorf("torrentConfig.%w", err)
+		return fmt.Errorf("torrent.%w", err)
 	}
 	return nil
 }
@@ -169,7 +174,7 @@ func GenerateBoilerplateConfig() {
 			Username:         "admin",
 			Password:         "adminadmin",
 			CreateShowFolder: true,
-			RenameTorrent:    utils.Pointer(true),
+			RenameTorrent:    new(true),
 			Type:             TorrentClientTypeQBittorrent,
 		},
 	})
@@ -192,5 +197,5 @@ func ReadConfig(path string) (Config, error) {
 }
 
 func ReadEnv(name string, fallback string) string {
-	return utils.Coalesce(os.Getenv(name), fallback)
+	return optional.Coalesce(os.Getenv(name), fallback)
 }

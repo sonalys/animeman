@@ -8,7 +8,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/errutils"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 type ListOptions struct {
@@ -20,7 +21,7 @@ type ListOptions struct {
 func (opt ListOptions) Query() string {
 	var b strings.Builder
 
-	titles := utils.Map(opt.Titles, func(from string) string { return "(" + from + ")" })
+	titles := sliceutils.Map(opt.Titles, func(from string) string { return "(" + from + ")" })
 	fmt.Fprintf(&b, "%s", strings.Join(titles, "|"))
 
 	if resolutions := opt.VerticalResolutions; len(resolutions) > 0 {
@@ -37,7 +38,7 @@ func (opt ListOptions) Query() string {
 func (api *API) List(ctx context.Context, options ListOptions) ([]Item, error) {
 	var path = API_URL
 
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
+	req := errutils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
 
 	q := req.URL.Query()
 	for name, value := range api.config.ListParameters {
@@ -55,7 +56,7 @@ func (api *API) List(ctx context.Context, options ListOptions) ([]Item, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("request failed: %s", string(utils.Must(io.ReadAll(resp.Body))))
+		return nil, fmt.Errorf("request failed: %s", string(errutils.Must(io.ReadAll(resp.Body))))
 	}
 
 	var feed RSS

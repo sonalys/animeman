@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 type (
@@ -21,5 +21,5 @@ func NewErrConnection(err error) error {
 }
 
 func (t Torrent) GetTags() []string {
-	return utils.Map[string, string](strings.Split(t.Tags, ","), func(s string) string { return strings.TrimSpace(s) })
+	return sliceutils.Map[string, string](strings.Split(t.Tags, ","), func(s string) string { return strings.TrimSpace(s) })
 }
