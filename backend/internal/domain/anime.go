@@ -4,35 +4,68 @@ import (
 	"slices"
 	"time"
 
+	"github.com/gofrs/uuid/v5"
 	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
-type ListStatus int
-type AiringStatus int
+type (
+	AnimeListSource uint
+	ListStatus      uint
+	AiringStatus    uint
+
+	Image struct {
+		MimeType string
+		URL      string
+		Width    int
+		Height   int
+	}
+
+	AnimeListEntry struct {
+		ExternalID   string
+		Progress     int
+		ListStatus   ListStatus
+		Titles       []string
+		AiringStatus AiringStatus
+		StartDate    time.Time
+		NumEpisodes  int
+		Images       []Image
+	}
+
+	AnimeListID struct{ uuid.UUID }
+
+	AnimeList struct {
+		ID             AnimeListID
+		OwnerID        UserID
+		RemoteUsername string
+		Source         AnimeListSource
+		Entries        []AnimeListEntry
+	}
+)
 
 const (
-	ListStatusUnknown ListStatus = iota
+	ListStatusUnset ListStatus = iota
 	ListStatusWatching
 	ListStatusCompleted
 	ListStatusOnHold
 	ListStatusDropped
 	ListStatusPlanToWatch
 	ListStatusAll
+	_listStatusCeiling
 )
 
 const (
-	AiringStatusUnknown AiringStatus = iota
+	AiringStatusUnset AiringStatus = iota
 	AiringStatusAired
 	AiringStatusAiring
+	_airingStatusCeiling
 )
 
-type Entry struct {
-	ListStatus   ListStatus
-	Titles       []string
-	AiringStatus AiringStatus
-	StartDate    time.Time
-	NumEpisodes  int
-}
+const (
+	AnimeListSourceUnset AnimeListSource = iota
+	AnimeListSourceMAL
+	AnimeListSourceAnilist
+	_animeListSourceCeiling
+)
 
 func NewEntry(
 	titles []string,
@@ -40,11 +73,11 @@ func NewEntry(
 	airingStatus AiringStatus,
 	startDate time.Time,
 	numEpisodes int,
-) Entry {
+) AnimeListEntry {
 	titles = sliceutils.Filter(titles, func(s string) bool { return len(s) > 0 })
 	titles = slices.Compact(titles)
 
-	return Entry{
+	return AnimeListEntry{
 		Titles:       titles,
 		ListStatus:   listStatus,
 		AiringStatus: airingStatus,

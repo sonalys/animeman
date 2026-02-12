@@ -114,11 +114,11 @@ func convertAiringStatus(in AiringStatus) domain.AiringStatus {
 	case AiringStatusCompleted, AiringStatusFinished:
 		return domain.AiringStatusAired
 	}
-	return domain.AiringStatus(-1)
+	return domain.AiringStatusUnset
 }
 
-func convertEntry(in []AnimeListEntry) []domain.Entry {
-	out := make([]domain.Entry, 0, len(in))
+func convertEntry(in []AnimeListEntry) []domain.AnimeListEntry {
+	out := make([]domain.AnimeListEntry, 0, len(in))
 	for i := range in {
 		titles := in[i].Media.Title
 
@@ -133,7 +133,7 @@ func convertEntry(in []AnimeListEntry) []domain.Entry {
 	return out
 }
 
-func (api *API) GetCurrentlyWatching(ctx context.Context) ([]domain.Entry, error) {
+func (api *API) GetCurrentlyWatching(ctx context.Context) ([]domain.AnimeListEntry, error) {
 	var path = API_URL + "/animelist/" + api.Username + "/load.json"
 
 	reqBody := GraphqlQuery{

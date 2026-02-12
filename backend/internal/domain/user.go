@@ -66,3 +66,15 @@ func (u User) CreateTorrentClientConfiguration(
 		Password: password,
 	}
 }
+
+func (u User) CreateAnimeList(
+	remoteUsername string,
+	source AnimeListSource,
+) *AnimeList {
+	return &AnimeList{
+		ID:             NewID[AnimeListID](),
+		OwnerID:        u.ID,
+		RemoteUsername: remoteUsername,
+		Source:         source,
+	}
+}

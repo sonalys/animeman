@@ -12,7 +12,7 @@ type (
 	API struct {
 		Username        string
 		client          *http.Client
-		cachedAnimeList []domain.Entry
+		cachedAnimeList []domain.AnimeListEntry
 	}
 )
 

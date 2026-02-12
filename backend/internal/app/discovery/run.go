@@ -115,7 +115,7 @@ func parseResults(results []nyaa.Item) []parser.ParsedNyaa {
 // it will also sort the response by season and episode.
 // it's important it returns a crescent season/episode list, so you don't download a recent episode and
 // don't download the oldest ones in case you don't have all episodes since your latestTag.
-func sortResults(entry domain.Entry, results []parser.ParsedNyaa) []parser.ParsedNyaa {
+func sortResults(entry domain.AnimeListEntry, results []parser.ParsedNyaa) []parser.ParsedNyaa {
 	smallerFunc := func(i, j int) bool {
 		first := results[i]
 		second := results[j]
@@ -158,7 +158,7 @@ func sortResults(entry domain.Entry, results []parser.ParsedNyaa) []parser.Parse
 
 // filterRelevantResults is responsible for filtering and ordering the raw Nyaa feed into valid downloadable torrents.
 func filterRelevantResults(
-	entry domain.Entry,
+	entry domain.AnimeListEntry,
 	results []parser.ParsedNyaa,
 	latestTag tags.Tag,
 ) []parser.ParsedNyaa {
@@ -197,7 +197,7 @@ func filterRelevantResults(
 	return results
 }
 
-func (c *Controller) NyaaSearch(ctx context.Context, entry domain.Entry) ([]nyaa.Item, error) {
+func (c *Controller) NyaaSearch(ctx context.Context, entry domain.AnimeListEntry) ([]nyaa.Item, error) {
 	logger := getLogger(ctx)
 
 	titleSanitization := strings.NewReplacer(
@@ -246,7 +246,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry domain.Entry) ([]nyaa
 }
 
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.
-func (c *Controller) DiscoverEntry(ctx context.Context, entry domain.Entry) error {
+func (c *Controller) DiscoverEntry(ctx context.Context, entry domain.AnimeListEntry) error {
 	logger := getLogger(ctx)
 
 	searchResults, err := c.NyaaSearch(ctx, entry)

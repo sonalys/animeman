@@ -1,7 +1,6 @@
 package discovery
 
 import (
-	"regexp"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -12,9 +11,11 @@ import (
 	utils "github.com/sonalys/animeman/internal/utils/stringutils"
 )
 
+const ignoreCharset = " ,.:`'\"/\\;-[](){}*【】"
+
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.
-func filterMetadata(entry domain.Entry) func(e nyaa.Item) bool {
+func filterMetadata(entry domain.AnimeListEntry) func(e nyaa.Item) bool {
 	return func(nyaaEntry nyaa.Item) bool {
 		publishedDate := errutils.Must(time.Parse(time.RFC1123Z, nyaaEntry.PubDate))
 
@@ -43,7 +44,7 @@ func filterMetadata(entry domain.Entry) func(e nyaa.Item) bool {
 		}
 
 		for _, originalTitle := range entry.Titles {
-			if utils.MatchPrefixFlexible(meta.Title, originalTitle, ",.:`'\";-") {
+			if utils.MatchPrefixFlexible(meta.Title, originalTitle, ignoreCharset) {
 				return true
 			}
 		}
@@ -56,13 +57,4 @@ func filterMetadata(entry domain.Entry) func(e nyaa.Item) bool {
 
 		return false
 	}
-}
-
-func matchTitle(gotTitle, originalTitle string) bool {
-	re := regexp.MustCompile(`[*\-:;.\\/ ]`)
-
-	gotTitle = re.ReplaceAllString(gotTitle, "")
-	originalTitle = re.ReplaceAllString(originalTitle, "")
-
-	return utils.HasPrefixFold(gotTitle, originalTitle)
 }

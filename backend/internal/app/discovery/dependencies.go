@@ -8,7 +8,7 @@ import (
 
 type (
 	AnimeListSource interface {
-		GetCurrentlyWatching(ctx context.Context) ([]domain.Entry, error)
+		GetCurrentlyWatching(ctx context.Context) ([]domain.AnimeListEntry, error)
 	}
 
 	TorrentClient interface {

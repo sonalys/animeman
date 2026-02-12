@@ -13,7 +13,7 @@ import (
 )
 
 // findLatestTag will receive an anime list entry and return all torrents listed from the anime.
-func (c *Controller) findLatestTag(ctx context.Context, entry domain.Entry) (tags.Tag, error) {
+func (c *Controller) findLatestTag(ctx context.Context, entry domain.AnimeListEntry) (tags.Tag, error) {
 	logger := getLogger(ctx)
 	torrents := make([]domain.Torrent, 0, 100)
 
@@ -112,7 +112,7 @@ func isASCII(s string) bool {
 
 // AddTorrentEntry receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
-func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry domain.Entry, parsedNyaa parser.ParsedNyaa) error {
+func (c *Controller) AddTorrentEntry(ctx context.Context, animeListEntry domain.AnimeListEntry, parsedNyaa parser.ParsedNyaa) error {
 	selectedTitle := selectIdealTitle(animeListEntry.Titles)
 
 	meta := parsedNyaa.ExtractedMetadata.Clone()

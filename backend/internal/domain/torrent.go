@@ -36,3 +36,24 @@ type (
 		Password []byte
 	}
 )
+
+const (
+	TorrentSourceUnset TorrentSource = iota
+	TorrentSourceQBitTorrent
+	_torrentSourceCeiling
+)
+
+var torrentSourceStringer = map[TorrentSource]string{
+	TorrentSourceQBitTorrent: "qbittorrent",
+}
+
+func (s TorrentSource) String() string {
+	if value, ok := torrentSourceStringer[s]; ok {
+		return value
+	}
+	return ""
+}
+
+func (s TorrentSource) IsValid() bool {
+	return s > TorrentSourceUnset && s < _torrentSourceCeiling
+}
