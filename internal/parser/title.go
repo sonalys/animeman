@@ -72,7 +72,7 @@ func Parse(title string, opts ...TitleStripOptions) Metadata {
 		resp.Source = tags[0][1]
 		resp.Labels = make([]string, 0, len(tags[1:]))
 		for _, matches := range tags[1:] {
-			resp.Labels = append(resp.Labels, matches[1])
+			resp.Labels = append(resp.Labels, strings.Split(matches[1], " ")...)
 		}
 	}
 	title = removeTags(title)

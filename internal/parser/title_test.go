@@ -16,16 +16,16 @@ func TestTitleParse(t *testing.T) {
 	}{
 		{
 			name:  "simple",
-			title: "[Provider] Show name - 140 (1080p) [file-hash].mkv",
+			title: "[Erai-raws] Jujutsu Kaisen: Shimetsu Kaiyuu - Zenpen - 07 [1080p CR WEB-DL AVC AAC][MultiSub][D834BF79]",
 			want: Metadata{
-				Title: "Show name",
+				Title: "Jujutsu Kaisen: Shimetsu Kaiyuu - Zenpen",
 				Tag: tags.Tag{
 					Seasons:  []int{1},
-					Episodes: []float64{140},
+					Episodes: []float64{7},
 				},
 				VerticalResolution: 1080,
-				Source:             "Provider",
-				Labels:             []string{"file-hash"},
+				Source:             "Erai-raws",
+				Labels:             []string{"1080p", "CR", "WEB-DL", "AVC", "AAC", "MultiSub", "D834BF79"},
 			},
 		},
 		{

@@ -91,7 +91,7 @@ func Test_filterEpisodes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := filterEpisodes(tt.args.list, tt.args.latestTag); !reflect.DeepEqual(got, tt.want) {
+			if _, got := filterEpisodes(tt.args.list, tt.args.latestTag); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("filterEpisodes() = %v, want %v", got, tt.want)
 			}
 		})

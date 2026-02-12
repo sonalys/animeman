@@ -75,34 +75,42 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 // filterEpisodes will only return ParsedNyaa entries that are more recent than the given latestTag.
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
-func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) []parser.ParsedNyaa {
+func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) ([]parser.ParsedNyaa, tags.Tag) {
 	out := make([]parser.ParsedNyaa, 0, len(results))
 
-	latestTag := initialTag
+	var latestDetectedTag tags.Tag
 
 	for _, nyaaEntry := range results {
 		currentTag := nyaaEntry.ExtractedMetadata.Tag
 
-		if !latestTag.IsZero() {
-			if latestTag.IsMultiEpisode() && latestTag.Contains(currentTag) {
+		if latestDetectedTag.Before(currentTag) {
+			latestDetectedTag = currentTag
+		}
+
+		if currentTag.Before(initialTag) {
+			continue
+		}
+
+		if !latestDetectedTag.IsZero() {
+			if latestDetectedTag.IsMultiEpisode() && latestDetectedTag.Contains(currentTag) {
 				continue
 			}
 
 			// This scenario can happen when we are filtering for batches, and the subsequent batch contains the previous batch.
 			// Example: S01E01-13, followed by S01.
 			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
-			if currentTag.IsMultiEpisode() && currentTag.Contains(latestTag) {
+			if currentTag.IsMultiEpisode() && currentTag.Contains(latestDetectedTag) {
 				out = utils.Filter(out, func(previous parser.ParsedNyaa) bool { return !currentTag.Contains(previous.ExtractedMetadata.Tag) })
-			} else if tagCompare(currentTag, latestTag) <= 0 {
+			} else if tagCompare(currentTag, latestDetectedTag) <= 0 {
 				continue
 			}
 		}
 
-		latestTag = currentTag
+		latestDetectedTag = currentTag
 		out = append(out, nyaaEntry)
 	}
 
-	return out
+	return out, latestDetectedTag
 }
 
 func parseResults(results []nyaa.Item) []parser.ParsedNyaa {
@@ -176,12 +184,13 @@ func filterRelevantResults(
 		results = utils.Filter(results, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
 	}
 
-	results = filterEpisodes(results, latestTag)
+	results, latestDetectedTag := filterEpisodes(results, latestTag)
 
 	if len(results) == 0 {
 		log.
 			Debug().
-			Stringer("latestTag", latestTag).
+			Stringer("latestLocalTag", latestTag).
+			Stringer("latestNyaaTag", latestDetectedTag).
 			Msg("no new episodes detected")
 
 		return nil
