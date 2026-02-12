@@ -1,5 +1,7 @@
 package domain
 
+import "github.com/gofrs/uuid/v5"
+
 type (
 	Torrent struct {
 		Name     string
@@ -20,5 +22,17 @@ type (
 	ListTorrentConfig struct {
 		Category *string
 		Tag      *string
+	}
+
+	TorrentClientID struct{ uuid.UUID }
+	TorrentSource   uint
+
+	TorrentClient struct {
+		ID       TorrentClientID
+		OwnerID  UserID
+		Source   TorrentSource
+		Host     string
+		Username string
+		Password []byte
 	}
 )

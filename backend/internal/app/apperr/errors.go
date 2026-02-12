@@ -13,10 +13,18 @@ type Error struct {
 	Cause      error
 }
 
-func New(cause error, code codes.Code, msg string, args ...any) Error {
+func New(cause error, code codes.Code, msgAndArgs ...any) Error {
+	var message string
+
+	if len(msgAndArgs) > 0 {
+		if mask, ok := msgAndArgs[0].(string); ok {
+			message = fmt.Sprintf(mask, msgAndArgs[1:]...)
+		}
+	}
+
 	return Error{
 		StatusCode: code,
-		Message:    fmt.Sprintf(msg, args...),
+		Message:    message,
 		Cause:      cause,
 	}
 }
@@ -34,11 +42,14 @@ func (e Error) Code() codes.Code {
 }
 
 func Code(err error) codes.Code {
-	var target interface{ Code() codes.Code }
+	type codedError interface {
+		error
+		Code() codes.Code
+	}
 
-	if errors.As(err, &target) {
+	if target, ok := errors.AsType[codedError](err); ok {
 		return target.Code()
 	}
 
-	return 0
+	return codes.Internal
 }

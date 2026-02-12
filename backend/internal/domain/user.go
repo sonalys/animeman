@@ -4,7 +4,9 @@ import (
 	"fmt"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/sonalys/animeman/internal/app/apperr"
 	"golang.org/x/crypto/bcrypt"
+	"google.golang.org/grpc/codes"
 )
 
 type (
@@ -21,13 +23,17 @@ func NewUser(
 	email string,
 	password []byte,
 ) (*User, error) {
-	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if pwdLength := len(password); pwdLength < 8 || pwdLength > 72 {
+		return nil, apperr.New(ErrInvalidPasswordLength, codes.InvalidArgument)
+	}
+
+	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
 	if err != nil {
 		return nil, fmt.Errorf("hashing user password: %w", err)
 	}
 
 	return &User{
-		ID:           UserID{uuid.Must(uuid.NewV7())},
+		ID:           NewID[UserID](),
 		Username:     email,
 		PasswordHash: hashedPassword,
 	}, nil
@@ -38,9 +44,25 @@ func (u User) CreateProwlarrConfiguration(
 	apiKey string,
 ) *ProwlarrConfiguration {
 	return &ProwlarrConfiguration{
-		ID:      ProwlarrConfigID{uuid.Must(uuid.NewV7())},
+		ID:      NewID[ProwlarrConfigID](),
 		OwnerID: u.ID,
 		Host:    host,
 		APIKey:  apiKey,
+	}
+}
+
+func (u User) CreateTorrentClientConfiguration(
+	source TorrentSource,
+	host string,
+	username string,
+	password []byte,
+) *TorrentClient {
+	return &TorrentClient{
+		ID:       NewID[TorrentClientID](),
+		OwnerID:  u.ID,
+		Source:   source,
+		Host:     host,
+		Username: username,
+		Password: password,
 	}
 }
