@@ -31,12 +31,13 @@ func ParseSeason(title string) int {
 
 		seasonNumber, err := strconv.ParseInt(matches[0][1], 10, 64)
 		if err != nil {
-			seasonNumber = 1
+			continue
 		}
 
 		return int(seasonNumber)
 	}
-	return 1
+
+	return 0
 }
 
 // seasonIndexMatch is used for removing season from titles.

@@ -83,11 +83,7 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) ([]parser.
 	for _, nyaaEntry := range results {
 		currentTag := nyaaEntry.ExtractedMetadata.Tag
 
-		if latestDetectedTag.Before(currentTag) {
-			latestDetectedTag = currentTag
-		}
-
-		if currentTag.Before(initialTag) {
+		if tagCompare(currentTag, initialTag) <= 0 || tagCompare(currentTag, latestDetectedTag) <= 0 {
 			continue
 		}
 
@@ -101,8 +97,6 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) ([]parser.
 			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
 			if currentTag.IsMultiEpisode() && currentTag.Contains(latestDetectedTag) {
 				out = utils.Filter(out, func(previous parser.ParsedNyaa) bool { return !currentTag.Contains(previous.ExtractedMetadata.Tag) })
-			} else if tagCompare(currentTag, latestDetectedTag) <= 0 {
-				continue
 			}
 		}
 
@@ -113,8 +107,8 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) ([]parser.
 	return out, latestDetectedTag
 }
 
-func parseResults(results []nyaa.Item) []parser.ParsedNyaa {
-	return utils.Map(results, func(entry nyaa.Item) parser.ParsedNyaa { return parser.NewParsedNyaa(entry) })
+func parseResults(entry animelist.Entry, results []nyaa.Item) []parser.ParsedNyaa {
+	return utils.Map(results, func(item nyaa.Item) parser.ParsedNyaa { return parser.NewParsedNyaa(entry, item) })
 }
 
 // sortResults will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
@@ -284,7 +278,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 			Msg("detected latest tag")
 	}
 
-	parsedTorrents := parseResults(torrentResults)
+	parsedTorrents := parseResults(entry, torrentResults)
 	parsedTorrents = filterRelevantResults(entry, parsedTorrents, latestTag)
 
 	for _, episodeTorrent := range parsedTorrents {

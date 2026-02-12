@@ -35,11 +35,6 @@ func Test_filterEpisodes(t *testing.T) {
 			want: []parser.ParsedNyaa{},
 		},
 		{
-			name: "empty",
-			args: args{},
-			want: []parser.ParsedNyaa{},
-		},
-		{
 			name: "no tag",
 			args: args{
 				latestTag: tags.Zero,
@@ -52,6 +47,11 @@ func Test_filterEpisodes(t *testing.T) {
 				{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
 				{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
 			},
+		},
+		{
+			name: "empty",
+			args: args{},
+			want: []parser.ParsedNyaa{},
 		},
 		{
 			name: "tag",
@@ -91,7 +91,7 @@ func Test_filterEpisodes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if _, got := filterEpisodes(tt.args.list, tt.args.latestTag); !reflect.DeepEqual(got, tt.want) {
+			if got, _ := filterEpisodes(tt.args.list, tt.args.latestTag); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("filterEpisodes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -100,7 +100,7 @@ func Test_filterEpisodes(t *testing.T) {
 
 func Test_buildTaggedNyaaList(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		got := parseResults([]nyaa.Item{})
+		got := parseResults(animelist.Entry{}, []nyaa.Item{})
 		got = sortResults(animelist.Entry{}, got)
 		require.Empty(t, got)
 	})
@@ -113,7 +113,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 			{Title: "Show3: S03"},
 		}
 
-		got := parseResults(input)
+		got := parseResults(animelist.Entry{}, input)
 		got = sortResults(animelist.Entry{}, got)
 
 		require.Len(t, got, len(input))
@@ -130,7 +130,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 			{Title: "Show3: S03E01", Seeders: 2},
 		}
 
-		got := parseResults(input)
+		got := parseResults(animelist.Entry{}, input)
 		got = sortResults(animelist.Entry{}, got)
 
 		require.Len(t, got, len(input))
@@ -158,7 +158,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E01"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(animelist.Entry{}, parsed, tags.Zero)
 
 		require.Len(t, got, len(input))
@@ -175,7 +175,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		entry := newEntry(animelist.AiringStatusAiring)
-		parsedTorrents := parseResults(input)
+		parsedTorrents := parseResults(animelist.Entry{}, input)
 		latestTag := tags.SeasonEpisode(3, 2)
 
 		got := filterRelevantResults(entry, parsedTorrents, latestTag)
@@ -190,7 +190,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E01"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 1))
 
 		require.Len(t, got, 1)
@@ -205,7 +205,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E01"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2))
 
 		require.Len(t, got, 1)
@@ -219,7 +219,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E01"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2))
 
 		require.Len(t, got, 1)
@@ -233,7 +233,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero)
 
 		require.Equal(t, parsed[2:], got)
@@ -245,7 +245,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero)
 
 		require.Equal(t, parsed[1:], got)
@@ -257,7 +257,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03 1080p"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero)
 
 		require.Len(t, got, 1)
@@ -271,7 +271,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.SeasonEpisode(3, 2))
 
 		require.Len(t, got, 1)
@@ -285,7 +285,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2))
 
 		require.Len(t, got, 1)
@@ -299,7 +299,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S3"},
 		}
 
-		parsed := parseResults(input)
+		parsed := parseResults(animelist.Entry{}, input)
 		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero)
 
 		require.Len(t, got, 3)

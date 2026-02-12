@@ -13,7 +13,7 @@ func Test_matchSeason(t *testing.T) {
 		{
 			name:  "episode with provider and dash",
 			title: "[Provider] episode with dash - 02 (1080p) [hash].mkv",
-			want:  1,
+			want:  0,
 		},
 		{
 			name:  "episode with S01",
@@ -23,7 +23,7 @@ func Test_matchSeason(t *testing.T) {
 		{
 			name:  "episode with dash",
 			title: "episode with dash - 01.mkv",
-			want:  1,
+			want:  0,
 		},
 		{
 			name:  "episode with source and tags between",

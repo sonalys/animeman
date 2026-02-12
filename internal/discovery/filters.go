@@ -29,7 +29,7 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Item) bool {
 			return false
 		}
 
-		meta := parser.Parse(nyaaEntry.Title)
+		meta := parser.Parse(nyaaEntry.Title, 1)
 
 		// Check if nyaa entry episode is greater than the animelist episode count.
 		if entry.NumEpisodes > 0 && meta.Tag.LastEpisode() > float64(entry.NumEpisodes) {

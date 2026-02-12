@@ -100,7 +100,7 @@ func getLatestTag(torrents []torrentclient.Torrent) tags.Tag {
 	for _, torrent := range torrents {
 		tags := torrent.Tags
 		seasonEpisodeTag := tags[len(tags)-1]
-		meta := parser.Parse(seasonEpisodeTag)
+		meta := parser.Parse(seasonEpisodeTag, 1)
 		tag := meta.Tag
 
 		if latestTag.IsZero() || tagCompare(tag, latestTag) > 0 {

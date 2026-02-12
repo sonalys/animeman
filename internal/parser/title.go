@@ -14,23 +14,9 @@ var titleCleanupExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(\[.*?\])|(\(.*?\))`),
 }
 
-type titleCleanOptions struct {
-	removeDots bool
-}
-
-type TitleStripOptions interface {
-	applyTitleStripOptions(*titleCleanOptions)
-}
-
 // StripTitle cleans title from sub-titles, tags and season / episode information.
 // Example: [Source] Show: another story - S03E02 [1080p].mkv -> Show.
-func StripTitle(title string, opts ...TitleStripOptions) string {
-	options := titleCleanOptions{}
-
-	for _, opt := range opts {
-		opt.applyTitleStripOptions(&options)
-	}
-
+func StripTitle(title string) string {
 	title = removeDotSpacing(title)
 
 	if index := seasonIndexMatch(title); index != -1 {
@@ -62,9 +48,9 @@ func removeTags(title string) string {
 }
 
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
-func Parse(title string, opts ...TitleStripOptions) Metadata {
+func Parse(title string, fallbackSeason int) Metadata {
 	resp := Metadata{
-		Title:              StripTitle(title, opts...),
+		Title:              StripTitle(title),
 		VerticalResolution: parseVerticalResolution(title),
 		Tag:                tags.Tag{},
 	}
@@ -78,7 +64,12 @@ func Parse(title string, opts ...TitleStripOptions) Metadata {
 	title = removeTags(title)
 
 	resp.Tag.Episodes = ParseEpisode(title)
-	resp.Tag.Seasons = []int{ParseSeason(title)}
+
+	if detectedSeason := ParseSeason(title); detectedSeason > 0 {
+		resp.Tag.Seasons = []int{detectedSeason}
+	} else {
+		resp.Tag.Seasons = []int{fallbackSeason}
+	}
 	return resp
 }
 

@@ -154,7 +154,7 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
 	}
 
 	for _, torrent := range torrents {
-		meta := parser.Parse(torrent.Name)
+		meta := parser.Parse(torrent.Name, 1)
 		tags := meta.BuildTorrentTags()
 
 		log.
