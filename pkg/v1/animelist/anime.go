@@ -43,6 +43,7 @@ func NewEntry(
 ) Entry {
 	titles = utils.Filter(titles, func(s string) bool { return len(s) > 0 })
 	titles = slices.Compact(titles)
+	slices.Sort(titles)
 
 	return Entry{
 		Titles:       titles,
