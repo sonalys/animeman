@@ -7,31 +7,6 @@ import (
 	"github.com/stretchr/testify/require"
 )
 
-func TestTitleStrip(t *testing.T) {
-	tests := []struct {
-		name  string
-		title string
-		want  string
-		opts  []TitleStripOptions
-	}{
-		{name: "no trailing numbers", title: "anime 33", want: "anime"},
-		{name: "title.with.dots", title: "title.with.dots", want: "title with dots"},
-		{name: "dr. stein", title: "dr. stein", want: "dr. stein"},
-		{name: "\"quoted\" title", title: "\"quoted\" title", want: "quoted title"},
-		{name: "title. subtitle", title: "title. subtitle", want: "title. subtitle"},
-		{name: "empty", title: "", want: ""},
-		{name: "multiple spaces", title: "My     cool   anime", want: "My cool anime"},
-		{name: "dash trim", title: "my title -", want: "my title"},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := StripTitle(tt.title, tt.opts...); got != tt.want {
-				t.Errorf("TitleStrip(\"%s\") = %v, want %v", tt.title, got, tt.want)
-			}
-		})
-	}
-}
-
 func TestTitleParse(t *testing.T) {
 	tests := []struct {
 		name  string

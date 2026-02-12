@@ -41,24 +41,10 @@ func StripTitle(title string, opts ...TitleStripOptions) string {
 		title = title[:index]
 	}
 
-	title = removeQuotation(title)
 	title = removeTags(title)
-	title = removeTrailingNumbers(title)
-	title = removeDashes(title)
-	title = flattenMultispace(title)
 	title = strings.TrimSpace(title)
 
 	return title
-}
-
-func removeDashes(title string) string {
-	return strings.ReplaceAll(title, "-", "")
-}
-
-func removeTrailingNumbers(title string) string {
-	return strings.TrimRightFunc(title, func(r rune) bool {
-		return r >= '0' && r <= '9'
-	})
 }
 
 func removeDotSpacing(title string) string {
@@ -73,14 +59,6 @@ func removeTags(title string) string {
 	}
 
 	return title
-}
-
-func flattenMultispace(title string) string {
-	return regexp.MustCompile(`\s{2,}`).ReplaceAllString(title, " ")
-}
-
-func removeQuotation(title string) string {
-	return strings.ReplaceAll(title, "\"", "")
 }
 
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
