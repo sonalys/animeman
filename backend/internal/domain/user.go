@@ -20,7 +20,7 @@ type (
 )
 
 func NewUser(
-	email string,
+	username string,
 	password []byte,
 ) (*User, error) {
 	if pwdLength := len(password); pwdLength < 8 || pwdLength > 72 {
@@ -34,12 +34,12 @@ func NewUser(
 
 	return &User{
 		ID:           NewID[UserID](),
-		Username:     email,
+		Username:     username,
 		PasswordHash: hashedPassword,
 	}, nil
 }
 
-func (u User) CreateProwlarrConfiguration(
+func (u User) NewProwlarrConfiguration(
 	host string,
 	apiKey string,
 ) *ProwlarrConfiguration {
@@ -51,7 +51,7 @@ func (u User) CreateProwlarrConfiguration(
 	}
 }
 
-func (u User) CreateTorrentClientConfiguration(
+func (u User) NewTorrentClientConfiguration(
 	source TorrentSource,
 	host string,
 	username string,
@@ -64,17 +64,5 @@ func (u User) CreateTorrentClientConfiguration(
 		Host:     host,
 		Username: username,
 		Password: password,
-	}
-}
-
-func (u User) CreateAnimeList(
-	remoteUsername string,
-	source AnimeListSource,
-) *AnimeList {
-	return &AnimeList{
-		ID:             NewID[AnimeListID](),
-		OwnerID:        u.ID,
-		RemoteUsername: remoteUsername,
-		Source:         source,
 	}
 }
