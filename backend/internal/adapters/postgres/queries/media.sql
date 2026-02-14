@@ -14,7 +14,9 @@ SELECT * FROM media WHERE id = $1 LIMIT 1 FOR UPDATE;
 
 -- name: ListMediaPaginated :many
 SELECT * FROM media
-WHERE id < sqlc.arg(last_id)::uuid
+WHERE 
+    id < sqlc.arg(last_id)::uuid AND
+    collection_id = $2
 ORDER BY id DESC
 LIMIT $1;
 

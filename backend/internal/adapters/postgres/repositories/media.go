@@ -66,10 +66,13 @@ func (r *mediaRepository) Delete(ctx context.Context, id collections.MediaID) er
 func (r *mediaRepository) ListByCollection(ctx context.Context, id collections.CollectionID, opts ports.ListOptions) ([]collections.Media, error) {
 	queries := sqlcgen.New(r.conn)
 
-	entityModels, err := queries.ListMediaPaginated(ctx, sqlcgen.ListMediaPaginatedParams{
-		LastID: opts.Cursor,
-		Limit:  opts.PageSize,
-	})
+	params := sqlcgen.ListMediaPaginatedParams{
+		CollectionID: id,
+		LastID:       opts.Cursor,
+		Limit:        opts.PageSize,
+	}
+
+	entityModels, err := queries.ListMediaPaginated(ctx, params)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
