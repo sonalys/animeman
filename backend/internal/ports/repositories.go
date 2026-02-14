@@ -11,38 +11,40 @@ import (
 )
 
 type (
+	UpdateHandler[T any] = func(*T) error
+
 	UserRepository interface {
 		Create(ctx context.Context, user *users.User) error
 		Get(ctx context.Context, id shared.UserID) (*users.User, error)
-		Update(ctx context.Context, id shared.UserID, update func(user *users.User) error) error
+		Update(ctx context.Context, id shared.UserID, updateHandler UpdateHandler[users.User]) error
 		Delete(ctx context.Context, id shared.UserID) error
 	}
 
 	IndexerClientRepository interface {
 		Create(ctx context.Context, client *indexing.IndexerClient) error
-		ListByOwner(ctx context.Context, owner shared.UserID) ([]indexing.IndexerClient, error)
-		Update(ctx context.Context, id indexing.IndexerID, update func(client *indexing.IndexerClient) error) error
+		ListByOwner(ctx context.Context, id shared.UserID) ([]indexing.IndexerClient, error)
+		Update(ctx context.Context, id indexing.IndexerID, updateHandler UpdateHandler[indexing.IndexerClient]) error
 		Delete(ctx context.Context, id indexing.IndexerID) error
 	}
 
 	TransferClientRepository interface {
 		Create(ctx context.Context, client *transfer.Client) error
-		ListByOwner(ctx context.Context, owner shared.UserID) ([]transfer.Client, error)
-		Update(ctx context.Context, id transfer.ClientID, update func(client *transfer.Client) error) error
+		ListByOwner(ctx context.Context, id shared.UserID) ([]transfer.Client, error)
+		Update(ctx context.Context, id transfer.ClientID, updateHandler UpdateHandler[transfer.Client]) error
 		Delete(ctx context.Context, id transfer.ClientID) error
 	}
 
 	CollectionRepository interface {
 		Create(ctx context.Context, collection *collections.Collection) error
-		ListByOwner(ctx context.Context, owner shared.UserID) ([]collections.Collection, error)
-		Update(ctx context.Context, id collections.CollectionID, update func(collection *collections.Collection) error) error
+		ListByOwner(ctx context.Context, id shared.UserID) ([]collections.Collection, error)
+		Update(ctx context.Context, id collections.CollectionID, updateHandler UpdateHandler[collections.Collection]) error
 		Delete(ctx context.Context, id collections.CollectionID) error
 	}
 
 	QualityProfileRepository interface {
-		Create(ctx context.Context, profile *collections.QualityProfile) error
+		Create(ctx context.Context, qualityProfile *collections.QualityProfile) error
 		List(ctx context.Context) ([]collections.QualityProfile, error)
-		Update(ctx context.Context, id collections.QualityProfileID, update func(profile *collections.QualityProfile) error) error
+		Update(ctx context.Context, id collections.QualityProfileID, updateHandler UpdateHandler[collections.QualityProfile]) error
 		Delete(ctx context.Context, id collections.QualityProfileID) error
 	}
 )
