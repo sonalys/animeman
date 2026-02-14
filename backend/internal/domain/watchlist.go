@@ -11,8 +11,8 @@ type (
 	WatchlistEntryID struct{ uuid.UUID }
 
 	Watchlist struct {
-		ID     WatchlistID
-		UserID UserID
+		ID    WatchlistID
+		Owner UserID
 
 		Source     WatchlistSource
 		ExternalID string
@@ -26,7 +26,6 @@ type (
 	WatchlistEntry struct {
 		ID          WatchlistEntryID
 		WatchlistID WatchlistID
-		UserID      UserID
 
 		MediaID     MediaID
 		SeasonID    SeasonID
@@ -38,3 +37,25 @@ type (
 		UpdatedAt time.Time
 	}
 )
+
+func (l Watchlist) NewEntry(
+	mediaID MediaID,
+	seasonID SeasonID,
+	status WatchlistStatus,
+) *WatchlistEntry {
+	now := time.Now()
+
+	return &WatchlistEntry{
+		ID:          NewID[WatchlistEntryID](),
+		WatchlistID: l.ID,
+		MediaID:     mediaID,
+		SeasonID:    seasonID,
+		Status:      status,
+		CreatedAt:   now,
+		UpdatedAt:   now,
+	}
+}
+
+func (e *WatchlistEntry) SetLastWatchedEpisode(id EpisodeID) {
+	e.LastWatched = id
+}

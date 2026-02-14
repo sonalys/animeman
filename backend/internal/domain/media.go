@@ -13,8 +13,7 @@ type (
 		ID           MediaID
 		CollectionID CollectionID
 
-		Titles       []AlternativeTitle
-		AiringStatus AiringStatus
+		Titles []AlternativeTitle
 
 		MonitoringStatus MonitoringStatus
 		MonitoredSince   time.Time
@@ -22,8 +21,25 @@ type (
 		Metadata       MediaMetadata
 		QualityProfile QualityProfile
 
-		Seasons []Season
+		Seasons []*Season
 
 		CreatedAt time.Time
 	}
 )
+
+func (m *Media) NewSeason(
+	number int,
+	airingStatus AiringStatus,
+	metadata SeasonMetadata,
+) *Season {
+	season := &Season{
+		ID:             NewID[SeasonID](),
+		MediaID:        m.ID,
+		Number:         number,
+		AiringStatus:   airingStatus,
+		SeasonMetadata: metadata,
+	}
+	m.Seasons = append(m.Seasons, season)
+
+	return season
+}

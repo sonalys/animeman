@@ -22,7 +22,7 @@ type (
 		Version      uint
 		Source       FileSource
 
-		Video           VideoInfo
+		VideoInfo       VideoInfo
 		AudioStreams    []AudioStream
 		SubtitleStreams []SubtitleStream
 		Hashes          []Hash
