@@ -10,10 +10,11 @@ type (
 	MediaID struct{ uuid.UUID }
 
 	Media struct {
-		ID   MediaID
-		Type MediaType
+		ID           MediaID
+		CollectionID CollectionID
+		Type         MediaType
 
-		Title        string
+		Titles       []AlternativeTitle
 		AiringStatus AiringStatus
 
 		MonitoringStatus MonitoringStatus

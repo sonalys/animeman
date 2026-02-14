@@ -10,7 +10,7 @@ type QualityProfile struct {
 	MaxResolution Resolution
 
 	// Represents a list from least to most preferrable codec.
-	CodecPreference []Codec
+	CodecPreference []VideoCodec
 	// Represents a list from least to most preferrable release group.
 	ReleaseGroupPreference []string
 }
