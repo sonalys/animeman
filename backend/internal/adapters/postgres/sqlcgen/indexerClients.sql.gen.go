@@ -7,6 +7,8 @@ package sqlcgen
 
 import (
 	"context"
+
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const createIndexerClient = `-- name: CreateIndexerClient :one
@@ -19,11 +21,11 @@ RETURNING id, owner_id, address, type, auth_id
 `
 
 type CreateIndexerClientParams struct {
-	ID      string
-	OwnerID string
+	ID      shared.ID
+	OwnerID shared.ID
 	Address string
 	Type    IndexerClientType
-	AuthID  string
+	AuthID  shared.ID
 }
 
 func (q *Queries) CreateIndexerClient(ctx context.Context, arg CreateIndexerClientParams) (IndexerClient, error) {
@@ -50,8 +52,7 @@ DELETE FROM indexer_clients
 WHERE id = $1
 `
 
-// Note: ON DELETE CASCADE handles the auth deletion if schema is set that way
-func (q *Queries) DeleteIndexerClient(ctx context.Context, id string) error {
+func (q *Queries) DeleteIndexerClient(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteIndexerClient, id)
 	return err
 }
@@ -66,16 +67,16 @@ WHERE c.id = $1 LIMIT 1 FOR UPDATE
 `
 
 type GetIndexerClientRow struct {
-	ID              string
-	OwnerID         string
+	ID              shared.ID
+	OwnerID         shared.ID
 	Address         string
 	Type            IndexerClientType
-	AuthID          string
+	AuthID          shared.ID
 	AuthType        AuthType
 	AuthCredentials []byte
 }
 
-func (q *Queries) GetIndexerClient(ctx context.Context, id string) (GetIndexerClientRow, error) {
+func (q *Queries) GetIndexerClient(ctx context.Context, id shared.ID) (GetIndexerClientRow, error) {
 	row := q.db.QueryRow(ctx, getIndexerClient, id)
 	var i GetIndexerClientRow
 	err := row.Scan(
@@ -101,16 +102,16 @@ ORDER BY c.id ASC
 `
 
 type ListIndexerClientsByOwnerRow struct {
-	ID              string
-	OwnerID         string
+	ID              shared.ID
+	OwnerID         shared.ID
 	Address         string
 	Type            IndexerClientType
-	AuthID          string
+	AuthID          shared.ID
 	AuthType        AuthType
 	AuthCredentials []byte
 }
 
-func (q *Queries) ListIndexerClientsByOwner(ctx context.Context, ownerID string) ([]ListIndexerClientsByOwnerRow, error) {
+func (q *Queries) ListIndexerClientsByOwner(ctx context.Context, ownerID shared.ID) ([]ListIndexerClientsByOwnerRow, error) {
 	rows, err := q.db.Query(ctx, listIndexerClientsByOwner, ownerID)
 	if err != nil {
 		return nil, err
@@ -145,7 +146,7 @@ WHERE id = $1
 `
 
 type UpdateIndexerAddressParams struct {
-	ID      string
+	ID      shared.ID
 	Address string
 }
 

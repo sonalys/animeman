@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const createMedia = `-- name: CreateMedia :one
@@ -23,9 +24,9 @@ RETURNING id, collection_id, quality_profile_id, titles, monitoring_status, moni
 `
 
 type CreateMediaParams struct {
-	ID               string
-	CollectionID     string
-	QualityProfileID string
+	ID               shared.ID
+	CollectionID     shared.ID
+	QualityProfileID shared.ID
 	Titles           []byte
 	MonitoringStatus MonitoringStatus
 	MonitoredSince   pgtype.Timestamptz
@@ -69,7 +70,7 @@ const deleteMedia = `-- name: DeleteMedia :exec
 DELETE FROM media WHERE id = $1
 `
 
-func (q *Queries) DeleteMedia(ctx context.Context, id string) error {
+func (q *Queries) DeleteMedia(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteMedia, id)
 	return err
 }
@@ -116,7 +117,7 @@ const getMedia = `-- name: GetMedia :one
 SELECT id, collection_id, quality_profile_id, titles, monitoring_status, monitored_since, genres, airing_started_at, airing_ended_at, created_at, titles_search_vector FROM media WHERE id = $1 LIMIT 1 FOR UPDATE
 `
 
-func (q *Queries) GetMedia(ctx context.Context, id string) (Medium, error) {
+func (q *Queries) GetMedia(ctx context.Context, id shared.ID) (Medium, error) {
 	row := q.db.QueryRow(ctx, getMedia, id)
 	var i Medium
 	err := row.Scan(
@@ -143,7 +144,7 @@ LIMIT $2
 `
 
 type ListMediaPaginatedParams struct {
-	Column1 string
+	Column1 shared.ID
 	Limit   int32
 }
 
@@ -191,14 +192,14 @@ LIMIT $4
 type SearchMediaByTitlePaginatedParams struct {
 	Similarity string
 	Column2    float32
-	Column3    string
+	Column3    shared.ID
 	Limit      int32
 }
 
 type SearchMediaByTitlePaginatedRow struct {
-	ID                 string
-	CollectionID       string
-	QualityProfileID   string
+	ID                 shared.ID
+	CollectionID       shared.ID
+	QualityProfileID   shared.ID
 	Titles             []byte
 	MonitoringStatus   MonitoringStatus
 	MonitoredSince     pgtype.Timestamptz
@@ -263,14 +264,14 @@ WHERE id = $1
 `
 
 type UpdateMediaParams struct {
-	ID               string
+	ID               shared.ID
 	Titles           []byte
 	MonitoringStatus MonitoringStatus
 	MonitoredSince   pgtype.Timestamptz
 	Genres           []string
 	AiringStartedAt  pgtype.Timestamptz
 	AiringEndedAt    pgtype.Timestamptz
-	QualityProfileID string
+	QualityProfileID shared.ID
 }
 
 func (q *Queries) UpdateMedia(ctx context.Context, arg UpdateMediaParams) error {
@@ -294,8 +295,8 @@ WHERE id = $1
 `
 
 type UpdateMediaQualityProfileParams struct {
-	ID               string
-	QualityProfileID string
+	ID               shared.ID
+	QualityProfileID shared.ID
 }
 
 func (q *Queries) UpdateMediaQualityProfile(ctx context.Context, arg UpdateMediaQualityProfileParams) error {

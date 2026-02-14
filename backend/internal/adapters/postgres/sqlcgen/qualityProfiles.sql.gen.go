@@ -7,6 +7,8 @@ package sqlcgen
 
 import (
 	"context"
+
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const createQualityProfile = `-- name: CreateQualityProfile :one
@@ -20,7 +22,7 @@ RETURNING id, name, min_resolution, max_resolution, codec_preference, release_gr
 `
 
 type CreateQualityProfileParams struct {
-	ID                     string
+	ID                     shared.ID
 	Name                   string
 	MinResolution          Resolution
 	MaxResolution          Resolution
@@ -54,7 +56,7 @@ DELETE FROM quality_profiles
 WHERE id = $1
 `
 
-func (q *Queries) DeleteQualityProfile(ctx context.Context, id string) error {
+func (q *Queries) DeleteQualityProfile(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteQualityProfile, id)
 	return err
 }
@@ -64,7 +66,7 @@ SELECT id, name, min_resolution, max_resolution, codec_preference, release_group
 WHERE id = $1 LIMIT 1 FOR UPDATE
 `
 
-func (q *Queries) GetQualityProfile(ctx context.Context, id string) (QualityProfile, error) {
+func (q *Queries) GetQualityProfile(ctx context.Context, id shared.ID) (QualityProfile, error) {
 	row := q.db.QueryRow(ctx, getQualityProfile, id)
 	var i QualityProfile
 	err := row.Scan(
@@ -123,7 +125,7 @@ RETURNING id, name, min_resolution, max_resolution, codec_preference, release_gr
 `
 
 type UpdateQualityProfileParams struct {
-	ID                     string
+	ID                     shared.ID
 	Name                   string
 	MinResolution          Resolution
 	MaxResolution          Resolution

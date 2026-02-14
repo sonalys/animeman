@@ -32,8 +32,8 @@ func (r indexerClientRepository) Create(ctx context.Context, client *indexing.In
 	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateIndexerClientParams{
-		ID:      client.ID.String(),
-		OwnerID: client.OwnerID.String(),
+		ID:      client.ID,
+		OwnerID: client.OwnerID,
 		Address: client.Address.String(),
 		Type:    sqlcgen.IndexerClientType(client.Type.String()),
 	}
@@ -52,7 +52,7 @@ func (r indexerClientRepository) Create(ctx context.Context, client *indexing.In
 func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]indexing.IndexerClient, error) {
 	queries := sqlcgen.New(r.conn)
 
-	entityModels, err := queries.ListIndexerClientsByOwner(ctx, owner.String())
+	entityModels, err := queries.ListIndexerClientsByOwner(ctx, owner)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
@@ -62,8 +62,8 @@ func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.U
 	for i := range entityModels {
 		item := entityModels[i]
 		response = append(response, indexing.IndexerClient{
-			ID:             shared.ParseID[indexing.IndexerID](item.ID),
-			OwnerID:        shared.ParseID[shared.UserID](item.OwnerID),
+			ID:             item.ID,
+			OwnerID:        item.OwnerID,
 			Type:           indexing.IndexerTypeProwlarr,
 			Address:        *errutils.Must(url.Parse(item.Address)),
 			Authentication: mappers.NewAuthentication(item.AuthCredentials),
@@ -82,14 +82,14 @@ func (r indexerClientRepository) Update(ctx context.Context, id indexing.Indexer
 
 	queries := sqlcgen.New(tx)
 
-	entityModel, err := queries.GetIndexerClient(ctx, id.String())
+	entityModel, err := queries.GetIndexerClient(ctx, id)
 	if err != nil {
 		return handleReadError(err)
 	}
 
 	indexerClient := &indexing.IndexerClient{
-		ID:             shared.ParseID[indexing.IndexerID](entityModel.ID),
-		OwnerID:        shared.ParseID[shared.UserID](entityModel.OwnerID),
+		ID:             entityModel.ID,
+		OwnerID:        entityModel.OwnerID,
 		Type:           indexing.IndexerTypeProwlarr,
 		Address:        *errutils.Must(url.Parse(entityModel.Address)),
 		Authentication: mappers.NewAuthentication(entityModel.AuthCredentials),
@@ -100,7 +100,7 @@ func (r indexerClientRepository) Update(ctx context.Context, id indexing.Indexer
 	}
 
 	updateParams := sqlcgen.UpdateIndexerAddressParams{
-		ID:      id.String(),
+		ID:      id,
 		Address: indexerClient.Address.String(),
 	}
 
@@ -135,7 +135,7 @@ func (r indexerClientRepository) Update(ctx context.Context, id indexing.Indexer
 func (r indexerClientRepository) Delete(ctx context.Context, id indexing.IndexerID) error {
 	queries := sqlcgen.New(r.conn)
 
-	if err := queries.DeleteIndexerClient(ctx, id.String()); err != nil {
+	if err := queries.DeleteIndexerClient(ctx, id); err != nil {
 		return handleReadError(err)
 	}
 

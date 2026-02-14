@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 type AudioCodec string
@@ -502,14 +503,14 @@ func (ns NullVideoCodec) Value() (driver.Value, error) {
 }
 
 type Authentication struct {
-	ID          string
+	ID          shared.ID
 	Type        AuthType
 	Credentials []byte
 }
 
 type Collection struct {
-	ID        string
-	OwnerID   string
+	ID        shared.ID
+	OwnerID   shared.ID
 	Name      string
 	BasePath  string
 	Tags      []string
@@ -518,10 +519,10 @@ type Collection struct {
 }
 
 type CollectionFile struct {
-	ID              string
-	EpisodeID       string
-	SeasonID        string
-	MediaID         string
+	ID              shared.ID
+	EpisodeID       shared.ID
+	SeasonID        shared.ID
+	MediaID         shared.ID
 	RelativePath    string
 	SizeBytes       int64
 	ReleaseGroup    pgtype.Text
@@ -536,9 +537,9 @@ type CollectionFile struct {
 }
 
 type Episode struct {
-	ID         string
-	SeasonID   string
-	MediaID    string
+	ID         shared.ID
+	SeasonID   shared.ID
+	MediaID    shared.ID
 	Type       MediaType
 	Number     string
 	Titles     []byte
@@ -546,17 +547,17 @@ type Episode struct {
 }
 
 type IndexerClient struct {
-	ID      string
-	OwnerID string
+	ID      shared.ID
+	OwnerID shared.ID
 	Address string
 	Type    IndexerClientType
-	AuthID  string
+	AuthID  shared.ID
 }
 
 type Medium struct {
-	ID                 string
-	CollectionID       string
-	QualityProfileID   string
+	ID                 shared.ID
+	CollectionID       shared.ID
+	QualityProfileID   shared.ID
 	Titles             []byte
 	MonitoringStatus   MonitoringStatus
 	MonitoredSince     pgtype.Timestamptz
@@ -568,7 +569,7 @@ type Medium struct {
 }
 
 type QualityProfile struct {
-	ID                     string
+	ID                     shared.ID
 	Name                   string
 	MinResolution          Resolution
 	MaxResolution          Resolution
@@ -577,23 +578,23 @@ type QualityProfile struct {
 }
 
 type Season struct {
-	ID           string
-	MediaID      string
+	ID           shared.ID
+	MediaID      shared.ID
 	Number       int32
 	AiringStatus pgtype.Text
 	Metadata     []byte
 }
 
 type TransferClient struct {
-	ID      string
-	OwnerID string
+	ID      shared.ID
+	OwnerID shared.ID
 	Address string
 	Type    TransferClientType
-	AuthID  string
+	AuthID  shared.ID
 }
 
 type User struct {
-	ID           string
+	ID           shared.ID
 	Username     string
 	PasswordHash string
 }

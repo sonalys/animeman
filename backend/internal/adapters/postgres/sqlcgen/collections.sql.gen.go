@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const createCollection = `-- name: CreateCollection :one
@@ -21,8 +22,8 @@ RETURNING id, owner_id, name, base_path, tags, monitored, created_at
 `
 
 type CreateCollectionParams struct {
-	ID        string
-	OwnerID   string
+	ID        shared.ID
+	OwnerID   shared.ID
 	Name      string
 	BasePath  string
 	Tags      []string
@@ -58,7 +59,7 @@ DELETE FROM collections
 WHERE id = $1
 `
 
-func (q *Queries) DeleteCollection(ctx context.Context, id string) error {
+func (q *Queries) DeleteCollection(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteCollection, id)
 	return err
 }
@@ -70,7 +71,7 @@ WHERE $1 = ANY(tags) AND owner_id = $2
 
 type FindCollectionsByTagParams struct {
 	Tags    []string
-	OwnerID string
+	OwnerID shared.ID
 }
 
 // Uses the GIN index to find collections containing the specified tag
@@ -107,7 +108,7 @@ SELECT id, owner_id, name, base_path, tags, monitored, created_at FROM collectio
 WHERE id = $1 LIMIT 1 FOR UPDATE
 `
 
-func (q *Queries) GetCollection(ctx context.Context, id string) (Collection, error) {
+func (q *Queries) GetCollection(ctx context.Context, id shared.ID) (Collection, error) {
 	row := q.db.QueryRow(ctx, getCollection, id)
 	var i Collection
 	err := row.Scan(
@@ -128,7 +129,7 @@ WHERE owner_id = $1
 ORDER BY created_at DESC
 `
 
-func (q *Queries) ListCollectionsByOwner(ctx context.Context, ownerID string) ([]Collection, error) {
+func (q *Queries) ListCollectionsByOwner(ctx context.Context, ownerID shared.ID) ([]Collection, error) {
 	rows, err := q.db.Query(ctx, listCollectionsByOwner, ownerID)
 	if err != nil {
 		return nil, err
@@ -163,7 +164,7 @@ WHERE id = $1
 `
 
 type SetMonitoredStatusParams struct {
-	ID        string
+	ID        shared.ID
 	Monitored bool
 }
 
@@ -185,7 +186,7 @@ RETURNING id, owner_id, name, base_path, tags, monitored, created_at
 `
 
 type UpdateCollectionParams struct {
-	ID        string
+	ID        shared.ID
 	Name      string
 	BasePath  string
 	Tags      []string
@@ -220,7 +221,7 @@ WHERE id = $1
 `
 
 type UpdateCollectionTagsParams struct {
-	ID   string
+	ID   shared.ID
 	Tags []string
 }
 

@@ -7,6 +7,8 @@ package sqlcgen
 
 import (
 	"context"
+
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const createAuthentication = `-- name: CreateAuthentication :one
@@ -19,7 +21,7 @@ RETURNING id, type, credentials
 `
 
 type CreateAuthenticationParams struct {
-	ID          string
+	ID          shared.ID
 	Type        AuthType
 	Credentials []byte
 }
@@ -36,7 +38,7 @@ DELETE FROM authentications
 WHERE id = $1
 `
 
-func (q *Queries) DeleteAuthentication(ctx context.Context, id string) error {
+func (q *Queries) DeleteAuthentication(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteAuthentication, id)
 	return err
 }
@@ -46,7 +48,7 @@ SELECT id, type, credentials FROM authentications
 WHERE id = $1 LIMIT 1 FOR UPDATE
 `
 
-func (q *Queries) GetAuthentication(ctx context.Context, id string) (Authentication, error) {
+func (q *Queries) GetAuthentication(ctx context.Context, id shared.ID) (Authentication, error) {
 	row := q.db.QueryRow(ctx, getAuthentication, id)
 	var i Authentication
 	err := row.Scan(&i.ID, &i.Type, &i.Credentials)
@@ -86,7 +88,7 @@ WHERE id = $1
 `
 
 type UpdateCredentialsParams struct {
-	ID          string
+	ID          shared.ID
 	Credentials []byte
 }
 

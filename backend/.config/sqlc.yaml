@@ -17,4 +17,6 @@ sql:
         overrides:
           - db_type: "uuid"
             go_type:
-              type: "string"
+              package: shared
+              import: github.com/sonalys/animeman/internal/domain/shared
+              type: ID

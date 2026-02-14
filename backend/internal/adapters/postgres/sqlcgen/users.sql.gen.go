@@ -7,6 +7,8 @@ package sqlcgen
 
 import (
 	"context"
+
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const createUser = `-- name: CreateUser :one
@@ -17,7 +19,7 @@ RETURNING id, username, password_hash
 `
 
 type CreateUserParams struct {
-	ID           string
+	ID           shared.ID
 	Username     string
 	PasswordHash string
 }
@@ -34,7 +36,7 @@ const deleteUser = `-- name: DeleteUser :exec
 DELETE FROM users WHERE id = $1
 `
 
-func (q *Queries) DeleteUser(ctx context.Context, id string) error {
+func (q *Queries) DeleteUser(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteUser, id)
 	return err
 }
@@ -43,7 +45,7 @@ const getUserById = `-- name: GetUserById :one
 SELECT id, username, password_hash FROM users WHERE id = $1 LIMIT 1 FOR UPDATE
 `
 
-func (q *Queries) GetUserById(ctx context.Context, id string) (User, error) {
+func (q *Queries) GetUserById(ctx context.Context, id shared.ID) (User, error) {
 	row := q.db.QueryRow(ctx, getUserById, id)
 	var i User
 	err := row.Scan(&i.ID, &i.Username, &i.PasswordHash)
@@ -69,7 +71,7 @@ RETURNING id, username, password_hash
 `
 
 type UpdateUserPasswordParams struct {
-	ID           string
+	ID           shared.ID
 	PasswordHash string
 }
 

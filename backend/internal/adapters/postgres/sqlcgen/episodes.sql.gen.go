@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const createEpisode = `-- name: CreateEpisode :one
@@ -21,9 +22,9 @@ RETURNING id, season_id, media_id, type, number, titles, airing_date
 `
 
 type CreateEpisodeParams struct {
-	ID         string
-	SeasonID   string
-	MediaID    string
+	ID         shared.ID
+	SeasonID   shared.ID
+	MediaID    shared.ID
 	Type       MediaType
 	Number     string
 	Titles     []byte
@@ -57,7 +58,7 @@ const deleteEpisode = `-- name: DeleteEpisode :exec
 DELETE FROM episodes WHERE id = $1
 `
 
-func (q *Queries) DeleteEpisode(ctx context.Context, id string) error {
+func (q *Queries) DeleteEpisode(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteEpisode, id)
 	return err
 }
@@ -67,7 +68,7 @@ SELECT id, season_id, media_id, type, number, titles, airing_date FROM episodes
 WHERE id = $1 LIMIT 1 FOR UPDATE
 `
 
-func (q *Queries) GetEpisode(ctx context.Context, id string) (Episode, error) {
+func (q *Queries) GetEpisode(ctx context.Context, id shared.ID) (Episode, error) {
 	row := q.db.QueryRow(ctx, getEpisode, id)
 	var i Episode
 	err := row.Scan(
@@ -88,7 +89,7 @@ WHERE season_id = $1 AND number = $2 LIMIT 1
 `
 
 type GetEpisodeByNumberParams struct {
-	SeasonID string
+	SeasonID shared.ID
 	Number   string
 }
 
@@ -114,7 +115,7 @@ WHERE season_id = $1
 ORDER BY airing_date ASC
 `
 
-func (q *Queries) ListEpisodesBySeason(ctx context.Context, seasonID string) ([]Episode, error) {
+func (q *Queries) ListEpisodesBySeason(ctx context.Context, seasonID shared.ID) ([]Episode, error) {
 	rows, err := q.db.Query(ctx, listEpisodesBySeason, seasonID)
 	if err != nil {
 		return nil, err
@@ -153,7 +154,7 @@ RETURNING id, season_id, media_id, type, number, titles, airing_date
 `
 
 type UpdateEpisodeMetadataParams struct {
-	ID         string
+	ID         shared.ID
 	Type       MediaType
 	Titles     []byte
 	AiringDate pgtype.Timestamptz

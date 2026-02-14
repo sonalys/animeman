@@ -32,8 +32,8 @@ func (r transferClientRepository) Create(ctx context.Context, client *transfer.C
 	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateIndexerClientParams{
-		ID:      client.ID.String(),
-		OwnerID: client.OwnerID.String(),
+		ID:      client.ID,
+		OwnerID: client.OwnerID,
 		Address: client.Address.String(),
 		Type:    sqlcgen.IndexerClientType(client.Type.String()),
 	}
@@ -52,7 +52,7 @@ func (r transferClientRepository) Create(ctx context.Context, client *transfer.C
 func (r transferClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]transfer.Client, error) {
 	queries := sqlcgen.New(r.conn)
 
-	entityModels, err := queries.ListIndexerClientsByOwner(ctx, owner.String())
+	entityModels, err := queries.ListIndexerClientsByOwner(ctx, owner)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
@@ -62,8 +62,8 @@ func (r transferClientRepository) ListByOwner(ctx context.Context, owner shared.
 	for i := range entityModels {
 		item := entityModels[i]
 		response = append(response, transfer.Client{
-			ID:             shared.ParseID[transfer.ClientID](item.ID),
-			OwnerID:        shared.ParseID[shared.UserID](item.OwnerID),
+			ID:             item.ID,
+			OwnerID:        item.OwnerID,
 			Type:           transfer.ClientTypeQBittorrent,
 			Address:        *errutils.Must(url.Parse(item.Address)),
 			Authentication: mappers.NewAuthentication(item.AuthCredentials),
@@ -82,14 +82,14 @@ func (r transferClientRepository) Update(ctx context.Context, id transfer.Client
 
 	queries := sqlcgen.New(tx)
 
-	entityModel, err := queries.GetIndexerClient(ctx, id.String())
+	entityModel, err := queries.GetIndexerClient(ctx, id)
 	if err != nil {
 		return handleReadError(err)
 	}
 
 	indexerClient := &transfer.Client{
-		ID:             shared.ParseID[transfer.ClientID](entityModel.ID),
-		OwnerID:        shared.ParseID[shared.UserID](entityModel.OwnerID),
+		ID:             entityModel.ID,
+		OwnerID:        entityModel.OwnerID,
 		Type:           transfer.ClientTypeQBittorrent,
 		Address:        *errutils.Must(url.Parse(entityModel.Address)),
 		Authentication: mappers.NewAuthentication(entityModel.AuthCredentials),
@@ -100,7 +100,7 @@ func (r transferClientRepository) Update(ctx context.Context, id transfer.Client
 	}
 
 	updateParams := sqlcgen.UpdateIndexerAddressParams{
-		ID:      id.String(),
+		ID:      id,
 		Address: indexerClient.Address.String(),
 	}
 
@@ -135,7 +135,7 @@ func (r transferClientRepository) Update(ctx context.Context, id transfer.Client
 func (r transferClientRepository) Delete(ctx context.Context, id transfer.ClientID) error {
 	queries := sqlcgen.New(r.conn)
 
-	if err := queries.DeleteIndexerClient(ctx, id.String()); err != nil {
+	if err := queries.DeleteIndexerClient(ctx, id); err != nil {
 		return handleReadError(err)
 	}
 

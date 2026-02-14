@@ -3,6 +3,7 @@ package ports
 import (
 	"context"
 
+	"github.com/gofrs/uuid/v5"
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
@@ -12,6 +13,11 @@ import (
 
 type (
 	UpdateHandler[T any] = func(*T) error
+
+	ListOptions struct {
+		PageSize uint
+		Cursor   uuid.UUID
+	}
 
 	UserRepository interface {
 		Create(ctx context.Context, user *users.User) error
@@ -46,5 +52,12 @@ type (
 		List(ctx context.Context) ([]collections.QualityProfile, error)
 		Update(ctx context.Context, id collections.QualityProfileID, updateHandler UpdateHandler[collections.QualityProfile]) error
 		Delete(ctx context.Context, id collections.QualityProfileID) error
+	}
+
+	MediaRepository interface {
+		Create(ctx context.Context, media *collections.Media) error
+		ListByCollection(ctx context.Context, id collections.CollectionID, opts ListOptions) ([]collections.Media, error)
+		Update(ctx context.Context, id collections.MediaID, updateHandler UpdateHandler[collections.Media]) error
+		Delete(ctx context.Context, id collections.MediaID) error
 	}
 )

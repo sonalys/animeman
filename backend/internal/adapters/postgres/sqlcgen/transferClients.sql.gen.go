@@ -7,6 +7,8 @@ package sqlcgen
 
 import (
 	"context"
+
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const createTransferClient = `-- name: CreateTransferClient :one
@@ -19,11 +21,11 @@ RETURNING id, owner_id, address, type, auth_id
 `
 
 type CreateTransferClientParams struct {
-	ID      string
-	OwnerID string
+	ID      shared.ID
+	OwnerID shared.ID
 	Address string
 	Type    TransferClientType
-	AuthID  string
+	AuthID  shared.ID
 }
 
 func (q *Queries) CreateTransferClient(ctx context.Context, arg CreateTransferClientParams) (TransferClient, error) {
@@ -51,7 +53,7 @@ WHERE id = $1
 `
 
 // Cascade will handle the associated row in authentications
-func (q *Queries) DeleteTransferClient(ctx context.Context, id string) error {
+func (q *Queries) DeleteTransferClient(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteTransferClient, id)
 	return err
 }
@@ -66,17 +68,17 @@ WHERE tc.id = $1 LIMIT 1 FOR UPDATE
 `
 
 type GetTransferClientRow struct {
-	ID              string
-	OwnerID         string
+	ID              shared.ID
+	OwnerID         shared.ID
 	Address         string
 	Type            TransferClientType
-	AuthID          string
+	AuthID          shared.ID
 	AuthType        AuthType
 	AuthCredentials []byte
 }
 
 // Reconstructs the TransferClient aggregate with nested Authentication
-func (q *Queries) GetTransferClient(ctx context.Context, id string) (GetTransferClientRow, error) {
+func (q *Queries) GetTransferClient(ctx context.Context, id shared.ID) (GetTransferClientRow, error) {
 	row := q.db.QueryRow(ctx, getTransferClient, id)
 	var i GetTransferClientRow
 	err := row.Scan(
@@ -102,16 +104,16 @@ ORDER BY tc.id
 `
 
 type ListTransferClientsByOwnerRow struct {
-	ID              string
-	OwnerID         string
+	ID              shared.ID
+	OwnerID         shared.ID
 	Address         string
 	Type            TransferClientType
-	AuthID          string
+	AuthID          shared.ID
 	AuthType        AuthType
 	AuthCredentials []byte
 }
 
-func (q *Queries) ListTransferClientsByOwner(ctx context.Context, ownerID string) ([]ListTransferClientsByOwnerRow, error) {
+func (q *Queries) ListTransferClientsByOwner(ctx context.Context, ownerID shared.ID) ([]ListTransferClientsByOwnerRow, error) {
 	rows, err := q.db.Query(ctx, listTransferClientsByOwner, ownerID)
 	if err != nil {
 		return nil, err
@@ -146,7 +148,7 @@ WHERE id = $1
 `
 
 type UpdateTransferClientAddressParams struct {
-	ID      string
+	ID      shared.ID
 	Address string
 }
 

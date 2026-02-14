@@ -30,8 +30,8 @@ func (r *collectionRepository) Create(ctx context.Context, collection *collectio
 	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateCollectionParams{
-		ID:        collection.ID.String(),
-		OwnerID:   collection.Owner.String(),
+		ID:        collection.ID,
+		OwnerID:   collection.Owner,
 		Name:      collection.Name,
 		BasePath:  collection.BasePath,
 		Tags:      collection.Tags,
@@ -53,7 +53,7 @@ func (r *collectionRepository) Create(ctx context.Context, collection *collectio
 func (r *collectionRepository) Delete(ctx context.Context, id collections.CollectionID) error {
 	queries := sqlcgen.New(r.conn)
 
-	if err := queries.DeleteCollection(ctx, id.String()); err != nil {
+	if err := queries.DeleteCollection(ctx, id); err != nil {
 		return handleReadError(err)
 	}
 
@@ -63,7 +63,7 @@ func (r *collectionRepository) Delete(ctx context.Context, id collections.Collec
 func (r *collectionRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]collections.Collection, error) {
 	queries := sqlcgen.New(r.conn)
 
-	entityModels, err := queries.ListCollectionsByOwner(ctx, owner.String())
+	entityModels, err := queries.ListCollectionsByOwner(ctx, owner)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
@@ -73,8 +73,8 @@ func (r *collectionRepository) ListByOwner(ctx context.Context, owner shared.Use
 	for i := range entityModels {
 		item := entityModels[i]
 		response = append(response, collections.Collection{
-			ID:        shared.ParseID[collections.CollectionID](item.ID),
-			Owner:     shared.ParseID[shared.UserID](item.OwnerID),
+			ID:        item.ID,
+			Owner:     item.OwnerID,
 			Name:      item.Name,
 			BasePath:  item.BasePath,
 			Tags:      item.Tags,
@@ -95,14 +95,14 @@ func (r *collectionRepository) Update(ctx context.Context, id collections.Collec
 
 	queries := sqlcgen.New(tx)
 
-	entityModel, err := queries.GetCollection(ctx, id.String())
+	entityModel, err := queries.GetCollection(ctx, id)
 	if err != nil {
 		return handleReadError(err)
 	}
 
 	collection := &collections.Collection{
-		ID:        shared.ParseID[collections.CollectionID](entityModel.ID),
-		Owner:     shared.ParseID[shared.UserID](entityModel.OwnerID),
+		ID:        entityModel.ID,
+		Owner:     entityModel.OwnerID,
 		Name:      entityModel.Name,
 		BasePath:  entityModel.BasePath,
 		Tags:      entityModel.Tags,
@@ -115,7 +115,7 @@ func (r *collectionRepository) Update(ctx context.Context, id collections.Collec
 	}
 
 	updateParams := sqlcgen.UpdateCollectionParams{
-		ID:        id.String(),
+		ID:        id,
 		Name:      collection.Name,
 		BasePath:  collection.BasePath,
 		Tags:      collection.Tags,

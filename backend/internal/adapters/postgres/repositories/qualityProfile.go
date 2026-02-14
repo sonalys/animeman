@@ -11,7 +11,6 @@ import (
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/collections"
-	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/sliceutils"
 	"google.golang.org/grpc/codes"
@@ -31,7 +30,7 @@ func (r *qualityProfileRepository) Create(ctx context.Context, profile *collecti
 	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateQualityProfileParams{
-		ID:                     profile.ID.String(),
+		ID:                     profile.ID,
 		Name:                   profile.Name,
 		MinResolution:          mappers.NewResolutionModel(profile.MinResolution),
 		MaxResolution:          mappers.NewResolutionModel(profile.MaxResolution),
@@ -53,7 +52,7 @@ func (r *qualityProfileRepository) Create(ctx context.Context, profile *collecti
 func (r *qualityProfileRepository) Delete(ctx context.Context, id collections.QualityProfileID) error {
 	queries := sqlcgen.New(r.conn)
 
-	if err := queries.DeleteQualityProfile(ctx, id.String()); err != nil {
+	if err := queries.DeleteQualityProfile(ctx, id); err != nil {
 		return handleReadError(err)
 	}
 
@@ -74,7 +73,7 @@ func (r *qualityProfileRepository) List(ctx context.Context) ([]collections.Qual
 		item := models[i]
 
 		response = append(response, collections.QualityProfile{
-			ID:                     shared.ParseID[collections.QualityProfileID](item.ID),
+			ID:                     item.ID,
 			Name:                   item.Name,
 			MinResolution:          mappers.NewResolution(item.MinResolution),
 			MaxResolution:          mappers.NewResolution(item.MaxResolution),
@@ -90,13 +89,13 @@ func (r *qualityProfileRepository) Update(ctx context.Context, id collections.Qu
 	return transaction(ctx, r.conn, func(tx pgx.Tx) error {
 		queries := sqlcgen.New(tx)
 
-		model, err := queries.GetQualityProfile(ctx, id.String())
+		model, err := queries.GetQualityProfile(ctx, id)
 		if err != nil {
 			return err
 		}
 
 		qualityProfile := collections.QualityProfile{
-			ID:                     shared.ParseID[collections.QualityProfileID](model.ID),
+			ID:                     model.ID,
 			Name:                   model.Name,
 			MinResolution:          mappers.NewResolution(model.MinResolution),
 			MaxResolution:          mappers.NewResolution(model.MaxResolution),
@@ -109,7 +108,7 @@ func (r *qualityProfileRepository) Update(ctx context.Context, id collections.Qu
 		}
 
 		params := sqlcgen.UpdateQualityProfileParams{
-			ID:                     id.String(),
+			ID:                     id,
 			Name:                   qualityProfile.Name,
 			MinResolution:          mappers.NewResolutionModel(qualityProfile.MinResolution),
 			MaxResolution:          mappers.NewResolutionModel(qualityProfile.MaxResolution),

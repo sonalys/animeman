@@ -30,7 +30,7 @@ func (r userRepository) Create(ctx context.Context, user *users.User) error {
 	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateUserParams{
-		ID:           user.ID.String(),
+		ID:           user.ID,
 		Username:     user.Username,
 		PasswordHash: string(user.PasswordHash),
 	}
@@ -49,7 +49,7 @@ func (r userRepository) Create(ctx context.Context, user *users.User) error {
 func (r userRepository) Delete(ctx context.Context, id shared.UserID) error {
 	queries := sqlcgen.New(r.conn)
 
-	if err := queries.DeleteUser(ctx, id.String()); err != nil {
+	if err := queries.DeleteUser(ctx, id); err != nil {
 		return handleReadError(err)
 	}
 
@@ -59,7 +59,7 @@ func (r userRepository) Delete(ctx context.Context, id shared.UserID) error {
 func (r userRepository) Get(ctx context.Context, id shared.UserID) (*users.User, error) {
 	queries := sqlcgen.New(r.conn)
 
-	userModel, err := queries.GetUserById(ctx, id.String())
+	userModel, err := queries.GetUserById(ctx, id)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
@@ -78,7 +78,7 @@ func (r userRepository) Update(ctx context.Context, id shared.UserID, update fun
 
 	queries := sqlcgen.New(tx)
 
-	userModel, err := queries.GetUserById(ctx, id.String())
+	userModel, err := queries.GetUserById(ctx, id)
 	if err != nil {
 		return handleReadError(err)
 	}
@@ -90,7 +90,7 @@ func (r userRepository) Update(ctx context.Context, id shared.UserID, update fun
 	}
 
 	updateParams := sqlcgen.UpdateUserPasswordParams{
-		ID:           user.ID.String(),
+		ID:           user.ID,
 		PasswordHash: string(user.PasswordHash),
 	}
 

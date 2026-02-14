@@ -9,13 +9,14 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
 const deleteCollectionFile = `-- name: DeleteCollectionFile :exec
 DELETE FROM collection_files WHERE id = $1
 `
 
-func (q *Queries) DeleteCollectionFile(ctx context.Context, id string) error {
+func (q *Queries) DeleteCollectionFile(ctx context.Context, id shared.ID) error {
 	_, err := q.db.Exec(ctx, deleteCollectionFile, id)
 	return err
 }
@@ -25,7 +26,7 @@ SELECT id, episode_id, season_id, media_id, relative_path, size_bytes, release_g
 WHERE episode_id = $1 LIMIT 1 FOR UPDATE
 `
 
-func (q *Queries) GetCollectionFileByEpisode(ctx context.Context, episodeID string) (CollectionFile, error) {
+func (q *Queries) GetCollectionFileByEpisode(ctx context.Context, episodeID shared.ID) (CollectionFile, error) {
 	row := q.db.QueryRow(ctx, getCollectionFileByEpisode, episodeID)
 	var i CollectionFile
 	err := row.Scan(
@@ -54,7 +55,7 @@ WHERE season_id = $1
 ORDER BY relative_path ASC
 `
 
-func (q *Queries) ListCollectionFilesBySeason(ctx context.Context, seasonID string) ([]CollectionFile, error) {
+func (q *Queries) ListCollectionFilesBySeason(ctx context.Context, seasonID shared.ID) ([]CollectionFile, error) {
 	rows, err := q.db.Query(ctx, listCollectionFilesBySeason, seasonID)
 	if err != nil {
 		return nil, err
@@ -98,7 +99,7 @@ LIMIT $2
 `
 
 type ListCollectionFilesPaginatedParams struct {
-	Column1 string
+	Column1 shared.ID
 	Limit   int32
 }
 
@@ -151,10 +152,10 @@ RETURNING id, episode_id, season_id, media_id, relative_path, size_bytes, releas
 `
 
 type RegisterCollectionFileParams struct {
-	ID              string
-	EpisodeID       string
-	SeasonID        string
-	MediaID         string
+	ID              shared.ID
+	EpisodeID       shared.ID
+	SeasonID        shared.ID
+	MediaID         shared.ID
 	RelativePath    string
 	SizeBytes       int64
 	ReleaseGroup    pgtype.Text
@@ -223,7 +224,7 @@ RETURNING id, episode_id, season_id, media_id, relative_path, size_bytes, releas
 `
 
 type UpdateCollectionFileParams struct {
-	ID              string
+	ID              shared.ID
 	RelativePath    string
 	SizeBytes       int64
 	Version         int32
