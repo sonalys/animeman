@@ -28,18 +28,6 @@ func NewTransferClientRepository(conn *pgxpool.Pool) ports.TransferClientReposit
 	}
 }
 
-func transferClientErrorHandler(err *pgconn.PgError) error {
-	switch err.Code {
-	case pgerrcode.UniqueViolation:
-		switch err.ConstraintName {
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
-		}
-	default:
-		return err
-	}
-}
-
 func (r transferClientRepository) Create(ctx context.Context, client *transfer.Client) error {
 	queries := sqlcgen.New(r.conn)
 
@@ -152,4 +140,16 @@ func (r transferClientRepository) Delete(ctx context.Context, id transfer.Client
 	}
 
 	return nil
+}
+
+func transferClientErrorHandler(err *pgconn.PgError) error {
+	switch err.Code {
+	case pgerrcode.UniqueViolation:
+		switch err.ConstraintName {
+		default:
+			return apperr.New(err, codes.FailedPrecondition)
+		}
+	default:
+		return err
+	}
 }

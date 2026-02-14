@@ -28,20 +28,6 @@ func NewIndexerClientRepository(conn *pgxpool.Pool) ports.IndexerClientRepositor
 	}
 }
 
-func indexerClientErrorHandler(err *pgconn.PgError) error {
-	switch err.Code {
-	case pgerrcode.UniqueViolation:
-		switch err.ConstraintName {
-		case "prowlarr_configurations_pkey":
-			return apperr.New(err, codes.AlreadyExists)
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
-		}
-	default:
-		return err
-	}
-}
-
 func (r indexerClientRepository) Create(ctx context.Context, client *indexing.IndexerClient) error {
 	queries := sqlcgen.New(r.conn)
 
@@ -154,4 +140,16 @@ func (r indexerClientRepository) Delete(ctx context.Context, id indexing.Indexer
 	}
 
 	return nil
+}
+
+func indexerClientErrorHandler(err *pgconn.PgError) error {
+	switch err.Code {
+	case pgerrcode.UniqueViolation:
+		switch err.ConstraintName {
+		default:
+			return apperr.New(err, codes.FailedPrecondition)
+		}
+	default:
+		return err
+	}
 }

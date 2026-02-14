@@ -26,20 +26,6 @@ func NewUserRepository(conn *pgxpool.Pool) ports.UserRepository {
 	}
 }
 
-func userErrorHandler(err *pgconn.PgError) error {
-	switch err.Code {
-	case pgerrcode.UniqueViolation:
-		switch err.ConstraintName {
-		case "users_pkey":
-			return apperr.New(users.ErrUniqueUsername, codes.AlreadyExists)
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
-		}
-	default:
-		return err
-	}
-}
-
 func (r userRepository) Create(ctx context.Context, user *users.User) error {
 	queries := sqlcgen.New(r.conn)
 
@@ -121,4 +107,18 @@ func (r userRepository) Update(ctx context.Context, id shared.UserID, update fun
 	}
 
 	return nil
+}
+
+func userErrorHandler(err *pgconn.PgError) error {
+	switch err.Code {
+	case pgerrcode.UniqueViolation:
+		switch err.ConstraintName {
+		case "users_pkey":
+			return apperr.New(users.ErrUniqueUsername, codes.AlreadyExists)
+		default:
+			return apperr.New(err, codes.FailedPrecondition)
+		}
+	default:
+		return err
+	}
 }

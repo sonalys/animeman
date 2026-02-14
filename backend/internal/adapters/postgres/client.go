@@ -49,6 +49,10 @@ func (c Client) TransferClientRepository() ports.TransferClientRepository {
 	return repositories.NewTransferClientRepository(c.conn)
 }
 
+func (c Client) CollectionRepository() ports.CollectionRepository {
+	return repositories.NewCollectionRepository(c.conn)
+}
+
 func waitConnection(ctx context.Context, conn *pgxpool.Pool) error {
 	for {
 		if err := conn.Ping(ctx); err == nil {

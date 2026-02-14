@@ -3,6 +3,7 @@ package ports
 import (
 	"context"
 
+	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/transfer"
@@ -29,5 +30,12 @@ type (
 		ListByOwner(ctx context.Context, owner shared.UserID) ([]transfer.Client, error)
 		Update(ctx context.Context, id transfer.ClientID, update func(client *transfer.Client) error) error
 		Delete(ctx context.Context, id transfer.ClientID) error
+	}
+
+	CollectionRepository interface {
+		Create(ctx context.Context, collection *collections.Collection) error
+		ListByOwner(ctx context.Context, owner shared.UserID) ([]collections.Collection, error)
+		Update(ctx context.Context, id collections.CollectionID, update func(collection *collections.Collection) error) error
+		Delete(ctx context.Context, id collections.CollectionID) error
 	}
 )
