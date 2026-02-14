@@ -17,10 +17,10 @@ It automatically parses the torrent titles for tagging the show, season and epis
 
 ## How does it work?
 
-0. Tag existing torrents in the configured category
+0. Tag existing torrents in the configured category in **qBittorrent**
 1. Fetch your **Currently Watching** entries from **MAL** or **Anilist**
-2. Search in the RSS feed for each entry in **Nyaa.si**
-3. Scan through results searching for all newewer episodes than **qBittorrent**  
+2. Search **Nyaa.si** for episodes for each anime list entry
+3. Scan through results searching for newer episodes than the existing ones in **qBittorrent**  
   It doesn't search for specific episodes, it uses all results from a single page to retrieve new episodes.  
   This might not work well for shows with more episodes than nyaa.si page size.  
   Changing this approach is not viable at the moment, 
