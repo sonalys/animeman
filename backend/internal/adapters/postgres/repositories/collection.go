@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
@@ -87,54 +86,44 @@ func (r *collectionRepository) ListByOwner(ctx context.Context, owner shared.Use
 }
 
 func (r *collectionRepository) Update(ctx context.Context, id collections.CollectionID, update func(collection *collections.Collection) error) error {
-	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
+	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
+		entityModel, err := queries.GetCollection(ctx, id)
+		if err != nil {
+			return handleReadError(err)
+		}
 
-	queries := sqlcgen.New(tx)
+		collection := &collections.Collection{
+			ID:        entityModel.ID,
+			Owner:     entityModel.OwnerID,
+			Name:      entityModel.Name,
+			BasePath:  entityModel.BasePath,
+			Tags:      entityModel.Tags,
+			Monitored: entityModel.Monitored,
+			CreatedAt: entityModel.CreatedAt.Time,
+		}
 
-	entityModel, err := queries.GetCollection(ctx, id)
-	if err != nil {
-		return handleReadError(err)
-	}
-
-	collection := &collections.Collection{
-		ID:        entityModel.ID,
-		Owner:     entityModel.OwnerID,
-		Name:      entityModel.Name,
-		BasePath:  entityModel.BasePath,
-		Tags:      entityModel.Tags,
-		Monitored: entityModel.Monitored,
-		CreatedAt: entityModel.CreatedAt.Time,
-	}
-
-	if err := update(collection); err != nil {
-		return err
-	}
-
-	updateParams := sqlcgen.UpdateCollectionParams{
-		ID:        id,
-		Name:      collection.Name,
-		BasePath:  collection.BasePath,
-		Tags:      collection.Tags,
-		Monitored: collection.Monitored,
-	}
-
-	if _, err = queries.UpdateCollection(ctx, updateParams); err != nil {
-		if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+		if err := update(collection); err != nil {
 			return err
 		}
 
-		return handleReadError(err)
-	}
+		updateParams := sqlcgen.UpdateCollectionParams{
+			ID:        id,
+			Name:      collection.Name,
+			BasePath:  collection.BasePath,
+			Tags:      collection.Tags,
+			Monitored: collection.Monitored,
+		}
 
-	if err := tx.Commit(ctx); err != nil {
-		return err
-	}
+		if _, err = queries.UpdateCollection(ctx, updateParams); err != nil {
+			if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+				return err
+			}
 
-	return nil
+			return handleReadError(err)
+		}
+
+		return nil
+	})
 }
 
 func collectionErrorHandler(err *pgconn.PgError) error {

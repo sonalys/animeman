@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
@@ -86,9 +85,7 @@ func (r *qualityProfileRepository) List(ctx context.Context) ([]collections.Qual
 }
 
 func (r *qualityProfileRepository) Update(ctx context.Context, id collections.QualityProfileID, update func(profile *collections.QualityProfile) error) error {
-	return transaction(ctx, r.conn, func(tx pgx.Tx) error {
-		queries := sqlcgen.New(tx)
-
+	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
 		model, err := queries.GetQualityProfile(ctx, id)
 		if err != nil {
 			return err

@@ -5,7 +5,6 @@ import (
 	"net/url"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
@@ -74,62 +73,52 @@ func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.U
 }
 
 func (r indexerClientRepository) Update(ctx context.Context, id indexing.IndexerID, update func(indexerClient *indexing.IndexerClient) error) error {
-	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
+	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
+		entityModel, err := queries.GetIndexerClient(ctx, id)
+		if err != nil {
+			return handleReadError(err)
+		}
 
-	queries := sqlcgen.New(tx)
+		indexerClient := &indexing.IndexerClient{
+			ID:             entityModel.ID,
+			OwnerID:        entityModel.OwnerID,
+			Type:           indexing.IndexerTypeProwlarr,
+			Address:        *errutils.Must(url.Parse(entityModel.Address)),
+			Authentication: mappers.NewAuthentication(entityModel.AuthCredentials),
+		}
 
-	entityModel, err := queries.GetIndexerClient(ctx, id)
-	if err != nil {
-		return handleReadError(err)
-	}
-
-	indexerClient := &indexing.IndexerClient{
-		ID:             entityModel.ID,
-		OwnerID:        entityModel.OwnerID,
-		Type:           indexing.IndexerTypeProwlarr,
-		Address:        *errutils.Must(url.Parse(entityModel.Address)),
-		Authentication: mappers.NewAuthentication(entityModel.AuthCredentials),
-	}
-
-	if err := update(indexerClient); err != nil {
-		return err
-	}
-
-	updateParams := sqlcgen.UpdateIndexerAddressParams{
-		ID:      id,
-		Address: indexerClient.Address.String(),
-	}
-
-	if err = queries.UpdateIndexerAddress(ctx, updateParams); err != nil {
-		if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+		if err := update(indexerClient); err != nil {
 			return err
 		}
 
-		return handleReadError(err)
-	}
-
-	updateAuthParams := sqlcgen.UpdateCredentialsParams{
-		ID:          entityModel.AuthID,
-		Credentials: mappers.NewAuthenticationModel(indexerClient.Authentication),
-	}
-
-	if err = queries.UpdateCredentials(ctx, updateAuthParams); err != nil {
-		if err := handleWriteError(err, transferClientErrorHandler); err != nil {
-			return err
+		updateParams := sqlcgen.UpdateIndexerAddressParams{
+			ID:      id,
+			Address: indexerClient.Address.String(),
 		}
 
-		return handleReadError(err)
-	}
+		if err = queries.UpdateIndexerAddress(ctx, updateParams); err != nil {
+			if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+				return err
+			}
 
-	if err := tx.Commit(ctx); err != nil {
-		return err
-	}
+			return handleReadError(err)
+		}
 
-	return nil
+		updateAuthParams := sqlcgen.UpdateCredentialsParams{
+			ID:          entityModel.AuthID,
+			Credentials: mappers.NewAuthenticationModel(indexerClient.Authentication),
+		}
+
+		if err = queries.UpdateCredentials(ctx, updateAuthParams); err != nil {
+			if err := handleWriteError(err, transferClientErrorHandler); err != nil {
+				return err
+			}
+
+			return handleReadError(err)
+		}
+
+		return nil
+	})
 }
 
 func (r indexerClientRepository) Delete(ctx context.Context, id indexing.IndexerID) error {

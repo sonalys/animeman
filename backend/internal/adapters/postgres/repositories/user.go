@@ -4,7 +4,6 @@ import (
 	"context"
 
 	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
@@ -70,43 +69,33 @@ func (r userRepository) Get(ctx context.Context, id shared.UserID) (*users.User,
 }
 
 func (r userRepository) Update(ctx context.Context, id shared.UserID, update func(user *users.User) error) error {
-	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
-	if err != nil {
-		return err
-	}
-	defer tx.Rollback(ctx)
+	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
+		userModel, err := queries.GetUserById(ctx, id)
+		if err != nil {
+			return handleReadError(err)
+		}
 
-	queries := sqlcgen.New(tx)
+		user := mappers.NewUser(&userModel)
 
-	userModel, err := queries.GetUserById(ctx, id)
-	if err != nil {
-		return handleReadError(err)
-	}
-
-	user := mappers.NewUser(&userModel)
-
-	if err := update(user); err != nil {
-		return err
-	}
-
-	updateParams := sqlcgen.UpdateUserPasswordParams{
-		ID:           user.ID,
-		PasswordHash: string(user.PasswordHash),
-	}
-
-	if _, err = queries.UpdateUserPassword(ctx, updateParams); err != nil {
-		if err := handleWriteError(err, userErrorHandler); err != nil {
+		if err := update(user); err != nil {
 			return err
 		}
 
-		return handleReadError(err)
-	}
+		updateParams := sqlcgen.UpdateUserPasswordParams{
+			ID:           user.ID,
+			PasswordHash: string(user.PasswordHash),
+		}
 
-	if err := tx.Commit(ctx); err != nil {
-		return err
-	}
+		if _, err = queries.UpdateUserPassword(ctx, updateParams); err != nil {
+			if err := handleWriteError(err, userErrorHandler); err != nil {
+				return err
+			}
 
-	return nil
+			return handleReadError(err)
+		}
+
+		return nil
+	})
 }
 
 func userErrorHandler(err *pgconn.PgError) error {
