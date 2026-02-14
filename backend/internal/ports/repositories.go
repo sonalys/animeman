@@ -3,7 +3,6 @@ package ports
 import (
 	"context"
 
-	"github.com/gofrs/uuid/v5"
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
@@ -15,8 +14,8 @@ type (
 	UpdateHandler[T any] = func(*T) error
 
 	ListOptions struct {
-		PageSize uint
-		Cursor   uuid.UUID
+		PageSize int32
+		Cursor   shared.ID
 	}
 
 	UserRepository interface {

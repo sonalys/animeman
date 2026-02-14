@@ -22,8 +22,6 @@ type (
 		Metadata         MediaMetadata
 		QualityProfileID QualityProfileID
 
-		Seasons []*Season
-
 		CreatedAt time.Time
 	}
 )
@@ -40,7 +38,6 @@ func (m *Media) NewSeason(
 		AiringStatus:   airingStatus,
 		SeasonMetadata: metadata,
 	}
-	m.Seasons = append(m.Seasons, season)
 
 	return season
 }

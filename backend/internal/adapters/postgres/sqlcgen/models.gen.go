@@ -9,6 +9,7 @@ import (
 	"fmt"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/sonalys/animeman/internal/adapters/postgres/dtos"
 	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
@@ -558,7 +559,7 @@ type Medium struct {
 	ID                 shared.ID
 	CollectionID       shared.ID
 	QualityProfileID   shared.ID
-	Titles             []byte
+	Titles             dtos.Titles
 	MonitoringStatus   MonitoringStatus
 	MonitoredSince     pgtype.Timestamptz
 	Genres             []string

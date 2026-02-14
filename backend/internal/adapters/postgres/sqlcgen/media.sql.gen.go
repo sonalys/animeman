@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/sonalys/animeman/internal/adapters/postgres/dtos"
 	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
@@ -27,7 +28,7 @@ type CreateMediaParams struct {
 	ID               shared.ID
 	CollectionID     shared.ID
 	QualityProfileID shared.ID
-	Titles           []byte
+	Titles           dtos.Titles
 	MonitoringStatus MonitoringStatus
 	MonitoredSince   pgtype.Timestamptz
 	Genres           []string
@@ -138,18 +139,18 @@ func (q *Queries) GetMedia(ctx context.Context, id shared.ID) (Medium, error) {
 
 const listMediaPaginated = `-- name: ListMediaPaginated :many
 SELECT id, collection_id, quality_profile_id, titles, monitoring_status, monitored_since, genres, airing_started_at, airing_ended_at, created_at, titles_search_vector FROM media
-WHERE (id) < ($1::uuid)
+WHERE id < $2::uuid
 ORDER BY id DESC
-LIMIT $2
+LIMIT $1
 `
 
 type ListMediaPaginatedParams struct {
-	Column1 shared.ID
-	Limit   int32
+	Limit  int32
+	LastID shared.ID
 }
 
 func (q *Queries) ListMediaPaginated(ctx context.Context, arg ListMediaPaginatedParams) ([]Medium, error) {
-	rows, err := q.db.Query(ctx, listMediaPaginated, arg.Column1, arg.Limit)
+	rows, err := q.db.Query(ctx, listMediaPaginated, arg.Limit, arg.LastID)
 	if err != nil {
 		return nil, err
 	}
@@ -200,7 +201,7 @@ type SearchMediaByTitlePaginatedRow struct {
 	ID                 shared.ID
 	CollectionID       shared.ID
 	QualityProfileID   shared.ID
-	Titles             []byte
+	Titles             dtos.Titles
 	MonitoringStatus   MonitoringStatus
 	MonitoredSince     pgtype.Timestamptz
 	Genres             []string
@@ -265,7 +266,7 @@ WHERE id = $1
 
 type UpdateMediaParams struct {
 	ID               shared.ID
-	Titles           []byte
+	Titles           dtos.Titles
 	MonitoringStatus MonitoringStatus
 	MonitoredSince   pgtype.Timestamptz
 	Genres           []string
