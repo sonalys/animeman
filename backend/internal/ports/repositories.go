@@ -3,21 +3,23 @@ package ports
 import (
 	"context"
 
-	"github.com/sonalys/animeman/internal/domain"
+	"github.com/sonalys/animeman/internal/domain/indexing"
+	"github.com/sonalys/animeman/internal/domain/shared"
+	"github.com/sonalys/animeman/internal/domain/users"
 )
 
 type (
 	UserRepository interface {
-		Create(ctx context.Context, user *domain.User) error
-		Get(ctx context.Context, id domain.UserID) (*domain.User, error)
-		Update(ctx context.Context, id domain.UserID, update func(user *domain.User) error) error
-		Delete(ctx context.Context, id domain.UserID) error
+		Create(ctx context.Context, user *users.User) error
+		Get(ctx context.Context, id shared.UserID) (*users.User, error)
+		Update(ctx context.Context, id shared.UserID, update func(user *users.User) error) error
+		Delete(ctx context.Context, id shared.UserID) error
 	}
 
-	ProwlarrRepository interface {
-		CreateConfig(ctx context.Context, config *domain.ProwlarrConfiguration) error
-		GetConfigByOwner(ctx context.Context, owner domain.UserID) (*domain.ProwlarrConfiguration, error)
-		UpdateConfig(ctx context.Context, id domain.ProwlarrConfigID, update func(config *domain.ProwlarrConfiguration) error) error
-		DeleteConfig(ctx context.Context, id domain.ProwlarrConfigID) error
+	IndexerClientRepository interface {
+		Create(ctx context.Context, config *indexing.IndexerClient) error
+		GetByOwner(ctx context.Context, owner shared.UserID) (*indexing.IndexerClient, error)
+		Update(ctx context.Context, id indexing.IndexerID, update func(config *indexing.IndexerClient) error) error
+		Delete(ctx context.Context, id indexing.IndexerID) error
 	}
 )

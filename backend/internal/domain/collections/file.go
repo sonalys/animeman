@@ -9,10 +9,10 @@ import (
 )
 
 type (
-	CollectionFileID struct{ uuid.UUID }
+	FileID struct{ uuid.UUID }
 
-	CollectionFile struct {
-		ID        CollectionFileID
+	File struct {
+		ID        FileID
 		EpisodeID EpisodeID
 		SeasonID  SeasonID
 		MediaID   MediaID

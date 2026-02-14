@@ -15,17 +15,17 @@ const (
 func (a HashAlgorithm) String() string {
 	switch a {
 	case HashAlgCRC32:
-		return "CRC32"
+		return "crc32"
 	case HashAlgMD5:
-		return "MD5"
+		return "md5"
 	case HashAlgSHA1:
-		return "SHA1"
+		return "sha1"
 	case HashAlgED2K:
-		return "ED2K"
+		return "ed2k"
 	case HashAlgSHA256:
-		return "SHA256"
+		return "sha256"
 	default:
-		return "UNKNOWN"
+		return "unknown"
 	}
 }
 

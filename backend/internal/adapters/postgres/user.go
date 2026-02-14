@@ -10,7 +10,8 @@ import (
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
 	"github.com/sonalys/animeman/internal/app/apperr"
-	"github.com/sonalys/animeman/internal/domain"
+	"github.com/sonalys/animeman/internal/domain/shared"
+	"github.com/sonalys/animeman/internal/domain/users"
 	"google.golang.org/grpc/codes"
 )
 
@@ -23,7 +24,7 @@ func userErrorHandler(err *pgconn.PgError) error {
 	case pgerrcode.UniqueViolation:
 		switch err.ConstraintName {
 		case "users_pkey":
-			return apperr.New(domain.ErrUniqueUsername, codes.AlreadyExists)
+			return apperr.New(users.ErrUniqueUsername, codes.AlreadyExists)
 		default:
 			return apperr.New(err, codes.FailedPrecondition)
 		}
@@ -32,7 +33,7 @@ func userErrorHandler(err *pgconn.PgError) error {
 	}
 }
 
-func (r userRepository) Create(ctx context.Context, user *domain.User) error {
+func (r userRepository) Create(ctx context.Context, user *users.User) error {
 	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateUserParams{
@@ -52,7 +53,7 @@ func (r userRepository) Create(ctx context.Context, user *domain.User) error {
 	return nil
 }
 
-func (r userRepository) Delete(ctx context.Context, id domain.UserID) error {
+func (r userRepository) Delete(ctx context.Context, id shared.UserID) error {
 	queries := sqlcgen.New(r.conn)
 
 	if err := queries.DeleteUser(ctx, id.String()); err != nil {
@@ -62,7 +63,7 @@ func (r userRepository) Delete(ctx context.Context, id domain.UserID) error {
 	return nil
 }
 
-func (r userRepository) Get(ctx context.Context, id domain.UserID) (*domain.User, error) {
+func (r userRepository) Get(ctx context.Context, id shared.UserID) (*users.User, error) {
 	queries := sqlcgen.New(r.conn)
 
 	userModel, err := queries.GetUserById(ctx, id.String())
@@ -75,7 +76,7 @@ func (r userRepository) Get(ctx context.Context, id domain.UserID) (*domain.User
 	return user, nil
 }
 
-func (r userRepository) Update(ctx context.Context, id domain.UserID, update func(user *domain.User) error) error {
+func (r userRepository) Update(ctx context.Context, id shared.UserID, update func(user *users.User) error) error {
 	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return err

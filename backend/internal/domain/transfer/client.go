@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/releases"
 	"github.com/sonalys/animeman/internal/domain/shared"
 )
@@ -18,7 +19,7 @@ type (
 
 		Address        url.URL
 		Type           ClientType
-		Authentication Authentication
+		Authentication authentication.Authentication
 	}
 
 	ReleaseDownload struct {

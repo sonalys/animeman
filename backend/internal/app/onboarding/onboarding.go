@@ -7,6 +7,6 @@ import (
 type (
 	onboarder struct {
 		userRepository     ports.UserRepository
-		prowlarrRepository ports.ProwlarrRepository
+		prowlarrRepository ports.IndexerClientRepository
 	}
 )

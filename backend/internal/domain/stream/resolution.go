@@ -22,7 +22,7 @@ func (r Resolution) String() string {
 	case Resolution2160p:
 		return "2160p"
 	default:
-		return "UNKNOWN"
+		return "unknown"
 	}
 }
 

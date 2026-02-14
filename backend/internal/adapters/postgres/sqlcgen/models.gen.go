@@ -7,120 +7,589 @@ package sqlcgen
 import (
 	"database/sql/driver"
 	"fmt"
+
+	"github.com/jackc/pgx/v5/pgtype"
 )
 
-type AnimeListSource string
+type AudioCodec string
 
 const (
-	AnimeListSourceMal     AnimeListSource = "mal"
-	AnimeListSourceAnilist AnimeListSource = "anilist"
+	AudioCodecUnknown AudioCodec = "unknown"
+	AudioCodecAac     AudioCodec = "aac"
+	AudioCodecOpus    AudioCodec = "opus"
+	AudioCodecFlac    AudioCodec = "flac"
+	AudioCodecMp3     AudioCodec = "mp3"
+	AudioCodecAc3     AudioCodec = "ac3"
+	AudioCodecDts     AudioCodec = "dts"
+	AudioCodecTruehd  AudioCodec = "truehd"
 )
 
-func (e *AnimeListSource) Scan(src interface{}) error {
+func (e *AudioCodec) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case []byte:
-		*e = AnimeListSource(s)
+		*e = AudioCodec(s)
 	case string:
-		*e = AnimeListSource(s)
+		*e = AudioCodec(s)
 	default:
-		return fmt.Errorf("unsupported scan type for AnimeListSource: %T", src)
+		return fmt.Errorf("unsupported scan type for AudioCodec: %T", src)
 	}
 	return nil
 }
 
-type NullAnimeListSource struct {
-	AnimeListSource AnimeListSource
-	Valid           bool // Valid is true if AnimeListSource is not NULL
+type NullAudioCodec struct {
+	AudioCodec AudioCodec
+	Valid      bool // Valid is true if AudioCodec is not NULL
 }
 
 // Scan implements the Scanner interface.
-func (ns *NullAnimeListSource) Scan(value interface{}) error {
+func (ns *NullAudioCodec) Scan(value interface{}) error {
 	if value == nil {
-		ns.AnimeListSource, ns.Valid = "", false
+		ns.AudioCodec, ns.Valid = "", false
 		return nil
 	}
 	ns.Valid = true
-	return ns.AnimeListSource.Scan(value)
+	return ns.AudioCodec.Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (ns NullAnimeListSource) Value() (driver.Value, error) {
+func (ns NullAudioCodec) Value() (driver.Value, error) {
 	if !ns.Valid {
 		return nil, nil
 	}
-	return string(ns.AnimeListSource), nil
+	return string(ns.AudioCodec), nil
 }
 
-type TorrentClientSource string
+type AuthType string
 
 const (
-	TorrentClientSourceQbittorrent TorrentClientSource = "qbittorrent"
+	AuthTypeUserPassword AuthType = "userPassword"
+	AuthTypeApiKey       AuthType = "apiKey"
 )
 
-func (e *TorrentClientSource) Scan(src interface{}) error {
+func (e *AuthType) Scan(src interface{}) error {
 	switch s := src.(type) {
 	case []byte:
-		*e = TorrentClientSource(s)
+		*e = AuthType(s)
 	case string:
-		*e = TorrentClientSource(s)
+		*e = AuthType(s)
 	default:
-		return fmt.Errorf("unsupported scan type for TorrentClientSource: %T", src)
+		return fmt.Errorf("unsupported scan type for AuthType: %T", src)
 	}
 	return nil
 }
 
-type NullTorrentClientSource struct {
-	TorrentClientSource TorrentClientSource
-	Valid               bool // Valid is true if TorrentClientSource is not NULL
+type NullAuthType struct {
+	AuthType AuthType
+	Valid    bool // Valid is true if AuthType is not NULL
 }
 
 // Scan implements the Scanner interface.
-func (ns *NullTorrentClientSource) Scan(value interface{}) error {
+func (ns *NullAuthType) Scan(value interface{}) error {
 	if value == nil {
-		ns.TorrentClientSource, ns.Valid = "", false
+		ns.AuthType, ns.Valid = "", false
 		return nil
 	}
 	ns.Valid = true
-	return ns.TorrentClientSource.Scan(value)
+	return ns.AuthType.Scan(value)
 }
 
 // Value implements the driver Valuer interface.
-func (ns NullTorrentClientSource) Value() (driver.Value, error) {
+func (ns NullAuthType) Value() (driver.Value, error) {
 	if !ns.Valid {
 		return nil, nil
 	}
-	return string(ns.TorrentClientSource), nil
+	return string(ns.AuthType), nil
 }
 
-type AnimeList struct {
-	ID             string
-	OwnerID        string
-	RemoteUsername string
-	Source         AnimeListSource
+type FileSource string
+
+const (
+	FileSourceUnknown FileSource = "unknown"
+	FileSourceTv      FileSource = "tv"
+	FileSourceWeb     FileSource = "web"
+	FileSourceDvd     FileSource = "dvd"
+	FileSourceBr      FileSource = "br"
+)
+
+func (e *FileSource) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = FileSource(s)
+	case string:
+		*e = FileSource(s)
+	default:
+		return fmt.Errorf("unsupported scan type for FileSource: %T", src)
+	}
+	return nil
 }
 
-type ImportConfiguration struct {
-	ID                      string
-	OwnerID                 string
-	AnimeListID             string
-	TorrentClientID         string
-	ProwlarrConfigurationID string
+type NullFileSource struct {
+	FileSource FileSource
+	Valid      bool // Valid is true if FileSource is not NULL
 }
 
-type ProwlarrConfiguration struct {
+// Scan implements the Scanner interface.
+func (ns *NullFileSource) Scan(value interface{}) error {
+	if value == nil {
+		ns.FileSource, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.FileSource.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullFileSource) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.FileSource), nil
+}
+
+type HashAlgorithm string
+
+const (
+	HashAlgorithmMd5    HashAlgorithm = "md5"
+	HashAlgorithmSha1   HashAlgorithm = "sha1"
+	HashAlgorithmSha256 HashAlgorithm = "sha256"
+	HashAlgorithmCrc32  HashAlgorithm = "crc32"
+	HashAlgorithmEd2k   HashAlgorithm = "ed2k"
+)
+
+func (e *HashAlgorithm) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = HashAlgorithm(s)
+	case string:
+		*e = HashAlgorithm(s)
+	default:
+		return fmt.Errorf("unsupported scan type for HashAlgorithm: %T", src)
+	}
+	return nil
+}
+
+type NullHashAlgorithm struct {
+	HashAlgorithm HashAlgorithm
+	Valid         bool // Valid is true if HashAlgorithm is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullHashAlgorithm) Scan(value interface{}) error {
+	if value == nil {
+		ns.HashAlgorithm, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.HashAlgorithm.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullHashAlgorithm) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.HashAlgorithm), nil
+}
+
+type IndexerClientType string
+
+const (
+	IndexerClientTypeProwlarr IndexerClientType = "prowlarr"
+)
+
+func (e *IndexerClientType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = IndexerClientType(s)
+	case string:
+		*e = IndexerClientType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for IndexerClientType: %T", src)
+	}
+	return nil
+}
+
+type NullIndexerClientType struct {
+	IndexerClientType IndexerClientType
+	Valid             bool // Valid is true if IndexerClientType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullIndexerClientType) Scan(value interface{}) error {
+	if value == nil {
+		ns.IndexerClientType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.IndexerClientType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullIndexerClientType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.IndexerClientType), nil
+}
+
+type MediaType string
+
+const (
+	MediaTypeUnknown MediaType = "unknown"
+	MediaTypeTv      MediaType = "tv"
+	MediaTypeMovie   MediaType = "movie"
+	MediaTypeOva     MediaType = "ova"
+	MediaTypeSpecial MediaType = "special"
+)
+
+func (e *MediaType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MediaType(s)
+	case string:
+		*e = MediaType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MediaType: %T", src)
+	}
+	return nil
+}
+
+type NullMediaType struct {
+	MediaType MediaType
+	Valid     bool // Valid is true if MediaType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMediaType) Scan(value interface{}) error {
+	if value == nil {
+		ns.MediaType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MediaType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMediaType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MediaType), nil
+}
+
+type MonitoringStatus string
+
+const (
+	MonitoringStatusUnknown      MonitoringStatus = "unknown"
+	MonitoringStatusAll          MonitoringStatus = "all"
+	MonitoringStatusFuture       MonitoringStatus = "future"
+	MonitoringStatusMissing      MonitoringStatus = "missing"
+	MonitoringStatusExisting     MonitoringStatus = "existing"
+	MonitoringStatusFirstSeason  MonitoringStatus = "firstSeason"
+	MonitoringStatusLatestSeason MonitoringStatus = "latestSeason"
+	MonitoringStatusNone         MonitoringStatus = "none"
+)
+
+func (e *MonitoringStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = MonitoringStatus(s)
+	case string:
+		*e = MonitoringStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for MonitoringStatus: %T", src)
+	}
+	return nil
+}
+
+type NullMonitoringStatus struct {
+	MonitoringStatus MonitoringStatus
+	Valid            bool // Valid is true if MonitoringStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullMonitoringStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.MonitoringStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.MonitoringStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullMonitoringStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.MonitoringStatus), nil
+}
+
+type Resolution string
+
+const (
+	ResolutionUnknown Resolution = "unknown"
+	Resolution480p    Resolution = "480p"
+	Resolution720p    Resolution = "720p"
+	Resolution1080p   Resolution = "1080p"
+	Resolution2160p   Resolution = "2160p"
+)
+
+func (e *Resolution) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = Resolution(s)
+	case string:
+		*e = Resolution(s)
+	default:
+		return fmt.Errorf("unsupported scan type for Resolution: %T", src)
+	}
+	return nil
+}
+
+type NullResolution struct {
+	Resolution Resolution
+	Valid      bool // Valid is true if Resolution is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullResolution) Scan(value interface{}) error {
+	if value == nil {
+		ns.Resolution, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.Resolution.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullResolution) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.Resolution), nil
+}
+
+type SubtitleFormat string
+
+const (
+	SubtitleFormatUnknown SubtitleFormat = "unknown"
+	SubtitleFormatSrt     SubtitleFormat = "srt"
+	SubtitleFormatAss     SubtitleFormat = "ass"
+	SubtitleFormatSsa     SubtitleFormat = "ssa"
+	SubtitleFormatPgs     SubtitleFormat = "pgs"
+	SubtitleFormatVobsub  SubtitleFormat = "vobsub"
+)
+
+func (e *SubtitleFormat) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = SubtitleFormat(s)
+	case string:
+		*e = SubtitleFormat(s)
+	default:
+		return fmt.Errorf("unsupported scan type for SubtitleFormat: %T", src)
+	}
+	return nil
+}
+
+type NullSubtitleFormat struct {
+	SubtitleFormat SubtitleFormat
+	Valid          bool // Valid is true if SubtitleFormat is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullSubtitleFormat) Scan(value interface{}) error {
+	if value == nil {
+		ns.SubtitleFormat, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.SubtitleFormat.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullSubtitleFormat) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.SubtitleFormat), nil
+}
+
+type TransferClientType string
+
+const (
+	TransferClientTypeQBittorrent TransferClientType = "qBittorrent"
+)
+
+func (e *TransferClientType) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = TransferClientType(s)
+	case string:
+		*e = TransferClientType(s)
+	default:
+		return fmt.Errorf("unsupported scan type for TransferClientType: %T", src)
+	}
+	return nil
+}
+
+type NullTransferClientType struct {
+	TransferClientType TransferClientType
+	Valid              bool // Valid is true if TransferClientType is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullTransferClientType) Scan(value interface{}) error {
+	if value == nil {
+		ns.TransferClientType, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.TransferClientType.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullTransferClientType) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.TransferClientType), nil
+}
+
+type VideoCodec string
+
+const (
+	VideoCodecUnknown VideoCodec = "unknown"
+	VideoCodecX264    VideoCodec = "x264"
+	VideoCodecX265    VideoCodec = "x265"
+	VideoCodecAv1     VideoCodec = "av1"
+)
+
+func (e *VideoCodec) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = VideoCodec(s)
+	case string:
+		*e = VideoCodec(s)
+	default:
+		return fmt.Errorf("unsupported scan type for VideoCodec: %T", src)
+	}
+	return nil
+}
+
+type NullVideoCodec struct {
+	VideoCodec VideoCodec
+	Valid      bool // Valid is true if VideoCodec is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullVideoCodec) Scan(value interface{}) error {
+	if value == nil {
+		ns.VideoCodec, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.VideoCodec.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullVideoCodec) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.VideoCodec), nil
+}
+
+type Authentication struct {
+	ID          string
+	Type        AuthType
+	Credentials []byte
+}
+
+type Collection struct {
+	ID        string
+	OwnerID   string
+	Name      string
+	BasePath  string
+	Tags      []string
+	Monitored bool
+	CreatedAt pgtype.Timestamptz
+}
+
+type CollectionFile struct {
+	ID              string
+	EpisodeID       string
+	SeasonID        string
+	MediaID         string
+	RelativePath    string
+	SizeBytes       int64
+	ReleaseGroup    pgtype.Text
+	Version         int32
+	Source          FileSource
+	VideoInfo       []byte
+	AudioStreams    []byte
+	SubtitleStreams []byte
+	Chapters        []byte
+	Hashes          []byte
+	CreatedAt       pgtype.Timestamptz
+}
+
+type Episode struct {
+	ID         string
+	SeasonID   string
+	MediaID    string
+	Type       MediaType
+	Number     string
+	Titles     []byte
+	AiringDate pgtype.Timestamptz
+}
+
+type IndexerClient struct {
 	ID      string
 	OwnerID string
-	Host    string
-	ApiKey  string
+	Address string
+	Type    IndexerClientType
+	AuthID  string
 }
 
-type TorrentClient struct {
-	ID       string
-	OwnerID  string
-	Source   TorrentClientSource
-	Host     string
-	Username string
-	Password string
+type Medium struct {
+	ID                 string
+	CollectionID       string
+	QualityProfileID   string
+	Titles             []byte
+	MonitoringStatus   MonitoringStatus
+	MonitoredSince     pgtype.Timestamptz
+	Genres             []string
+	AiringStartedAt    pgtype.Timestamptz
+	AiringEndedAt      pgtype.Timestamptz
+	CreatedAt          pgtype.Timestamptz
+	TitlesSearchVector pgtype.Text
+}
+
+type QualityProfile struct {
+	ID                     string
+	Name                   string
+	MinResolution          Resolution
+	MaxResolution          Resolution
+	CodecPreference        []VideoCodec
+	ReleaseGroupPreference []string
+}
+
+type Season struct {
+	ID           string
+	MediaID      string
+	Number       int32
+	AiringStatus pgtype.Text
+	Metadata     []byte
+}
+
+type TransferClient struct {
+	ID      string
+	OwnerID string
+	Address string
+	Type    TransferClientType
+	AuthID  string
 }
 
 type User struct {

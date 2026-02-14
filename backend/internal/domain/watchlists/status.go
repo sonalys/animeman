@@ -14,15 +14,15 @@ const (
 func (s WatchlistStatus) String() string {
 	switch s {
 	case WatchlistStatusWatching:
-		return "WATCHING"
+		return "watching"
 	case WatchlistStatusCompleted:
-		return "COMPLETED"
+		return "completed"
 	case WatchlistStatusDropped:
-		return "DROPPED"
+		return "dropped"
 	case WatchlistStatusPlanToWatch:
-		return "PLAN_TO_WATCH"
+		return "planToWatch"
 	default:
-		return "UNKNOWN"
+		return "unknown"
 	}
 }
 

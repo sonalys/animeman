@@ -28,9 +28,9 @@ func (c VideoCodec) String() string {
 	case VideoCodecX265:
 		return "x265"
 	case VideoCodecAV1:
-		return "AV1"
+		return "av1"
 	default:
-		return "UNKNOWN"
+		return "unknown"
 	}
 }
 

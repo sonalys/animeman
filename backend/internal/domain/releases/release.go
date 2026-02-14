@@ -4,6 +4,7 @@ import (
 	"net/url"
 
 	"github.com/gofrs/uuid/v5"
+	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/domain/hashing"
 	"github.com/sonalys/animeman/internal/domain/stream"
 )
@@ -12,7 +13,9 @@ type (
 	ReleaseID struct{ uuid.UUID }
 
 	Release struct {
-		ID        ReleaseID
+		ID      ReleaseID
+		MediaID collections.MediaID
+
 		Title     string
 		Hash      hashing.Hash
 		SizeBytes int64

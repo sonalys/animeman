@@ -23,17 +23,17 @@ const (
 func (f SubtitleFormat) String() string {
 	switch f {
 	case SubtitleFormatSRT:
-		return "SRT"
+		return "srt"
 	case SubtitleFormatASS:
-		return "ASS"
+		return "ass"
 	case SubtitleFormatSSA:
-		return "SSA"
+		return "ssa"
 	case SubtitleFormatPGS:
-		return "PGS"
+		return "pgs"
 	case SubtitleFormatVobSub:
-		return "VOBSUB"
+		return "vobsub"
 	default:
-		return "UNKNOWN"
+		return "unknown"
 	}
 }
 

@@ -42,8 +42,8 @@ func (c Client) UserRepository() ports.UserRepository {
 	}
 }
 
-func (c Client) ProwlarrRepository() ports.ProwlarrRepository {
-	return prowlarrRepository{
+func (c Client) ProwlarrRepository() ports.IndexerClientRepository {
+	return indexerClientRepository{
 		conn: c.conn,
 	}
 }

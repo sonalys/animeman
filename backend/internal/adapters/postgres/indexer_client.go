@@ -10,15 +10,16 @@ import (
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
 	"github.com/sonalys/animeman/internal/app/apperr"
-	"github.com/sonalys/animeman/internal/domain"
+	"github.com/sonalys/animeman/internal/domain/indexing"
+	"github.com/sonalys/animeman/internal/domain/shared"
 	"google.golang.org/grpc/codes"
 )
 
-type prowlarrRepository struct {
+type indexerClientRepository struct {
 	conn *pgxpool.Pool
 }
 
-func prowlarrConfigErrorHandler(err *pgconn.PgError) error {
+func indexerClientErrorHandler(err *pgconn.PgError) error {
 	switch err.Code {
 	case pgerrcode.UniqueViolation:
 		switch err.ConstraintName {
@@ -32,18 +33,18 @@ func prowlarrConfigErrorHandler(err *pgconn.PgError) error {
 	}
 }
 
-func (r prowlarrRepository) CreateConfig(ctx context.Context, config *domain.ProwlarrConfiguration) error {
+func (r indexerClientRepository) Create(ctx context.Context, config *indexing.IndexerClient) error {
 	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateProwlarrConfigurationParams{
 		ID:      config.ID.String(),
 		OwnerID: config.OwnerID.String(),
-		Host:    config.Host,
-		ApiKey:  config.APIKey,
+		Host:    config.Address.String(),
+		ApiKey:  config.Authentication.Key,
 	}
 
 	if _, err := queries.CreateProwlarrConfiguration(ctx, params); err != nil {
-		if err := handleWriteError(err, prowlarrConfigErrorHandler); err != nil {
+		if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
 			return err
 		}
 
@@ -53,18 +54,18 @@ func (r prowlarrRepository) CreateConfig(ctx context.Context, config *domain.Pro
 	return nil
 }
 
-func (r prowlarrRepository) GetConfigByOwner(ctx context.Context, owner domain.UserID) (*domain.ProwlarrConfiguration, error) {
+func (r indexerClientRepository) GetByOwner(ctx context.Context, owner shared.UserID) (*indexing.IndexerClient, error) {
 	queries := sqlcgen.New(r.conn)
 
-	prowlarrConfigModel, err := queries.GetProwlarrConfigurationByOwner(ctx, owner.String())
+	entityModel, err := queries.GetProwlarrConfigurationByOwner(ctx, owner.String())
 	if err != nil {
 		return nil, handleReadError(err)
 	}
 
-	return mappers.NewProwlarrConfiguration(&prowlarrConfigModel), nil
+	return mappers.NewIndexerClient(&entityModel), nil
 }
 
-func (r prowlarrRepository) UpdateConfig(ctx context.Context, id domain.ProwlarrConfigID, update func(config *domain.ProwlarrConfiguration) error) error {
+func (r indexerClientRepository) Update(ctx context.Context, id indexing.IndexerID, update func(indexerClient *indexing.IndexerClient) error) error {
 	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return err
@@ -73,25 +74,25 @@ func (r prowlarrRepository) UpdateConfig(ctx context.Context, id domain.Prowlarr
 
 	queries := sqlcgen.New(tx)
 
-	prowlarrConfigModel, err := queries.GetProwlarrConfigurationByOwner(ctx, id.String())
+	entityModel, err := queries.GetProwlarrConfigurationByOwner(ctx, id.String())
 	if err != nil {
 		return handleReadError(err)
 	}
 
-	prowlarrConfiguration := mappers.NewProwlarrConfiguration(&prowlarrConfigModel)
+	indexerClient := mappers.NewIndexerClient(&entityModel)
 
-	if err := update(prowlarrConfiguration); err != nil {
+	if err := update(indexerClient); err != nil {
 		return err
 	}
 
 	updateParams := sqlcgen.UpdateProwlarrConfigurationParams{
 		ID:     id.String(),
-		Host:   prowlarrConfigModel.Host,
-		ApiKey: prowlarrConfiguration.APIKey,
+		Host:   entityModel.Host,
+		ApiKey: indexerClient.Authentication.Key,
 	}
 
 	if _, err = queries.UpdateProwlarrConfiguration(ctx, updateParams); err != nil {
-		if err := handleWriteError(err, prowlarrConfigErrorHandler); err != nil {
+		if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
 			return err
 		}
 
@@ -105,7 +106,7 @@ func (r prowlarrRepository) UpdateConfig(ctx context.Context, id domain.Prowlarr
 	return nil
 }
 
-func (r prowlarrRepository) DeleteConfig(ctx context.Context, id domain.ProwlarrConfigID) error {
+func (r indexerClientRepository) Delete(ctx context.Context, id indexing.IndexerID) error {
 	queries := sqlcgen.New(r.conn)
 
 	if err := queries.DeleteProwlarrConfiguration(ctx, id.String()); err != nil {

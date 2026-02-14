@@ -1,25 +1,39 @@
 package main
 
 import (
+	"net/url"
 	"testing"
 	"time"
 
-	"github.com/sonalys/animeman/internal/domain"
+	"github.com/sonalys/animeman/internal/domain/authentication"
+	"github.com/sonalys/animeman/internal/domain/collections"
+	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/stream"
+	"github.com/sonalys/animeman/internal/domain/transfer"
+	"github.com/sonalys/animeman/internal/domain/users"
+	"github.com/sonalys/animeman/internal/domain/watchlists"
+	"github.com/sonalys/animeman/internal/utils/errutils"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_Onboarding(t *testing.T) {
-	user, err := domain.NewUser("username", []byte("password"))
+	user, err := users.NewUser("username", []byte("password"))
 	require.NoError(t, err)
 	assert.NotNil(t, user)
 
-	prowlarrConfig := user.NewProwlarrConfiguration("http://192.168.1.219:9696", "api_key")
+	prowlarrConfig := user.NewIndexerClient(
+		indexing.IndexerTypeProwlarr,
+		*errutils.Must(url.Parse("http://192.168.1.219:9696")),
+		authentication.NewAPIKeyAuthentication("apiKey"),
+	)
 	require.NotNil(t, prowlarrConfig)
 
-	torrentConfig := user.NewTorrentClientConfiguration(
-		domain.TorrentSourceQBitTorrent, "http://192.168.1.219:8088", "username", nil)
+	torrentConfig := user.NewTransferClient(
+		transfer.ClientTypeQBittorrent,
+		*errutils.Must(url.Parse("http://192.168.1.219:8088")),
+		authentication.NewUserPasswordAuthentication("username", []byte{}),
+	)
 	require.NotNil(t, torrentConfig)
 
 	collection := user.NewCollection(
@@ -30,8 +44,8 @@ func Test_Onboarding(t *testing.T) {
 	)
 	require.NotNil(t, collection)
 
-	qualityProfile := domain.NewQualityProfile(
-		"fullhd only",
+	qualityProfile := collections.NewQualityProfile(
+		"FullHD only",
 		stream.Resolution1080p,
 		stream.Resolution1080p,
 		[]stream.VideoCodec{},
@@ -39,32 +53,32 @@ func Test_Onboarding(t *testing.T) {
 	)
 
 	media := collection.NewMedia(
-		[]domain.Title{
-			domain.NewTitle(domain.TitleTypeNative, "en-us", "Media title"),
+		[]collections.Title{
+			collections.NewTitle(collections.TitleTypeNative, "en-us", "Media title"),
 		},
-		domain.MonitoringStatusAll,
-		domain.NewMediaMetadata([]string{}, time.Time{}, time.Time{}),
+		collections.MonitoringStatusAll,
+		collections.NewMediaMetadata([]string{}, time.Time{}, time.Time{}),
 		qualityProfile.ID,
 	)
 	require.NotNil(t, media)
 
 	season := media.NewSeason(
 		1,
-		domain.AiringStatusAiring,
-		domain.SeasonMetadata{},
+		collections.AiringStatusAiring,
+		collections.SeasonMetadata{},
 	)
 	require.NotNil(t, season)
 
 	episode := season.NewEpisode(
-		domain.MediaTypeTV,
+		collections.MediaTypeTV,
 		"1",
-		[]domain.Title{},
+		[]collections.Title{},
 		new(time.Now()),
 	)
 	require.NotNil(t, episode)
 
 	watchlist := user.NewExternalWatchList(
-		domain.WatchlistSourceAniList,
+		watchlists.WatchlistSourceAniList,
 		"username",
 		time.Hour,
 	)
@@ -73,7 +87,7 @@ func Test_Onboarding(t *testing.T) {
 	entry := watchlist.NewEntry(
 		media.ID,
 		season.ID,
-		domain.WatchlistStatusWatching,
+		watchlists.WatchlistStatusWatching,
 	)
 
 	entry.SetLastWatchedEpisode(episode.ID)

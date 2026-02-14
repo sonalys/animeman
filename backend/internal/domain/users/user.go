@@ -7,7 +7,9 @@ import (
 	"time"
 
 	"github.com/sonalys/animeman/internal/app/apperr"
+	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/collections"
+	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/domain/watchlists"
@@ -43,22 +45,24 @@ func NewUser(
 	}, nil
 }
 
-func (u User) NewProwlarrConfiguration(
-	host string,
-	apiKey string,
-) *collections.ProwlarrConfiguration {
-	return &collections.ProwlarrConfiguration{
-		ID:      shared.NewID[collections.ProwlarrConfigID](),
-		OwnerID: u.ID,
-		Host:    host,
-		APIKey:  apiKey,
+func (u User) NewIndexerClient(
+	t indexing.IndexerType,
+	address url.URL,
+	auth authentication.Authentication,
+) *indexing.IndexerClient {
+	return &indexing.IndexerClient{
+		ID:             shared.NewID[indexing.IndexerID](),
+		OwnerID:        u.ID,
+		Type:           t,
+		Address:        address,
+		Authentication: auth,
 	}
 }
 
 func (u User) NewTransferClient(
 	clientType transfer.ClientType,
 	address url.URL,
-	auth transfer.Authentication,
+	auth authentication.Authentication,
 ) *transfer.Client {
 	return &transfer.Client{
 		ID:             shared.NewID[transfer.ClientID](),

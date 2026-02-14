@@ -22,11 +22,11 @@ type (
 		Number     string
 		Titles     []Title
 		AiringDate *time.Time
-		Files      []*CollectionFile
+		Files      []*File
 	}
 )
 
-func (e *Episode) BestFile() *CollectionFile {
+func (e *Episode) BestFile() *File {
 	if len(e.Files) == 0 {
 		return nil
 	}
@@ -56,9 +56,9 @@ func (e *Episode) NewFile(
 	subtitleStreams []stream.Subtitle,
 	hashes []hashing.Hash,
 	chapters []Chapter,
-) *CollectionFile {
-	file := &CollectionFile{
-		ID:              shared.NewID[CollectionFileID](),
+) *File {
+	file := &File{
+		ID:              shared.NewID[FileID](),
 		MediaID:         e.MediaID,
 		SeasonID:        e.SeasonID,
 		EpisodeID:       e.ID,

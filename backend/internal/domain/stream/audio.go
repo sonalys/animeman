@@ -27,21 +27,21 @@ const (
 func (c AudioCodec) String() string {
 	switch c {
 	case AudioCodecAAC:
-		return "AAC"
+		return "aac"
 	case AudioCodecOpus:
-		return "OPUS"
+		return "opus"
 	case AudioCodecFLAC:
-		return "FLAC"
+		return "flac"
 	case AudioCodecMP3:
-		return "MP3"
+		return "mp3"
 	case AudioCodecAC3:
-		return "AC3"
+		return "ac3"
 	case AudioCodecDTS:
-		return "DTS"
+		return "dts"
 	case AudioCodecTrueHD:
-		return "TRUEHD"
+		return "truehd"
 	default:
-		return "UNKNOWN"
+		return "unknown"
 	}
 }
 

@@ -18,12 +18,12 @@ func (s WatchlistSource) IsValid() bool {
 func (s WatchlistSource) String() string {
 	switch s {
 	case WatchlistSourceLocal:
-		return "LOCAL"
+		return "local"
 	case WatchlistSourceAniList:
-		return "ANILIST"
+		return "anilist"
 	case WatchlistSourceMyAnimeList:
-		return "MAL"
+		return "mal"
 	default:
-		return "UNKNOWN"
+		return "unknown"
 	}
 }
