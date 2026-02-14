@@ -1,4 +1,4 @@
-package postgres
+package repositories
 
 import (
 	"context"
@@ -13,12 +13,19 @@ import (
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/transfer"
+	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/errutils"
 	"google.golang.org/grpc/codes"
 )
 
 type transferClientRepository struct {
 	conn *pgxpool.Pool
+}
+
+func NewTransferClientRepository(conn *pgxpool.Pool) ports.TransferClientRepository {
+	return &transferClientRepository{
+		conn: conn,
+	}
 }
 
 func transferClientErrorHandler(err *pgconn.PgError) error {

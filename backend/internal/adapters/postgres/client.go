@@ -7,6 +7,7 @@ import (
 
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/adapters/postgres/repositories"
 	"github.com/sonalys/animeman/internal/ports"
 )
 
@@ -37,15 +38,15 @@ func New(ctx context.Context, connStr string) (*Client, error) {
 }
 
 func (c Client) UserRepository() ports.UserRepository {
-	return userRepository{
-		conn: c.conn,
-	}
+	return repositories.NewUserRepository(c.conn)
 }
 
-func (c Client) ProwlarrRepository() ports.IndexerClientRepository {
-	return indexerClientRepository{
-		conn: c.conn,
-	}
+func (c Client) IndexerClientRepository() ports.IndexerClientRepository {
+	return repositories.NewIndexerClientRepository(c.conn)
+}
+
+func (c Client) TransferClientRepository() ports.TransferClientRepository {
+	return repositories.NewTransferClientRepository(c.conn)
 }
 
 func waitConnection(ctx context.Context, conn *pgxpool.Pool) error {

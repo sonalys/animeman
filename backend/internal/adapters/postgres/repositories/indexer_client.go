@@ -1,4 +1,4 @@
-package postgres
+package repositories
 
 import (
 	"context"
@@ -13,12 +13,19 @@ import (
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
+	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/errutils"
 	"google.golang.org/grpc/codes"
 )
 
 type indexerClientRepository struct {
 	conn *pgxpool.Pool
+}
+
+func NewIndexerClientRepository(conn *pgxpool.Pool) ports.IndexerClientRepository {
+	return &indexerClientRepository{
+		conn: conn,
+	}
 }
 
 func indexerClientErrorHandler(err *pgconn.PgError) error {

@@ -1,4 +1,4 @@
-package postgres
+package repositories
 
 import (
 	"context"
@@ -12,11 +12,18 @@ import (
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/users"
+	"github.com/sonalys/animeman/internal/ports"
 	"google.golang.org/grpc/codes"
 )
 
 type userRepository struct {
 	conn *pgxpool.Pool
+}
+
+func NewUserRepository(conn *pgxpool.Pool) ports.UserRepository {
+	return &userRepository{
+		conn: conn,
+	}
 }
 
 func userErrorHandler(err *pgconn.PgError) error {
