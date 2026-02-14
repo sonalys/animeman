@@ -38,4 +38,11 @@ type (
 		Update(ctx context.Context, id collections.CollectionID, update func(collection *collections.Collection) error) error
 		Delete(ctx context.Context, id collections.CollectionID) error
 	}
+
+	QualityProfileRepository interface {
+		Create(ctx context.Context, profile *collections.QualityProfile) error
+		List(ctx context.Context) ([]collections.QualityProfile, error)
+		Update(ctx context.Context, id collections.QualityProfileID, update func(profile *collections.QualityProfile) error) error
+		Delete(ctx context.Context, id collections.QualityProfileID) error
+	}
 )
