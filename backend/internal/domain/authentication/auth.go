@@ -32,7 +32,7 @@ func (s AuthenticationType) String() string {
 	case AuthenticationTypeUserPassword:
 		return "userPassword"
 	case AuthenticationTypeAPIKey:
-		return "apikey"
+		return "apiKey"
 	default:
 		return "unknown"
 	}

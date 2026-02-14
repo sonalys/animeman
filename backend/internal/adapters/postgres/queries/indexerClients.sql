@@ -29,6 +29,5 @@ SET address = $2
 WHERE id = $1;
 
 -- name: DeleteIndexerClient :exec
--- Note: ON DELETE CASCADE handles the auth deletion if schema is set that way
 DELETE FROM indexer_clients
 WHERE id = $1;

@@ -5,6 +5,7 @@ import (
 
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
+	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/domain/users"
 )
 
@@ -17,9 +18,16 @@ type (
 	}
 
 	IndexerClientRepository interface {
-		Create(ctx context.Context, config *indexing.IndexerClient) error
-		GetByOwner(ctx context.Context, owner shared.UserID) (*indexing.IndexerClient, error)
-		Update(ctx context.Context, id indexing.IndexerID, update func(config *indexing.IndexerClient) error) error
+		Create(ctx context.Context, client *indexing.IndexerClient) error
+		ListByOwner(ctx context.Context, owner shared.UserID) ([]indexing.IndexerClient, error)
+		Update(ctx context.Context, id indexing.IndexerID, update func(client *indexing.IndexerClient) error) error
 		Delete(ctx context.Context, id indexing.IndexerID) error
+	}
+
+	TransferClientRepository interface {
+		Create(ctx context.Context, client *transfer.Client) error
+		ListByOwner(ctx context.Context, owner shared.UserID) ([]transfer.Client, error)
+		Update(ctx context.Context, id transfer.ClientID, update func(client *transfer.Client) error) error
+		Delete(ctx context.Context, id transfer.ClientID) error
 	}
 )

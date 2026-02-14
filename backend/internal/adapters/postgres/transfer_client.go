@@ -11,22 +11,20 @@ import (
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
 	"github.com/sonalys/animeman/internal/app/apperr"
-	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
+	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/utils/errutils"
 	"google.golang.org/grpc/codes"
 )
 
-type indexerClientRepository struct {
+type transferClientRepository struct {
 	conn *pgxpool.Pool
 }
 
-func indexerClientErrorHandler(err *pgconn.PgError) error {
+func transferClientErrorHandler(err *pgconn.PgError) error {
 	switch err.Code {
 	case pgerrcode.UniqueViolation:
 		switch err.ConstraintName {
-		case "prowlarr_configurations_pkey":
-			return apperr.New(err, codes.AlreadyExists)
 		default:
 			return apperr.New(err, codes.FailedPrecondition)
 		}
@@ -35,7 +33,7 @@ func indexerClientErrorHandler(err *pgconn.PgError) error {
 	}
 }
 
-func (r indexerClientRepository) Create(ctx context.Context, client *indexing.IndexerClient) error {
+func (r transferClientRepository) Create(ctx context.Context, client *transfer.Client) error {
 	queries := sqlcgen.New(r.conn)
 
 	params := sqlcgen.CreateIndexerClientParams{
@@ -46,7 +44,7 @@ func (r indexerClientRepository) Create(ctx context.Context, client *indexing.In
 	}
 
 	if _, err := queries.CreateIndexerClient(ctx, params); err != nil {
-		if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+		if err := handleWriteError(err, transferClientErrorHandler); err != nil {
 			return err
 		}
 
@@ -56,7 +54,7 @@ func (r indexerClientRepository) Create(ctx context.Context, client *indexing.In
 	return nil
 }
 
-func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]indexing.IndexerClient, error) {
+func (r transferClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]transfer.Client, error) {
 	queries := sqlcgen.New(r.conn)
 
 	entityModels, err := queries.ListIndexerClientsByOwner(ctx, owner.String())
@@ -64,14 +62,14 @@ func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.U
 		return nil, handleReadError(err)
 	}
 
-	response := make([]indexing.IndexerClient, 0, len(entityModels))
+	response := make([]transfer.Client, 0, len(entityModels))
 
 	for i := range entityModels {
 		item := entityModels[i]
-		response = append(response, indexing.IndexerClient{
-			ID:             shared.ParseID[indexing.IndexerID](item.ID),
+		response = append(response, transfer.Client{
+			ID:             shared.ParseID[transfer.ClientID](item.ID),
 			OwnerID:        shared.ParseID[shared.UserID](item.OwnerID),
-			Type:           indexing.IndexerTypeProwlarr,
+			Type:           transfer.ClientTypeQBittorrent,
 			Address:        *errutils.Must(url.Parse(item.Address)),
 			Authentication: mappers.NewAuthentication(item.AuthCredentials),
 		})
@@ -80,7 +78,7 @@ func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.U
 	return response, nil
 }
 
-func (r indexerClientRepository) Update(ctx context.Context, id indexing.IndexerID, update func(indexerClient *indexing.IndexerClient) error) error {
+func (r transferClientRepository) Update(ctx context.Context, id transfer.ClientID, update func(indexerClient *transfer.Client) error) error {
 	tx, err := r.conn.BeginTx(ctx, pgx.TxOptions{})
 	if err != nil {
 		return err
@@ -94,10 +92,10 @@ func (r indexerClientRepository) Update(ctx context.Context, id indexing.Indexer
 		return handleReadError(err)
 	}
 
-	indexerClient := &indexing.IndexerClient{
-		ID:             shared.ParseID[indexing.IndexerID](entityModel.ID),
+	indexerClient := &transfer.Client{
+		ID:             shared.ParseID[transfer.ClientID](entityModel.ID),
 		OwnerID:        shared.ParseID[shared.UserID](entityModel.OwnerID),
-		Type:           indexing.IndexerTypeProwlarr,
+		Type:           transfer.ClientTypeQBittorrent,
 		Address:        *errutils.Must(url.Parse(entityModel.Address)),
 		Authentication: mappers.NewAuthentication(entityModel.AuthCredentials),
 	}
@@ -112,7 +110,7 @@ func (r indexerClientRepository) Update(ctx context.Context, id indexing.Indexer
 	}
 
 	if err = queries.UpdateIndexerAddress(ctx, updateParams); err != nil {
-		if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+		if err := handleWriteError(err, transferClientErrorHandler); err != nil {
 			return err
 		}
 
@@ -139,7 +137,7 @@ func (r indexerClientRepository) Update(ctx context.Context, id indexing.Indexer
 	return nil
 }
 
-func (r indexerClientRepository) Delete(ctx context.Context, id indexing.IndexerID) error {
+func (r transferClientRepository) Delete(ctx context.Context, id transfer.ClientID) error {
 	queries := sqlcgen.New(r.conn)
 
 	if err := queries.DeleteIndexerClient(ctx, id.String()); err != nil {
