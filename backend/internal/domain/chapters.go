@@ -5,7 +5,6 @@ import (
 )
 
 type Chapter struct {
-	Index     uint
 	Title     string
 	StartTime time.Duration
 	EndTime   time.Duration

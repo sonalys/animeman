@@ -13,6 +13,8 @@ type (
 		ID       EpisodeID
 		SeasonID SeasonID
 		MediaID  MediaID
+		Type     MediaType
+
 		// Number is a string due to complex episode number variations, like episode 6.5 or combined episodes.
 		Number     string
 		Titles     []AlternativeTitle
@@ -27,12 +29,12 @@ func (e *Episode) BestFile() *CollectionFile {
 	}
 	best := &e.Files[0]
 	for i := 1; i < len(e.Files); i++ {
-		if e.Files[i].Quality.Resolution > best.Quality.Resolution {
+		if e.Files[i].Video.Resolution > best.Video.Resolution {
 			best = &e.Files[i]
 			continue
 		}
 
-		if e.Files[i].Quality.Codec > best.Quality.Codec {
+		if e.Files[i].Video.Codec > best.Video.Codec {
 			best = &e.Files[i]
 			continue
 		}

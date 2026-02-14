@@ -12,7 +12,6 @@ type (
 	Media struct {
 		ID           MediaID
 		CollectionID CollectionID
-		Type         MediaType
 
 		Titles       []AlternativeTitle
 		AiringStatus AiringStatus
