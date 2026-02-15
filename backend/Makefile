@@ -30,10 +30,11 @@ push:
 	docker push ${IMG}
 
 generate-postgres:
-	rm -rf **/sqlcgen/*.gen.go
+	rm -rf **/sqlcgen/*gen.go
 	$(SQLC) generate
 
 generate-api:
+	rm -rf **/ogen/*gen.go
 	$(OGEN) -package ogen --target cmd/server/ogen --clean ../api/oapi.yaml
 
 upgrade-tools:

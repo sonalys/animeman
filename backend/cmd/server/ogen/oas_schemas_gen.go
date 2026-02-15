@@ -12,6 +12,57 @@ func (s *ErrorResponseStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
+type AuthenticationWhoAmIOK struct {
+	// User's email address.
+	Email  string    `json:"email"`
+	UserID uuid.UUID `json:"user_id"`
+}
+
+// GetEmail returns the value of Email.
+func (s *AuthenticationWhoAmIOK) GetEmail() string {
+	return s.Email
+}
+
+// GetUserID returns the value of UserID.
+func (s *AuthenticationWhoAmIOK) GetUserID() uuid.UUID {
+	return s.UserID
+}
+
+// SetEmail sets the value of Email.
+func (s *AuthenticationWhoAmIOK) SetEmail(val string) {
+	s.Email = val
+}
+
+// SetUserID sets the value of UserID.
+func (s *AuthenticationWhoAmIOK) SetUserID(val uuid.UUID) {
+	s.UserID = val
+}
+
+type CookieAuth struct {
+	APIKey string
+	Roles  []string
+}
+
+// GetAPIKey returns the value of APIKey.
+func (s *CookieAuth) GetAPIKey() string {
+	return s.APIKey
+}
+
+// GetRoles returns the value of Roles.
+func (s *CookieAuth) GetRoles() []string {
+	return s.Roles
+}
+
+// SetAPIKey sets the value of APIKey.
+func (s *CookieAuth) SetAPIKey(val string) {
+	s.APIKey = val
+}
+
+// SetRoles sets the value of Roles.
+func (s *CookieAuth) SetRoles(val []string) {
+	s.Roles = val
+}
+
 // Ref: #/components/schemas/Error
 type Error struct {
 	Code string `json:"code"`

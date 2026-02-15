@@ -46,6 +46,35 @@ paths:
         "409":
           description: Conflict (e.g., username already exists).
 
+  /authentication/whoami:
+    x-ogen-operation-group: Users
+    get:
+      operationId: AuthenticationWhoAmI
+      description: returns current information on the authenticated entity
+      security:
+        - cookieAuth: []
+      responses:
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+        "200":
+          description: Caller is authenticated and the data is successfully retrieved
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - user_id
+                  - email
+                properties:
+                  email:
+                    type: string
+                    format: email
+                    description: User's email address
+                    example: "john.doe@example.com"
+                  user_id:
+                    type: string
+                    format: uuid
+
 components:
   securitySchemes:
     cookieAuth:

@@ -2,15 +2,17 @@ package main
 
 import (
 	"context"
+	"errors"
 	"net/http"
 	"os"
 	"os/signal"
 	"syscall"
+	"time"
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/cmd/server/configs"
-	"github.com/sonalys/animeman/internal/adapters/postgres"
+	"github.com/sonalys/animeman/cmd/server/handler"
 	"github.com/sonalys/animeman/internal/utils/otel"
 	"github.com/sonalys/animeman/internal/utils/roundtripper"
 )
@@ -56,11 +58,30 @@ func main() {
 	log.Info().
 		Msg("Connecting to PostgreSQL")
 
-	_, err = postgres.New(ctx, config.PostgresConfig.ConnStr)
+	_ = initializeAdapters(ctx, config)
+
+	handler, err := handler.New()
 	if err != nil {
 		log.Fatal().
 			Err(err).
-			Msg("Could not connect to PostgreSQL")
+			Msg("Could not initialize http handler")
+	}
+
+	httpServer := http.Server{
+		Addr:         ":8080",
+		WriteTimeout: 15 * time.Second,
+		ReadTimeout:  10 * time.Second,
+		Handler:      handler,
+	}
+
+	log.Info().
+		Str("addr", httpServer.Addr).
+		Msg("Serving http api")
+
+	if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
+		log.Fatal().
+			Err(err).
+			Msg("Could not serve http api")
 	}
 
 	done()

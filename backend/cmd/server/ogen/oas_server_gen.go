@@ -8,6 +8,7 @@ import (
 
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
+	UsersHandler
 	// RegisterUser implements registerUser operation.
 	//
 	// Creates a new user account with a unique username and a secure password.
@@ -20,21 +21,35 @@ type Handler interface {
 	NewError(ctx context.Context, err error) *ErrorResponseStatusCode
 }
 
+// UsersHandler handles operations described by OpenAPI v3 specification.
+//
+// x-ogen-operation-group: Users
+type UsersHandler interface {
+	// AuthenticationWhoAmI implements AuthenticationWhoAmI operation.
+	//
+	// Returns current information on the authenticated entity.
+	//
+	// GET /authentication/whoami
+	AuthenticationWhoAmI(ctx context.Context) (*AuthenticationWhoAmIOK, error)
+}
+
 // Server implements http server based on OpenAPI v3 specification and
 // calls Handler to handle requests.
 type Server struct {
-	h Handler
+	h   Handler
+	sec SecurityHandler
 	baseServer
 }
 
 // NewServer creates new Server.
-func NewServer(h Handler, opts ...ServerOption) (*Server, error) {
+func NewServer(h Handler, sec SecurityHandler, opts ...ServerOption) (*Server, error) {
 	s, err := newServerConfig(opts...).baseServer()
 	if err != nil {
 		return nil, err
 	}
 	return &Server{
 		h:          h,
+		sec:        sec,
 		baseServer: s,
 	}, nil
 }

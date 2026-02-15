@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// AuthenticationWhoAmI implements AuthenticationWhoAmI operation.
+//
+// Returns current information on the authenticated entity.
+//
+// GET /authentication/whoami
+func (UnimplementedHandler) AuthenticationWhoAmI(ctx context.Context) (r *AuthenticationWhoAmIOK, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // RegisterUser implements registerUser operation.
 //
 // Creates a new user account with a unique username and a secure password.

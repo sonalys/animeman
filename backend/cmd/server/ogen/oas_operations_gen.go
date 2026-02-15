@@ -6,5 +6,6 @@ package ogen
 type OperationName = string
 
 const (
-	RegisterUserOperation OperationName = "RegisterUser"
+	AuthenticationWhoAmIOperation OperationName = "AuthenticationWhoAmI"
+	RegisterUserOperation         OperationName = "RegisterUser"
 )
