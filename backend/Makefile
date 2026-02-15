@@ -13,6 +13,7 @@ TOOLS_DIR = .tools
 CONFIG_DIR = .config
 
 SQLC = go tool -modfile=$(TOOLS_DIR)/sqlc/go.mod sqlc -f $(CONFIG_DIR)/sqlc.yaml
+OGEN = go tool -modfile=$(TOOLS_DIR)/ogen/go.mod ogen -config $(CONFIG_DIR)/.ogen.yaml
 
 VERSION := $(shell git describe --tags --always --dirty)
 
@@ -31,3 +32,6 @@ push:
 generate-postgres:
 	rm -rf **/sqlcgen/*.gen.go
 	$(SQLC) generate
+
+generate-api:
+	$(OGEN) -package ogen --target cmd/server/ogen --clean ../api/oapi.yaml

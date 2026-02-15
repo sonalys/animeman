@@ -1,0 +1,118 @@
+openapi: 3.1.0
+info:
+  title: Animeman
+  description: Your anime media collection overlord!
+  version: 1.0.0
+
+servers:
+  - url: http://localhost:8080/api/v1
+    description: Local Server
+
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      description: Creates a new user account with a unique username and a secure password.
+      operationId: registerUser
+      tags:
+        - Authentication
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/UserRegistration"
+      responses:
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+        "201":
+          description: User created successfully.
+          headers:
+            Set-Cookie:
+              description: Sets the session cookie
+              schema:
+                type: string
+                example: SESSION_ID=abc12345; Path=/; HttpOnly; Secure
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+        "400":
+          description: Invalid input (e.g., password too weak).
+        "409":
+          description: Conflict (e.g., username already exists).
+
+components:
+  securitySchemes:
+    cookieAuth:
+      type: apiKey
+      in: cookie
+      name: SESSION_ID
+  responses:
+    ErrorResponse:
+      description: An error has occurred
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - trace_id
+              - errors
+            properties:
+              trace_id:
+                type: string
+                format: uuid
+                description: Unique identifier for the error instance
+                example: "b6b7b3b0-1b4d-4f4b-8b3e-1b4d4f4b8b3e"
+              errors:
+                type: array
+                minItems: 1
+                items:
+                  $ref: "#/components/schemas/Error"
+  schemas:
+    ErrorMetadata:
+      type: object
+      properties:
+        field:
+          type: string
+          example: "name"
+
+    Error:
+      type: object
+      required:
+        - message
+        - code
+      properties:
+        code:
+          type: string
+        message:
+          type: string
+          description: Human readable error message
+          example: "Missing parameter 'name'"
+        metadata:
+          $ref: "#/components/schemas/ErrorMetadata"
+
+    UserRegistration:
+      type: object
+      required:
+        - username
+        - password
+      properties:
+        username:
+          type: string
+          minLength: 3
+          maxLength: 20
+          pattern: "^[a-zA-Z0-9_]+$"
+          example: "jdoe_secure"
+          description: "Must be alphanumeric and 3-20 characters long."
+        password:
+          type: string
+          format: password
+          minLength: 8
+          maxLength: 72
+          example: "P@ssw0rd123!"
+          description: "Must be at least 8 characters long."
