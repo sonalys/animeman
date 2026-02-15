@@ -34,11 +34,7 @@ func (r transferClientRepository) Create(ctx context.Context, client *transfer.C
 	}
 
 	if _, err := queries.CreateIndexerClient(ctx, params); err != nil {
-		if err := handleWriteError(err); err != nil {
-			return err
-		}
-
-		return err
+		return handleWriteError(err)
 	}
 
 	return nil
@@ -47,21 +43,22 @@ func (r transferClientRepository) Create(ctx context.Context, client *transfer.C
 func (r transferClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]transfer.Client, error) {
 	queries := sqlcgen.New(r.conn)
 
-	entityModels, err := queries.ListIndexerClientsByOwner(ctx, owner)
+	models, err := queries.ListIndexerClientsByOwner(ctx, owner)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
 
-	response := make([]transfer.Client, 0, len(entityModels))
+	response := make([]transfer.Client, 0, len(models))
 
-	for i := range entityModels {
-		item := entityModels[i]
+	for i := range models {
+		model := &models[i]
+
 		response = append(response, transfer.Client{
-			ID:             item.ID,
-			OwnerID:        item.OwnerID,
+			ID:             model.ID,
+			OwnerID:        model.OwnerID,
 			Type:           transfer.ClientTypeQBittorrent,
-			Address:        *errutils.Must(url.Parse(item.Address)),
-			Authentication: mappers.NewAuthentication(item.AuthCredentials),
+			Address:        *errutils.Must(url.Parse(model.Address)),
+			Authentication: mappers.NewAuthentication(model.AuthCredentials),
 		})
 	}
 
@@ -70,17 +67,17 @@ func (r transferClientRepository) ListByOwner(ctx context.Context, owner shared.
 
 func (r transferClientRepository) Update(ctx context.Context, id transfer.ClientID, update func(indexerClient *transfer.Client) error) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
-		entityModel, err := queries.GetIndexerClient(ctx, id)
+		model, err := queries.GetIndexerClient(ctx, id)
 		if err != nil {
 			return handleReadError(err)
 		}
 
 		indexerClient := &transfer.Client{
-			ID:             entityModel.ID,
-			OwnerID:        entityModel.OwnerID,
+			ID:             model.ID,
+			OwnerID:        model.OwnerID,
 			Type:           transfer.ClientTypeQBittorrent,
-			Address:        *errutils.Must(url.Parse(entityModel.Address)),
-			Authentication: mappers.NewAuthentication(entityModel.AuthCredentials),
+			Address:        *errutils.Must(url.Parse(model.Address)),
+			Authentication: mappers.NewAuthentication(model.AuthCredentials),
 		}
 
 		if err := update(indexerClient); err != nil {
@@ -101,7 +98,7 @@ func (r transferClientRepository) Update(ctx context.Context, id transfer.Client
 		}
 
 		updateAuthParams := sqlcgen.UpdateCredentialsParams{
-			ID:          entityModel.AuthID,
+			ID:          model.AuthID,
 			Credentials: mappers.NewAuthenticationModel(indexerClient.Authentication),
 		}
 

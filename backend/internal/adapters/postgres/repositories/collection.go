@@ -35,11 +35,7 @@ func (r *collectionRepository) Create(ctx context.Context, collection *collectio
 	}
 
 	if _, err := queries.CreateCollection(ctx, params); err != nil {
-		if err := handleWriteError(err); err != nil {
-			return err
-		}
-
-		return err
+		return handleWriteError(err)
 	}
 
 	return nil
@@ -58,23 +54,24 @@ func (r *collectionRepository) Delete(ctx context.Context, id collections.Collec
 func (r *collectionRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]collections.Collection, error) {
 	queries := sqlcgen.New(r.conn)
 
-	entityModels, err := queries.ListCollectionsByOwner(ctx, owner)
+	models, err := queries.ListCollectionsByOwner(ctx, owner)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
 
-	response := make([]collections.Collection, 0, len(entityModels))
+	response := make([]collections.Collection, 0, len(models))
 
-	for i := range entityModels {
-		item := entityModels[i]
+	for i := range models {
+		model := &models[i]
+
 		response = append(response, collections.Collection{
-			ID:        item.ID,
-			Owner:     item.OwnerID,
-			Name:      item.Name,
-			BasePath:  item.BasePath,
-			Tags:      item.Tags,
-			Monitored: item.Monitored,
-			CreatedAt: item.CreatedAt.Time,
+			ID:        model.ID,
+			Owner:     model.OwnerID,
+			Name:      model.Name,
+			BasePath:  model.BasePath,
+			Tags:      model.Tags,
+			Monitored: model.Monitored,
+			CreatedAt: model.CreatedAt.Time,
 		})
 	}
 
@@ -83,19 +80,19 @@ func (r *collectionRepository) ListByOwner(ctx context.Context, owner shared.Use
 
 func (r *collectionRepository) Update(ctx context.Context, id collections.CollectionID, update func(collection *collections.Collection) error) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
-		entityModel, err := queries.GetCollection(ctx, id)
+		model, err := queries.GetCollection(ctx, id)
 		if err != nil {
 			return handleReadError(err)
 		}
 
 		collection := &collections.Collection{
-			ID:        entityModel.ID,
-			Owner:     entityModel.OwnerID,
-			Name:      entityModel.Name,
-			BasePath:  entityModel.BasePath,
-			Tags:      entityModel.Tags,
-			Monitored: entityModel.Monitored,
-			CreatedAt: entityModel.CreatedAt.Time,
+			ID:        model.ID,
+			Owner:     model.OwnerID,
+			Name:      model.Name,
+			BasePath:  model.BasePath,
+			Tags:      model.Tags,
+			Monitored: model.Monitored,
+			CreatedAt: model.CreatedAt.Time,
 		}
 
 		if err := update(collection); err != nil {

@@ -8,6 +8,7 @@ import (
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/domain/users"
+	"github.com/sonalys/animeman/internal/domain/watchlists"
 )
 
 type (
@@ -72,5 +73,15 @@ type (
 		ListBySeason(ctx context.Context, id collections.SeasonID) ([]collections.Episode, error)
 		Update(ctx context.Context, id collections.EpisodeID, updateHandler UpdateHandler[collections.Episode]) error
 		Delete(ctx context.Context, id collections.EpisodeID) error
+	}
+
+	WatchlistRepository interface {
+		Create(ctx context.Context, watchlist *watchlists.Watchlist) error
+		CreateEntry(ctx context.Context, entry *watchlists.WatchlistEntry) error
+		ListByOwner(ctx context.Context, id shared.UserID) ([]watchlists.Watchlist, error)
+		ListEntries(ctx context.Context, id watchlists.WatchlistID) ([]watchlists.WatchlistEntry, error)
+		Update(ctx context.Context, id watchlists.WatchlistID, updateHandler UpdateHandler[watchlists.Watchlist]) error
+		Delete(ctx context.Context, id watchlists.WatchlistID) error
+		DeleteEntry(ctx context.Context, id watchlists.WatchlistEntryID) error
 	}
 )

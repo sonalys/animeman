@@ -38,11 +38,7 @@ func (r *episodeRepository) Create(ctx context.Context, episode *collections.Epi
 	}
 
 	if _, err := queries.CreateEpisode(ctx, params); err != nil {
-		if err := handleWriteError(err); err != nil {
-			return err
-		}
-
-		return err
+		return handleWriteError(err)
 	}
 
 	return nil
@@ -61,23 +57,24 @@ func (r *episodeRepository) Delete(ctx context.Context, id collections.EpisodeID
 func (r *episodeRepository) ListBySeason(ctx context.Context, id collections.SeasonID) ([]collections.Episode, error) {
 	queries := sqlcgen.New(r.conn)
 
-	entityModels, err := queries.ListEpisodesBySeason(ctx, id)
+	models, err := queries.ListEpisodesBySeason(ctx, id)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
 
-	response := make([]collections.Episode, 0, len(entityModels))
+	response := make([]collections.Episode, 0, len(models))
 
-	for i := range entityModels {
-		item := entityModels[i]
+	for i := range models {
+		model := &models[i]
+
 		response = append(response, collections.Episode{
-			ID:         item.ID,
-			MediaID:    item.MediaID,
-			SeasonID:   item.SeasonID,
-			Type:       mappers.NewMediaType(item.Type),
-			Number:     item.Number,
-			Titles:     sliceutils.Map(item.Titles, mappers.NewTitle),
-			AiringDate: item.AiringDate.Time,
+			ID:         model.ID,
+			MediaID:    model.MediaID,
+			SeasonID:   model.SeasonID,
+			Type:       mappers.NewMediaType(model.Type),
+			Number:     model.Number,
+			Titles:     sliceutils.Map(model.Titles, mappers.NewTitle),
+			AiringDate: model.AiringDate.Time,
 		})
 	}
 
@@ -86,19 +83,19 @@ func (r *episodeRepository) ListBySeason(ctx context.Context, id collections.Sea
 
 func (r *episodeRepository) Update(ctx context.Context, id collections.EpisodeID, updateHandler ports.UpdateHandler[collections.Episode]) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
-		episodeModel, err := queries.GetEpisode(ctx, id)
+		model, err := queries.GetEpisode(ctx, id)
 		if err != nil {
 			return handleReadError(err)
 		}
 
 		episode := &collections.Episode{
-			ID:         episodeModel.ID,
-			MediaID:    episodeModel.MediaID,
-			SeasonID:   episodeModel.SeasonID,
-			Type:       mappers.NewMediaType(episodeModel.Type),
-			Number:     episodeModel.Number,
-			Titles:     sliceutils.Map(episodeModel.Titles, mappers.NewTitle),
-			AiringDate: episodeModel.AiringDate.Time,
+			ID:         model.ID,
+			MediaID:    model.MediaID,
+			SeasonID:   model.SeasonID,
+			Type:       mappers.NewMediaType(model.Type),
+			Number:     model.Number,
+			Titles:     sliceutils.Map(model.Titles, mappers.NewTitle),
+			AiringDate: model.AiringDate.Time,
 		}
 
 		if err := updateHandler(episode); err != nil {

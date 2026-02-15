@@ -34,11 +34,7 @@ func (r *qualityProfileRepository) Create(ctx context.Context, profile *collecti
 	}
 
 	if _, err := queries.CreateQualityProfile(ctx, params); err != nil {
-		if err := handleWriteError(err); err != nil {
-			return err
-		}
-
-		return err
+		return handleWriteError(err)
 	}
 
 	return nil
@@ -65,15 +61,15 @@ func (r *qualityProfileRepository) List(ctx context.Context) ([]collections.Qual
 	response := make([]collections.QualityProfile, 0, len(models))
 
 	for i := range models {
-		item := models[i]
+		model := &models[i]
 
 		response = append(response, collections.QualityProfile{
-			ID:                     item.ID,
-			Name:                   item.Name,
-			MinResolution:          mappers.NewResolution(item.MinResolution),
-			MaxResolution:          mappers.NewResolution(item.MaxResolution),
-			CodecPreference:        sliceutils.Map(item.CodecPreference, mappers.NewVideoCodec),
-			ReleaseGroupPreference: item.ReleaseGroupPreference,
+			ID:                     model.ID,
+			Name:                   model.Name,
+			MinResolution:          mappers.NewResolution(model.MinResolution),
+			MaxResolution:          mappers.NewResolution(model.MaxResolution),
+			CodecPreference:        sliceutils.Map(model.CodecPreference, mappers.NewVideoCodec),
+			ReleaseGroupPreference: model.ReleaseGroupPreference,
 		})
 	}
 

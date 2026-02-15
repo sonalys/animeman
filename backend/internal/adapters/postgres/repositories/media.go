@@ -39,11 +39,7 @@ func (r *mediaRepository) Create(ctx context.Context, media *collections.Media) 
 	}
 
 	if _, err := queries.CreateMedia(ctx, params); err != nil {
-		if err := handleWriteError(err); err != nil {
-			return err
-		}
-
-		return err
+		return handleWriteError(err)
 	}
 
 	return nil
@@ -68,27 +64,28 @@ func (r *mediaRepository) ListByCollection(ctx context.Context, id collections.C
 		Limit:        opts.PageSize,
 	}
 
-	entityModels, err := queries.ListMediaPaginated(ctx, params)
+	models, err := queries.ListMediaPaginated(ctx, params)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
 
-	response := make([]collections.Media, 0, len(entityModels))
+	response := make([]collections.Media, 0, len(models))
 
-	for i := range entityModels {
-		item := entityModels[i]
+	for i := range models {
+		model := &models[i]
+
 		response = append(response, collections.Media{
-			ID:               item.ID,
-			CollectionID:     item.CollectionID,
-			QualityProfileID: item.QualityProfileID,
-			Titles:           sliceutils.Map(item.Titles, mappers.NewTitle),
-			MonitoringStatus: mappers.NewMonitoringStatus(item.MonitoringStatus),
-			MonitoredSince:   item.MonitoredSince.Time,
-			CreatedAt:        item.CreatedAt.Time,
+			ID:               model.ID,
+			CollectionID:     model.CollectionID,
+			QualityProfileID: model.QualityProfileID,
+			Titles:           sliceutils.Map(model.Titles, mappers.NewTitle),
+			MonitoringStatus: mappers.NewMonitoringStatus(model.MonitoringStatus),
+			MonitoredSince:   model.MonitoredSince.Time,
+			CreatedAt:        model.CreatedAt.Time,
 			Metadata: collections.MediaMetadata{
-				Genres:          item.Genres,
-				AiringStartedAt: item.AiringStartedAt.Time,
-				AiringEndedAt:   item.AiringEndedAt.Time,
+				Genres:          model.Genres,
+				AiringStartedAt: model.AiringStartedAt.Time,
+				AiringEndedAt:   model.AiringEndedAt.Time,
 			},
 		})
 	}
@@ -98,24 +95,24 @@ func (r *mediaRepository) ListByCollection(ctx context.Context, id collections.C
 
 func (r *mediaRepository) Update(ctx context.Context, id collections.MediaID, updateHandler ports.UpdateHandler[collections.Media]) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
-		mediaModel, err := queries.GetMedia(ctx, id)
+		model, err := queries.GetMedia(ctx, id)
 		if err != nil {
 			return handleReadError(err)
 		}
 
 		media := &collections.Media{
-			ID:               mediaModel.ID,
-			CollectionID:     mediaModel.CollectionID,
-			QualityProfileID: mediaModel.QualityProfileID,
-			Titles:           sliceutils.Map(mediaModel.Titles, mappers.NewTitle),
-			MonitoredSince:   mediaModel.MonitoredSince.Time,
-			CreatedAt:        mediaModel.CreatedAt.Time,
+			ID:               model.ID,
+			CollectionID:     model.CollectionID,
+			QualityProfileID: model.QualityProfileID,
+			Titles:           sliceutils.Map(model.Titles, mappers.NewTitle),
+			MonitoredSince:   model.MonitoredSince.Time,
+			CreatedAt:        model.CreatedAt.Time,
 			Metadata: collections.MediaMetadata{
-				Genres:          mediaModel.Genres,
-				AiringStartedAt: mediaModel.AiringStartedAt.Time,
-				AiringEndedAt:   mediaModel.AiringEndedAt.Time,
+				Genres:          model.Genres,
+				AiringStartedAt: model.AiringStartedAt.Time,
+				AiringEndedAt:   model.AiringEndedAt.Time,
 			},
-			MonitoringStatus: mappers.NewMonitoringStatus(mediaModel.MonitoringStatus),
+			MonitoringStatus: mappers.NewMonitoringStatus(model.MonitoringStatus),
 		}
 
 		if err := updateHandler(media); err != nil {

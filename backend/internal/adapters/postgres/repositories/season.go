@@ -38,11 +38,7 @@ func (r *seasonRepository) Create(ctx context.Context, season *collections.Seaso
 	}
 
 	if _, err := queries.CreateSeason(ctx, params); err != nil {
-		if err := handleWriteError(err); err != nil {
-			return err
-		}
-
-		return err
+		return handleWriteError(err)
 	}
 
 	return nil
@@ -61,25 +57,26 @@ func (r *seasonRepository) Delete(ctx context.Context, id collections.SeasonID) 
 func (r *seasonRepository) ListByMedia(ctx context.Context, id collections.MediaID) ([]collections.Season, error) {
 	queries := sqlcgen.New(r.conn)
 
-	entityModels, err := queries.ListSeasonsByMedia(ctx, id)
+	models, err := queries.ListSeasonsByMedia(ctx, id)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
 
-	response := make([]collections.Season, 0, len(entityModels))
+	response := make([]collections.Season, 0, len(models))
 
-	for i := range entityModels {
-		item := entityModels[i]
+	for i := range models {
+		model := &models[i]
+
 		response = append(response, collections.Season{
-			ID:           item.ID,
-			MediaID:      item.MediaID,
-			Number:       int(item.Number),
-			AiringStatus: mappers.NewAiringStatus(item.AiringStatus),
+			ID:           model.ID,
+			MediaID:      model.MediaID,
+			Number:       int(model.Number),
+			AiringStatus: mappers.NewAiringStatus(model.AiringStatus),
 			SeasonMetadata: collections.SeasonMetadata{
-				Season: item.Metadata.Season,
-				Year:   item.Metadata.Year,
-				Month:  item.Metadata.Month,
-				Day:    item.Metadata.Day,
+				Season: model.Metadata.Season,
+				Year:   model.Metadata.Year,
+				Month:  model.Metadata.Month,
+				Day:    model.Metadata.Day,
 			},
 		})
 	}
@@ -89,21 +86,21 @@ func (r *seasonRepository) ListByMedia(ctx context.Context, id collections.Media
 
 func (r *seasonRepository) Update(ctx context.Context, id collections.SeasonID, updateHandler ports.UpdateHandler[collections.Season]) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
-		seasonModel, err := queries.GetSeason(ctx, id)
+		model, err := queries.GetSeason(ctx, id)
 		if err != nil {
 			return handleReadError(err)
 		}
 
 		season := &collections.Season{
-			ID:           seasonModel.ID,
-			MediaID:      seasonModel.MediaID,
-			Number:       int(seasonModel.Number),
-			AiringStatus: mappers.NewAiringStatus(seasonModel.AiringStatus),
+			ID:           model.ID,
+			MediaID:      model.MediaID,
+			Number:       int(model.Number),
+			AiringStatus: mappers.NewAiringStatus(model.AiringStatus),
 			SeasonMetadata: collections.SeasonMetadata{
-				Season: seasonModel.Metadata.Season,
-				Year:   seasonModel.Metadata.Year,
-				Month:  seasonModel.Metadata.Month,
-				Day:    seasonModel.Metadata.Day,
+				Season: model.Metadata.Season,
+				Year:   model.Metadata.Year,
+				Month:  model.Metadata.Month,
+				Day:    model.Metadata.Day,
 			},
 		}
 

@@ -74,7 +74,7 @@ func (u User) NewTransferClient(
 }
 
 func (u User) NewExternalWatchList(
-	source watchlists.WatchlistSource,
+	source watchlists.Source,
 	externalID string,
 	syncFrequency time.Duration,
 ) *watchlists.Watchlist {

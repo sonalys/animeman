@@ -233,3 +233,46 @@ CREATE TABLE collection_files (
 );
 
 CREATE INDEX idx_files_hashes ON collection_files USING GIN (hashes);
+
+CREATE TYPE watchlist_source AS ENUM (
+    'local', 
+    'anilist', 
+    'mal', 
+    'unknown'
+);
+
+CREATE TYPE watchlist_status AS ENUM (
+    'watching', 
+    'completed', 
+    'dropped', 
+    'planToWatch', 
+    'unknown'
+);
+
+CREATE TABLE watchlists (
+    id              UUID PRIMARY KEY,
+    owner_id        UUID NOT NULL,
+    source          watchlist_source NOT NULL,
+    external_id     TEXT,
+    sync_frequency  INTERVAL NOT NULL,
+    last_synced_at  TIMESTAMPTZ,
+    created_at      TIMESTAMPTZ NOT NULL,
+    
+    UNIQUE(source, external_id)
+);
+
+CREATE TABLE watchlist_entries (
+    id              UUID PRIMARY KEY,
+    watchlist_id    UUID NOT NULL REFERENCES watchlists(id) ON DELETE CASCADE,
+    media_id        UUID NOT NULL REFERENCES media(id) ON DELETE CASCADE,
+    season_id       UUID NOT NULL REFERENCES seasons(id) ON DELETE CASCADE,
+    last_watched_id UUID NOT NULL REFERENCES episodes(id) ON DELETE CASCADE,
+    status          watchlist_status NOT NULL,
+    created_at      TIMESTAMPTZ NOT NULL,
+    updated_at      TIMESTAMPTZ NOT NULL,
+
+    UNIQUE(watchlist_id, media_id)
+);
+
+CREATE INDEX idx_watchlist_owner ON watchlists(owner_id);
+CREATE INDEX idx_entries_watchlist_id ON watchlist_entries(watchlist_id);

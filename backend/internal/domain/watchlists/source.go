@@ -1,21 +1,21 @@
 package watchlists
 
-// WatchlistSource identifies where the item originated
-type WatchlistSource uint
+// Source identifies where the item originated
+type Source uint
 
 const (
-	WatchlistSourceUnknown WatchlistSource = iota
+	WatchlistSourceUnknown Source = iota
 	WatchlistSourceLocal
 	WatchlistSourceAniList
 	WatchlistSourceMyAnimeList
 	watchlistSourceSentinel
 )
 
-func (s WatchlistSource) IsValid() bool {
+func (s Source) IsValid() bool {
 	return s > WatchlistSourceUnknown && s < watchlistSourceSentinel
 }
 
-func (s WatchlistSource) String() string {
+func (s Source) String() string {
 	switch s {
 	case WatchlistSourceLocal:
 		return "local"

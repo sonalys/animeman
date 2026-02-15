@@ -547,6 +547,95 @@ func (ns NullVideoCodec) Value() (driver.Value, error) {
 	return string(ns.VideoCodec), nil
 }
 
+type WatchlistSource string
+
+const (
+	WatchlistSourceLocal   WatchlistSource = "local"
+	WatchlistSourceAnilist WatchlistSource = "anilist"
+	WatchlistSourceMal     WatchlistSource = "mal"
+	WatchlistSourceUnknown WatchlistSource = "unknown"
+)
+
+func (e *WatchlistSource) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = WatchlistSource(s)
+	case string:
+		*e = WatchlistSource(s)
+	default:
+		return fmt.Errorf("unsupported scan type for WatchlistSource: %T", src)
+	}
+	return nil
+}
+
+type NullWatchlistSource struct {
+	WatchlistSource WatchlistSource
+	Valid           bool // Valid is true if WatchlistSource is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullWatchlistSource) Scan(value interface{}) error {
+	if value == nil {
+		ns.WatchlistSource, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.WatchlistSource.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullWatchlistSource) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.WatchlistSource), nil
+}
+
+type WatchlistStatus string
+
+const (
+	WatchlistStatusWatching    WatchlistStatus = "watching"
+	WatchlistStatusCompleted   WatchlistStatus = "completed"
+	WatchlistStatusDropped     WatchlistStatus = "dropped"
+	WatchlistStatusPlanToWatch WatchlistStatus = "planToWatch"
+	WatchlistStatusUnknown     WatchlistStatus = "unknown"
+)
+
+func (e *WatchlistStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = WatchlistStatus(s)
+	case string:
+		*e = WatchlistStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for WatchlistStatus: %T", src)
+	}
+	return nil
+}
+
+type NullWatchlistStatus struct {
+	WatchlistStatus WatchlistStatus
+	Valid           bool // Valid is true if WatchlistStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullWatchlistStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.WatchlistStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.WatchlistStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullWatchlistStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.WatchlistStatus), nil
+}
+
 type Authentication struct {
 	ID          shared.ID
 	Type        AuthType
@@ -642,4 +731,25 @@ type User struct {
 	ID           shared.ID
 	Username     string
 	PasswordHash string
+}
+
+type Watchlist struct {
+	ID            shared.ID
+	OwnerID       shared.ID
+	Source        WatchlistSource
+	ExternalID    pgtype.Text
+	SyncFrequency pgtype.Interval
+	LastSyncedAt  pgtype.Timestamptz
+	CreatedAt     pgtype.Timestamptz
+}
+
+type WatchlistEntry struct {
+	ID            shared.ID
+	WatchlistID   shared.ID
+	MediaID       shared.ID
+	SeasonID      shared.ID
+	LastWatchedID shared.ID
+	Status        WatchlistStatus
+	CreatedAt     pgtype.Timestamptz
+	UpdatedAt     pgtype.Timestamptz
 }

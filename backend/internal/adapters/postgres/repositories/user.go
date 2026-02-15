@@ -58,24 +58,24 @@ func (r userRepository) Delete(ctx context.Context, id shared.UserID) error {
 func (r userRepository) Get(ctx context.Context, id shared.UserID) (*users.User, error) {
 	queries := sqlcgen.New(r.conn)
 
-	userModel, err := queries.GetUserById(ctx, id)
+	model, err := queries.GetUserById(ctx, id)
 	if err != nil {
 		return nil, handleReadError(err)
 	}
 
-	user := mappers.NewUser(&userModel)
+	user := mappers.NewUser(&model)
 
 	return user, nil
 }
 
 func (r userRepository) Update(ctx context.Context, id shared.UserID, update func(user *users.User) error) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
-		userModel, err := queries.GetUserById(ctx, id)
+		model, err := queries.GetUserById(ctx, id)
 		if err != nil {
 			return handleReadError(err)
 		}
 
-		user := mappers.NewUser(&userModel)
+		user := mappers.NewUser(&model)
 
 		if err := update(user); err != nil {
 			return err

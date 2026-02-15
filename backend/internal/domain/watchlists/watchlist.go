@@ -16,7 +16,7 @@ type (
 		ID    WatchlistID
 		Owner shared.UserID
 
-		Source     WatchlistSource
+		Source     Source
 		ExternalID string
 
 		SyncFrequency time.Duration
