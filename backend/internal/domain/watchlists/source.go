@@ -4,24 +4,24 @@ package watchlists
 type Source uint
 
 const (
-	WatchlistSourceUnknown Source = iota
-	WatchlistSourceLocal
-	WatchlistSourceAniList
-	WatchlistSourceMyAnimeList
-	watchlistSourceSentinel
+	SourceUnknown Source = iota
+	SourceLocal
+	SourceAniList
+	SourceMyAnimeList
+	sourceSentinel
 )
 
 func (s Source) IsValid() bool {
-	return s > WatchlistSourceUnknown && s < watchlistSourceSentinel
+	return s > SourceUnknown && s < sourceSentinel
 }
 
 func (s Source) String() string {
 	switch s {
-	case WatchlistSourceLocal:
+	case SourceLocal:
 		return "local"
-	case WatchlistSourceAniList:
+	case SourceAniList:
 		return "anilist"
-	case WatchlistSourceMyAnimeList:
+	case SourceMyAnimeList:
 		return "mal"
 	default:
 		return "unknown"

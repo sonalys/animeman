@@ -78,7 +78,7 @@ func Test_Onboarding(t *testing.T) {
 	require.NotNil(t, episode)
 
 	watchlist := user.NewExternalWatchList(
-		watchlists.WatchlistSourceAniList,
+		watchlists.SourceAniList,
 		"username",
 		time.Hour,
 	)

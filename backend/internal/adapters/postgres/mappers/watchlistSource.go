@@ -8,23 +8,23 @@ import (
 func NewWatchlistSource(from sqlcgen.WatchlistSource) watchlists.Source {
 	switch from {
 	case sqlcgen.WatchlistSourceAnilist:
-		return watchlists.WatchlistSourceAniList
+		return watchlists.SourceAniList
 	case sqlcgen.WatchlistSourceMal:
-		return watchlists.WatchlistSourceMyAnimeList
+		return watchlists.SourceMyAnimeList
 	case sqlcgen.WatchlistSourceLocal:
-		return watchlists.WatchlistSourceLocal
+		return watchlists.SourceLocal
 	default:
-		return watchlists.WatchlistSourceUnknown
+		return watchlists.SourceUnknown
 	}
 }
 
 func NewWatchlistSourceModel(from watchlists.Source) sqlcgen.WatchlistSource {
 	switch from {
-	case watchlists.WatchlistSourceAniList:
+	case watchlists.SourceAniList:
 		return sqlcgen.WatchlistSourceAnilist
-	case watchlists.WatchlistSourceMyAnimeList:
+	case watchlists.SourceMyAnimeList:
 		return sqlcgen.WatchlistSourceMal
-	case watchlists.WatchlistSourceLocal:
+	case watchlists.SourceLocal:
 		return sqlcgen.WatchlistSourceLocal
 	default:
 		return sqlcgen.WatchlistSourceUnknown
