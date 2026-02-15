@@ -126,8 +126,6 @@ func sortResults(entry animelist.Entry, results []parser.ParsedNyaa) []parser.Pa
 			return cmp < 0
 		}
 
-		const ignoreCharset = ",.;:-()[]'`\""
-
 		// Then title similarity.
 		titleSimilarityI := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
 			return utils.CalculateTextSimilarity(curTitle, first.ExtractedMetadata.Title, ignoreCharset)

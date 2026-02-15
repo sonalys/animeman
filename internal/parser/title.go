@@ -14,6 +14,14 @@ var titleCleanupExpr = []*regexp.Regexp{
 	regexp.MustCompile(`(\[.*?\])|(\(.*?\))`),
 }
 
+func StripSeason(title string) string {
+	if index := seasonIndexMatch(title); index != -1 {
+		title = title[:index]
+	}
+
+	return title
+}
+
 // StripTitle cleans title from sub-titles, tags and season / episode information.
 // Example: [Source] Show: another story - S03E02 [1080p].mkv -> Show.
 func StripTitle(title string) string {

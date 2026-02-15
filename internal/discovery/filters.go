@@ -43,7 +43,8 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Item) bool {
 		}
 
 		for _, originalTitle := range entry.Titles {
-			if utils.MatchPrefixFlexible(meta.Title, originalTitle, ignoreCharset) {
+			withoutSeason := parser.StripSeason(originalTitle)
+			if utils.MatchPrefixFlexible(meta.Title, withoutSeason, ignoreCharset) {
 				return true
 			}
 		}
