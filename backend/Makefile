@@ -1,6 +1,8 @@
 IMG = ghcr.io/sonalys/animeman
 ARCH := $(shell go env GOARCH)
 
+.SILENT:
+
 ifeq ($(ARCH),x86_64)
 	ARCHITECTURE := amd64
 else ifeq ($(ARCH),aarch64)
@@ -27,4 +29,5 @@ push:
 	docker push ${IMG}
 
 generate-postgres:
+	rm -rf **/sqlcgen/*.gen.go
 	$(SQLC) generate

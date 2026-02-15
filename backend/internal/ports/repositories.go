@@ -66,4 +66,11 @@ type (
 		Update(ctx context.Context, id collections.SeasonID, updateHandler UpdateHandler[collections.Season]) error
 		Delete(ctx context.Context, id collections.SeasonID) error
 	}
+
+	EpisodeRepository interface {
+		Create(ctx context.Context, episode *collections.Episode) error
+		ListBySeason(ctx context.Context, id collections.SeasonID) ([]collections.Episode, error)
+		Update(ctx context.Context, id collections.EpisodeID, updateHandler UpdateHandler[collections.Episode]) error
+		Delete(ctx context.Context, id collections.EpisodeID) error
+	}
 )

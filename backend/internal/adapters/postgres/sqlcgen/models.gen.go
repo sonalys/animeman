@@ -587,7 +587,7 @@ type Episode struct {
 	MediaID    shared.ID
 	Type       MediaType
 	Number     string
-	Titles     []byte
+	Titles     dtos.Titles
 	AiringDate pgtype.Timestamptz
 }
 

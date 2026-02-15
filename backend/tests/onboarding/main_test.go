@@ -73,7 +73,7 @@ func Test_Onboarding(t *testing.T) {
 		collections.MediaTypeTV,
 		"1",
 		[]collections.Title{},
-		new(time.Now()),
+		time.Now(),
 	)
 	require.NotNil(t, episode)
 

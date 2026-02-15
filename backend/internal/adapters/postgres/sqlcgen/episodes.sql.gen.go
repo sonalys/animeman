@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/sonalys/animeman/internal/adapters/postgres/dtos"
 	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
@@ -27,7 +28,7 @@ type CreateEpisodeParams struct {
 	MediaID    shared.ID
 	Type       MediaType
 	Number     string
-	Titles     []byte
+	Titles     dtos.Titles
 	AiringDate pgtype.Timestamptz
 }
 
@@ -156,7 +157,7 @@ RETURNING id, season_id, media_id, type, number, titles, airing_date
 type UpdateEpisodeMetadataParams struct {
 	ID         shared.ID
 	Type       MediaType
-	Titles     []byte
+	Titles     dtos.Titles
 	AiringDate pgtype.Timestamptz
 }
 

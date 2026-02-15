@@ -25,7 +25,7 @@ func (s *Season) NewEpisode(
 	t MediaType,
 	number string,
 	titles []Title,
-	airingDate *time.Time,
+	airingDate time.Time,
 ) *Episode {
 	episode := &Episode{
 		ID:         shared.NewID[EpisodeID](),

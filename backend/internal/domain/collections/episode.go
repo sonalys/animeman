@@ -21,29 +21,9 @@ type (
 		// Number is a string due to complex episode number variations, like episode 6.5 or combined episodes.
 		Number     string
 		Titles     []Title
-		AiringDate *time.Time
-		Files      []*File
+		AiringDate time.Time
 	}
 )
-
-func (e *Episode) BestFile() *File {
-	if len(e.Files) == 0 {
-		return nil
-	}
-	best := e.Files[0]
-	for i := 1; i < len(e.Files); i++ {
-		if e.Files[i].VideoInfo.Resolution > best.VideoInfo.Resolution {
-			best = e.Files[i]
-			continue
-		}
-
-		if e.Files[i].VideoInfo.Codec > best.VideoInfo.Codec {
-			best = e.Files[i]
-			continue
-		}
-	}
-	return best
-}
 
 func (e *Episode) NewFile(
 	relativePath string,
@@ -74,7 +54,6 @@ func (e *Episode) NewFile(
 		Chapters:        chapters,
 		CreatedAt:       time.Now(),
 	}
-	e.Files = append(e.Files, file)
 
 	return file
 }
