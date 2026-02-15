@@ -2,9 +2,11 @@ package ports
 
 import (
 	"context"
+	"time"
 
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/domain/indexing"
+	"github.com/sonalys/animeman/internal/domain/orchestration"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/domain/users"
@@ -83,5 +85,23 @@ type (
 		Update(ctx context.Context, id watchlists.WatchlistID, updateHandler UpdateHandler[watchlists.Watchlist]) error
 		Delete(ctx context.Context, id watchlists.WatchlistID) error
 		DeleteEntry(ctx context.Context, id watchlists.WatchlistEntryID) error
+	}
+
+	TaskRepository interface {
+		// Task Lifecycle
+		CreateTask(ctx context.Context, t *orchestration.Task) error
+		ClaimTask(ctx context.Context, timeout time.Duration) (*orchestration.Task, error)
+		MarkCompleted(ctx context.Context, id orchestration.TaskID) error
+		MarkFailed(ctx context.Context, id orchestration.TaskID, nextRetry time.Time) error
+
+		// Logging & Telemetry
+		AddLog(ctx context.Context, entry *orchestration.TaskLog) error
+
+		// Querying & Pagination
+		ListTasks(ctx context.Context, lastID orchestration.TaskID, pageSize int32) ([]orchestration.Task, error)
+		ListTaskLogs(ctx context.Context, taskID orchestration.TaskID, lastID orchestration.TaskLogID, pageSize int32) ([]orchestration.TaskLog, error)
+
+		// Maintenance
+		RotateLogs(ctx context.Context, retention time.Duration, maxLogs int32) error
 	}
 )

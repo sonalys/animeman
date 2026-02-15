@@ -276,3 +276,50 @@ CREATE TABLE watchlist_entries (
 
 CREATE INDEX idx_watchlist_owner ON watchlists(owner_id);
 CREATE INDEX idx_entries_watchlist_id ON watchlist_entries(watchlist_id);
+
+CREATE TYPE task_status AS ENUM (
+    'pending',
+    'running',
+    'completed',
+    'failed'
+);
+
+CREATE TABLE orchestration_tasks (
+    id              UUID PRIMARY KEY,
+    task_type       TEXT NOT NULL,
+    status          task_status NOT NULL,
+    payload         JSONB NOT NULL,
+    retry_count     INT NOT NULL,
+    max_retries     INT NOT NULL,
+    next_retry_at   TIMESTAMPTZ,
+    trace_id        TEXT,
+    span_id         TEXT,
+    expires_at      TIMESTAMPTZ,
+    created_at      TIMESTAMPTZ NOT NULL,
+    updated_at      TIMESTAMPTZ NOT NULL
+);
+
+CREATE TYPE log_level AS ENUM (
+    'debug',
+    'info',
+    'warn',
+    'error',
+    'fatal',
+    'unknown'
+);
+
+CREATE TABLE task_logs (
+    id          UUID PRIMARY KEY,
+    task_id     UUID NOT NULL REFERENCES orchestration_tasks(id) ON DELETE CASCADE,
+    level       log_level NOT NULL,
+    message     TEXT NOT NULL,
+    trace_id        TEXT,
+    span_id         TEXT,
+    created_at  TIMESTAMPTZ NOT NULL
+);
+
+CREATE INDEX idx_tasks_claim ON orchestration_tasks (status, expires_at) WHERE status IN ('pending', 'running');
+CREATE INDEX idx_tasks_next_retry ON orchestration_tasks (next_retry_at) WHERE status = 'pending'::task_status AND next_retry_at IS NOT NULL;
+
+CREATE INDEX idx_task_logs_rotation ON task_logs (created_at DESC);
+CREATE INDEX idx_task_logs_lookup ON task_logs (task_id, created_at DESC);

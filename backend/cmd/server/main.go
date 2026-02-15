@@ -11,12 +11,14 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/cmd/server/configs"
 	"github.com/sonalys/animeman/internal/adapters/postgres"
+	"github.com/sonalys/animeman/internal/utils/otel"
 	"github.com/sonalys/animeman/internal/utils/roundtripper"
 )
 
 var (
-	version          = "dev"
-	defaultTransport = roundtripper.NewUserAgentTransport(
+	version = "dev"
+
+	_ = roundtripper.NewUserAgentTransport(
 		roundtripper.NewLoggerTransport(http.DefaultTransport),
 		"github.com/sonalys/animeman",
 	)
@@ -25,7 +27,9 @@ var (
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{
 		Out: os.Stderr,
-	})
+	}).Hook(
+		otel.OTelHook{},
+	)
 
 	zerolog.DefaultContextLogger = &log.Logger
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)

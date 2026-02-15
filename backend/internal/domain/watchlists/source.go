@@ -1,6 +1,5 @@
 package watchlists
 
-// Source identifies where the item originated
 type Source uint
 
 const (

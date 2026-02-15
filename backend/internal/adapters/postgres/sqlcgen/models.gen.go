@@ -278,6 +278,52 @@ func (ns NullIndexerClientType) Value() (driver.Value, error) {
 	return string(ns.IndexerClientType), nil
 }
 
+type LogLevel string
+
+const (
+	LogLevelDebug   LogLevel = "debug"
+	LogLevelInfo    LogLevel = "info"
+	LogLevelWarn    LogLevel = "warn"
+	LogLevelError   LogLevel = "error"
+	LogLevelFatal   LogLevel = "fatal"
+	LogLevelUnknown LogLevel = "unknown"
+)
+
+func (e *LogLevel) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = LogLevel(s)
+	case string:
+		*e = LogLevel(s)
+	default:
+		return fmt.Errorf("unsupported scan type for LogLevel: %T", src)
+	}
+	return nil
+}
+
+type NullLogLevel struct {
+	LogLevel LogLevel
+	Valid    bool // Valid is true if LogLevel is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullLogLevel) Scan(value interface{}) error {
+	if value == nil {
+		ns.LogLevel, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.LogLevel.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullLogLevel) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.LogLevel), nil
+}
+
 type MediaType string
 
 const (
@@ -460,6 +506,50 @@ func (ns NullSubtitleFormat) Value() (driver.Value, error) {
 		return nil, nil
 	}
 	return string(ns.SubtitleFormat), nil
+}
+
+type TaskStatus string
+
+const (
+	TaskStatusPending   TaskStatus = "pending"
+	TaskStatusRunning   TaskStatus = "running"
+	TaskStatusCompleted TaskStatus = "completed"
+	TaskStatusFailed    TaskStatus = "failed"
+)
+
+func (e *TaskStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = TaskStatus(s)
+	case string:
+		*e = TaskStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for TaskStatus: %T", src)
+	}
+	return nil
+}
+
+type NullTaskStatus struct {
+	TaskStatus TaskStatus
+	Valid      bool // Valid is true if TaskStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullTaskStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.TaskStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.TaskStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullTaskStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.TaskStatus), nil
 }
 
 type TransferClientType string
@@ -702,6 +792,21 @@ type Medium struct {
 	TitlesSearchVector pgtype.Text
 }
 
+type OrchestrationTask struct {
+	ID          shared.ID
+	TaskType    string
+	Status      TaskStatus
+	Payload     []byte
+	RetryCount  int32
+	MaxRetries  int32
+	NextRetryAt pgtype.Timestamptz
+	TraceID     pgtype.Text
+	SpanID      pgtype.Text
+	ExpiresAt   pgtype.Timestamptz
+	CreatedAt   pgtype.Timestamptz
+	UpdatedAt   pgtype.Timestamptz
+}
+
 type QualityProfile struct {
 	ID                     shared.ID
 	Name                   string
@@ -717,6 +822,16 @@ type Season struct {
 	Number       int32
 	AiringStatus AiringStatus
 	Metadata     dtos.SeasonMetadata
+}
+
+type TaskLog struct {
+	ID        shared.ID
+	TaskID    shared.ID
+	Level     LogLevel
+	Message   string
+	TraceID   pgtype.Text
+	SpanID    pgtype.Text
+	CreatedAt pgtype.Timestamptz
 }
 
 type TransferClient struct {
