@@ -35,3 +35,12 @@ generate-postgres:
 
 generate-api:
 	$(OGEN) -package ogen --target cmd/server/ogen --clean ../api/oapi.yaml
+
+upgrade-tools:
+	for d in $(TOOLS_DIR)/*; do \
+		if [ -d "$$d" ] && [ -f "$$d/go.mod" ]; then \
+			TOOL=$$(grep "^tool " "$$d/go.mod" | awk '{print $$2}'); \
+			echo "Updating tool: $$TOOL"; \
+			(cd "$$d" && go get -tool "$${TOOL}@latest" && go mod tidy); \
+		fi; \
+	done

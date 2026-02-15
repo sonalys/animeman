@@ -4,7 +4,6 @@ package ogen
 
 import (
 	"github.com/go-faster/errors"
-
 	"github.com/ogen-go/ogen/validate"
 )
 
@@ -70,13 +69,17 @@ func (s *UserRegistration) Validate() error {
 	var failures []validate.FieldError
 	if err := func() error {
 		if err := (validate.String{
-			MinLength:    3,
-			MinLengthSet: true,
-			MaxLength:    20,
-			MaxLengthSet: true,
-			Email:        false,
-			Hostname:     false,
-			Regex:        regexMap["^[a-zA-Z0-9_]+$"],
+			MinLength:     3,
+			MinLengthSet:  true,
+			MaxLength:     20,
+			MaxLengthSet:  true,
+			Email:         false,
+			Hostname:      false,
+			Regex:         regexMap["^[a-zA-Z0-9_]+$"],
+			MinNumeric:    0,
+			MinNumericSet: false,
+			MaxNumeric:    0,
+			MaxNumericSet: false,
 		}).Validate(string(s.Username)); err != nil {
 			return errors.Wrap(err, "string")
 		}
@@ -89,13 +92,17 @@ func (s *UserRegistration) Validate() error {
 	}
 	if err := func() error {
 		if err := (validate.String{
-			MinLength:    8,
-			MinLengthSet: true,
-			MaxLength:    72,
-			MaxLengthSet: true,
-			Email:        false,
-			Hostname:     false,
-			Regex:        nil,
+			MinLength:     8,
+			MinLengthSet:  true,
+			MaxLength:     72,
+			MaxLengthSet:  true,
+			Email:         false,
+			Hostname:      false,
+			Regex:         nil,
+			MinNumeric:    0,
+			MinNumericSet: false,
+			MaxNumeric:    0,
+			MaxNumericSet: false,
 		}).Validate(string(s.Password)); err != nil {
 			return errors.Wrap(err, "string")
 		}
