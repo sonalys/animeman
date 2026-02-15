@@ -33,7 +33,7 @@ type (
 		SeasonID    collections.SeasonID
 		LastWatched collections.EpisodeID
 
-		Status WatchlistStatus
+		Status Status
 
 		CreatedAt time.Time
 		UpdatedAt time.Time
@@ -43,7 +43,7 @@ type (
 func (l Watchlist) NewEntry(
 	mediaID collections.MediaID,
 	seasonID collections.SeasonID,
-	status WatchlistStatus,
+	status Status,
 ) *WatchlistEntry {
 	now := time.Now()
 

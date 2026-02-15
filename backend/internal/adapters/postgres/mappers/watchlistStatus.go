@@ -5,30 +5,30 @@ import (
 	"github.com/sonalys/animeman/internal/domain/watchlists"
 )
 
-func NewWatchlistStatus(from sqlcgen.WatchlistStatus) watchlists.WatchlistStatus {
+func NewWatchlistStatus(from sqlcgen.WatchlistStatus) watchlists.Status {
 	switch from {
 	case sqlcgen.WatchlistStatusCompleted:
-		return watchlists.WatchlistStatusCompleted
+		return watchlists.StatusCompleted
 	case sqlcgen.WatchlistStatusDropped:
-		return watchlists.WatchlistStatusDropped
+		return watchlists.StatusDropped
 	case sqlcgen.WatchlistStatusPlanToWatch:
-		return watchlists.WatchlistStatusPlanToWatch
+		return watchlists.StatusPlanToWatch
 	case sqlcgen.WatchlistStatusWatching:
-		return watchlists.WatchlistStatusWatching
+		return watchlists.StatusWatching
 	default:
-		return watchlists.WatchlistStatusUnknown
+		return watchlists.StatusUnknown
 	}
 }
 
-func NewWatchlistStatusModel(from watchlists.WatchlistStatus) sqlcgen.WatchlistStatus {
+func NewWatchlistStatusModel(from watchlists.Status) sqlcgen.WatchlistStatus {
 	switch from {
-	case watchlists.WatchlistStatusCompleted:
+	case watchlists.StatusCompleted:
 		return sqlcgen.WatchlistStatusCompleted
-	case watchlists.WatchlistStatusDropped:
+	case watchlists.StatusDropped:
 		return sqlcgen.WatchlistStatusDropped
-	case watchlists.WatchlistStatusPlanToWatch:
+	case watchlists.StatusPlanToWatch:
 		return sqlcgen.WatchlistStatusPlanToWatch
-	case watchlists.WatchlistStatusWatching:
+	case watchlists.StatusWatching:
 		return sqlcgen.WatchlistStatusWatching
 	default:
 		return sqlcgen.WatchlistStatusUnknown

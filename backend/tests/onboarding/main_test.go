@@ -87,7 +87,7 @@ func Test_Onboarding(t *testing.T) {
 	entry := watchlist.NewEntry(
 		media.ID,
 		season.ID,
-		watchlists.WatchlistStatusWatching,
+		watchlists.StatusWatching,
 	)
 
 	entry.SetLastWatchedEpisode(episode.ID)

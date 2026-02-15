@@ -1,31 +1,31 @@
 package watchlists
 
-type WatchlistStatus uint
+type Status uint
 
 const (
-	WatchlistStatusUnknown WatchlistStatus = iota
-	WatchlistStatusWatching
-	WatchlistStatusCompleted
-	WatchlistStatusDropped
-	WatchlistStatusPlanToWatch
-	watchlistStatusSentinel
+	StatusUnknown Status = iota
+	StatusWatching
+	StatusCompleted
+	StatusDropped
+	StatusPlanToWatch
+	statusSentinel
 )
 
-func (s WatchlistStatus) String() string {
+func (s Status) String() string {
 	switch s {
-	case WatchlistStatusWatching:
+	case StatusWatching:
 		return "watching"
-	case WatchlistStatusCompleted:
+	case StatusCompleted:
 		return "completed"
-	case WatchlistStatusDropped:
+	case StatusDropped:
 		return "dropped"
-	case WatchlistStatusPlanToWatch:
+	case StatusPlanToWatch:
 		return "planToWatch"
 	default:
 		return "unknown"
 	}
 }
 
-func (s WatchlistStatus) IsValid() bool {
-	return s > WatchlistStatusUnknown && s < watchlistStatusSentinel
+func (s Status) IsValid() bool {
+	return s > StatusUnknown && s < statusSentinel
 }
