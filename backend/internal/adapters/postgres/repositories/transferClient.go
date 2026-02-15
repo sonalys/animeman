@@ -4,17 +4,13 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
-	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/errutils"
-	"google.golang.org/grpc/codes"
 )
 
 type transferClientRepository struct {
@@ -38,7 +34,7 @@ func (r transferClientRepository) Create(ctx context.Context, client *transfer.C
 	}
 
 	if _, err := queries.CreateIndexerClient(ctx, params); err != nil {
-		if err := handleWriteError(err, transferClientErrorHandler); err != nil {
+		if err := handleWriteError(err); err != nil {
 			return err
 		}
 
@@ -97,7 +93,7 @@ func (r transferClientRepository) Update(ctx context.Context, id transfer.Client
 		}
 
 		if err = queries.UpdateIndexerAddress(ctx, updateParams); err != nil {
-			if err := handleWriteError(err, transferClientErrorHandler); err != nil {
+			if err := handleWriteError(err); err != nil {
 				return err
 			}
 
@@ -110,7 +106,7 @@ func (r transferClientRepository) Update(ctx context.Context, id transfer.Client
 		}
 
 		if err = queries.UpdateCredentials(ctx, updateAuthParams); err != nil {
-			if err := handleWriteError(err, transferClientErrorHandler); err != nil {
+			if err := handleWriteError(err); err != nil {
 				return err
 			}
 
@@ -129,16 +125,4 @@ func (r transferClientRepository) Delete(ctx context.Context, id transfer.Client
 	}
 
 	return nil
-}
-
-func transferClientErrorHandler(err *pgconn.PgError) error {
-	switch err.Code {
-	case pgerrcode.UniqueViolation:
-		switch err.ConstraintName {
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
-		}
-	default:
-		return err
-	}
 }

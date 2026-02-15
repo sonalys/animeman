@@ -126,12 +126,13 @@ CREATE INDEX idx_media_titles_fuzzy ON media USING gin (titles_search_vector gin
 
 CREATE TYPE media_type AS ENUM ('unknown', 'tv', 'movie', 'ova', 'special');
 CREATE TYPE file_source AS ENUM ('unknown', 'tv', 'web', 'dvd', 'br');
+CREATE TYPE airing_status AS ENUM ('upcoming','airing','finished','unknown');
 
 CREATE TABLE seasons (
     id              UUID PRIMARY KEY,
     media_id        UUID NOT NULL REFERENCES media(id) ON DELETE CASCADE,
     number          INTEGER NOT NULL,
-    airing_status   TEXT,
+    airing_status   airing_status NOT NULL,
     metadata        JSONB NOT NULL DEFAULT '{}',
     UNIQUE(media_id, number)
 );

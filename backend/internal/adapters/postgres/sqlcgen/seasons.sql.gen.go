@@ -8,7 +8,7 @@ package sqlcgen
 import (
 	"context"
 
-	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/sonalys/animeman/internal/adapters/postgres/dtos"
 	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
@@ -25,8 +25,8 @@ type CreateSeasonParams struct {
 	ID           shared.ID
 	MediaID      shared.ID
 	Number       int32
-	AiringStatus pgtype.Text
-	Metadata     []byte
+	AiringStatus AiringStatus
+	Metadata     dtos.SeasonMetadata
 }
 
 func (q *Queries) CreateSeason(ctx context.Context, arg CreateSeasonParams) (Season, error) {
@@ -142,8 +142,8 @@ RETURNING id, media_id, number, airing_status, metadata
 
 type UpdateSeasonMetadataParams struct {
 	ID           shared.ID
-	AiringStatus pgtype.Text
-	Metadata     []byte
+	AiringStatus AiringStatus
+	Metadata     dtos.SeasonMetadata
 }
 
 func (q *Queries) UpdateSeasonMetadata(ctx context.Context, arg UpdateSeasonMetadataParams) (Season, error) {

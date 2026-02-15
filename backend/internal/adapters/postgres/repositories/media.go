@@ -3,17 +3,13 @@ package repositories
 import (
 	"context"
 
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
-	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/sliceutils"
-	"google.golang.org/grpc/codes"
 )
 
 type mediaRepository struct {
@@ -43,7 +39,7 @@ func (r *mediaRepository) Create(ctx context.Context, media *collections.Media) 
 	}
 
 	if _, err := queries.CreateMedia(ctx, params); err != nil {
-		if err := handleWriteError(err, mediaErrorHandler); err != nil {
+		if err := handleWriteError(err); err != nil {
 			return err
 		}
 
@@ -138,7 +134,7 @@ func (r *mediaRepository) Update(ctx context.Context, id collections.MediaID, up
 		}
 
 		if err := queries.UpdateMedia(ctx, params); err != nil {
-			if err := handleWriteError(err, mediaErrorHandler); err != nil {
+			if err := handleWriteError(err); err != nil {
 				return err
 			}
 
@@ -147,16 +143,4 @@ func (r *mediaRepository) Update(ctx context.Context, id collections.MediaID, up
 
 		return nil
 	})
-}
-
-func mediaErrorHandler(err *pgconn.PgError) error {
-	switch err.Code {
-	case pgerrcode.UniqueViolation:
-		switch err.ConstraintName {
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
-		}
-	default:
-		return err
-	}
 }

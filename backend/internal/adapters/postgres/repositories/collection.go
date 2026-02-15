@@ -3,16 +3,12 @@ package repositories
 import (
 	"context"
 
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
-	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/ports"
-	"google.golang.org/grpc/codes"
 )
 
 type collectionRepository struct {
@@ -39,7 +35,7 @@ func (r *collectionRepository) Create(ctx context.Context, collection *collectio
 	}
 
 	if _, err := queries.CreateCollection(ctx, params); err != nil {
-		if err := handleWriteError(err, collectionErrorHandler); err != nil {
+		if err := handleWriteError(err); err != nil {
 			return err
 		}
 
@@ -115,7 +111,7 @@ func (r *collectionRepository) Update(ctx context.Context, id collections.Collec
 		}
 
 		if _, err = queries.UpdateCollection(ctx, updateParams); err != nil {
-			if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+			if err := handleWriteError(err); err != nil {
 				return err
 			}
 
@@ -124,16 +120,4 @@ func (r *collectionRepository) Update(ctx context.Context, id collections.Collec
 
 		return nil
 	})
-}
-
-func collectionErrorHandler(err *pgconn.PgError) error {
-	switch err.Code {
-	case pgerrcode.UniqueViolation:
-		switch err.ConstraintName {
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
-		}
-	default:
-		return err
-	}
 }

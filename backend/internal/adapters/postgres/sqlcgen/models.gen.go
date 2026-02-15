@@ -13,6 +13,50 @@ import (
 	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
+type AiringStatus string
+
+const (
+	AiringStatusUpcoming AiringStatus = "upcoming"
+	AiringStatusAiring   AiringStatus = "airing"
+	AiringStatusFinished AiringStatus = "finished"
+	AiringStatusUnknown  AiringStatus = "unknown"
+)
+
+func (e *AiringStatus) Scan(src interface{}) error {
+	switch s := src.(type) {
+	case []byte:
+		*e = AiringStatus(s)
+	case string:
+		*e = AiringStatus(s)
+	default:
+		return fmt.Errorf("unsupported scan type for AiringStatus: %T", src)
+	}
+	return nil
+}
+
+type NullAiringStatus struct {
+	AiringStatus AiringStatus
+	Valid        bool // Valid is true if AiringStatus is not NULL
+}
+
+// Scan implements the Scanner interface.
+func (ns *NullAiringStatus) Scan(value interface{}) error {
+	if value == nil {
+		ns.AiringStatus, ns.Valid = "", false
+		return nil
+	}
+	ns.Valid = true
+	return ns.AiringStatus.Scan(value)
+}
+
+// Value implements the driver Valuer interface.
+func (ns NullAiringStatus) Value() (driver.Value, error) {
+	if !ns.Valid {
+		return nil, nil
+	}
+	return string(ns.AiringStatus), nil
+}
+
 type AudioCodec string
 
 const (
@@ -582,8 +626,8 @@ type Season struct {
 	ID           shared.ID
 	MediaID      shared.ID
 	Number       int32
-	AiringStatus pgtype.Text
-	Metadata     []byte
+	AiringStatus AiringStatus
+	Metadata     dtos.SeasonMetadata
 }
 
 type TransferClient struct {

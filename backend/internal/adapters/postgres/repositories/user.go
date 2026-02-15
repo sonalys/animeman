@@ -104,10 +104,8 @@ func userErrorHandler(err *pgconn.PgError) error {
 		switch err.ConstraintName {
 		case "users_pkey":
 			return apperr.New(users.ErrUniqueUsername, codes.AlreadyExists)
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
 		}
-	default:
-		return err
 	}
+
+	return nil
 }

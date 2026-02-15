@@ -18,8 +18,6 @@ type (
 		AiringStatus AiringStatus
 
 		SeasonMetadata SeasonMetadata
-
-		Episodes []*Episode
 	}
 )
 
@@ -38,7 +36,6 @@ func (s *Season) NewEpisode(
 		Titles:     titles,
 		AiringDate: airingDate,
 	}
-	s.Episodes = append(s.Episodes, episode)
 
 	return episode
 }

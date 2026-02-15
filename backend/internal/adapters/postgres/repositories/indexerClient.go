@@ -4,17 +4,13 @@ import (
 	"context"
 	"net/url"
 
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
-	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/errutils"
-	"google.golang.org/grpc/codes"
 )
 
 type indexerClientRepository struct {
@@ -38,7 +34,7 @@ func (r indexerClientRepository) Create(ctx context.Context, client *indexing.In
 	}
 
 	if _, err := queries.CreateIndexerClient(ctx, params); err != nil {
-		if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+		if err := handleWriteError(err); err != nil {
 			return err
 		}
 
@@ -97,7 +93,7 @@ func (r indexerClientRepository) Update(ctx context.Context, id indexing.Indexer
 		}
 
 		if err = queries.UpdateIndexerAddress(ctx, updateParams); err != nil {
-			if err := handleWriteError(err, indexerClientErrorHandler); err != nil {
+			if err := handleWriteError(err); err != nil {
 				return err
 			}
 
@@ -110,7 +106,7 @@ func (r indexerClientRepository) Update(ctx context.Context, id indexing.Indexer
 		}
 
 		if err = queries.UpdateCredentials(ctx, updateAuthParams); err != nil {
-			if err := handleWriteError(err, transferClientErrorHandler); err != nil {
+			if err := handleWriteError(err); err != nil {
 				return err
 			}
 
@@ -129,16 +125,4 @@ func (r indexerClientRepository) Delete(ctx context.Context, id indexing.Indexer
 	}
 
 	return nil
-}
-
-func indexerClientErrorHandler(err *pgconn.PgError) error {
-	switch err.Code {
-	case pgerrcode.UniqueViolation:
-		switch err.ConstraintName {
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
-		}
-	default:
-		return err
-	}
 }

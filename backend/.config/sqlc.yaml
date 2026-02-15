@@ -17,6 +17,8 @@ sql:
         overrides:
           - column: "media.titles"
             go_type: github.com/sonalys/animeman/internal/adapters/postgres/dtos.Titles
+          - column: "seasons.metadata"
+            go_type: github.com/sonalys/animeman/internal/adapters/postgres/dtos.SeasonMetadata
           - db_type: "uuid"
             go_type:
               package: shared

@@ -4,19 +4,30 @@ import (
 	"database/sql"
 	"errors"
 
+	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"google.golang.org/grpc/codes"
 )
 
-func handleWriteError(err error, handler func(err *pgconn.PgError) error) error {
+func handleWriteError(err error, handlers ...func(err *pgconn.PgError) error) error {
 	if pgErr, ok := errors.AsType[*pgconn.PgError](err); ok {
-		if err := handler(pgErr); err != nil {
-			return err
+		for _, handler := range handlers {
+			if err := handler(pgErr); err != nil {
+				return err
+			}
+		}
+
+		switch pgErr.Code {
+		case pgerrcode.UniqueViolation:
+			switch pgErr.ConstraintName {
+			default:
+				return apperr.New(err, codes.FailedPrecondition)
+			}
 		}
 	}
 
-	return nil
+	return err
 }
 
 func handleReadError(err error) error {

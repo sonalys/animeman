@@ -59,4 +59,11 @@ type (
 		Update(ctx context.Context, id collections.MediaID, updateHandler UpdateHandler[collections.Media]) error
 		Delete(ctx context.Context, id collections.MediaID) error
 	}
+
+	SeasonRepository interface {
+		Create(ctx context.Context, season *collections.Season) error
+		ListByMedia(ctx context.Context, id collections.MediaID) ([]collections.Season, error)
+		Update(ctx context.Context, id collections.SeasonID, updateHandler UpdateHandler[collections.Season]) error
+		Delete(ctx context.Context, id collections.SeasonID) error
+	}
 )

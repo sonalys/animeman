@@ -3,16 +3,12 @@ package repositories
 import (
 	"context"
 
-	"github.com/jackc/pgerrcode"
-	"github.com/jackc/pgx/v5/pgconn"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
-	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/sliceutils"
-	"google.golang.org/grpc/codes"
 )
 
 type qualityProfileRepository struct {
@@ -38,7 +34,7 @@ func (r *qualityProfileRepository) Create(ctx context.Context, profile *collecti
 	}
 
 	if _, err := queries.CreateQualityProfile(ctx, params); err != nil {
-		if err := handleWriteError(err, qualityProfileErrorHandler); err != nil {
+		if err := handleWriteError(err); err != nil {
 			return err
 		}
 
@@ -114,21 +110,9 @@ func (r *qualityProfileRepository) Update(ctx context.Context, id collections.Qu
 		}
 
 		if _, err := queries.UpdateQualityProfile(ctx, params); err != nil {
-			return err
+			return handleWriteError(err)
 		}
 
 		return nil
 	})
-}
-
-func qualityProfileErrorHandler(err *pgconn.PgError) error {
-	switch err.Code {
-	case pgerrcode.UniqueViolation:
-		switch err.ConstraintName {
-		default:
-			return apperr.New(err, codes.FailedPrecondition)
-		}
-	default:
-		return err
-	}
 }
