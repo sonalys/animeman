@@ -7,22 +7,24 @@ import (
 )
 
 func Logger(req middleware.Request, next middleware.Next) (resp middleware.Response, err error) {
-	ctx := req.Context
+	logger := log.
+		With().
+		Str("operationId", req.OperationID).
+		Logger()
 
-	logger := log.Info().
-		Ctx(ctx).
-		Str("operationId", req.OperationID)
-
-	logger.Msg("request received")
+	logger.Info().Ctx(req.Context).Msg("request received")
 
 	resp, err = next(req)
 	if err == nil {
 		if code := apperr.Code(err); code != 0 {
-			logger = logger.Stringer("errorCode", code)
+			logger = logger.
+				With().
+				Stringer("errorCode", code).
+				Logger()
 		}
 	}
 
-	logger.Msg("request responded")
+	logger.Info().Ctx(req.Context).Msg("request responded")
 
 	return
 }

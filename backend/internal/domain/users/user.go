@@ -1,6 +1,7 @@
 package users
 
 import (
+	"crypto/subtle"
 	"fmt"
 	"net/url"
 	"slices"
@@ -33,7 +34,7 @@ func NewUser(
 		return nil, apperr.New(ErrInvalidPasswordLength, codes.InvalidArgument)
 	}
 
-	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+	hashedPassword, err := hashPassword(password)
 	if err != nil {
 		return nil, fmt.Errorf("hashing user password: %w", err)
 	}
@@ -43,6 +44,19 @@ func NewUser(
 		Username:     username,
 		PasswordHash: hashedPassword,
 	}, nil
+}
+
+func (u User) Login(password []byte) error {
+	hashedPassword, err := hashPassword(password)
+	if err != nil {
+		return fmt.Errorf("hashing user password: %w", err)
+	}
+
+	if subtle.ConstantTimeCompare(u.PasswordHash, hashedPassword) != 0 {
+		return ErrInvalidPassword
+	}
+
+	return nil
 }
 
 func (u User) NewIndexerClient(
@@ -103,4 +117,13 @@ func (u User) NewCollection(
 		Monitored: monitored,
 		CreatedAt: time.Now(),
 	}
+}
+
+func hashPassword(password []byte) ([]byte, error) {
+	hashedPassword, err := bcrypt.GenerateFromPassword(password, bcrypt.DefaultCost)
+	if err != nil {
+		return nil, fmt.Errorf("hashing user password: %w", err)
+	}
+
+	return hashedPassword, nil
 }

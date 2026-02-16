@@ -3,6 +3,7 @@ package apperr
 import (
 	"errors"
 	"fmt"
+	"strings"
 
 	"google.golang.org/grpc/codes"
 )
@@ -19,6 +20,8 @@ type (
 		PublicDetails string
 		Cause         error
 	}
+
+	StringError string
 )
 
 func New(cause error, code codes.Code, msgAndArgs ...any) Error {
@@ -63,7 +66,15 @@ func (e Error) Details() string {
 }
 
 func (e Error) Error() string {
-	return fmt.Sprintf("[%s] %s: %s", e.StatusCode, e.Message, e.Cause)
+	var b strings.Builder
+
+	fmt.Fprintf(&b, "[%s] %s", e.Code(), e.Message)
+
+	if e.Cause != nil {
+		fmt.Fprintf(&b, " (%s)", e.Cause)
+	}
+
+	return b.String()
 }
 
 func (e Error) Unwrap() error {
@@ -72,4 +83,8 @@ func (e Error) Unwrap() error {
 
 func (e Error) Code() codes.Code {
 	return e.StatusCode
+}
+
+func (e StringError) Error() string {
+	return string(e)
 }

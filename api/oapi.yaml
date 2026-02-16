@@ -29,6 +29,7 @@ paths:
           description: User created successfully.
           headers:
             Set-Cookie:
+              required: true
               description: Sets the session cookie
               schema:
                 type: string
@@ -37,6 +38,8 @@ paths:
             application/json:
               schema:
                 type: object
+                required:
+                  - id
                 properties:
                   id:
                     type: string
@@ -64,15 +67,48 @@ paths:
                 type: object
                 required:
                   - userID
-                  - email
                 properties:
-                  email:
-                    type: string
-                    format: email
-                    description: User's email address
-                    example: "john.doe@example.com"
                   userID:
                     type: string
+                    format: uuid
+
+  /authentication/login:
+    x-ogen-operation-group: Users
+    post:
+      operationId: AuthenticationLogin
+      description: Authenticate as the specified identity
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - username
+                - password
+              properties:
+                username:
+                  type: string
+                  description: User's username address
+                  example: "john.doe@example.com"
+                password:
+                  type: string
+                  format: password
+                  description: User's password
+                  example: "P@ssw0rd"
+                  minLength: 8
+                  maxLength: 72
+      responses:
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+        "200":
+          description: Successfully authenticated
+          headers:
+            Set-Cookie:
+              required: true
+              schema:
+                type: string
+                example: SESSION_ID=abcde12345; Path=/; HttpOnly
 
 components:
   securitySchemes:
@@ -87,9 +123,6 @@ components:
         application/json:
           schema:
             type: object
-            required:
-              - traceID
-              - details
             properties:
               traceID:
                 type: string
@@ -131,11 +164,9 @@ components:
           maxLength: 20
           pattern: "^[a-zA-Z0-9_]+$"
           example: "jdoe_secure"
-          description: "Must be alphanumeric and 3-20 characters long."
         password:
           type: string
           format: password
           minLength: 8
           maxLength: 72
           example: "P@ssw0rd123!"
-          description: "Must be at least 8 characters long."

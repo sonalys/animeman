@@ -21,12 +21,14 @@ services:
 
   # This is your Go backend
   api:
+    container_name: api
     build: 
       context: backend
       dockerfile: ./deployment/Dockerfile
-      args:
-        - VERSION=dev
-    container_name: api
+    develop:
+      watch:
+        - action: rebuild
+          path: ./backend
     depends_on:
       - postgres
       - migrate
@@ -42,7 +44,6 @@ services:
     image: migrate/migrate
     volumes:
       - ./backend/internal/adapters/postgres/migrations:/migrations:z
-    # Connects to 'db' service using internal Docker network
     command: -path=/migrations/ -database "postgres://animeman:animeman@postgres:5432/animeman?sslmode=disable" up
     depends_on:
       postgres:

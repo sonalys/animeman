@@ -38,7 +38,7 @@ func (h OTelHook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
 	spanContext := trace.SpanContextFromContext(ctx)
 
 	if spanContext.IsValid() {
-		e.Str("trace_id", spanContext.TraceID().String())
-		e.Str("span_id", spanContext.SpanID().String())
+		e.Str("traceID", spanContext.TraceID().String())
+		e.Str("spanID", spanContext.SpanID().String())
 	}
 }

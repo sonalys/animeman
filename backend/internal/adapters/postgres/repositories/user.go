@@ -68,6 +68,19 @@ func (r userRepository) Get(ctx context.Context, id shared.UserID) (*users.User,
 	return user, nil
 }
 
+func (r *userRepository) GetByUsername(ctx context.Context, username string) (*users.User, error) {
+	queries := sqlcgen.New(r.conn)
+
+	model, err := queries.GetUserByUsername(ctx, username)
+	if err != nil {
+		return nil, handleReadError(err)
+	}
+
+	user := mappers.NewUser(&model)
+
+	return user, nil
+}
+
 func (r userRepository) Update(ctx context.Context, id shared.UserID, update func(user *users.User) error) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
 		model, err := queries.GetUserById(ctx, id)

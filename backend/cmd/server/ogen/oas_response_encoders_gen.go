@@ -14,15 +14,30 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func encodeAuthenticationWhoAmIResponse(response *AuthenticationWhoAmIOK, w http.ResponseWriter, span trace.Span) error {
-	if err := func() error {
-		if err := response.Validate(); err != nil {
-			return err
+func encodeAuthenticationLoginResponse(response *AuthenticationLoginOK, w http.ResponseWriter, span trace.Span) error {
+	// Encoding response headers.
+	{
+		h := uri.NewHeaderEncoder(w.Header())
+		// Encode "Set-Cookie" header.
+		{
+			cfg := uri.HeaderParameterEncodingConfig{
+				Name:    "Set-Cookie",
+				Explode: false,
+			}
+			if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
+				return e.EncodeValue(conv.StringToString(response.SetCookie))
+			}); err != nil {
+				return errors.Wrap(err, "encode Set-Cookie header")
+			}
 		}
-		return nil
-	}(); err != nil {
-		return errors.Wrap(err, "validate")
 	}
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	return nil
+}
+
+func encodeAuthenticationWhoAmIResponse(response *AuthenticationWhoAmIOK, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 	span.SetStatus(codes.Ok, http.StatusText(200))
@@ -50,10 +65,7 @@ func encodeRegisterUserResponse(response RegisterUserRes, w http.ResponseWriter,
 					Explode: false,
 				}
 				if err := h.EncodeParam(cfg, func(e uri.Encoder) error {
-					if val, ok := response.SetCookie.Get(); ok {
-						return e.EncodeValue(conv.StringToString(val))
-					}
-					return nil
+					return e.EncodeValue(conv.StringToString(response.SetCookie))
 				}); err != nil {
 					return errors.Wrap(err, "encode Set-Cookie header")
 				}

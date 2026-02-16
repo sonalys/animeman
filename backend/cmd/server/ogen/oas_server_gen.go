@@ -25,6 +25,12 @@ type Handler interface {
 //
 // x-ogen-operation-group: Users
 type UsersHandler interface {
+	// AuthenticationLogin implements AuthenticationLogin operation.
+	//
+	// Authenticate as the specified identity.
+	//
+	// POST /authentication/login
+	AuthenticationLogin(ctx context.Context, req *AuthenticationLoginReq) (*AuthenticationLoginOK, error)
 	// AuthenticationWhoAmI implements AuthenticationWhoAmI operation.
 	//
 	// Returns current information on the authenticated entity.

@@ -60,24 +60,58 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "authentication/whoami"
+			case 'a': // Prefix: "authentication/"
 
-				if l := len("authentication/whoami"); len(elem) >= l && elem[0:l] == "authentication/whoami" {
+				if l := len("authentication/"); len(elem) >= l && elem[0:l] == "authentication/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
-					switch r.Method {
-					case "GET":
-						s.handleAuthenticationWhoAmIRequest([0]string{}, elemIsEscaped, w, r)
-					default:
-						s.notAllowed(w, r, "GET")
+					break
+				}
+				switch elem[0] {
+				case 'l': // Prefix: "login"
+
+					if l := len("login"); len(elem) >= l && elem[0:l] == "login" {
+						elem = elem[l:]
+					} else {
+						break
 					}
 
-					return
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleAuthenticationLoginRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "POST")
+						}
+
+						return
+					}
+
+				case 'w': // Prefix: "whoami"
+
+					if l := len("whoami"); len(elem) >= l && elem[0:l] == "whoami" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "GET":
+							s.handleAuthenticationWhoAmIRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, "GET")
+						}
+
+						return
+					}
+
 				}
 
 			case 'r': // Prefix: "register"
@@ -200,29 +234,68 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 				break
 			}
 			switch elem[0] {
-			case 'a': // Prefix: "authentication/whoami"
+			case 'a': // Prefix: "authentication/"
 
-				if l := len("authentication/whoami"); len(elem) >= l && elem[0:l] == "authentication/whoami" {
+				if l := len("authentication/"); len(elem) >= l && elem[0:l] == "authentication/" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
-					switch method {
-					case "GET":
-						r.name = AuthenticationWhoAmIOperation
-						r.summary = ""
-						r.operationID = "AuthenticationWhoAmI"
-						r.operationGroup = "Users"
-						r.pathPattern = "/authentication/whoami"
-						r.args = args
-						r.count = 0
-						return r, true
-					default:
-						return
+					break
+				}
+				switch elem[0] {
+				case 'l': // Prefix: "login"
+
+					if l := len("login"); len(elem) >= l && elem[0:l] == "login" {
+						elem = elem[l:]
+					} else {
+						break
 					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "POST":
+							r.name = AuthenticationLoginOperation
+							r.summary = ""
+							r.operationID = "AuthenticationLogin"
+							r.operationGroup = "Users"
+							r.pathPattern = "/authentication/login"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
+				case 'w': // Prefix: "whoami"
+
+					if l := len("whoami"); len(elem) >= l && elem[0:l] == "whoami" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "GET":
+							r.name = AuthenticationWhoAmIOperation
+							r.summary = ""
+							r.operationID = "AuthenticationWhoAmI"
+							r.operationGroup = "Users"
+							r.pathPattern = "/authentication/whoami"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
 				}
 
 			case 'r': // Prefix: "register"

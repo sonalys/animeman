@@ -9,7 +9,7 @@
             "env": {
                 "CONFIG_PATH": "${workspaceFolder}/backend/.config/config.yaml"
             },
-            "program": "${workspaceFolder}/backend/cmd/server/main.go"
+            "program": "${workspaceFolder}/backend/cmd/server"
         },
     ]
 }

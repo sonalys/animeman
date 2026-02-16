@@ -24,6 +24,7 @@ type (
 	UserRepository interface {
 		Create(ctx context.Context, user *users.User) error
 		Get(ctx context.Context, id shared.UserID) (*users.User, error)
+		GetByUsername(ctx context.Context, username string) (*users.User, error)
 		Update(ctx context.Context, id shared.UserID, updateHandler UpdateHandler[users.User]) error
 		Delete(ctx context.Context, id shared.UserID) error
 	}

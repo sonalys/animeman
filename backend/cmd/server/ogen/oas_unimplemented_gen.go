@@ -13,6 +13,15 @@ type UnimplementedHandler struct{}
 
 var _ Handler = UnimplementedHandler{}
 
+// AuthenticationLogin implements AuthenticationLogin operation.
+//
+// Authenticate as the specified identity.
+//
+// POST /authentication/login
+func (UnimplementedHandler) AuthenticationLogin(ctx context.Context, req *AuthenticationLoginReq) (r *AuthenticationLoginOK, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // AuthenticationWhoAmI implements AuthenticationWhoAmI operation.
 //
 // Returns current information on the authenticated entity.

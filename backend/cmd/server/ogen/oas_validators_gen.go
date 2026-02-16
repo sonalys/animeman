@@ -7,7 +7,7 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func (s *AuthenticationWhoAmIOK) Validate() error {
+func (s *AuthenticationLoginReq) Validate() error {
 	if s == nil {
 		return validate.ErrNilPointer
 	}
@@ -15,24 +15,24 @@ func (s *AuthenticationWhoAmIOK) Validate() error {
 	var failures []validate.FieldError
 	if err := func() error {
 		if err := (validate.String{
-			MinLength:     0,
-			MinLengthSet:  false,
-			MaxLength:     0,
-			MaxLengthSet:  false,
-			Email:         true,
+			MinLength:     8,
+			MinLengthSet:  true,
+			MaxLength:     72,
+			MaxLengthSet:  true,
+			Email:         false,
 			Hostname:      false,
 			Regex:         nil,
 			MinNumeric:    0,
 			MinNumericSet: false,
 			MaxNumeric:    0,
 			MaxNumericSet: false,
-		}).Validate(string(s.Email)); err != nil {
+		}).Validate(string(s.Password)); err != nil {
 			return errors.Wrap(err, "string")
 		}
 		return nil
 	}(); err != nil {
 		failures = append(failures, validate.FieldError{
-			Name:  "email",
+			Name:  "password",
 			Error: err,
 		})
 	}

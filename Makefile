@@ -1,6 +1,6 @@
 .PHONY: up
 up: ## Start the infrastructure in the background
-	docker compose up
+	docker compose up --build
 
 .PHONY: down
 down: ## Stop all containers

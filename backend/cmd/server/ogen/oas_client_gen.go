@@ -40,6 +40,12 @@ type Invoker interface {
 //
 // x-gen-operation-group: Users
 type UsersInvoker interface {
+	// AuthenticationLogin invokes AuthenticationLogin operation.
+	//
+	// Authenticate as the specified identity.
+	//
+	// POST /authentication/login
+	AuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (*AuthenticationLoginOK, error)
 	// AuthenticationWhoAmI invokes AuthenticationWhoAmI operation.
 	//
 	// Returns current information on the authenticated entity.
@@ -95,6 +101,91 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 		return c.serverURL
 	}
 	return u
+}
+
+// AuthenticationLogin invokes AuthenticationLogin operation.
+//
+// Authenticate as the specified identity.
+//
+// POST /authentication/login
+func (c *Client) AuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (*AuthenticationLoginOK, error) {
+	res, err := c.sendAuthenticationLogin(ctx, request)
+	return res, err
+}
+
+func (c *Client) sendAuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (res *AuthenticationLoginOK, err error) {
+	// Validate request before sending.
+	if err := func() error {
+		if err := request.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return res, errors.Wrap(err, "validate")
+	}
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("AuthenticationLogin"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.URLTemplateKey.String("/authentication/login"),
+	}
+	otelAttrs = append(otelAttrs, c.cfg.Attributes...)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		elapsedDuration := time.Since(startTime)
+		c.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), metric.WithAttributes(otelAttrs...))
+	}()
+
+	// Increment request counter.
+	c.requests.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+
+	// Start a span for this request.
+	ctx, span := c.cfg.Tracer.Start(ctx, AuthenticationLoginOperation,
+		trace.WithAttributes(otelAttrs...),
+		clientSpanKind,
+	)
+	// Track stage for error reporting.
+	var stage string
+	defer func() {
+		if err != nil {
+			span.RecordError(err)
+			span.SetStatus(codes.Error, stage)
+			c.errors.Add(ctx, 1, metric.WithAttributes(otelAttrs...))
+		}
+		span.End()
+	}()
+
+	stage = "BuildURL"
+	u := uri.Clone(c.requestURL(ctx))
+	var pathParts [1]string
+	pathParts[0] = "/authentication/login"
+	uri.AddPathParts(u, pathParts[:]...)
+
+	stage = "EncodeRequest"
+	r, err := ht.NewRequest(ctx, "POST", u)
+	if err != nil {
+		return res, errors.Wrap(err, "create request")
+	}
+	if err := encodeAuthenticationLoginRequest(request, r); err != nil {
+		return res, errors.Wrap(err, "encode request")
+	}
+
+	stage = "SendRequest"
+	resp, err := c.cfg.Client.Do(r)
+	if err != nil {
+		return res, errors.Wrap(err, "do request")
+	}
+	defer resp.Body.Close()
+
+	stage = "DecodeResponse"
+	result, err := decodeAuthenticationLoginResponse(resp)
+	if err != nil {
+		return res, errors.Wrap(err, "decode response")
+	}
+
+	return result, nil
 }
 
 // AuthenticationWhoAmI invokes AuthenticationWhoAmI operation.

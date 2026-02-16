@@ -12,29 +12,59 @@ func (s *ErrorResponseStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
 }
 
-type AuthenticationWhoAmIOK struct {
-	// User's email address.
-	Email  string `json:"email"`
-	UserID string `json:"userID"`
+// AuthenticationLoginOK is response for AuthenticationLogin operation.
+type AuthenticationLoginOK struct {
+	SetCookie string
 }
 
-// GetEmail returns the value of Email.
-func (s *AuthenticationWhoAmIOK) GetEmail() string {
-	return s.Email
+// GetSetCookie returns the value of SetCookie.
+func (s *AuthenticationLoginOK) GetSetCookie() string {
+	return s.SetCookie
+}
+
+// SetSetCookie sets the value of SetCookie.
+func (s *AuthenticationLoginOK) SetSetCookie(val string) {
+	s.SetCookie = val
+}
+
+type AuthenticationLoginReq struct {
+	// User's username address.
+	Username string `json:"username"`
+	// User's password.
+	Password string `json:"password"`
+}
+
+// GetUsername returns the value of Username.
+func (s *AuthenticationLoginReq) GetUsername() string {
+	return s.Username
+}
+
+// GetPassword returns the value of Password.
+func (s *AuthenticationLoginReq) GetPassword() string {
+	return s.Password
+}
+
+// SetUsername sets the value of Username.
+func (s *AuthenticationLoginReq) SetUsername(val string) {
+	s.Username = val
+}
+
+// SetPassword sets the value of Password.
+func (s *AuthenticationLoginReq) SetPassword(val string) {
+	s.Password = val
+}
+
+type AuthenticationWhoAmIOK struct {
+	UserID uuid.UUID `json:"userID"`
 }
 
 // GetUserID returns the value of UserID.
-func (s *AuthenticationWhoAmIOK) GetUserID() string {
+func (s *AuthenticationWhoAmIOK) GetUserID() uuid.UUID {
 	return s.UserID
 }
 
-// SetEmail sets the value of Email.
-func (s *AuthenticationWhoAmIOK) SetEmail(val string) {
-	s.Email = val
-}
-
 // SetUserID sets the value of UserID.
-func (s *AuthenticationWhoAmIOK) SetUserID(val string) {
+func (s *AuthenticationWhoAmIOK) SetUserID(val uuid.UUID) {
 	s.UserID = val
 }
 
@@ -65,18 +95,18 @@ func (s *CookieAuth) SetRoles(val []string) {
 
 type ErrorResponse struct {
 	// Unique identifier for the error instance.
-	TraceID     uuid.UUID    `json:"traceID"`
-	Details     string       `json:"details"`
+	TraceID     OptUUID      `json:"traceID"`
+	Details     OptString    `json:"details"`
 	FieldErrors []FieldError `json:"fieldErrors"`
 }
 
 // GetTraceID returns the value of TraceID.
-func (s *ErrorResponse) GetTraceID() uuid.UUID {
+func (s *ErrorResponse) GetTraceID() OptUUID {
 	return s.TraceID
 }
 
 // GetDetails returns the value of Details.
-func (s *ErrorResponse) GetDetails() string {
+func (s *ErrorResponse) GetDetails() OptString {
 	return s.Details
 }
 
@@ -86,12 +116,12 @@ func (s *ErrorResponse) GetFieldErrors() []FieldError {
 }
 
 // SetTraceID sets the value of TraceID.
-func (s *ErrorResponse) SetTraceID(val uuid.UUID) {
+func (s *ErrorResponse) SetTraceID(val OptUUID) {
 	s.TraceID = val
 }
 
 // SetDetails sets the value of Details.
-func (s *ErrorResponse) SetDetails(val string) {
+func (s *ErrorResponse) SetDetails(val OptString) {
 	s.Details = val
 }
 
@@ -267,27 +297,27 @@ type RegisterUserConflict struct{}
 func (*RegisterUserConflict) registerUserRes() {}
 
 type RegisterUserCreated struct {
-	ID OptUUID `json:"id"`
+	ID uuid.UUID `json:"id"`
 }
 
 // GetID returns the value of ID.
-func (s *RegisterUserCreated) GetID() OptUUID {
+func (s *RegisterUserCreated) GetID() uuid.UUID {
 	return s.ID
 }
 
 // SetID sets the value of ID.
-func (s *RegisterUserCreated) SetID(val OptUUID) {
+func (s *RegisterUserCreated) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
 // RegisterUserCreatedHeaders wraps RegisterUserCreated with response headers.
 type RegisterUserCreatedHeaders struct {
-	SetCookie OptString
+	SetCookie string
 	Response  RegisterUserCreated
 }
 
 // GetSetCookie returns the value of SetCookie.
-func (s *RegisterUserCreatedHeaders) GetSetCookie() OptString {
+func (s *RegisterUserCreatedHeaders) GetSetCookie() string {
 	return s.SetCookie
 }
 
@@ -297,7 +327,7 @@ func (s *RegisterUserCreatedHeaders) GetResponse() RegisterUserCreated {
 }
 
 // SetSetCookie sets the value of SetCookie.
-func (s *RegisterUserCreatedHeaders) SetSetCookie(val OptString) {
+func (s *RegisterUserCreatedHeaders) SetSetCookie(val string) {
 	s.SetCookie = val
 }
 
@@ -310,9 +340,7 @@ func (*RegisterUserCreatedHeaders) registerUserRes() {}
 
 // Ref: #/components/schemas/UserRegistration
 type UserRegistration struct {
-	// Must be alphanumeric and 3-20 characters long.
 	Username string `json:"username"`
-	// Must be at least 8 characters long.
 	Password string `json:"password"`
 }
 

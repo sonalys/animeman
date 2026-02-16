@@ -187,7 +187,9 @@ func ReadConfig(path string) (Config, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		GenerateBoilerplateConfig()
-		log.Fatal().Msg("file config.yaml not detected, please open the created file and configure it correctly")
+		log.Fatal().
+			Str("path", path).
+			Msg("file config.yaml not detected, please open the created file and configure it correctly")
 	}
 	var config Config
 	if err = yaml.NewDecoder(file).Decode(&config); err != nil {
