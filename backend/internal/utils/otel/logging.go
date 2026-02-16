@@ -34,8 +34,7 @@ func newLoggerProvider(ctx context.Context, endpoint string, res *resource.Resou
 type OTelHook struct{}
 
 func (h OTelHook) Run(e *zerolog.Event, level zerolog.Level, msg string) {
-	ctx := e.GetCtx()
-	spanContext := trace.SpanContextFromContext(ctx)
+	spanContext := trace.SpanContextFromContext(e.GetCtx())
 
 	if spanContext.IsValid() {
 		e.Str("traceID", spanContext.TraceID().String())

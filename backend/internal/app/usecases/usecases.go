@@ -43,8 +43,6 @@ func (u usecases) RegisterUser(ctx context.Context, username string, password st
 	ctx, span := otel.Tracer.Start(ctx, "RegisterUser")
 	defer span.End()
 
-	logger := log.Ctx(ctx)
-
 	newUser, err := users.NewUser(username, []byte(password))
 	if err != nil {
 		logError(ctx, err, "Could not initialize new user")
@@ -62,7 +60,9 @@ func (u usecases) RegisterUser(ctx context.Context, username string, password st
 		return nil, err
 	}
 
-	logger.Info().Msg("User registered")
+	log.Info().
+		Ctx(ctx).
+		Msg("User registered")
 
 	return newUser, nil
 }
@@ -90,8 +90,8 @@ func logError(ctx context.Context, err error, mask string, args ...any) {
 		}
 
 		log.
-			Ctx(ctx).
 			WithLevel(level).
+			Ctx(ctx).
 			Stringer("code", appErr.Code()).
 			Str("message", appErr.Message).
 			Err(appErr.Cause).
@@ -100,8 +100,8 @@ func logError(ctx context.Context, err error, mask string, args ...any) {
 	}
 
 	log.
-		Ctx(ctx).
 		WithLevel(level).
+		Ctx(ctx).
 		Err(err).
 		Msgf(mask, args...)
 }

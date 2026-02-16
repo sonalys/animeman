@@ -30,10 +30,9 @@ var (
 
 func init() {
 	log.Logger = log.Output(zerolog.ConsoleWriter{
-		Out: os.Stdout,
-	}).Hook(
-		otel.OTelHook{},
-	)
+		Out:        os.Stdout,
+		TimeFormat: time.DateTime,
+	}).Hook(otel.OTelHook{})
 
 	zerolog.DefaultContextLogger = &log.Logger
 }

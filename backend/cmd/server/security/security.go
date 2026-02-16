@@ -11,14 +11,12 @@ import (
 )
 
 type (
-	contextKey string
+	ctxKey struct{}
 
 	SecurityHandler struct {
 		client *jwt.Client
 	}
 )
-
-const identityContextKey = contextKey("identity-key")
 
 var errUnauthenticated apperr.Error = apperr.New(nil, codes.Unauthenticated, "unauthenticated")
 
@@ -29,7 +27,7 @@ func NewHandler(c *jwt.Client) *SecurityHandler {
 }
 
 func GetIdentity(ctx context.Context) (*shared.UserID, error) {
-	identity, ok := ctx.Value(identityContextKey).(*shared.UserID)
+	identity, ok := ctx.Value(ctxKey{}).(*shared.UserID)
 	if !ok {
 		return nil, errUnauthenticated
 	}
@@ -43,5 +41,5 @@ func (h *SecurityHandler) HandleCookieAuth(ctx context.Context, operationName og
 		return nil, err
 	}
 
-	return context.WithValue(ctx, identityContextKey, &identity.UserID), nil
+	return context.WithValue(ctx, ctxKey{}, &identity.UserID), nil
 }

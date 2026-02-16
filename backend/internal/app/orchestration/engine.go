@@ -69,49 +69,56 @@ func (e *Engine) execute(ctx context.Context, task *orchestration.Task) {
 		Hook(newLoggerOrchestrationHook(e.store, task)).
 		WithContext(ctx)
 
-	logger := log.Ctx(ctx)
-
-	logger.Info().Msg("Starting task execution")
+	log.Info().
+		Ctx(ctx).
+		Msg("Starting task execution")
 
 	fn, ok := e.processors[task.Type]
 	if !ok {
-		logger.Error().
+		log.Error().
+			Ctx(ctx).
 			Str("taskType", task.Type).
 			Msg("Processor for task not found")
 		return
 	}
 
 	if err := fn(ctx, task); err != nil {
-		logger.Error().
+		log.Error().
+			Ctx(ctx).
 			Err(err).
 			Msg("Task execution failed")
 
 		nextRetry, shouldRetry := task.CalculateBackoff(30 * time.Second)
 		if !shouldRetry {
-			logger.Warn().
+			log.Warn().
+				Ctx(ctx).
 				Err(err).
 				Msg("Task ran out of retries")
 		}
 
 		if err := e.store.MarkFailed(ctx, task.ID, nextRetry); err != nil {
-			logger.Warn().
+			log.Warn().
+				Ctx(ctx).
 				Err(err).
 				Msg("Failed to mark task as failed. It will be retried when expired")
 		}
 
-		logger.Info().
+		log.Info().
+			Ctx(ctx).
 			Time("nextRetry", nextRetry).
 			Msg("Task scheduled for retry")
 		return
 	}
 
 	if err := e.store.MarkCompleted(ctx, task.ID); err != nil {
-		logger.Warn().
+		log.Warn().
+			Ctx(ctx).
 			Err(err).
 			Msg("Failed to mark task as failed. It will be retried when expired")
 	}
 
-	logger.Info().
+	log.Info().
+		Ctx(ctx).
 		Msg("Task completed")
 }
 
