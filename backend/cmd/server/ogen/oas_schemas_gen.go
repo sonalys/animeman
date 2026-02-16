@@ -14,8 +14,8 @@ func (s *ErrorResponseStatusCode) Error() string {
 
 type AuthenticationWhoAmIOK struct {
 	// User's email address.
-	Email  string    `json:"email"`
-	UserID uuid.UUID `json:"user_id"`
+	Email  string `json:"email"`
+	UserID string `json:"userID"`
 }
 
 // GetEmail returns the value of Email.
@@ -24,7 +24,7 @@ func (s *AuthenticationWhoAmIOK) GetEmail() string {
 }
 
 // GetUserID returns the value of UserID.
-func (s *AuthenticationWhoAmIOK) GetUserID() uuid.UUID {
+func (s *AuthenticationWhoAmIOK) GetUserID() string {
 	return s.UserID
 }
 
@@ -34,7 +34,7 @@ func (s *AuthenticationWhoAmIOK) SetEmail(val string) {
 }
 
 // SetUserID sets the value of UserID.
-func (s *AuthenticationWhoAmIOK) SetUserID(val uuid.UUID) {
+func (s *AuthenticationWhoAmIOK) SetUserID(val string) {
 	s.UserID = val
 }
 
@@ -118,7 +118,7 @@ func (s *ErrorMetadata) SetField(val OptString) {
 
 type ErrorResponse struct {
 	// Unique identifier for the error instance.
-	TraceID uuid.UUID `json:"trace_id"`
+	TraceID uuid.UUID `json:"traceID"`
 	Errors  []Error   `json:"errors"`
 }
 

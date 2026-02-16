@@ -26,14 +26,14 @@ func (s *AuthenticationWhoAmIOK) encodeFields(e *jx.Encoder) {
 		e.Str(s.Email)
 	}
 	{
-		e.FieldStart("user_id")
-		json.EncodeUUID(e, s.UserID)
+		e.FieldStart("userID")
+		e.Str(s.UserID)
 	}
 }
 
 var jsonFieldsNameOfAuthenticationWhoAmIOK = [2]string{
 	0: "email",
-	1: "user_id",
+	1: "userID",
 }
 
 // Decode decodes AuthenticationWhoAmIOK from json.
@@ -57,17 +57,17 @@ func (s *AuthenticationWhoAmIOK) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"email\"")
 			}
-		case "user_id":
+		case "userID":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := json.DecodeUUID(d)
-				s.UserID = v
+				v, err := d.Str()
+				s.UserID = string(v)
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"user_id\"")
+				return errors.Wrap(err, "decode field \"userID\"")
 			}
 		default:
 			return d.Skip()
@@ -328,7 +328,7 @@ func (s *ErrorResponse) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *ErrorResponse) encodeFields(e *jx.Encoder) {
 	{
-		e.FieldStart("trace_id")
+		e.FieldStart("traceID")
 		json.EncodeUUID(e, s.TraceID)
 	}
 	{
@@ -342,7 +342,7 @@ func (s *ErrorResponse) encodeFields(e *jx.Encoder) {
 }
 
 var jsonFieldsNameOfErrorResponse = [2]string{
-	0: "trace_id",
+	0: "traceID",
 	1: "errors",
 }
 
@@ -355,7 +355,7 @@ func (s *ErrorResponse) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "trace_id":
+		case "traceID":
 			requiredBitSet[0] |= 1 << 0
 			if err := func() error {
 				v, err := json.DecodeUUID(d)
@@ -365,7 +365,7 @@ func (s *ErrorResponse) Decode(d *jx.Decoder) error {
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"trace_id\"")
+				return errors.Wrap(err, "decode field \"traceID\"")
 			}
 		case "errors":
 			requiredBitSet[0] |= 1 << 1

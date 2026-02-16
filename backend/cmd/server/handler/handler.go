@@ -5,10 +5,12 @@ import (
 	"encoding/json"
 	"net/http"
 
+	"github.com/google/uuid"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/cmd/server/middlewares"
 	"github.com/sonalys/animeman/cmd/server/ogen"
 	"github.com/sonalys/animeman/internal/utils/otel"
+	"go.opentelemetry.io/otel/trace"
 )
 
 type Handler struct{}
@@ -31,12 +33,15 @@ func setupHandler(securityHandler ogen.SecurityHandler, client ogen.Handler) (ht
 
 func errorHandler(client ogen.Handler) func(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
 	return func(ctx context.Context, w http.ResponseWriter, r *http.Request, err error) {
-		resp := client.NewError(ctx, err)
+		statusCodeResponse := client.NewError(ctx, err)
 
-		w.WriteHeader(resp.StatusCode)
+		w.WriteHeader(statusCodeResponse.StatusCode)
 		w.Header().Set("Content-Type", "application/json")
 
-		if err := json.NewEncoder(w).Encode(resp); err != nil {
+		span := trace.SpanFromContext(ctx)
+		statusCodeResponse.Response.SetTraceID(uuid.UUID(span.SpanContext().TraceID()))
+
+		if err := json.NewEncoder(w).Encode(statusCodeResponse); err != nil {
 			log.Error().Ctx(ctx).Err(err).Msg("failed to encode error response")
 		}
 	}
