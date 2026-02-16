@@ -89,40 +89,35 @@ components:
             type: object
             required:
               - traceID
-              - errors
+              - details
             properties:
               traceID:
                 type: string
                 format: uuid
                 description: Unique identifier for the error instance
                 example: "b6b7b3b0-1b4d-4f4b-8b3e-1b4d4f4b8b3e"
-              errors:
+              details:
+                type: string
+              fieldErrors:
                 type: array
-                minItems: 1
                 items:
-                  $ref: "#/components/schemas/Error"
+                  $ref: "#/components/schemas/FieldError"
   schemas:
-    ErrorMetadata:
-      type: object
-      properties:
-        field:
-          type: string
-          example: "name"
-
-    Error:
+    FieldError:
       type: object
       required:
+        - field
         - message
         - code
       properties:
+        field:
+          type: string
         code:
           type: string
         message:
           type: string
           description: Human readable error message
-          example: "Missing parameter 'name'"
-        metadata:
-          $ref: "#/components/schemas/ErrorMetadata"
+          example: "Invalid format"
 
     UserRegistration:
       type: object

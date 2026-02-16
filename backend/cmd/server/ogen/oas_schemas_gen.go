@@ -63,63 +63,11 @@ func (s *CookieAuth) SetRoles(val []string) {
 	s.Roles = val
 }
 
-// Ref: #/components/schemas/Error
-type Error struct {
-	Code string `json:"code"`
-	// Human readable error message.
-	Message  string           `json:"message"`
-	Metadata OptErrorMetadata `json:"metadata"`
-}
-
-// GetCode returns the value of Code.
-func (s *Error) GetCode() string {
-	return s.Code
-}
-
-// GetMessage returns the value of Message.
-func (s *Error) GetMessage() string {
-	return s.Message
-}
-
-// GetMetadata returns the value of Metadata.
-func (s *Error) GetMetadata() OptErrorMetadata {
-	return s.Metadata
-}
-
-// SetCode sets the value of Code.
-func (s *Error) SetCode(val string) {
-	s.Code = val
-}
-
-// SetMessage sets the value of Message.
-func (s *Error) SetMessage(val string) {
-	s.Message = val
-}
-
-// SetMetadata sets the value of Metadata.
-func (s *Error) SetMetadata(val OptErrorMetadata) {
-	s.Metadata = val
-}
-
-// Ref: #/components/schemas/ErrorMetadata
-type ErrorMetadata struct {
-	Field OptString `json:"field"`
-}
-
-// GetField returns the value of Field.
-func (s *ErrorMetadata) GetField() OptString {
-	return s.Field
-}
-
-// SetField sets the value of Field.
-func (s *ErrorMetadata) SetField(val OptString) {
-	s.Field = val
-}
-
 type ErrorResponse struct {
 	// Unique identifier for the error instance.
-	TraceID uuid.UUID `json:"traceID"`
-	Errors  []Error   `json:"errors"`
+	TraceID     uuid.UUID    `json:"traceID"`
+	Details     string       `json:"details"`
+	FieldErrors []FieldError `json:"fieldErrors"`
 }
 
 // GetTraceID returns the value of TraceID.
@@ -127,9 +75,14 @@ func (s *ErrorResponse) GetTraceID() uuid.UUID {
 	return s.TraceID
 }
 
-// GetErrors returns the value of Errors.
-func (s *ErrorResponse) GetErrors() []Error {
-	return s.Errors
+// GetDetails returns the value of Details.
+func (s *ErrorResponse) GetDetails() string {
+	return s.Details
+}
+
+// GetFieldErrors returns the value of FieldErrors.
+func (s *ErrorResponse) GetFieldErrors() []FieldError {
+	return s.FieldErrors
 }
 
 // SetTraceID sets the value of TraceID.
@@ -137,9 +90,14 @@ func (s *ErrorResponse) SetTraceID(val uuid.UUID) {
 	s.TraceID = val
 }
 
-// SetErrors sets the value of Errors.
-func (s *ErrorResponse) SetErrors(val []Error) {
-	s.Errors = val
+// SetDetails sets the value of Details.
+func (s *ErrorResponse) SetDetails(val string) {
+	s.Details = val
+}
+
+// SetFieldErrors sets the value of FieldErrors.
+func (s *ErrorResponse) SetFieldErrors(val []FieldError) {
+	s.FieldErrors = val
 }
 
 // ErrorResponseStatusCode wraps ErrorResponse with StatusCode.
@@ -168,50 +126,42 @@ func (s *ErrorResponseStatusCode) SetResponse(val ErrorResponse) {
 	s.Response = val
 }
 
-// NewOptErrorMetadata returns new OptErrorMetadata with value set to v.
-func NewOptErrorMetadata(v ErrorMetadata) OptErrorMetadata {
-	return OptErrorMetadata{
-		Value: v,
-		Set:   true,
-	}
+// Ref: #/components/schemas/FieldError
+type FieldError struct {
+	Field string `json:"field"`
+	Code  string `json:"code"`
+	// Human readable error message.
+	Message string `json:"message"`
 }
 
-// OptErrorMetadata is optional ErrorMetadata.
-type OptErrorMetadata struct {
-	Value ErrorMetadata
-	Set   bool
+// GetField returns the value of Field.
+func (s *FieldError) GetField() string {
+	return s.Field
 }
 
-// IsSet returns true if OptErrorMetadata was set.
-func (o OptErrorMetadata) IsSet() bool { return o.Set }
-
-// Reset unsets value.
-func (o *OptErrorMetadata) Reset() {
-	var v ErrorMetadata
-	o.Value = v
-	o.Set = false
+// GetCode returns the value of Code.
+func (s *FieldError) GetCode() string {
+	return s.Code
 }
 
-// SetTo sets value to v.
-func (o *OptErrorMetadata) SetTo(v ErrorMetadata) {
-	o.Set = true
-	o.Value = v
+// GetMessage returns the value of Message.
+func (s *FieldError) GetMessage() string {
+	return s.Message
 }
 
-// Get returns value and boolean that denotes whether value was set.
-func (o OptErrorMetadata) Get() (v ErrorMetadata, ok bool) {
-	if !o.Set {
-		return v, false
-	}
-	return o.Value, true
+// SetField sets the value of Field.
+func (s *FieldError) SetField(val string) {
+	s.Field = val
 }
 
-// Or returns value if set, or given parameter if does not.
-func (o OptErrorMetadata) Or(d ErrorMetadata) ErrorMetadata {
-	if v, ok := o.Get(); ok {
-		return v
-	}
-	return d
+// SetCode sets the value of Code.
+func (s *FieldError) SetCode(val string) {
+	s.Code = val
+}
+
+// SetMessage sets the value of Message.
+func (s *FieldError) SetMessage(val string) {
+	s.Message = val
 }
 
 // NewOptString returns new OptString with value set to v.

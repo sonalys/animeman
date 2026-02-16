@@ -93,15 +93,6 @@ func decodeAuthenticationWhoAmIResponse(resp *http.Response) (res *Authenticatio
 				}
 				return res, err
 			}
-			// Validate response.
-			if err := func() error {
-				if err := response.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return res, errors.Wrap(err, "validate")
-			}
 			return &ErrorResponseStatusCode{
 				StatusCode: resp.StatusCode,
 				Response:   response,
@@ -230,15 +221,6 @@ func decodeRegisterUserResponse(resp *http.Response) (res RegisterUserRes, _ err
 					Err:         err,
 				}
 				return res, err
-			}
-			// Validate response.
-			if err := func() error {
-				if err := response.Validate(); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return res, errors.Wrap(err, "validate")
 			}
 			return &ErrorResponseStatusCode{
 				StatusCode: resp.StatusCode,
