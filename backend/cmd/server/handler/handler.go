@@ -92,6 +92,10 @@ func (h *Handler) NewError(ctx context.Context, err error) (resp *ogen.ErrorResp
 		if traceID := span.SpanContext().TraceID(); traceID.IsValid() {
 			resp.Response.SetTraceID(ogen.NewOptUUID(uuid.UUID(traceID)))
 		}
+
+		if !resp.Response.Details.IsSet() {
+			resp.Response.Details = ogen.NewOptString("")
+		}
 	}()
 	if target := new(ogenerrors.SecurityError); errors.As(err, &target) {
 		return &ogen.ErrorResponseStatusCode{
@@ -109,24 +113,24 @@ func (h *Handler) NewError(ctx context.Context, err error) (resp *ogen.ErrorResp
 			errs = append(errs, ogen.FieldError{
 				Message: fieldErr.Error.Error(),
 				Field:   fieldErr.Name,
-				Code: func() string {
+				Code: func() ogen.FieldErrorCode {
 					if errors.Is(fieldErr.Error, validate.ErrFieldRequired) {
-						return "required"
+						return ogen.FieldErrorCodeRequired
 					}
 
 					if _, ok := errors.AsType[*validate.MinLengthError](fieldErr.Error); ok {
-						return "minLength"
+						return ogen.FieldErrorCodeMinLength
 					}
 
 					if _, ok := errors.AsType[*validate.MaxLengthError](fieldErr.Error); ok {
-						return "maxLength"
+						return ogen.FieldErrorCodeMaxLength
 					}
 
 					if _, ok := errors.AsType[*validate.NoRegexMatchError](fieldErr.Error); ok {
-						return "invalidFormat"
+						return ogen.FieldErrorCodeInvalidFormat
 					}
 
-					return "unknown"
+					return ogen.FieldErrorCodeUnknown
 				}(),
 			})
 		}
@@ -149,12 +153,12 @@ func (h *Handler) NewError(ctx context.Context, err error) (resp *ogen.ErrorResp
 		Response: ogen.ErrorResponse{
 			Details: ogen.OptString{
 				Value: details,
-				Set:   details != "",
+				Set:   true,
 			},
 			FieldErrors: sliceutils.Map(fieldErrors, func(from apperr.FieldError) ogen.FieldError {
 				return ogen.FieldError{
 					Field:   from.Field,
-					Code:    from.Code.String(),
+					Code:    ogen.FieldErrorCode(from.Code),
 					Message: from.Message,
 				}
 			}),
@@ -202,8 +206,11 @@ func validationErrorHandler(client ogen.Handler) func(ctx context.Context, w htt
 		w.WriteHeader(statusCodeResponse.StatusCode)
 		w.Header().Set("Content-Type", "application/json")
 
-		if err := json.NewEncoder(w).Encode(statusCodeResponse); err != nil {
-			log.Error().Ctx(ctx).Err(err).Msg("failed to encode error response")
+		if err := json.NewEncoder(w).Encode(statusCodeResponse.Response); err != nil {
+			log.Error().
+				Ctx(ctx).
+				Err(err).
+				Msg("failed to encode error response")
 		}
 	}
 }

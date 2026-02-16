@@ -60,14 +60,6 @@ type Client struct {
 	sec       SecuritySource
 	baseClient
 }
-type errorHandler interface {
-	NewError(ctx context.Context, err error) *ErrorResponseStatusCode
-}
-
-var _ Handler = struct {
-	errorHandler
-	*Client
-}{}
 
 // NewClient initializes new Client defined by OAS.
 func NewClient(serverURL string, sec SecuritySource, opts ...ClientOption) (*Client, error) {

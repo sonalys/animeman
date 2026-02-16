@@ -46,6 +46,8 @@ func (s *Server) handleAuthenticationLoginRequest(args [0]string, argsEscaped bo
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/authentication/login"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), AuthenticationLoginOperation,
@@ -198,6 +200,8 @@ func (s *Server) handleAuthenticationWhoAmIRequest(args [0]string, argsEscaped b
 		semconv.HTTPRequestMethodKey.String("GET"),
 		semconv.HTTPRouteKey.String("/authentication/whoami"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), AuthenticationWhoAmIOperation,
@@ -381,6 +385,8 @@ func (s *Server) handleRegisterUserRequest(args [0]string, argsEscaped bool, w h
 		semconv.HTTPRequestMethodKey.String("POST"),
 		semconv.HTTPRouteKey.String("/register"),
 	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
 	ctx, span := s.cfg.Tracer.Start(r.Context(), RegisterUserOperation,

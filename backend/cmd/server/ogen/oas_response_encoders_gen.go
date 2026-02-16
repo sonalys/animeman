@@ -15,6 +15,7 @@ import (
 )
 
 func encodeAuthenticationLoginResponse(response *AuthenticationLoginOK, w http.ResponseWriter, span trace.Span) error {
+	w.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
 	// Encoding response headers.
 	{
 		h := uri.NewHeaderEncoder(w.Header())
@@ -55,6 +56,7 @@ func encodeRegisterUserResponse(response RegisterUserRes, w http.ResponseWriter,
 	switch response := response.(type) {
 	case *RegisterUserCreatedHeaders:
 		w.Header().Set("Content-Type", "application/json; charset=utf-8")
+		w.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
 		// Encoding response headers.
 		{
 			h := uri.NewHeaderEncoder(w.Header())
@@ -100,6 +102,14 @@ func encodeRegisterUserResponse(response RegisterUserRes, w http.ResponseWriter,
 }
 
 func encodeErrorResponse(response *ErrorResponseStatusCode, w http.ResponseWriter, span trace.Span) error {
+	if err := func() error {
+		if err := response.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "validate")
+	}
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	code := response.StatusCode
 	if code == 0 {

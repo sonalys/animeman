@@ -5,6 +5,7 @@ package ogen
 import (
 	"fmt"
 
+	"github.com/go-faster/errors"
 	"github.com/google/uuid"
 )
 
@@ -158,8 +159,8 @@ func (s *ErrorResponseStatusCode) SetResponse(val ErrorResponse) {
 
 // Ref: #/components/schemas/FieldError
 type FieldError struct {
-	Field string `json:"field"`
-	Code  string `json:"code"`
+	Field string         `json:"field"`
+	Code  FieldErrorCode `json:"code"`
 	// Human readable error message.
 	Message string `json:"message"`
 }
@@ -170,7 +171,7 @@ func (s *FieldError) GetField() string {
 }
 
 // GetCode returns the value of Code.
-func (s *FieldError) GetCode() string {
+func (s *FieldError) GetCode() FieldErrorCode {
 	return s.Code
 }
 
@@ -185,13 +186,82 @@ func (s *FieldError) SetField(val string) {
 }
 
 // SetCode sets the value of Code.
-func (s *FieldError) SetCode(val string) {
+func (s *FieldError) SetCode(val FieldErrorCode) {
 	s.Code = val
 }
 
 // SetMessage sets the value of Message.
 func (s *FieldError) SetMessage(val string) {
 	s.Message = val
+}
+
+type FieldErrorCode string
+
+const (
+	FieldErrorCodeAlreadyExists FieldErrorCode = "alreadyExists"
+	FieldErrorCodeMinLength     FieldErrorCode = "minLength"
+	FieldErrorCodeMaxLength     FieldErrorCode = "maxLength"
+	FieldErrorCodeRequired      FieldErrorCode = "required"
+	FieldErrorCodeInvalidFormat FieldErrorCode = "invalidFormat"
+	FieldErrorCodeUnknown       FieldErrorCode = "unknown"
+)
+
+// AllValues returns all FieldErrorCode values.
+func (FieldErrorCode) AllValues() []FieldErrorCode {
+	return []FieldErrorCode{
+		FieldErrorCodeAlreadyExists,
+		FieldErrorCodeMinLength,
+		FieldErrorCodeMaxLength,
+		FieldErrorCodeRequired,
+		FieldErrorCodeInvalidFormat,
+		FieldErrorCodeUnknown,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s FieldErrorCode) MarshalText() ([]byte, error) {
+	switch s {
+	case FieldErrorCodeAlreadyExists:
+		return []byte(s), nil
+	case FieldErrorCodeMinLength:
+		return []byte(s), nil
+	case FieldErrorCodeMaxLength:
+		return []byte(s), nil
+	case FieldErrorCodeRequired:
+		return []byte(s), nil
+	case FieldErrorCodeInvalidFormat:
+		return []byte(s), nil
+	case FieldErrorCodeUnknown:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *FieldErrorCode) UnmarshalText(data []byte) error {
+	switch FieldErrorCode(data) {
+	case FieldErrorCodeAlreadyExists:
+		*s = FieldErrorCodeAlreadyExists
+		return nil
+	case FieldErrorCodeMinLength:
+		*s = FieldErrorCodeMinLength
+		return nil
+	case FieldErrorCodeMaxLength:
+		*s = FieldErrorCodeMaxLength
+		return nil
+	case FieldErrorCodeRequired:
+		*s = FieldErrorCodeRequired
+		return nil
+	case FieldErrorCodeInvalidFormat:
+		*s = FieldErrorCodeInvalidFormat
+		return nil
+	case FieldErrorCodeUnknown:
+		*s = FieldErrorCodeUnknown
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // NewOptString returns new OptString with value set to v.

@@ -344,7 +344,7 @@ func (s *FieldError) encodeFields(e *jx.Encoder) {
 	}
 	{
 		e.FieldStart("code")
-		e.Str(s.Code)
+		s.Code.Encode(e)
 	}
 	{
 		e.FieldStart("message")
@@ -382,9 +382,7 @@ func (s *FieldError) Decode(d *jx.Decoder) error {
 		case "code":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
-				v, err := d.Str()
-				s.Code = string(v)
-				if err != nil {
+				if err := s.Code.Decode(d); err != nil {
 					return err
 				}
 				return nil
@@ -455,6 +453,54 @@ func (s *FieldError) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *FieldError) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes FieldErrorCode as json.
+func (s FieldErrorCode) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes FieldErrorCode from json.
+func (s *FieldErrorCode) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode FieldErrorCode to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch FieldErrorCode(v) {
+	case FieldErrorCodeAlreadyExists:
+		*s = FieldErrorCodeAlreadyExists
+	case FieldErrorCodeMinLength:
+		*s = FieldErrorCodeMinLength
+	case FieldErrorCodeMaxLength:
+		*s = FieldErrorCodeMaxLength
+	case FieldErrorCodeRequired:
+		*s = FieldErrorCodeRequired
+	case FieldErrorCodeInvalidFormat:
+		*s = FieldErrorCodeInvalidFormat
+	case FieldErrorCodeUnknown:
+		*s = FieldErrorCodeUnknown
+	default:
+		*s = FieldErrorCode(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s FieldErrorCode) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *FieldErrorCode) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
