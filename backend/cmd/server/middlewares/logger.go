@@ -15,7 +15,14 @@ func Logger(req middleware.Request, next middleware.Next) (resp middleware.Respo
 	logger.Info().Ctx(req.Context).Msg("Request received")
 
 	resp, err = next(req)
-	if err == nil {
+
+	if resp, ok := resp.Type.(interface{ GetStatusCode() int }); ok {
+		logger = logger.With().
+			Int("statusCode", resp.GetStatusCode()).
+			Logger()
+	}
+
+	if err != nil {
 		if code := apperr.Code(err); code != 0 {
 			logger = logger.
 				With().

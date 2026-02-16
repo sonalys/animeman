@@ -39,18 +39,17 @@ func (c *Client) Decode(tokenString string) (*Token, error) {
 	var claims jwt.MapClaims
 
 	keyFunc := func(token *jwt.Token) (any, error) {
+		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
+			return nil, fmt.Errorf("unexpected signing method: %v", token.Header["alg"])
+		}
 		return c.jwtSignKey, nil
-	}
-
-	supportedMethods := []string{
-		jwt.SigningMethodHS256.Alg(),
 	}
 
 	token, err := jwt.ParseWithClaims(
 		tokenString,
 		&claims,
 		keyFunc,
-		jwt.WithValidMethods(supportedMethods),
+		jwt.WithValidMethods([]string{jwt.SigningMethodHS256.Alg()}),
 	)
 	if err != nil || !token.Valid {
 		return nil, apperr.New(err, codes.Unauthenticated, "token could not be parsed")
