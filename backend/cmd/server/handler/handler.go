@@ -2,7 +2,6 @@ package handler
 
 import (
 	"context"
-	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -24,16 +23,8 @@ func (h *Handler) NewError(ctx context.Context, err error) *ogen.ErrorResponseSt
 	span := trace.SpanFromContext(ctx)
 	statusCode := GRPCCodeToHTTP(apperr.Code(err))
 
-	var fieldErrors []apperr.FieldError
-	var details string
-
-	if publicErr, ok := errors.AsType[apperr.PublicError](err); ok {
-		details = publicErr.Details()
-	}
-
-	if formErr, ok := errors.AsType[apperr.FormError](err); ok {
-		fieldErrors = formErr.FieldErrors
-	}
+	fieldErrors := apperr.FieldErrors(err)
+	details := apperr.PublicDetails(err)
 
 	return &ogen.ErrorResponseStatusCode{
 		StatusCode: statusCode,

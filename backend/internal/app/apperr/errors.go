@@ -4,19 +4,13 @@ import (
 	"errors"
 	"fmt"
 
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
 	"google.golang.org/grpc/codes"
 )
 
 type (
-	CodedError interface {
+	codedError interface {
 		error
 		Code() codes.Code
-	}
-
-	PublicError interface {
-		error
-		Details() string
 	}
 
 	Error struct {
@@ -24,16 +18,6 @@ type (
 		Message       string
 		PublicDetails string
 		Cause         error
-	}
-
-	FieldError struct {
-		Field   string `json:"field"`   // e.g., "userID".
-		Message string `json:"message"` // e.g., "must be a valid UUID".
-		Code    string `json:"code"`    // e.g., "invalid_format".
-	}
-
-	FormError struct {
-		FieldErrors []FieldError
 	}
 )
 
@@ -53,37 +37,20 @@ func New(cause error, code codes.Code, msgAndArgs ...any) Error {
 	}
 }
 
-func (f *FormError) Add(field, code, message string) {
-	f.FieldErrors = append(f.FieldErrors, FieldError{
-		Field:   field,
-		Code:    code,
-		Message: message,
-	})
-}
-
-func (f *FormError) Code() codes.Code {
-	return codes.InvalidArgument
-}
-
-func (e FieldError) Error() string {
-	return fmt.Sprintf("field '%s': %s", e.Field, e.Message)
-}
-
-func (e FieldError) Is(err error) bool {
-	targetErr, ok := errors.AsType[FieldError](err)
-	if !ok {
-		return false
+func Code(err error) codes.Code {
+	if target, ok := errors.AsType[codedError](err); ok {
+		return target.Code()
 	}
 
-	return e.Field == targetErr.Field && e.Code == targetErr.Code
+	return codes.Internal
 }
 
-func (e FormError) Error() string {
-	return fmt.Sprintf("bad arguments: %v", e.FieldErrors)
-}
+func PublicDetails(err error) string {
+	if target, ok := errors.AsType[Error](err); ok {
+		return target.PublicDetails
+	}
 
-func (e FormError) Unwrap() []error {
-	return sliceutils.Map(e.FieldErrors, func(from FieldError) error { return from })
+	return ""
 }
 
 func (e Error) WithPublicDetails(details string) Error {
@@ -105,12 +72,4 @@ func (e Error) Unwrap() error {
 
 func (e Error) Code() codes.Code {
 	return e.StatusCode
-}
-
-func Code(err error) codes.Code {
-	if target, ok := errors.AsType[CodedError](err); ok {
-		return target.Code()
-	}
-
-	return codes.Internal
 }
