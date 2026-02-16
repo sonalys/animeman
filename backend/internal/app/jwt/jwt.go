@@ -21,7 +21,7 @@ type (
 )
 
 const (
-	ErrInvalidToken apperr.StringError = "token is invalid"
+	ErrInvalidToken shared.StringError = "token is invalid"
 )
 
 const (

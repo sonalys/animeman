@@ -15,13 +15,15 @@ type (
 	}
 
 	Error struct {
-		StatusCode    codes.Code
-		Message       string
-		PublicDetails string
-		Cause         error
+		StatusCode codes.Code
+		Message    string
+		Cause      error
 	}
 
-	StringError string
+	PublicError struct {
+		cause   error
+		Details string
+	}
 )
 
 func New(cause error, code codes.Code, msgAndArgs ...any) Error {
@@ -40,6 +42,13 @@ func New(cause error, code codes.Code, msgAndArgs ...any) Error {
 	}
 }
 
+func NewPublicError(cause error, mask string, args ...any) PublicError {
+	return PublicError{
+		cause:   cause,
+		Details: fmt.Sprintf(mask, args...),
+	}
+}
+
 func Code(err error) codes.Code {
 	if target, ok := errors.AsType[codedError](err); ok {
 		return target.Code()
@@ -49,29 +58,22 @@ func Code(err error) codes.Code {
 }
 
 func PublicDetails(err error) string {
-	if target, ok := errors.AsType[Error](err); ok {
-		return target.PublicDetails
+	if target, ok := errors.AsType[PublicError](err); ok {
+		return target.Details
 	}
 
 	return ""
 }
 
-func (e Error) WithPublicDetails(details string) Error {
-	e.PublicDetails = details
-	return e
-}
-
-func (e Error) Details() string {
-	return e.PublicDetails
-}
-
 func (e Error) Error() string {
 	var b strings.Builder
 
-	fmt.Fprintf(&b, "[%s] %s", e.Code(), e.Message)
+	if e.Message != "" {
+		b.WriteString(e.Message)
+	}
 
 	if e.Cause != nil {
-		fmt.Fprintf(&b, " (%s)", e.Cause)
+		fmt.Fprintf(&b, ": %s", e.Cause)
 	}
 
 	return b.String()
@@ -85,6 +87,10 @@ func (e Error) Code() codes.Code {
 	return e.StatusCode
 }
 
-func (e StringError) Error() string {
-	return string(e)
+func (e PublicError) Error() string {
+	return e.cause.Error()
+}
+
+func (e PublicError) Unwrap() error {
+	return e.cause
 }

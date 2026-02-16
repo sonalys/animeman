@@ -2,11 +2,15 @@ package usecases
 
 import (
 	"context"
+	"errors"
 
+	"github.com/rs/zerolog"
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/users"
 	"github.com/sonalys/animeman/internal/ports"
+	"github.com/sonalys/animeman/internal/utils/otel"
 	"google.golang.org/grpc/codes"
 )
 
@@ -36,14 +40,25 @@ func NewUsecases(r Repositories) usecases {
 }
 
 func (u usecases) RegisterUser(ctx context.Context, username string, password string) (*users.User, error) {
+	ctx, span := otel.Tracer.Start(ctx, "RegisterUser")
+	defer span.End()
+
+	logger := log.Ctx(ctx)
+
 	newUser, err := users.NewUser(username, []byte(password))
 	if err != nil {
+		logError(ctx, err, "Could not initialize new user")
 		return nil, err
 	}
 
+	span.AddEvent("User created")
+
 	if err := u.repositories.UserRepository.Create(ctx, newUser); err != nil {
+		logError(ctx, err, "Could not register new user")
 		return nil, err
 	}
+
+	logger.Info().Msg("User registered")
 
 	return newUser, nil
 }
@@ -59,4 +74,30 @@ func (u usecases) Login(ctx context.Context, username string, password []byte) (
 	}
 
 	return &user.ID, nil
+}
+
+func logError(ctx context.Context, err error, mask string, args ...any) {
+	level := zerolog.ErrorLevel
+
+	appErr, ok := errors.AsType[apperr.Error](err)
+	if ok {
+		if appErr.Code() != codes.Internal {
+			level = zerolog.InfoLevel
+		}
+
+		log.
+			Ctx(ctx).
+			WithLevel(level).
+			Stringer("code", appErr.Code()).
+			Str("message", appErr.Message).
+			Err(appErr.Cause).
+			Msgf(mask, args...)
+		return
+	}
+
+	log.
+		Ctx(ctx).
+		WithLevel(level).
+		Err(err).
+		Msgf(mask, args...)
 }

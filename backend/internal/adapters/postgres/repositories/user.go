@@ -115,7 +115,7 @@ func userErrorHandler(err *pgconn.PgError) error {
 	switch err.Code {
 	case pgerrcode.UniqueViolation:
 		switch err.ConstraintName {
-		case "users_pkey":
+		case "unique_username":
 			return apperr.New(users.ErrUniqueUsername, codes.AlreadyExists)
 		}
 	}

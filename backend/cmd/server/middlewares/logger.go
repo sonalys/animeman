@@ -12,7 +12,7 @@ func Logger(req middleware.Request, next middleware.Next) (resp middleware.Respo
 		Str("operationId", req.OperationID).
 		Logger()
 
-	logger.Info().Ctx(req.Context).Msg("request received")
+	logger.Info().Ctx(req.Context).Msg("Request received")
 
 	resp, err = next(req)
 	if err == nil {
@@ -24,7 +24,7 @@ func Logger(req middleware.Request, next middleware.Next) (resp middleware.Respo
 		}
 	}
 
-	logger.Info().Ctx(req.Context).Msg("request responded")
+	logger.Info().Ctx(req.Context).Msg("Request responded")
 
 	return
 }

@@ -4,7 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"time"
 
+	"github.com/rs/zerolog"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/log/global"
@@ -40,16 +42,35 @@ func (tp provider) TextMapPropagator() propagation.TextMapPropagator {
 	return otel.GetTextMapPropagator()
 }
 
+type ZerologHandler struct {
+	logger zerolog.Logger
+}
+
+func (h ZerologHandler) Handle(err error) {
+	h.logger.Error().
+		Err(err).
+		Msg("OpenTelemetry internal error")
+}
+
 // Initialize bootstraps the OpenTelemetry pipeline.
 // If it does not return an error, make sure to call shutdown for proper cleanup.
 func Initialize(ctx context.Context, endpoint, version string) (shutdown func(context.Context) error, err error) {
+	otel.SetErrorHandler(ZerologHandler{})
+
 	var shutdownFuncs []func(context.Context) error
 
 	shutdown = func(ctx context.Context) error {
 		var err error
+
 		for _, fn := range shutdownFuncs {
-			err = errors.Join(err, fn(ctx))
+			err := fn(ctx)
+			if errors.Is(err, context.Canceled) {
+				continue
+			}
+
+			err = errors.Join(err, err)
 		}
+
 		shutdownFuncs = nil
 
 		return err
@@ -116,6 +137,7 @@ func newTraceExporter(ctx context.Context, endpoint string) (traceSDK.SpanExport
 	return otlptracegrpc.New(ctx,
 		otlptracegrpc.WithInsecure(),
 		otlptracegrpc.WithEndpoint(endpoint),
+		otlptracegrpc.WithReconnectionPeriod(30*time.Minute),
 	)
 }
 

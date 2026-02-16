@@ -101,7 +101,7 @@ func main() {
 
 		go func() {
 			if err := httpServer.Shutdown(ctx); err != nil {
-				log.Fatal().
+				log.Error().
 					Err(err).
 					Msg("Failed to shutdown http server gracefully")
 			}
@@ -109,7 +109,7 @@ func main() {
 
 		go func() {
 			if err := telemetryShutdown(ctx); err != nil {
-				log.Fatal().
+				log.Error().
 					Err(err).
 					Msg("Failed to shutdown the telemetry gracefully")
 			}
