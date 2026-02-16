@@ -62,11 +62,7 @@ func (h *Handler) RegisterUser(ctx context.Context, req *ogen.UserRegistration) 
 	user, err := h.Usecases.RegisterUser(ctx, req.Username, req.Password)
 	if err != nil {
 		if errors.Is(err, users.ErrUniqueUsername) {
-			return nil, apperr.FieldError{
-				Field:   "username",
-				Message: err.Error(),
-				Code:    "alreadyExists",
-			}
+			return nil, apperr.NewFieldError(apperr.FieldErrorCodeAlreadyExists, "username", err.Error())
 		}
 
 		return nil, err
@@ -158,7 +154,7 @@ func (h *Handler) NewError(ctx context.Context, err error) (resp *ogen.ErrorResp
 			FieldErrors: sliceutils.Map(fieldErrors, func(from apperr.FieldError) ogen.FieldError {
 				return ogen.FieldError{
 					Field:   from.Field,
-					Code:    from.Code,
+					Code:    from.Code.String(),
 					Message: from.Message,
 				}
 			}),

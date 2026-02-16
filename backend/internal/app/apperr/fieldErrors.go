@@ -9,10 +9,12 @@ import (
 )
 
 type (
+	FieldErrorCode string
+
 	FieldError struct {
 		Field   string
 		Message string
-		Code    string
+		Code    FieldErrorCode
 	}
 
 	fieldErrors []FieldError
@@ -22,9 +24,30 @@ type (
 	}
 )
 
+const (
+	FieldErrorCodeAlreadyExists FieldErrorCode = "alreadyExists"
+	FieldErrorCodeMinLength     FieldErrorCode = "minLength"
+	FieldErrorCodeMaxLength     FieldErrorCode = "maxLength"
+	FieldErrorCodeRequired      FieldErrorCode = "required"
+	FieldErrorCodeInvalidFormat FieldErrorCode = "invalidFormat"
+	FieldErrorCodeUnknown       FieldErrorCode = "unknown"
+)
+
 var (
 	_ codedError = &fieldErrors{}
 )
+
+func NewFieldError(code FieldErrorCode, field string, mask string, args ...any) FieldError {
+	return FieldError{
+		Code:    code,
+		Field:   field,
+		Message: fmt.Sprintf(mask, args...),
+	}
+}
+
+func (c FieldErrorCode) String() string {
+	return string(c)
+}
 
 func FieldErrors(err error) []FieldError {
 	if target, ok := errors.AsType[fieldErrors](err); ok {
@@ -63,7 +86,7 @@ func (e FieldError) Is(err error) bool {
 	return e.Field == targetErr.Field && e.Code == targetErr.Code
 }
 
-func (f *FormValidation) Add(field, code, message string) {
+func (f *FormValidation) Add(code FieldErrorCode, field string, message string) {
 	f.FieldErrors = append(f.FieldErrors, FieldError{
 		Field:   field,
 		Code:    code,

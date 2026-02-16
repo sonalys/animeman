@@ -147,6 +147,13 @@ components:
           type: string
         code:
           type: string
+          enum:
+            - alreadyExists
+            - minLength
+            - maxLength
+            - required
+            - invalidFormat
+            - unknown
         message:
           type: string
           description: Human readable error message
