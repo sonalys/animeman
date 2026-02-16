@@ -55,6 +55,10 @@ func (u usecases) RegisterUser(ctx context.Context, username string, password st
 
 	if err := u.repositories.UserRepository.Create(ctx, newUser); err != nil {
 		logError(ctx, err, "Could not register new user")
+
+		if errors.Is(err, users.ErrUniqueUsername) {
+			return nil, apperr.NewPublicError(err, "username '%s' already exists", newUser.Username)
+		}
 		return nil, err
 	}
 

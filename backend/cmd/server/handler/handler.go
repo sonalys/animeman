@@ -17,6 +17,7 @@ import (
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/app/jwt"
 	"github.com/sonalys/animeman/internal/app/usecases"
+	"github.com/sonalys/animeman/internal/domain/users"
 	"github.com/sonalys/animeman/internal/utils/otel"
 	"github.com/sonalys/animeman/internal/utils/sliceutils"
 	"go.opentelemetry.io/otel/trace"
@@ -60,13 +61,23 @@ func (h *Handler) AuthenticationWhoAmI(ctx context.Context) (*ogen.Authenticatio
 func (h *Handler) RegisterUser(ctx context.Context, req *ogen.UserRegistration) (ogen.RegisterUserRes, error) {
 	user, err := h.Usecases.RegisterUser(ctx, req.Username, req.Password)
 	if err != nil {
+		if errors.Is(err, users.ErrUniqueUsername) {
+			return nil, apperr.FieldError{
+				Field:   "username",
+				Message: err.Error(),
+				Code:    "alreadyExists",
+			}
+		}
+
 		return nil, err
 	}
 
-	stringifiedToken, err := h.JWTClient.Encode(&jwt.Token{
+	token := &jwt.Token{
 		UserID: user.ID,
 		Exp:    time.Now().Add(24 * time.Hour).Unix(),
-	})
+	}
+
+	stringifiedToken, err := h.JWTClient.Encode(token)
 	if err != nil {
 		return nil, err
 	}

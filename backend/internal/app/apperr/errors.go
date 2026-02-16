@@ -73,7 +73,10 @@ func (e Error) Error() string {
 	}
 
 	if e.Cause != nil {
-		fmt.Fprintf(&b, ": %s", e.Cause)
+		if b.Len() > 0 {
+			b.WriteString(": ")
+		}
+		b.WriteString(e.Cause.Error())
 	}
 
 	return b.String()
@@ -88,7 +91,7 @@ func (e Error) Code() codes.Code {
 }
 
 func (e PublicError) Error() string {
-	return e.cause.Error()
+	return e.Details
 }
 
 func (e PublicError) Unwrap() error {

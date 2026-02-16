@@ -31,6 +31,10 @@ func FieldErrors(err error) []FieldError {
 		return target
 	}
 
+	if target, ok := errors.AsType[FieldError](err); ok {
+		return []FieldError{target}
+	}
+
 	return nil
 }
 
