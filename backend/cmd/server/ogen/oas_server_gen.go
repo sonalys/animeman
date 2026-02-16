@@ -9,6 +9,18 @@ import (
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
 	UsersHandler
+	// IndexersGet implements GET /indexers operation.
+	//
+	// List all configured indexers.
+	//
+	// GET /indexers
+	IndexersGet(ctx context.Context) ([]Indexer, error)
+	// IndexersPost implements POST /indexers operation.
+	//
+	// Add a new indexer.
+	//
+	// POST /indexers
+	IndexersPost(ctx context.Context, req *IndexerConfig) (*IndexersPostCreated, error)
 	// RegisterUser implements registerUser operation.
 	//
 	// Creates a new user account with a unique username and a secure password.

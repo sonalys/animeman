@@ -22,19 +22,20 @@ func Test_Onboarding(t *testing.T) {
 	require.NoError(t, err)
 	assert.NotNil(t, user)
 
-	prowlarrConfig := user.NewIndexerClient(
+	indexerClient := indexing.NewClient(
+		user.ID,
 		indexing.IndexerTypeProwlarr,
 		*errutils.Must(url.Parse("http://192.168.1.219:9696")),
-		authentication.NewAPIKeyAuthentication("apiKey"),
+		authentication.NewAPIKeyAuthentication("apiKey1"),
 	)
-	require.NotNil(t, prowlarrConfig)
+	require.NotNil(t, indexerClient)
 
-	torrentConfig := user.NewTransferClient(
+	transferClient := user.NewTransferClient(
 		transfer.ClientTypeQBittorrent,
 		*errutils.Must(url.Parse("http://192.168.1.219:8088")),
-		authentication.NewUserPasswordAuthentication("username", []byte{}),
+		authentication.NewUserPasswordAuthentication("username", []byte("password")),
 	)
-	require.NotNil(t, torrentConfig)
+	require.NotNil(t, transferClient)
 
 	collection := user.NewCollection(
 		"My Collection",

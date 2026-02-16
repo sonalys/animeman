@@ -3,10 +3,12 @@ package usecases
 import (
 	"context"
 	"errors"
+	"net/url"
 
-	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/app/apperr"
+	"github.com/sonalys/animeman/internal/domain/authentication"
+	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/domain/users"
 	"github.com/sonalys/animeman/internal/ports"
@@ -30,6 +32,8 @@ type (
 	Usecases interface {
 		RegisterUser(ctx context.Context, username string, password string) (*users.User, error)
 		Login(ctx context.Context, username string, password []byte) (*shared.UserID, error)
+		CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.IndexerClient, error)
+		ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.IndexerClient, error)
 	}
 )
 
@@ -45,14 +49,14 @@ func (u usecases) RegisterUser(ctx context.Context, username string, password st
 
 	newUser, err := users.NewUser(username, []byte(password))
 	if err != nil {
-		logError(ctx, err, "Could not initialize new user")
+		logError(ctx, err, "Failed creating new user")
 		return nil, err
 	}
 
 	span.AddEvent("User created")
 
 	if err := u.repositories.UserRepository.Create(ctx, newUser); err != nil {
-		logError(ctx, err, "Could not register new user")
+		logError(ctx, err, "Failed registering new user")
 
 		if errors.Is(err, users.ErrUniqueUsername) {
 			return nil, apperr.NewPublicError(err, "username '%s' already exists", newUser.Username)
@@ -68,40 +72,65 @@ func (u usecases) RegisterUser(ctx context.Context, username string, password st
 }
 
 func (u usecases) Login(ctx context.Context, username string, password []byte) (*shared.UserID, error) {
+	ctx, span := otel.Tracer.Start(ctx, "Login")
+	defer span.End()
+
 	user, err := u.repositories.UserRepository.GetByUsername(ctx, username)
 	if err != nil {
+		logError(ctx, err, "Failed retrieving user")
 		return nil, err
 	}
 
 	if err := user.Login(password); err != nil {
+		logError(ctx, err, "Failed login user")
 		return nil, apperr.New(err, codes.InvalidArgument)
 	}
+
+	log.Info().
+		Ctx(ctx).
+		Msg("User logged in")
 
 	return &user.ID, nil
 }
 
-func logError(ctx context.Context, err error, mask string, args ...any) {
-	level := zerolog.ErrorLevel
+type CreateIndexerArgs struct {
+	Type   indexing.IndexerType
+	URL    url.URL
+	Auth   authentication.Authentication
+	UserID shared.UserID
+}
 
-	appErr, ok := errors.AsType[apperr.Error](err)
-	if ok {
-		if appErr.Code() != codes.Internal {
-			level = zerolog.InfoLevel
-		}
+func (u usecases) CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.IndexerClient, error) {
+	ctx, span := otel.Tracer.Start(ctx, "CreateIndexer")
+	defer span.End()
 
-		log.
-			WithLevel(level).
-			Ctx(ctx).
-			Stringer("code", appErr.Code()).
-			Str("message", appErr.Message).
-			Err(appErr.Cause).
-			Msgf(mask, args...)
-		return
+	client := indexing.NewClient(
+		args.UserID,
+		args.Type,
+		args.URL,
+		args.Auth,
+	)
+
+	if err := u.repositories.IndexerClientRepository.Create(ctx, client); err != nil {
+		logError(ctx, err, "Failed creating indexer client")
+		return nil, apperr.New(err, codes.InvalidArgument)
 	}
 
-	log.
-		WithLevel(level).
+	log.Info().
 		Ctx(ctx).
-		Err(err).
-		Msgf(mask, args...)
+		Msg("Created indexer client")
+
+	return client, nil
+}
+
+func (u usecases) ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.IndexerClient, error) {
+	ctx, span := otel.Tracer.Start(ctx, "ListIndexers")
+	defer span.End()
+
+	response, err := u.repositories.IndexerClientRepository.ListByOwner(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
 }

@@ -71,7 +71,11 @@ func main() {
 	adapters := initializeAdapters(ctx, config)
 	jwtClient := jwt.NewClient([]byte("secret"))
 	usecases := usecases.NewUsecases(usecases.Repositories{
-		UserRepository: adapters.postgresClient.UserRepository(),
+		UserRepository:           adapters.postgresClient.UserRepository(),
+		IndexerClientRepository:  adapters.postgresClient.IndexerClientRepository(),
+		TransferClientRepository: adapters.postgresClient.TransferClientRepository(),
+		CollectionRepository:     adapters.postgresClient.CollectionRepository(),
+		WatchlistRepository:      nil,
 	})
 
 	handler, err := handler.New(jwtClient, usecases)

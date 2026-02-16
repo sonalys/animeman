@@ -28,12 +28,27 @@ const (
 	indexerTypeSentinel
 )
 
-var IndexerTypeStringer = map[IndexerType]string{
+var indexerTypeStringer = map[IndexerType]string{
 	IndexerTypeProwlarr: "prowlarr",
 }
 
+func NewClient(
+	userID shared.UserID,
+	t IndexerType,
+	address url.URL,
+	auth authentication.Authentication,
+) *IndexerClient {
+	return &IndexerClient{
+		ID:             shared.NewID[IndexerID](),
+		OwnerID:        userID,
+		Type:           t,
+		Address:        address,
+		Authentication: auth,
+	}
+}
+
 func (s IndexerType) String() string {
-	if value, ok := IndexerTypeStringer[s]; ok {
+	if value, ok := indexerTypeStringer[s]; ok {
 		return value
 	}
 	return ""

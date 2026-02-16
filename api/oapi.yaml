@@ -110,6 +110,53 @@ paths:
                 type: string
                 example: SESSION_ID=abcde12345; Path=/; HttpOnly
 
+  /indexers:
+    get:
+      summary: List all configured indexers
+      tags:
+        - Indexers
+      security:
+        - cookieAuth: []
+      responses:
+        "200":
+          description: List of indexers retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/Indexer"
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+
+    post:
+      summary: Add a new indexer
+      tags:
+        - Indexers
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IndexerConfig"
+      responses:
+        "201":
+          description: Indexer configured successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+
 components:
   securitySchemes:
     cookieAuth:
@@ -136,6 +183,64 @@ components:
                 items:
                   $ref: "#/components/schemas/FieldError"
   schemas:
+    IndexerType:
+      type: string
+      enum: [prowlarr, jackett, torznab]
+
+    IndexerConfig:
+      type: object
+      required: [type, url, auth]
+      properties:
+        type:
+          $ref: "#/components/schemas/IndexerType"
+        url:
+          type: string
+          format: uri
+        auth:
+          $ref: "#/components/schemas/Authentication"
+
+    Indexer:
+      type: object
+      required: [id, type, url]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/IndexerType"
+        url:
+          type: string
+          format: uri
+
+    Authentication:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [userPassword, apiKey]
+      oneOf:
+        - $ref: "#/components/schemas/AuthenticationUserPassword"
+        - $ref: "#/components/schemas/AuthenticationAPIKey"
+
+    AuthenticationUserPassword:
+      type: object
+      required: [username, password]
+      properties:
+        username:
+          type: string
+        password:
+          type: string
+          format: password
+
+    AuthenticationAPIKey:
+      type: object
+      required: [key]
+      properties:
+        key:
+          type: string
+          format: password
+
     FieldError:
       type: object
       required:

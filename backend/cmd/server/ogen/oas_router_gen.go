@@ -17,6 +17,9 @@ var (
 	rn5AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
+	rn6AllowedHeaders = map[string]string{
+		"POST": "Content-Type",
+	}
 )
 
 func (s *Server) cutPrefix(path string) (string, bool) {
@@ -133,6 +136,33 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 				}
 
+			case 'i': // Prefix: "indexers"
+
+				if l := len("indexers"); len(elem) >= l && elem[0:l] == "indexers" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "GET":
+						s.handleIndexersGetRequest([0]string{}, elemIsEscaped, w, r)
+					case "POST":
+						s.handleIndexersPostRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, notAllowedParams{
+							allowedMethods: "GET,POST",
+							allowedHeaders: rn5AllowedHeaders,
+							acceptPost:     "application/json",
+							acceptPatch:    "",
+						})
+					}
+
+					return
+				}
+
 			case 'r': // Prefix: "register"
 
 				if l := len("register"); len(elem) >= l && elem[0:l] == "register" {
@@ -149,7 +179,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					default:
 						s.notAllowed(w, r, notAllowedParams{
 							allowedMethods: "POST",
-							allowedHeaders: rn5AllowedHeaders,
+							allowedHeaders: rn6AllowedHeaders,
 							acceptPost:     "application/json",
 							acceptPatch:    "",
 						})
@@ -320,6 +350,40 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						}
 					}
 
+				}
+
+			case 'i': // Prefix: "indexers"
+
+				if l := len("indexers"); len(elem) >= l && elem[0:l] == "indexers" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "GET":
+						r.name = IndexersGetOperation
+						r.summary = "List all configured indexers"
+						r.operationID = ""
+						r.operationGroup = ""
+						r.pathPattern = "/indexers"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = IndexersPostOperation
+						r.summary = "Add a new indexer"
+						r.operationID = ""
+						r.operationGroup = ""
+						r.pathPattern = "/indexers"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
 				}
 
 			case 'r': // Prefix: "register"

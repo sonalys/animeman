@@ -8,5 +8,7 @@ type OperationName = string
 const (
 	AuthenticationLoginOperation  OperationName = "AuthenticationLogin"
 	AuthenticationWhoAmIOperation OperationName = "AuthenticationWhoAmI"
+	IndexersGetOperation          OperationName = "IndexersGet"
+	IndexersPostOperation         OperationName = "IndexersPost"
 	RegisterUserOperation         OperationName = "RegisterUser"
 )

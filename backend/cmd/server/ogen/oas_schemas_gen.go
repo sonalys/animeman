@@ -4,6 +4,7 @@ package ogen
 
 import (
 	"fmt"
+	"net/url"
 
 	"github.com/go-faster/errors"
 	"github.com/google/uuid"
@@ -11,6 +12,47 @@ import (
 
 func (s *ErrorResponseStatusCode) Error() string {
 	return fmt.Sprintf("code %d: %+v", s.StatusCode, s.Response)
+}
+
+// Ref: #/components/schemas/Authentication
+type Authentication struct {
+	Type  AuthenticationType `json:"type"`
+	OneOf AuthenticationSum
+}
+
+// GetType returns the value of Type.
+func (s *Authentication) GetType() AuthenticationType {
+	return s.Type
+}
+
+// GetOneOf returns the value of OneOf.
+func (s *Authentication) GetOneOf() AuthenticationSum {
+	return s.OneOf
+}
+
+// SetType sets the value of Type.
+func (s *Authentication) SetType(val AuthenticationType) {
+	s.Type = val
+}
+
+// SetOneOf sets the value of OneOf.
+func (s *Authentication) SetOneOf(val AuthenticationSum) {
+	s.OneOf = val
+}
+
+// Ref: #/components/schemas/AuthenticationAPIKey
+type AuthenticationAPIKey struct {
+	Key string `json:"key"`
+}
+
+// GetKey returns the value of Key.
+func (s *AuthenticationAPIKey) GetKey() string {
+	return s.Key
+}
+
+// SetKey sets the value of Key.
+func (s *AuthenticationAPIKey) SetKey(val string) {
+	s.Key = val
 }
 
 // AuthenticationLoginOK is response for AuthenticationLogin operation.
@@ -52,6 +94,141 @@ func (s *AuthenticationLoginReq) SetUsername(val string) {
 
 // SetPassword sets the value of Password.
 func (s *AuthenticationLoginReq) SetPassword(val string) {
+	s.Password = val
+}
+
+// AuthenticationSum represents sum type.
+type AuthenticationSum struct {
+	Type                       AuthenticationSumType // switch on this field
+	AuthenticationUserPassword AuthenticationUserPassword
+	AuthenticationAPIKey       AuthenticationAPIKey
+}
+
+// AuthenticationSumType is oneOf type of AuthenticationSum.
+type AuthenticationSumType string
+
+// Possible values for AuthenticationSumType.
+const (
+	AuthenticationUserPasswordAuthenticationSum AuthenticationSumType = "AuthenticationUserPassword"
+	AuthenticationAPIKeyAuthenticationSum       AuthenticationSumType = "AuthenticationAPIKey"
+)
+
+// IsAuthenticationUserPassword reports whether AuthenticationSum is AuthenticationUserPassword.
+func (s AuthenticationSum) IsAuthenticationUserPassword() bool {
+	return s.Type == AuthenticationUserPasswordAuthenticationSum
+}
+
+// IsAuthenticationAPIKey reports whether AuthenticationSum is AuthenticationAPIKey.
+func (s AuthenticationSum) IsAuthenticationAPIKey() bool {
+	return s.Type == AuthenticationAPIKeyAuthenticationSum
+}
+
+// SetAuthenticationUserPassword sets AuthenticationSum to AuthenticationUserPassword.
+func (s *AuthenticationSum) SetAuthenticationUserPassword(v AuthenticationUserPassword) {
+	s.Type = AuthenticationUserPasswordAuthenticationSum
+	s.AuthenticationUserPassword = v
+}
+
+// GetAuthenticationUserPassword returns AuthenticationUserPassword and true boolean if AuthenticationSum is AuthenticationUserPassword.
+func (s AuthenticationSum) GetAuthenticationUserPassword() (v AuthenticationUserPassword, ok bool) {
+	if !s.IsAuthenticationUserPassword() {
+		return v, false
+	}
+	return s.AuthenticationUserPassword, true
+}
+
+// NewAuthenticationUserPasswordAuthenticationSum returns new AuthenticationSum from AuthenticationUserPassword.
+func NewAuthenticationUserPasswordAuthenticationSum(v AuthenticationUserPassword) AuthenticationSum {
+	var s AuthenticationSum
+	s.SetAuthenticationUserPassword(v)
+	return s
+}
+
+// SetAuthenticationAPIKey sets AuthenticationSum to AuthenticationAPIKey.
+func (s *AuthenticationSum) SetAuthenticationAPIKey(v AuthenticationAPIKey) {
+	s.Type = AuthenticationAPIKeyAuthenticationSum
+	s.AuthenticationAPIKey = v
+}
+
+// GetAuthenticationAPIKey returns AuthenticationAPIKey and true boolean if AuthenticationSum is AuthenticationAPIKey.
+func (s AuthenticationSum) GetAuthenticationAPIKey() (v AuthenticationAPIKey, ok bool) {
+	if !s.IsAuthenticationAPIKey() {
+		return v, false
+	}
+	return s.AuthenticationAPIKey, true
+}
+
+// NewAuthenticationAPIKeyAuthenticationSum returns new AuthenticationSum from AuthenticationAPIKey.
+func NewAuthenticationAPIKeyAuthenticationSum(v AuthenticationAPIKey) AuthenticationSum {
+	var s AuthenticationSum
+	s.SetAuthenticationAPIKey(v)
+	return s
+}
+
+type AuthenticationType string
+
+const (
+	AuthenticationTypeUserPassword AuthenticationType = "userPassword"
+	AuthenticationTypeApiKey       AuthenticationType = "apiKey"
+)
+
+// AllValues returns all AuthenticationType values.
+func (AuthenticationType) AllValues() []AuthenticationType {
+	return []AuthenticationType{
+		AuthenticationTypeUserPassword,
+		AuthenticationTypeApiKey,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AuthenticationType) MarshalText() ([]byte, error) {
+	switch s {
+	case AuthenticationTypeUserPassword:
+		return []byte(s), nil
+	case AuthenticationTypeApiKey:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AuthenticationType) UnmarshalText(data []byte) error {
+	switch AuthenticationType(data) {
+	case AuthenticationTypeUserPassword:
+		*s = AuthenticationTypeUserPassword
+		return nil
+	case AuthenticationTypeApiKey:
+		*s = AuthenticationTypeApiKey
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+// Ref: #/components/schemas/AuthenticationUserPassword
+type AuthenticationUserPassword struct {
+	Username string `json:"username"`
+	Password string `json:"password"`
+}
+
+// GetUsername returns the value of Username.
+func (s *AuthenticationUserPassword) GetUsername() string {
+	return s.Username
+}
+
+// GetPassword returns the value of Password.
+func (s *AuthenticationUserPassword) GetPassword() string {
+	return s.Password
+}
+
+// SetUsername sets the value of Username.
+func (s *AuthenticationUserPassword) SetUsername(val string) {
+	s.Username = val
+}
+
+// SetPassword sets the value of Password.
+func (s *AuthenticationUserPassword) SetPassword(val string) {
 	s.Password = val
 }
 
@@ -262,6 +439,143 @@ func (s *FieldErrorCode) UnmarshalText(data []byte) error {
 	default:
 		return errors.Errorf("invalid value: %q", data)
 	}
+}
+
+// Ref: #/components/schemas/Indexer
+type Indexer struct {
+	ID   uuid.UUID   `json:"id"`
+	Type IndexerType `json:"type"`
+	URL  url.URL     `json:"url"`
+}
+
+// GetID returns the value of ID.
+func (s *Indexer) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetType returns the value of Type.
+func (s *Indexer) GetType() IndexerType {
+	return s.Type
+}
+
+// GetURL returns the value of URL.
+func (s *Indexer) GetURL() url.URL {
+	return s.URL
+}
+
+// SetID sets the value of ID.
+func (s *Indexer) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetType sets the value of Type.
+func (s *Indexer) SetType(val IndexerType) {
+	s.Type = val
+}
+
+// SetURL sets the value of URL.
+func (s *Indexer) SetURL(val url.URL) {
+	s.URL = val
+}
+
+// Ref: #/components/schemas/IndexerConfig
+type IndexerConfig struct {
+	Type IndexerType    `json:"type"`
+	URL  url.URL        `json:"url"`
+	Auth Authentication `json:"auth"`
+}
+
+// GetType returns the value of Type.
+func (s *IndexerConfig) GetType() IndexerType {
+	return s.Type
+}
+
+// GetURL returns the value of URL.
+func (s *IndexerConfig) GetURL() url.URL {
+	return s.URL
+}
+
+// GetAuth returns the value of Auth.
+func (s *IndexerConfig) GetAuth() Authentication {
+	return s.Auth
+}
+
+// SetType sets the value of Type.
+func (s *IndexerConfig) SetType(val IndexerType) {
+	s.Type = val
+}
+
+// SetURL sets the value of URL.
+func (s *IndexerConfig) SetURL(val url.URL) {
+	s.URL = val
+}
+
+// SetAuth sets the value of Auth.
+func (s *IndexerConfig) SetAuth(val Authentication) {
+	s.Auth = val
+}
+
+// Ref: #/components/schemas/IndexerType
+type IndexerType string
+
+const (
+	IndexerTypeProwlarr IndexerType = "prowlarr"
+	IndexerTypeJackett  IndexerType = "jackett"
+	IndexerTypeTorznab  IndexerType = "torznab"
+)
+
+// AllValues returns all IndexerType values.
+func (IndexerType) AllValues() []IndexerType {
+	return []IndexerType{
+		IndexerTypeProwlarr,
+		IndexerTypeJackett,
+		IndexerTypeTorznab,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s IndexerType) MarshalText() ([]byte, error) {
+	switch s {
+	case IndexerTypeProwlarr:
+		return []byte(s), nil
+	case IndexerTypeJackett:
+		return []byte(s), nil
+	case IndexerTypeTorznab:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *IndexerType) UnmarshalText(data []byte) error {
+	switch IndexerType(data) {
+	case IndexerTypeProwlarr:
+		*s = IndexerTypeProwlarr
+		return nil
+	case IndexerTypeJackett:
+		*s = IndexerTypeJackett
+		return nil
+	case IndexerTypeTorznab:
+		*s = IndexerTypeTorznab
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
+type IndexersPostCreated struct {
+	ID uuid.UUID `json:"id"`
+}
+
+// GetID returns the value of ID.
+func (s *IndexersPostCreated) GetID() uuid.UUID {
+	return s.ID
+}
+
+// SetID sets the value of ID.
+func (s *IndexersPostCreated) SetID(val uuid.UUID) {
+	s.ID = val
 }
 
 // NewOptString returns new OptString with value set to v.

@@ -26,10 +26,10 @@ func NewHandler(c *jwt.Client) *SecurityHandler {
 	}
 }
 
-func GetIdentity(ctx context.Context) (*shared.UserID, error) {
-	identity, ok := ctx.Value(ctxKey{}).(*shared.UserID)
+func GetIdentity(ctx context.Context) (shared.UserID, error) {
+	identity, ok := ctx.Value(ctxKey{}).(shared.UserID)
 	if !ok {
-		return nil, errUnauthenticated
+		return shared.UserID{}, errUnauthenticated
 	}
 
 	return identity, nil
@@ -41,5 +41,5 @@ func (h *SecurityHandler) HandleCookieAuth(ctx context.Context, operationName og
 		return nil, err
 	}
 
-	return context.WithValue(ctx, ctxKey{}, &identity.UserID), nil
+	return context.WithValue(ctx, ctxKey{}, identity.UserID), nil
 }

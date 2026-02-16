@@ -7,6 +7,7 @@ import (
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/mappers"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
+	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/ports"
@@ -24,20 +25,40 @@ func NewIndexerClientRepository(conn *pgxpool.Pool) ports.IndexerClientRepositor
 }
 
 func (r indexerClientRepository) Create(ctx context.Context, client *indexing.IndexerClient) error {
-	queries := sqlcgen.New(r.conn)
+	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
+		auth, err := queries.CreateAuthentication(ctx, sqlcgen.CreateAuthenticationParams{
+			ID: shared.NewID[shared.ID](),
+			Type: func() sqlcgen.AuthType {
+				switch client.Authentication.Type {
+				case authentication.AuthenticationTypeAPIKey:
+					return sqlcgen.AuthTypeApiKey
+				case authentication.AuthenticationTypeUserPassword:
+					return sqlcgen.AuthTypeUserPassword
+				default:
+					return sqlcgen.AuthType("")
+				}
+			}(),
+			Credentials: mappers.NewAuthenticationModel(client.Authentication),
+		})
 
-	params := sqlcgen.CreateIndexerClientParams{
-		ID:      client.ID,
-		OwnerID: client.OwnerID,
-		Address: client.Address.String(),
-		Type:    sqlcgen.IndexerClientType(client.Type.String()),
-	}
+		if err != nil {
+			return handleWriteError(err)
+		}
 
-	if _, err := queries.CreateIndexerClient(ctx, params); err != nil {
-		return handleWriteError(err)
-	}
+		params := sqlcgen.CreateIndexerClientParams{
+			ID:      client.ID,
+			OwnerID: client.OwnerID,
+			Address: client.Address.String(),
+			Type:    sqlcgen.IndexerClientType(client.Type.String()),
+			AuthID:  auth.ID,
+		}
 
-	return nil
+		if _, err := queries.CreateIndexerClient(ctx, params); err != nil {
+			return handleWriteError(err)
+		}
+
+		return nil
+	})
 }
 
 func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]indexing.IndexerClient, error) {

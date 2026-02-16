@@ -9,16 +9,7 @@ CREATE TYPE auth_type AS ENUM ('userPassword', 'apiKey');
 CREATE TABLE authentications (
     id          UUID PRIMARY KEY,
     type        auth_type NOT NULL,
-    credentials JSONB NOT NULL,
-
-    CONSTRAINT valid_auth_data CHECK (
-        (type = 'userPassword' AND 
-            credentials ? 'username' AND 
-            credentials ? 'password') 
-        OR
-        (type = 'apiKey' AND 
-            credentials ? 'apiKey')
-    )
+    credentials JSONB NOT NULL
 );
 
 CREATE TYPE indexer_client_type AS ENUM ('prowlarr');
@@ -61,7 +52,6 @@ CREATE TABLE collections (
     monitored   BOOLEAN NOT NULL,
     created_at  TIMESTAMPTZ,
 
-
     CONSTRAINT valid_path CHECK (length(base_path) > 0)
 );
 
@@ -98,28 +88,32 @@ CREATE TABLE media (
     airing_started_at  TIMESTAMPTZ,
     airing_ended_at    TIMESTAMPTZ,
     
-    created_at         TIMESTAMPTZ NOT NULL,
-
-    CONSTRAINT valid_title CHECK (
-        jsonb_typeof(titles) = 'array' AND
-        jsonb_array_length(titles) > 0 AND
-        (
-            SELECT bool_and(
-                obj ? 'value' AND 
-                obj ? 'language' AND 
-                obj ? 'type'
-            )
-            FROM jsonb_array_elements(titles) AS obj
-        )
-    )
+    created_at         TIMESTAMPTZ NOT NULL
 );
 
 CREATE INDEX idx_media_titles ON media USING GIN (titles);
 
-ALTER TABLE media ADD COLUMN titles_search_vector TEXT 
-GENERATED ALWAYS AS (
-    (SELECT string_agg(obj->>'value', ' ') FROM jsonb_array_elements(titles) AS obj)
-) STORED;
+CREATE OR REPLACE FUNCTION jsonb_titles_to_text(titles jsonb) 
+RETURNS text AS $$
+DECLARE
+    result text;
+BEGIN
+    -- Ensure input is an array
+    IF jsonb_typeof(titles) != 'array' THEN
+        RETURN '';
+    END IF;
+
+    -- Aggregate the 'value' fields into a single string
+    SELECT string_agg(obj->>'value', ' ') INTO result
+    FROM jsonb_array_elements(titles) AS obj;
+    
+    RETURN COALESCE(result, '');
+END;
+$$ LANGUAGE plpgsql IMMUTABLE;
+
+ALTER TABLE media 
+ADD COLUMN titles_search_vector TEXT 
+GENERATED ALWAYS AS (jsonb_titles_to_text(titles)) STORED;
 
 CREATE EXTENSION IF NOT EXISTS pg_trgm;
 CREATE INDEX idx_media_titles_fuzzy ON media USING gin (titles_search_vector gin_trgm_ops);
@@ -172,64 +166,7 @@ CREATE TABLE collection_files (
     chapters         JSONB NOT NULL DEFAULT '[]',
     hashes           JSONB NOT NULL DEFAULT '[]',
     
-    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-
-    CONSTRAINT enforce_video_metadata CHECK (
-        jsonb_typeof(video_info) = 'object' AND
-        (obj->>'codec')::video_codec IS NOT NULL AND
-        video_info ? 'resolution' AND
-        (video_info->>'bit_depth')::numeric >= 0 AND
-        (video_info->>'width')::numeric > 0 AND
-        (video_info->>'height')::numeric > 0
-    ),
-
-    CONSTRAINT enforce_audio_metadata CHECK (
-        jsonb_typeof(audio_streams) = 'array' AND
-        jsonb_array_length(audio_streams) > 0 AND
-        (
-            SELECT bool_and(
-                obj ? 'language' AND
-                (obj->>'codec')::audio_codec IS NOT NULL AND
-                (obj->>'channels')::numeric >= 1.0
-            )
-            FROM jsonb_array_elements(audio_streams) AS obj
-        )
-    ),
-
-    CONSTRAINT enforce_subtitle_metadata CHECK (
-        jsonb_typeof(subtitle_streams) = 'array' AND
-        (
-            SELECT bool_and(
-                obj ? 'language' AND 
-                (obj->>'format')::subtitle_format IS NOT NULL
-            )
-            FROM jsonb_array_elements(subtitle_streams) AS obj
-        )
-    ),
-
-    CONSTRAINT enforce_hashes_metadata CHECK (
-        jsonb_typeof(hashes) = 'array' AND
-        (
-            SELECT bool_and(
-                (obj->>'algorithm')::hash_algorithm IS NOT NULL AND
-                obj ? 'value' AND
-                length(obj->>'value') > 0
-            )
-            FROM jsonb_array_elements(hashes) AS obj
-        )
-    ),
-
-    CONSTRAINT enforce_chapters_metadata CHECK (
-        jsonb_typeof(chapters) = 'array' AND
-        (
-            SELECT bool_and(
-                obj ? 'title' AND 
-                (obj->>'startTime')::numeric >= 0 AND
-                (obj->>'endTime')::numeric >= (obj->>'startTime')::numeric
-            )
-            FROM jsonb_array_elements(chapters) AS obj
-        )
-    )
+    created_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
 CREATE INDEX idx_files_hashes ON collection_files USING GIN (hashes);

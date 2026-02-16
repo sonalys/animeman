@@ -3,6 +3,7 @@
 package ogen
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/go-faster/errors"
@@ -10,6 +11,7 @@ import (
 	"github.com/ogen-go/ogen/conv"
 	ht "github.com/ogen-go/ogen/http"
 	"github.com/ogen-go/ogen/uri"
+	"github.com/ogen-go/ogen/validate"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
 )
@@ -42,6 +44,63 @@ func encodeAuthenticationWhoAmIResponse(response *AuthenticationWhoAmIOK, w http
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(200)
 	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	e := new(jx.Encoder)
+	response.Encode(e)
+	if _, err := e.WriteTo(w); err != nil {
+		return errors.Wrap(err, "write")
+	}
+
+	return nil
+}
+
+func encodeIndexersGetResponse(response []Indexer, w http.ResponseWriter, span trace.Span) error {
+	if err := func() error {
+		if response == nil {
+			return errors.New("nil is invalid value")
+		}
+		var failures []validate.FieldError
+		for i, elem := range response {
+			if err := func() error {
+				if err := elem.Validate(); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				failures = append(failures, validate.FieldError{
+					Name:  fmt.Sprintf("[%d]", i),
+					Error: err,
+				})
+			}
+		}
+		if len(failures) > 0 {
+			return &validate.Error{Fields: failures}
+		}
+		return nil
+	}(); err != nil {
+		return errors.Wrap(err, "validate")
+	}
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(200)
+	span.SetStatus(codes.Ok, http.StatusText(200))
+
+	e := new(jx.Encoder)
+	e.ArrStart()
+	for _, elem := range response {
+		elem.Encode(e)
+	}
+	e.ArrEnd()
+	if _, err := e.WriteTo(w); err != nil {
+		return errors.Wrap(err, "write")
+	}
+
+	return nil
+}
+
+func encodeIndexersPostResponse(response *IndexersPostCreated, w http.ResponseWriter, span trace.Span) error {
+	w.Header().Set("Content-Type", "application/json; charset=utf-8")
+	w.WriteHeader(201)
+	span.SetStatus(codes.Ok, http.StatusText(201))
 
 	e := new(jx.Encoder)
 	response.Encode(e)

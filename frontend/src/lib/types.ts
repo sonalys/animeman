@@ -23,3 +23,26 @@ export interface UserRegistration {
     username: string; // pattern: ^[a-zA-Z0-9_]+$
     password: string; // min: 8, max: 72
 }
+
+export type AuthType = 'userPassword' | 'apiKey';
+
+export interface Authentication {
+    type: AuthType;
+    username?: string;
+    password?: string;
+    key?: string;
+}
+
+export interface IndexerConfig {
+    type: string;
+    url: string;
+    auth: Authentication;
+}
+
+export interface Indexer {
+    id: string;
+    type: 'prowlarr' | 'jackett' | 'torznab';
+    url: string;
+    status: 'online' | 'offline' | 'unauthorized';
+    // We don't usually return the sensitive auth data back to the UI
+}

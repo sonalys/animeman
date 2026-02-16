@@ -31,6 +31,24 @@ func (UnimplementedHandler) AuthenticationWhoAmI(ctx context.Context) (r *Authen
 	return r, ht.ErrNotImplemented
 }
 
+// IndexersGet implements GET /indexers operation.
+//
+// List all configured indexers.
+//
+// GET /indexers
+func (UnimplementedHandler) IndexersGet(ctx context.Context) (r []Indexer, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// IndexersPost implements POST /indexers operation.
+//
+// Add a new indexer.
+//
+// POST /indexers
+func (UnimplementedHandler) IndexersPost(ctx context.Context, req *IndexerConfig) (r *IndexersPostCreated, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // RegisterUser implements registerUser operation.
 //
 // Creates a new user account with a unique username and a secure password.
