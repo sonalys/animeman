@@ -1,0 +1,22 @@
+:root {
+    --bg-primary: #0f172a;
+    /* Deep Navy/Black */
+    --bg-secondary: #1e293b;
+    /* Lighter Slate */
+    --text-main: #f8fafc;
+    /* Off-white */
+    --text-muted: #94a3b8;
+    /* Grey-blue */
+    --accent: #8b5cf6;
+    /* Vivid Purple */
+    --accent-hover: #7c3aed;
+    --error: #ef4444;
+    --border: #334155;
+}
+
+body {
+    background-color: var(--bg-primary);
+    color: var(--text-main);
+    margin: 0;
+    font-family: 'Inter', system-ui, sans-serif;
+}
