@@ -1,22 +1,16 @@
 <script lang="ts">
 	import { apiFetch } from '$lib/api';
-	let { onNext } = $props();
+	import type { IndexerConfig } from '$lib/api/types';
 
-	let url = $state('');
-	let apiKey = $state('');
+	let { formState = $bindable(), onNext } = $props();
+
 	let loading = $state(false);
 	let error = $state('');
-
-	let canSubmit = $derived(url.length > 8 && apiKey.length > 5);
 
 	async function handleSave() {
 		loading = true;
 		error = '';
 		try {
-			await apiFetch('/indexers', {
-				method: 'POST',
-				body: { type: 'prowlarr', url, apiKey }
-			});
 			onNext();
 		} catch (e: any) {
 			error = e.details || 'Connection failed. Check settings.';
@@ -26,25 +20,25 @@
 	}
 </script>
 
-<div class="step-form">
+<div class="step-container">
 	<h3>Indexer Config</h3>
 	<p>Connect your Prowlarr instance to begin indexing.</p>
 
 	<div class="field">
 		<label for="url">Instance URL</label>
-		<input id="url" bind:value={url} placeholder="http://localhost:9696" />
+		<input id="url" bind:value={formState.url} placeholder="http://localhost:9696" />
 	</div>
 
 	<div class="field">
 		<label for="key">API Key</label>
-		<input id="key" type="password" bind:value={apiKey} placeholder="Paste key here" />
+		<input id="key" type="password" bind:value={formState.auth.key} placeholder="Paste key here" />
 	</div>
 
 	{#if error}
 		<div class="error-toast">{error}</div>
 	{/if}
 
-	<button onclick={handleSave} disabled={!canSubmit || loading}>
+	<button onclick={handleSave} disabled={loading}>
 		{loading ? 'Verifying...' : 'Continue'}
 	</button>
 </div>

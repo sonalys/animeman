@@ -1,73 +1,93 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
-	import { fly, fade, scale } from 'svelte/transition';
+	import { scale } from 'svelte/transition';
 	import { apiFetch } from '$lib/api';
 	import IndexerStep from './IndexerStep.svelte';
 	import TransferStep from './TransferStep.svelte';
+	import type { IndexerConfig } from '$lib/api/types';
 
-	let currentStep = $state(0); // 0 = Loading, 1 = Indexer, 2 = Transfer, 3 = Success
 	let steps = ['Indexer', 'Transfer', 'Library'];
+	let currentStep = $state(0);
 
-	onMount(async () => {
-		try {
-			const [indexers, transfers] = await Promise.all([
-				apiFetch<any[]>({ path: '/indexers' }),
-				apiFetch<any[]>({ path: '/transfers' })
-			]);
+	let stepHeights = $state([0, 0, 0]);
+	let activeHeight = $derived(stepHeights[currentStep]);
 
-			if (indexers.length === 0) currentStep = 1;
-			else if (transfers.length === 0) currentStep = 2;
-			else currentStep = 3;
-		} catch (e) {
-			currentStep = 1; // Fallback
-		}
+	let formState = $state({
+		indexingClient: {
+			url: 'http://localhost:9696',
+			auth: { type: 'apiKey', key: '' }
+		},
+		transferClient: {}
+	} as {
+		indexingClient: IndexerConfig;
+		transferClient: {};
 	});
 
 	const next = () => currentStep++;
+	const back = () => currentStep--;
 </script>
 
 <div class="setup-wrapper">
-	{#if currentStep === 0}
-		<div class="loader" out:fade>
-			<div class="orbit"></div>
-			<p>Initializing setup...</p>
-		</div>
-	{:else}
-		<div class="container" in:scale={{ start: 0.95, duration: 400 }}>
-			<header>
-				<div class="brand">Animeman <span>Setup</span></div>
-				<div class="dots">
-					{#each steps as _, i}
-						<div class="dot" class:active={currentStep >= i + 1}></div>
-					{/each}
-				</div>
-			</header>
+	<div class="container" in:scale={{ start: 0.9, duration: 400 }}>
+		<header>
+			<div class="brand">Animeman <span>Setup</span></div>
+			<div class="dots">
+				{#each steps as _, i}
+					<div class="dot" class:active={currentStep >= i}></div>
+				{/each}
+			</div>
+		</header>
 
-			<div class="content-area">
-				{#if currentStep === 1}
-					<div in:fly={{ x: 30, duration: 500 }} out:fly={{ x: -30, duration: 300 }}>
-						<IndexerStep onNext={next} />
-					</div>
-				{:else if currentStep === 2}
-					<div in:fly={{ x: 30, duration: 500 }} out:fly={{ x: -30, duration: 300 }}>
-						<TransferStep onNext={next} />
-					</div>
-				{:else}
-					<div class="success-screen" in:fly={{ y: 20 }}>
-						<div class="icon-check">✓</div>
-						<h1>You're all set!</h1>
-						<p>Everything is configured and ready.</p>
-						<button class="btn-primary" onclick={() => (window.location.href = '/')}>
-							Enter Dashboard
-						</button>
-					</div>
-				{/if}
+		<div class="content-area" style="height: {activeHeight}px;">
+			<div class="step-tray" style="transform: translateX(-{currentStep * 100}%);">
+				<div class="step-wrapper" bind:clientHeight={stepHeights[0]}>
+					<IndexerStep bind:formState={formState.indexingClient} onNext={next} />
+				</div>
+
+				<div class="step-wrapper" bind:clientHeight={stepHeights[1]}>
+					<TransferStep bind:formState={formState.indexingClient} onNext={next} onBack={back} />
+				</div>
+
+				<div class="step-wrapper success-screen" bind:clientHeight={stepHeights[2]}>
+					<div class="icon-check">✓</div>
+					<h1>You're all set!</h1>
+					<p>Everything is configured and ready.</p>
+					<button class="btn-primary" onclick={() => (window.location.href = '/')}>
+						Enter Dashboard
+					</button>
+				</div>
 			</div>
 		</div>
-	{/if}
+	</div>
 </div>
 
 <style>
+	/* The outer box that hides the overflow */
+	.content-area {
+		position: relative;
+		overflow: hidden;
+		transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+		width: 100%;
+	}
+
+	/* The long horizontal strip containing all steps */
+	.step-tray {
+		display: flex;
+		width: 100%;
+		transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+		will-change: transform;
+		align-items: flex-start; /* Ensures height is measured correctly per step */
+	}
+
+	/* Each individual step is exactly 100% of the container's width */
+	.step-wrapper {
+		min-width: 100%;
+		width: 100%;
+		box-sizing: border-box;
+		padding: 32px; /* Move padding here so height is measured accurately */
+	}
+
+	/* Rest of your existing pretty styles */
 	:global(body) {
 		background: radial-gradient(circle at top right, #1e293b, #0f172a);
 		color: #f8fafc;
@@ -78,8 +98,7 @@
 	.setup-wrapper {
 		display: grid;
 		place-items: center;
-		min-height: 100vh;
-		padding: 20px;
+		min-height: 100dvh;
 	}
 
 	.container {
@@ -90,7 +109,6 @@
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 24px;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-		overflow: hidden;
 	}
 
 	header {
@@ -103,13 +121,11 @@
 
 	.brand {
 		font-weight: 800;
-		letter-spacing: -0.5px;
 		font-size: 1.1rem;
 	}
 	.brand span {
 		color: #38bdf8;
 	}
-
 	.dots {
 		display: flex;
 		gap: 8px;
@@ -126,13 +142,6 @@
 		box-shadow: 0 0 10px #38bdf8;
 	}
 
-	.content-area {
-		padding: 32px;
-		position: relative;
-		min-height: 380px;
-	}
-
-	/* Success Screen */
 	.success-screen {
 		text-align: center;
 	}
@@ -158,25 +167,5 @@
 		color: #0f172a;
 		cursor: pointer;
 		margin-top: 24px;
-	}
-
-	/* Simple Loader */
-	.loader {
-		text-align: center;
-		color: #94a3b8;
-	}
-	.orbit {
-		width: 40px;
-		height: 40px;
-		border: 3px solid #334155;
-		border-top-color: #38bdf8;
-		border-radius: 50%;
-		animation: spin 0.8s linear infinite;
-		margin: 0 auto 16px;
-	}
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 </style>
