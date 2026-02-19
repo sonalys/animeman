@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { configStore } from '$lib/stores/config';
 
-	let { formState = $bindable(), onNext, onBack } = $props();
+	let { formState = $bindable() } = $props();
 
 	// Local validation state
 	let error = $state(''); // This fixed the warning!
@@ -20,7 +20,6 @@
 		}
 
 		error = '';
-		onNext();
 	}
 </script>
 
@@ -47,7 +46,6 @@
 	{/if}
 
 	<div class="actions">
-		<button class="primary" onclick={onBack}>Go back</button>
 		<button class="primary" onclick={validateAndNext}>Continue</button>
 	</div>
 </div>

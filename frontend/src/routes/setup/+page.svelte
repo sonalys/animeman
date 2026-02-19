@@ -1,17 +1,12 @@
 <script lang="ts">
-	import { onMount } from 'svelte';
-	import { scale } from 'svelte/transition';
+	import { scale, slide } from 'svelte/transition';
 	import { apiFetch } from '$lib/api';
 	import IndexerStep from './IndexerStep.svelte';
 	import TransferStep from './TransferStep.svelte';
 	import type { IndexerConfig } from '$lib/api/types';
+	import Stepper from '$lib/components/MultiStep.svelte';
 
-	let steps = ['Indexer', 'Transfer', 'Library'];
-	let currentStep = $state(0);
-
-	let stepHeights = $state([0, 0, 0]);
-	let activeHeight = $derived(stepHeights[currentStep]);
-
+	// Reactive state for the whole form
 	let formState = $state({
 		indexingClient: {
 			url: 'http://localhost:9696',
@@ -23,123 +18,265 @@
 		transferClient: {};
 	});
 
-	const next = () => currentStep++;
-	const back = () => currentStep--;
+	function handleSubmit() {
+		console.log('Final Submission:', $state.snapshot(formState));
+		// Call your SvelteKit Action here
+	}
 </script>
 
-<div class="setup-wrapper">
-	<div class="container" in:scale={{ start: 0.9, duration: 400 }}>
-		<header>
-			<div class="brand">Animeman <span>Setup</span></div>
-			<div class="dots">
-				{#each steps as _, i}
-					<div class="dot" class:active={currentStep >= i}></div>
-				{/each}
-			</div>
-		</header>
+{#snippet indexerStep({ next }: any)}
+	<div class="step-content">
+		<div class="step-header">
+			<h2>Configure Indexer</h2>
+			<p>Connect your primary search provider.</p>
+		</div>
 
-		<div class="content-area" style="height: {activeHeight}px;">
-			<div class="step-tray" style="transform: translateX(-{currentStep * 100}%);">
-				<div class="step-wrapper" bind:clientHeight={stepHeights[0]}>
-					<IndexerStep bind:formState={formState.indexingClient} onNext={next} />
-				</div>
+		<div class="field-group">
+			<label for="url">Instance URL</label>
+			<input
+				id="url"
+				type="url"
+				bind:value={formState.indexingClient.url}
+				placeholder="http://localhost:9696"
+			/>
+		</div>
 
-				<div class="step-wrapper" bind:clientHeight={stepHeights[1]}>
-					<TransferStep bind:formState={formState.indexingClient} onNext={next} onBack={back} />
-				</div>
-
-				<div class="step-wrapper success-screen" bind:clientHeight={stepHeights[2]}>
-					<div class="icon-check">✓</div>
-					<h1>You're all set!</h1>
-					<p>Everything is configured and ready.</p>
-					<button class="btn-primary" onclick={() => (window.location.href = '/')}>
-						Enter Dashboard
-					</button>
-				</div>
+		<div class="field-group">
+			<label for="authMethod">Auth Method</label>
+			<div class="segmented-control" id="authMethod">
+				<button
+					type="button"
+					class:active={formState.indexingClient.auth.type === 'apiKey'}
+					onclick={() => (formState.indexingClient.auth.type = 'apiKey')}>API Key</button
+				>
+				<button
+					type="button"
+					class:active={formState.indexingClient.auth.type === 'userPassword'}
+					onclick={() => (formState.indexingClient.auth.type = 'userPassword')}>Credentials</button
+				>
 			</div>
 		</div>
+
+		{#if formState.indexingClient.auth.type === 'apiKey'}
+			<div class="field-group">
+				<label for="key">API Key</label>
+				<input
+					id="key"
+					type="password"
+					bind:value={formState.indexingClient.auth.key}
+					placeholder="Paste key here..."
+				/>
+			</div>
+		{:else}
+			<div class="field-row">
+				<div class="field-group">
+					<label for="user">User</label>
+					<input
+						id="user"
+						bind:value={formState.indexingClient.auth.username}
+						placeholder="Username"
+					/>
+				</div>
+				<div class="field-group">
+					<label for="pass">Pass</label>
+					<input
+						id="pass"
+						type="password"
+						bind:value={formState.indexingClient.auth.password}
+						placeholder="••••••"
+					/>
+				</div>
+			</div>
+		{/if}
+
+		<button class="btn-primary" onclick={next}> Continue </button>
 	</div>
-</div>
+{/snippet}
+
+{#snippet transferStep({ next, back }: any)}
+	<div class="step-content">
+		<div class="step-header">
+			<h2>Configure Indexer</h2>
+			<p>Connect your primary search provider.</p>
+		</div>
+
+		<div class="field-group">
+			<label for="url">Instance URL</label>
+			<input
+				id="url"
+				type="url"
+				bind:value={formState.indexingClient.url}
+				placeholder="http://localhost:9696"
+			/>
+		</div>
+
+		<div class="field-group">
+			<label for="authMethod">Auth Method</label>
+			<div class="segmented-control" id="authMethod">
+				<button
+					type="button"
+					class:active={formState.indexingClient.auth.type === 'apiKey'}
+					onclick={() => (formState.indexingClient.auth.type = 'apiKey')}>API Key</button
+				>
+				<button
+					type="button"
+					class:active={formState.indexingClient.auth.type === 'userPassword'}
+					onclick={() => (formState.indexingClient.auth.type = 'userPassword')}>Credentials</button
+				>
+			</div>
+		</div>
+
+		{#if formState.indexingClient.auth.type === 'apiKey'}
+			<div class="field-group">
+				<label for="key">API Key</label>
+				<input
+					id="key"
+					type="password"
+					bind:value={formState.indexingClient.auth.key}
+					placeholder="Paste key here..."
+				/>
+			</div>
+		{:else}
+			<div class="field-row">
+				<div class="field-group">
+					<label for="user">User</label>
+					<input
+						id="user"
+						bind:value={formState.indexingClient.auth.username}
+						placeholder="Username"
+					/>
+				</div>
+				<div class="field-group">
+					<label for="pass">Pass</label>
+					<input
+						id="pass"
+						type="password"
+						bind:value={formState.indexingClient.auth.password}
+						placeholder="••••••"
+					/>
+				</div>
+			</div>
+		{/if}
+
+		<div class="btn-group">
+			<button class="btn-ghost" onclick={back}>Back</button>
+			<button class="btn-primary" onclick={next}> Continue </button>
+		</div>
+	</div>
+{/snippet}
+
+{#snippet successStep()}
+	<div class="success-screen">
+		<div class="icon-check">✓</div>
+		<h1>Ready!</h1>
+		<button class="btn-primary" onclick={() => alert('Done!')}>Enter Dashboard</button>
+	</div>
+{/snippet}
+
+<Stepper
+	onComplete={handleSubmit}
+	steps={[
+		{ name: 'Indexer', component: indexerStep },
+		{ name: 'Library', component: transferStep },
+		{ name: 'Finish', component: successStep }
+	]}
+/>
 
 <style>
-	/* The outer box that hides the overflow */
-	.content-area {
-		position: relative;
-		overflow: hidden;
-		transition: height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		width: 100%;
-	}
-
-	/* The long horizontal strip containing all steps */
-	.step-tray {
+	.field-group {
 		display: flex;
-		width: 100%;
-		transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-		will-change: transform;
-		align-items: flex-start; /* Ensures height is measured correctly per step */
-	}
-
-	/* Each individual step is exactly 100% of the container's width */
-	.step-wrapper {
-		min-width: 100%;
-		width: 100%;
-		box-sizing: border-box;
-		padding: 32px; /* Move padding here so height is measured accurately */
-	}
-
-	/* Rest of your existing pretty styles */
-	:global(body) {
-		background: radial-gradient(circle at top right, #1e293b, #0f172a);
-		color: #f8fafc;
-		font-family: 'Inter', system-ui, sans-serif;
-		margin: 0;
-	}
-
-	.setup-wrapper {
-		display: grid;
-		place-items: center;
-		min-height: 100dvh;
-	}
-
-	.container {
-		width: 100%;
-		max-width: 440px;
-		background: rgba(30, 41, 59, 0.7);
-		backdrop-filter: blur(12px);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 24px;
-		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
-	}
-
-	header {
-		padding: 24px 32px;
-		display: flex;
-		justify-content: space-between;
-		align-items: center;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-	}
-
-	.brand {
-		font-weight: 800;
-		font-size: 1.1rem;
-	}
-	.brand span {
-		color: #38bdf8;
-	}
-	.dots {
-		display: flex;
+		flex-direction: column;
 		gap: 8px;
 	}
-	.dot {
-		width: 8px;
-		height: 8px;
-		background: #334155;
-		border-radius: 50%;
-		transition: 0.3s;
+
+	.segmented-control {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		background: rgba(15, 23, 42, 0.6);
+		padding: 4px;
+		border-radius: 14px;
+		border: 1px solid rgba(255, 255, 255, 0.05);
+		margin-bottom: 20px;
 	}
-	.dot.active {
+
+	.segmented-control button {
+		background: transparent;
+		border: none;
+		color: #94a3b8;
+		padding: 10px;
+		border-radius: 10px;
+		cursor: pointer;
+		font-weight: 600;
+	}
+
+	.segmented-control button.active {
 		background: #38bdf8;
-		box-shadow: 0 0 10px #38bdf8;
+		color: #0f172a;
+	}
+
+	label {
+		display: block;
+		font-size: 0.75rem;
+		font-weight: 700;
+		color: #64748b;
+		text-transform: uppercase;
+		letter-spacing: 0.5px;
+	}
+
+	.step-content {
+		justify-items: stretch;
+	}
+
+	/* Styles for the inside of your snippets */
+	.step-content h2 {
+		margin: 0 0 8px 0;
+		font-size: 1.5rem;
+	}
+	.step-content p {
+		color: #94a3b8;
+		margin-bottom: 24px;
+	}
+
+	input {
+		width: 100%;
+		box-sizing: border-box;
+		padding: 14px;
+		background: rgba(15, 23, 42, 0.6);
+		border: 1px solid rgba(255, 255, 255, 0.1);
+		border-radius: 12px;
+		color: white;
+		margin-bottom: 15px;
+	}
+
+	.btn-group {
+		display: flex;
+		gap: 12px;
+	}
+
+	.btn-primary {
+		flex: 1;
+		width: 100%;
+		padding: 14px;
+		background: #38bdf8;
+		border: none;
+		border-radius: 12px;
+		font-weight: 700;
+		color: #0f172a;
+		cursor: pointer;
+		transition: transform 0.2s;
+	}
+	.btn-primary:hover {
+		transform: translateY(-2px);
+		background: #7dd3fc;
+	}
+
+	.btn-ghost {
+		padding: 14px 24px;
+		background: transparent;
+		color: #94a3b8;
+		border: 1px solid #334155;
+		border-radius: 12px;
+		cursor: pointer;
 	}
 
 	.success-screen {
@@ -149,23 +286,10 @@
 		width: 64px;
 		height: 64px;
 		background: #059669;
-		color: white;
-		font-size: 32px;
+		border-radius: 50%;
 		display: grid;
 		place-items: center;
-		border-radius: 50%;
-		margin: 0 auto 24px;
-	}
-
-	.btn-primary {
-		width: 100%;
-		padding: 14px;
-		background: #38bdf8;
-		border: none;
-		border-radius: 12px;
-		font-weight: 700;
-		color: #0f172a;
-		cursor: pointer;
-		margin-top: 24px;
+		margin: 0 auto 16px;
+		font-size: 2rem;
 	}
 </style>

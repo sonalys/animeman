@@ -2,7 +2,7 @@
 	import { apiFetch } from '$lib/api';
 	import type { IndexerConfig } from '$lib/api/types';
 
-	let { formState = $bindable(), onNext } = $props();
+	let { formState = $bindable() } = $props();
 
 	let loading = $state(false);
 	let error = $state('');
@@ -11,7 +11,6 @@
 		loading = true;
 		error = '';
 		try {
-			onNext();
 		} catch (e: any) {
 			error = e.details || 'Connection failed. Check settings.';
 		} finally {
