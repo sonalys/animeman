@@ -2,7 +2,7 @@
 	import { apiFetch } from '$lib/api';
 	import { userId } from '$lib/userStore';
 	import { goto } from '$app/navigation';
-	import type { AuthResponse, ErrorResponse, UserRegistration } from '$lib/types';
+	import type { AuthResponse, ErrorResponse, UserRegistration } from '$lib/api/types';
 
 	// Strictly typed state based on your OpenAPI schema
 	let username = '';
@@ -19,26 +19,17 @@
 		fieldErrors = {};
 
 		try {
-			// 1. Post to /register
-			// The API returns { id: string } on 201
-			await apiFetch<{ id: string }>('/register', 'POST', {
-				username,
-				password
-			} satisfies UserRegistration);
+			await apiFetch<{ id: string }>('/register', { method: 'POST', body: { username, password } });
 
-			// 2. The /register call sets a Set-Cookie: SESSION_ID
-			// Now we verify the session to update our global app state
 			const auth = await apiFetch<AuthResponse>('/authentication/whoami');
 
 			userId.set(auth.userID);
 
-			// 3. Redirect to the dashboard/home
 			goto('/');
 		} catch (e) {
 			const err = e as ErrorResponse;
 			globalError = err.details || 'An unexpected error occurred.';
 
-			// Map the FieldError array to our local state for inline UI hints
 			if (err.fieldErrors) {
 				err.fieldErrors.forEach((fe) => {
 					fieldErrors[fe.field] = fe.message;

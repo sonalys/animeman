@@ -14,9 +14,12 @@ import (
 	"github.com/sonalys/animeman/internal/domain/users"
 )
 
-func (h *Handler) AuthenticationLogin(ctx context.Context, req *ogen.AuthenticationLoginReq) (*ogen.AuthenticationLoginOK, error) {
-	userID, err := h.Usecases.Login(ctx, req.Username, []byte(req.Password))
+func (h *Handler) AuthenticationLogin(ctx context.Context, req *ogen.AuthenticationLoginReq) (*ogen.AuthenticationLoginNoContent, error) {
+	userID, err := h.Usecases.Login(ctx, req.Username, req.Password)
 	if err != nil {
+		if errors.Is(err, users.ErrUsernamePasswordMismatch) {
+			return nil, apperr.NewPublicError(err, "invalid username or password")
+		}
 		return nil, err
 	}
 
@@ -28,7 +31,7 @@ func (h *Handler) AuthenticationLogin(ctx context.Context, req *ogen.Authenticat
 		return nil, err
 	}
 
-	return &ogen.AuthenticationLoginOK{
+	return &ogen.AuthenticationLoginNoContent{
 		SetCookie: fmt.Sprintf("SESSION_ID=%s; Path=/; HttpOnly; SameSite=Strict", stringifiedToken),
 	}, nil
 }

@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { apiFetch } from '$lib/api';
-	import type { Indexer, IndexerConfig, AuthType, ErrorResponse } from '$lib/types';
+	import type { Indexer, IndexerConfig, AuthType, ErrorResponse } from '$lib/api/types';
 
 	// State Management
 	let indexers: Indexer[] = [];
@@ -47,7 +47,7 @@
 		fieldErrors = {};
 
 		try {
-			const result = await apiFetch<Indexer>('/indexers', 'POST', config);
+			const result = await apiFetch<Indexer>('/indexers', { method: 'POST', body: config });
 			indexers = [...indexers, result];
 			showCreate = false;
 			// Reset Form

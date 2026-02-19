@@ -57,7 +57,7 @@ type UsersInvoker interface {
 	// Authenticate as the specified identity.
 	//
 	// POST /authentication/login
-	AuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (*AuthenticationLoginOK, error)
+	AuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (*AuthenticationLoginNoContent, error)
 	// AuthenticationWhoAmI invokes AuthenticationWhoAmI operation.
 	//
 	// Returns current information on the authenticated entity.
@@ -112,12 +112,12 @@ func (c *Client) requestURL(ctx context.Context) *url.URL {
 // Authenticate as the specified identity.
 //
 // POST /authentication/login
-func (c *Client) AuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (*AuthenticationLoginOK, error) {
+func (c *Client) AuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (*AuthenticationLoginNoContent, error) {
 	res, err := c.sendAuthenticationLogin(ctx, request)
 	return res, err
 }
 
-func (c *Client) sendAuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (res *AuthenticationLoginOK, err error) {
+func (c *Client) sendAuthenticationLogin(ctx context.Context, request *AuthenticationLoginReq) (res *AuthenticationLoginNoContent, err error) {
 	// Validate request before sending.
 	if err := func() error {
 		if err := request.Validate(); err != nil {

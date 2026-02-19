@@ -18,7 +18,7 @@ var _ Handler = UnimplementedHandler{}
 // Authenticate as the specified identity.
 //
 // POST /authentication/login
-func (UnimplementedHandler) AuthenticationLogin(ctx context.Context, req *AuthenticationLoginReq) (r *AuthenticationLoginOK, _ error) {
+func (UnimplementedHandler) AuthenticationLogin(ctx context.Context, req *AuthenticationLoginReq) (r *AuthenticationLoginNoContent, _ error) {
 	return r, ht.ErrNotImplemented
 }
 

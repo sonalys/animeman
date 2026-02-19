@@ -23,7 +23,6 @@ type Handler struct {
 	Usecases  usecases.Usecases
 }
 
-// IndexersGet implements [ogen.Handler].
 func (h *Handler) IndexersGet(ctx context.Context) ([]ogen.Indexer, error) {
 	userID, err := security.GetIdentity(ctx)
 	if err != nil {
@@ -44,7 +43,6 @@ func (h *Handler) IndexersGet(ctx context.Context) ([]ogen.Indexer, error) {
 	}), nil
 }
 
-// IndexersPost implements [ogen.Handler].
 func (h *Handler) IndexersPost(ctx context.Context, req *ogen.IndexerConfig) (*ogen.IndexersPostCreated, error) {
 	userID, err := security.GetIdentity(ctx)
 	if err != nil {
@@ -98,21 +96,23 @@ func New(
 		ogen.WithPathPrefix("/api/v1"),
 		ogen.WithTracerProvider(otel.Provider.TracerProvider()),
 		ogen.WithErrorHandler(validationErrorHandler(handler)),
-		ogen.WithNotFound(func(w http.ResponseWriter, r *http.Request) {
-			w.WriteHeader(http.StatusNotFound)
-
-			response := ogen.ErrorResponse{
-				Details:     ogen.NewOptString("not found"),
-				FieldErrors: nil,
-			}
-
-			if err := json.NewEncoder(w).Encode(response); err != nil {
-				log.Error().Ctx(r.Context()).Err(err).Msg("failed to encode error response")
-			}
-		}),
+		ogen.WithNotFound(notFound),
 		ogen.WithMiddleware(
 			middlewares.Logger,
 			middlewares.Recoverer,
 		),
 	)
+}
+
+func notFound(w http.ResponseWriter, r *http.Request) {
+	w.WriteHeader(http.StatusNotFound)
+
+	response := ogen.ErrorResponse{
+		Details:     ogen.NewOptString("not found"),
+		FieldErrors: nil,
+	}
+
+	if err := json.NewEncoder(w).Encode(response); err != nil {
+		log.Error().Ctx(r.Context()).Err(err).Msg("failed to encode error response")
+	}
 }

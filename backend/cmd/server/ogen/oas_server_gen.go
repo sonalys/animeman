@@ -42,7 +42,7 @@ type UsersHandler interface {
 	// Authenticate as the specified identity.
 	//
 	// POST /authentication/login
-	AuthenticationLogin(ctx context.Context, req *AuthenticationLoginReq) (*AuthenticationLoginOK, error)
+	AuthenticationLogin(ctx context.Context, req *AuthenticationLoginReq) (*AuthenticationLoginNoContent, error)
 	// AuthenticationWhoAmI implements AuthenticationWhoAmI operation.
 	//
 	// Returns current information on the authenticated entity.

@@ -1,12 +1,12 @@
 package users
 
 import (
-	"crypto/subtle"
 	"fmt"
 	"net/url"
 	"slices"
 	"time"
 
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/collections"
@@ -38,21 +38,22 @@ func NewUser(
 		return nil, fmt.Errorf("hashing user password: %w", err)
 	}
 
+	log.Trace().
+		Str("username", username).
+		Str("password", string(password)).
+		Str("hashedPassword", string(hashedPassword)).
+		Msg("Creating new user")
+
 	return &User{
 		ID:           shared.NewID[shared.UserID](),
 		Username:     username,
-		PasswordHash: hashedPassword,
+		PasswordHash: hashedPassword[:],
 	}, nil
 }
 
 func (u User) Login(password []byte) error {
-	hashedPassword, err := hashPassword(password)
-	if err != nil {
-		return fmt.Errorf("hashing user password: %w", err)
-	}
-
-	if subtle.ConstantTimeCompare(u.PasswordHash, hashedPassword) != 0 {
-		return ErrInvalidPassword
+	if err := bcrypt.CompareHashAndPassword(u.PasswordHash, password); err != nil {
+		return ErrUsernamePasswordMismatch
 	}
 
 	return nil

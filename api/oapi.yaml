@@ -101,7 +101,7 @@ paths:
       responses:
         default:
           $ref: "#/components/responses/ErrorResponse"
-        "200":
+        "204":
           description: Successfully authenticated
           headers:
             Set-Cookie:

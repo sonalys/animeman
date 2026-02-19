@@ -33,8 +33,8 @@ services:
       - postgres
       - migrate
     environment:
-      - DATABASE_CONN=postgres://animeman:animeman@postgres:5432/animeman?sslmode=disable
-      - CONFIG_PATH=/etc/app/config.yaml
+      - POSTGRES_CONN=postgres://animeman:animeman@postgres:5432/animeman?sslmode=disable
+      - LOG_LEVEL=debug
     ports:
       - "8080:8080"
     volumes:

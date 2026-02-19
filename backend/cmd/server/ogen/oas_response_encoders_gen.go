@@ -16,7 +16,7 @@ import (
 	"go.opentelemetry.io/otel/trace"
 )
 
-func encodeAuthenticationLoginResponse(response *AuthenticationLoginOK, w http.ResponseWriter, span trace.Span) error {
+func encodeAuthenticationLoginResponse(response *AuthenticationLoginNoContent, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Access-Control-Expose-Headers", "Set-Cookie")
 	// Encoding response headers.
 	{
@@ -34,8 +34,8 @@ func encodeAuthenticationLoginResponse(response *AuthenticationLoginOK, w http.R
 			}
 		}
 	}
-	w.WriteHeader(200)
-	span.SetStatus(codes.Ok, http.StatusText(200))
+	w.WriteHeader(204)
+	span.SetStatus(codes.Ok, http.StatusText(204))
 
 	return nil
 }

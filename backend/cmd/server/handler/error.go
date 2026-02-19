@@ -103,11 +103,16 @@ func validationErrorHandler(client ogen.Handler) func(ctx context.Context, w htt
 		w.WriteHeader(statusCodeResponse.StatusCode)
 		w.Header().Set("Content-Type", "application/json")
 
+		log.Error().
+			Ctx(ctx).
+			Err(err).
+			Msg("Request validation failed")
+
 		if err := json.NewEncoder(w).Encode(statusCodeResponse.Response); err != nil {
 			log.Error().
 				Ctx(ctx).
 				Err(err).
-				Msg("failed to encode error response")
+				Msg("Failed to encode error response")
 		}
 	}
 }

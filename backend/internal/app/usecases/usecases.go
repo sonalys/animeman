@@ -31,7 +31,7 @@ type (
 
 	Usecases interface {
 		RegisterUser(ctx context.Context, username string, password string) (*users.User, error)
-		Login(ctx context.Context, username string, password []byte) (*shared.UserID, error)
+		Login(ctx context.Context, username string, password string) (*shared.UserID, error)
 		CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.IndexerClient, error)
 		ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.IndexerClient, error)
 	}
@@ -71,7 +71,7 @@ func (u usecases) RegisterUser(ctx context.Context, username string, password st
 	return newUser, nil
 }
 
-func (u usecases) Login(ctx context.Context, username string, password []byte) (*shared.UserID, error) {
+func (u usecases) Login(ctx context.Context, username string, password string) (*shared.UserID, error) {
 	ctx, span := otel.Tracer.Start(ctx, "Login")
 	defer span.End()
 
@@ -81,7 +81,7 @@ func (u usecases) Login(ctx context.Context, username string, password []byte) (
 		return nil, err
 	}
 
-	if err := user.Login(password); err != nil {
+	if err := user.Login([]byte(password)); err != nil {
 		logError(ctx, err, "Failed login user")
 		return nil, apperr.New(err, codes.InvalidArgument)
 	}

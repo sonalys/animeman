@@ -55,18 +55,18 @@ func (s *AuthenticationAPIKey) SetKey(val string) {
 	s.Key = val
 }
 
-// AuthenticationLoginOK is response for AuthenticationLogin operation.
-type AuthenticationLoginOK struct {
+// AuthenticationLoginNoContent is response for AuthenticationLogin operation.
+type AuthenticationLoginNoContent struct {
 	SetCookie string
 }
 
 // GetSetCookie returns the value of SetCookie.
-func (s *AuthenticationLoginOK) GetSetCookie() string {
+func (s *AuthenticationLoginNoContent) GetSetCookie() string {
 	return s.SetCookie
 }
 
 // SetSetCookie sets the value of SetCookie.
-func (s *AuthenticationLoginOK) SetSetCookie(val string) {
+func (s *AuthenticationLoginNoContent) SetSetCookie(val string) {
 	s.SetCookie = val
 }
 

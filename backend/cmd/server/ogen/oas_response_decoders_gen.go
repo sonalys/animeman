@@ -16,11 +16,11 @@ import (
 	"github.com/ogen-go/ogen/validate"
 )
 
-func decodeAuthenticationLoginResponse(resp *http.Response) (res *AuthenticationLoginOK, _ error) {
+func decodeAuthenticationLoginResponse(resp *http.Response) (res *AuthenticationLoginNoContent, _ error) {
 	switch resp.StatusCode {
-	case 200:
-		// Code 200.
-		var wrapper AuthenticationLoginOK
+	case 204:
+		// Code 204.
+		var wrapper AuthenticationLoginNoContent
 		h := uri.NewHeaderDecoder(resp.Header)
 		// Parse "Set-Cookie" header.
 		{

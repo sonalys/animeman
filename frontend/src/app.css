@@ -20,3 +20,13 @@ body {
     margin: 0;
     font-family: 'Inter', system-ui, sans-serif;
 }
+
+input:focus,
+select:focus {
+    outline: none;
+    border-color: var(--accent);
+    box-shadow:
+        0 0 0 2px rgba(var(--accent-rgb, 124, 58, 237), 0.2),
+        0 0 8px var(--accent);
+    transition: all 0.2s ease;
+}

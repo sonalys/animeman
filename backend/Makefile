@@ -18,7 +18,7 @@ OGEN = go tool -modfile=$(TOOLS_DIR)/ogen/go.mod ogen -config $(CONFIG_DIR)/.oge
 VERSION := $(shell git describe --tags --always --dirty)
 
 run:
-	CONFIG_PATH=$(CONFIG_DIR)/config.yaml go run ./cmd/server/...
+	export $$(cat .config/.env.local | xargs) && go run ./cmd/server/...
 
 build:
 	CGO_ENABLED=0 go build -o ./bin/animeman ./cmd/server/main.go

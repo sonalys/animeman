@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { apiFetch } from '$lib/api';
 	import { userId } from '$lib/userStore';
-	import type { ErrorResponse, FieldError } from '$lib/types';
+	import type { ErrorResponse, FieldError } from '$lib/api/types';
 
 	let isLogin = true; // State toggle
 	let username = '';
@@ -18,10 +18,8 @@
 		const endpoint = isLogin ? '/authentication/login' : '/register';
 
 		try {
-			// 1. Perform Auth Action
-			await apiFetch(endpoint, 'POST', { username, password });
+			await apiFetch(endpoint, { method: 'POST', body: { username, password } });
 
-			// 2. Refresh Auth State
 			const auth = await apiFetch<{ userID: string }>('/authentication/whoami');
 			userId.set(auth.userID);
 		} catch (e) {
@@ -96,10 +94,6 @@
 		border-radius: 8px;
 		color: white;
 		box-sizing: border-box;
-	}
-	input:focus {
-		outline: 2px solid var(--accent);
-		border-color: transparent;
 	}
 
 	.btn-primary {

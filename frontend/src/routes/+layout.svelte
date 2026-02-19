@@ -1,31 +1,28 @@
 <script lang="ts">
 	import '../app.css';
 	import { onMount } from 'svelte';
-	import { apiFetch } from '$lib/api';
+	import { apiFetch } from '$lib/api/index';
 	import { userId, authChecked } from '$lib/userStore';
 
 	onMount(async () => {
 		try {
-			// Validate the JWT cookie with the Go backend
 			const data = await apiFetch<{ userID: string }>('/authentication/whoami');
 			userId.set(data.userID);
 		} catch (e) {
-			// If 401 or invalid signature, we treat them as a guest
 			userId.set(null);
 		} finally {
-			// This is the key: we only reveal the page once the server responds
 			authChecked.set(true);
 		}
 	});
 </script>
 
-{#if !$authChecked}
+{#if $authChecked}
+	<slot />
+{:else}
 	<div class="splash">
 		<div class="loader"></div>
 		<p>Synchronizing with Overlord...</p>
 	</div>
-{:else}
-	<slot />
 {/if}
 
 <style>

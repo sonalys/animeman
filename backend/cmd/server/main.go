@@ -11,10 +11,10 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/cmd/server/configs"
 	"github.com/sonalys/animeman/cmd/server/handler"
 	"github.com/sonalys/animeman/internal/app/jwt"
 	"github.com/sonalys/animeman/internal/app/usecases"
+	"github.com/sonalys/animeman/internal/utils/optional"
 	"github.com/sonalys/animeman/internal/utils/otel"
 	"github.com/sonalys/animeman/internal/utils/roundtripper"
 )
@@ -42,19 +42,23 @@ func main() {
 		Str("version", version).
 		Msgf("Starting Animeman")
 
-	configPath := configs.ReadEnv("CONFIG_PATH", "config.yaml")
-
-	config, err := configs.ReadConfig(configPath)
+	logLvString := optional.Coalesce(os.Getenv("LOG_LEVEL"), "info")
+	logLv, err := zerolog.ParseLevel(logLvString)
 	if err != nil {
 		log.Fatal().
 			Err(err).
-			Str("path", configPath).
-			Msg("Invalid configuration")
+			Msg("Could not parse log level")
 	}
 
-	newLogLevel := config.LogLevel.Convert()
-	log.Info().Stringer("logLevel", newLogLevel).Msg("Adjusting log verbosity")
-	zerolog.SetGlobalLevel(config.LogLevel.Convert())
+	postgresConnStr := os.Getenv("POSTGRES_CONN")
+	if postgresConnStr == "" {
+		log.Fatal().
+			Err(err).
+			Msg("Missing env POSTGRES_CONN")
+	}
+
+	log.Info().Stringer("logLevel", logLv).Msg("Adjusting log verbosity")
+	zerolog.SetGlobalLevel(logLv)
 
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 
@@ -68,7 +72,7 @@ func main() {
 	log.Info().
 		Msg("Connecting to PostgreSQL")
 
-	adapters := initializeAdapters(ctx, config)
+	adapters := initializeAdapters(ctx, postgresConnStr)
 	jwtClient := jwt.NewClient([]byte("secret"))
 	usecases := usecases.NewUsecases(usecases.Repositories{
 		UserRepository:           adapters.postgresClient.UserRepository(),

@@ -127,7 +127,7 @@ func (s *Server) handleAuthenticationLoginRequest(args [0]string, argsEscaped bo
 		}
 	}()
 
-	var response *AuthenticationLoginOK
+	var response *AuthenticationLoginNoContent
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
@@ -143,7 +143,7 @@ func (s *Server) handleAuthenticationLoginRequest(args [0]string, argsEscaped bo
 		type (
 			Request  = *AuthenticationLoginReq
 			Params   = struct{}
-			Response = *AuthenticationLoginOK
+			Response = *AuthenticationLoginNoContent
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
