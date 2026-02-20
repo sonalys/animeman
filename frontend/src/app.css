@@ -30,3 +30,50 @@ select:focus {
         0 0 8px var(--accent);
     transition: all 0.2s ease;
 }
+
+label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 700;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 5px;
+}
+
+input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 14px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 12px;
+    color: white;
+}
+
+.btn-primary {
+    flex: 1;
+    width: 100%;
+    padding: 14px;
+    background: #38bdf8;
+    border: none;
+    border-radius: 12px;
+    font-weight: 700;
+    color: #0f172a;
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.btn-primary:hover {
+    transform: translateY(-2px);
+    background: #7dd3fc;
+}
+
+.btn-ghost {
+    padding: 14px 24px;
+    background: transparent;
+    color: #94a3b8;
+    border: 1px solid #334155;
+    border-radius: 12px;
+    cursor: pointer;
+}

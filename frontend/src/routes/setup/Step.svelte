@@ -3,11 +3,10 @@
 	interface Props {
 		onLoaded: () => void; // No argument
 		onChange: (value: string) => void; // Required string
-		onOptional?: (value: number | null) => void; // Optional
 	}
 
 	// Use the $props() rune
-	let { onLoaded, onChange, onOptional }: Props = $props();
+	let { onLoaded, onChange }: Props = $props();
 
 	function handleAction() {
 		onChange('New Value'); // Just call it like a function

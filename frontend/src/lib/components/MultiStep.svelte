@@ -124,7 +124,7 @@
 	.content-area {
 		position: relative;
 		overflow: hidden;
-		transition: height 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+		transition: height 0.2s linear;
 		width: 100%;
 	}
 

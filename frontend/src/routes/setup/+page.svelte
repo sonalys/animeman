@@ -1,10 +1,13 @@
 <script lang="ts">
-	import { scale, slide } from 'svelte/transition';
 	import { apiFetch } from '$lib/api';
-	import IndexerStep from './IndexerStep.svelte';
-	import TransferStep from './TransferStep.svelte';
-	import type { IndexerConfig } from '$lib/api/types';
+	import type {
+		IndexerConfig as IndexerClientConfig,
+		TransferClientConfig,
+		WatchlistConfig
+	} from '$lib/api/types';
 	import Stepper from '$lib/components/MultiStep.svelte';
+	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
+	import { slide } from 'svelte/transition';
 
 	// Reactive state for the whole form
 	let formState = $state({
@@ -12,23 +15,50 @@
 			url: 'http://localhost:9696',
 			auth: { type: 'apiKey', key: '' }
 		},
-		transferClient: {}
+		transferClient: {
+			url: 'http://localhost:8080',
+			auth: { type: 'userPassword', username: '', password: '' }
+		},
+		watchlist: {
+			externalID: '',
+			syncFrequencySeconds: 300
+		}
 	} as {
-		indexingClient: IndexerConfig;
-		transferClient: {};
+		indexingClient: IndexerClientConfig;
+		transferClient: TransferClientConfig;
+		watchlist: WatchlistConfig;
 	});
 
 	function handleSubmit() {
 		console.log('Final Submission:', $state.snapshot(formState));
-		// Call your SvelteKit Action here
 	}
+
+	const authOptions = [
+		{ label: 'API Key', value: 'apiKey' },
+		{ label: 'Credentials', value: 'userPassword' }
+	];
+
+	const sourceOptions = [
+		{ label: 'None', value: undefined },
+		{ label: 'AniList', value: 'anilist' },
+		{ label: 'MAL', value: 'mal' },
+		{ label: 'Local', value: 'local' }
+	];
+
+	// Helper to display friendly frequency names
+	const frequencies = [
+		{ label: '5m', value: 300 },
+		{ label: '1h', value: 3600 },
+		{ label: '6h', value: 21600 },
+		{ label: 'Daily', value: 86400 }
+	];
 </script>
 
 {#snippet indexerStep({ next }: any)}
 	<div class="step-content">
 		<div class="step-header">
 			<h2>Configure Indexer</h2>
-			<p>Connect your primary search provider.</p>
+			<p>For finding your favorite episode</p>
 		</div>
 
 		<div class="field-group">
@@ -41,21 +71,11 @@
 			/>
 		</div>
 
-		<div class="field-group">
-			<label for="authMethod">Auth Method</label>
-			<div class="segmented-control" id="authMethod">
-				<button
-					type="button"
-					class:active={formState.indexingClient.auth.type === 'apiKey'}
-					onclick={() => (formState.indexingClient.auth.type = 'apiKey')}>API Key</button
-				>
-				<button
-					type="button"
-					class:active={formState.indexingClient.auth.type === 'userPassword'}
-					onclick={() => (formState.indexingClient.auth.type = 'userPassword')}>Credentials</button
-				>
-			</div>
-		</div>
+		<SegmentedControl
+			bind:active={formState.indexingClient.auth.type}
+			options={authOptions}
+			name="Auth Type"
+		/>
 
 		{#if formState.indexingClient.auth.type === 'apiKey'}
 			<div class="field-group">
@@ -96,8 +116,8 @@
 {#snippet transferStep({ next, back }: any)}
 	<div class="step-content">
 		<div class="step-header">
-			<h2>Configure Indexer</h2>
-			<p>Connect your primary search provider.</p>
+			<h2>Configure Transfer Client</h2>
+			<p>For downloading joy</p>
 		</div>
 
 		<div class="field-group">
@@ -105,34 +125,24 @@
 			<input
 				id="url"
 				type="url"
-				bind:value={formState.indexingClient.url}
+				bind:value={formState.transferClient.url}
 				placeholder="http://localhost:9696"
 			/>
 		</div>
 
-		<div class="field-group">
-			<label for="authMethod">Auth Method</label>
-			<div class="segmented-control" id="authMethod">
-				<button
-					type="button"
-					class:active={formState.indexingClient.auth.type === 'apiKey'}
-					onclick={() => (formState.indexingClient.auth.type = 'apiKey')}>API Key</button
-				>
-				<button
-					type="button"
-					class:active={formState.indexingClient.auth.type === 'userPassword'}
-					onclick={() => (formState.indexingClient.auth.type = 'userPassword')}>Credentials</button
-				>
-			</div>
-		</div>
+		<SegmentedControl
+			bind:active={formState.transferClient.auth.type}
+			options={authOptions}
+			name="Auth Type"
+		/>
 
-		{#if formState.indexingClient.auth.type === 'apiKey'}
+		{#if formState.transferClient.auth.type === 'apiKey'}
 			<div class="field-group">
 				<label for="key">API Key</label>
 				<input
 					id="key"
 					type="password"
-					bind:value={formState.indexingClient.auth.key}
+					bind:value={formState.transferClient.auth.key}
 					placeholder="Paste key here..."
 				/>
 			</div>
@@ -142,7 +152,7 @@
 					<label for="user">User</label>
 					<input
 						id="user"
-						bind:value={formState.indexingClient.auth.username}
+						bind:value={formState.transferClient.auth.username}
 						placeholder="Username"
 					/>
 				</div>
@@ -151,7 +161,7 @@
 					<input
 						id="pass"
 						type="password"
-						bind:value={formState.indexingClient.auth.password}
+						bind:value={formState.transferClient.auth.password}
 						placeholder="••••••"
 					/>
 				</div>
@@ -165,11 +175,61 @@
 	</div>
 {/snippet}
 
-{#snippet successStep()}
+{#snippet watchlistStep({ next, back }: any)}
+	<div class="step-content">
+		<div class="step-header">
+			<h2>Watchlist</h2>
+			<p>For keeping your stash up-to-date</p>
+		</div>
+
+		<div class="field-group">
+			<SegmentedControl
+				bind:active={formState.watchlist.source}
+				options={sourceOptions}
+				name="Provider"
+			/>
+		</div>
+
+		{#if formState.watchlist.source == 'anilist' || formState.watchlist.source == 'mal'}
+			<div class="external-fields" transition:slide>
+				<div class="field-group">
+					<label for="extId">Username</label>
+					<input id="extId" bind:value={formState.watchlist.externalID} placeholder="Username" />
+				</div>
+
+				<div class="field-group">
+					<label for="freq">Sync Frequency</label>
+					<div class="frequency-grid" id="freq">
+						{#each frequencies as freq}
+							<button
+								type="button"
+								class="freq-btn"
+								class:active={formState.watchlist.syncFrequencySeconds === freq.value}
+								onclick={() => (formState.watchlist.syncFrequencySeconds = freq.value)}
+							>
+								{freq.label}
+							</button>
+						{/each}
+					</div>
+				</div>
+			</div>
+		{/if}
+
+		<div class="btn-group">
+			<button class="btn-ghost" onclick={back}>Back</button>
+			<button class="btn-primary" onclick={next}>Continue</button>
+		</div>
+	</div>
+{/snippet}
+
+{#snippet successStep({ next, back }: any)}
 	<div class="success-screen">
 		<div class="icon-check">✓</div>
 		<h1>Ready!</h1>
-		<button class="btn-primary" onclick={() => alert('Done!')}>Enter Dashboard</button>
+		<div class="btn-group">
+			<button class="btn-ghost" onclick={back}>Back</button>
+			<button class="btn-primary" onclick={next}> Continue </button>
+		</div>
 	</div>
 {/snippet}
 
@@ -178,105 +238,67 @@
 	steps={[
 		{ name: 'Indexer', component: indexerStep },
 		{ name: 'Library', component: transferStep },
+		{ name: 'Watchlist', component: watchlistStep },
 		{ name: 'Finish', component: successStep }
 	]}
 />
 
 <style>
 	.field-group {
-		display: flex;
-		flex-direction: column;
-		gap: 8px;
+		margin-bottom: 5px;
 	}
 
-	.segmented-control {
+	/* Specific Frequency Button Grid */
+	.frequency-grid {
 		display: grid;
-		grid-template-columns: 1fr 1fr;
-		background: rgba(15, 23, 42, 0.6);
-		padding: 4px;
-		border-radius: 14px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
+		grid-template-columns: repeat(4, 1fr);
+		gap: 8px;
 		margin-bottom: 20px;
 	}
 
-	.segmented-control button {
-		background: transparent;
-		border: none;
+	.freq-btn {
+		background: rgba(255, 255, 255, 0.03);
+		border: 1px solid rgba(255, 255, 255, 0.05);
 		color: #94a3b8;
 		padding: 10px;
 		border-radius: 10px;
-		cursor: pointer;
 		font-weight: 600;
+		cursor: pointer;
+		transition: all 0.2s;
 	}
 
-	.segmented-control button.active {
-		background: #38bdf8;
-		color: #0f172a;
+	.freq-btn:hover {
+		background: rgba(255, 255, 255, 0.08);
 	}
 
-	label {
-		display: block;
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: #64748b;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
+	.freq-btn.active {
+		background: rgba(56, 189, 248, 0.15);
+		border-color: #38bdf8;
+		color: #38bdf8;
 	}
 
 	.step-content {
 		justify-items: stretch;
+		display: flex;
+		flex-direction: column;
+		gap: 10px;
 	}
 
 	/* Styles for the inside of your snippets */
 	.step-content h2 {
-		margin: 0 0 8px 0;
 		font-size: 1.5rem;
-	}
-	.step-content p {
-		color: #94a3b8;
-		margin-bottom: 24px;
+		margin: 0;
 	}
 
-	input {
-		width: 100%;
-		box-sizing: border-box;
-		padding: 14px;
-		background: rgba(15, 23, 42, 0.6);
-		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 12px;
-		color: white;
-		margin-bottom: 15px;
+	.step-content p {
+		margin: 0;
+		margin-bottom: 20px;
+		color: #94a3b8;
 	}
 
 	.btn-group {
 		display: flex;
 		gap: 12px;
-	}
-
-	.btn-primary {
-		flex: 1;
-		width: 100%;
-		padding: 14px;
-		background: #38bdf8;
-		border: none;
-		border-radius: 12px;
-		font-weight: 700;
-		color: #0f172a;
-		cursor: pointer;
-		transition: transform 0.2s;
-	}
-	.btn-primary:hover {
-		transform: translateY(-2px);
-		background: #7dd3fc;
-	}
-
-	.btn-ghost {
-		padding: 14px 24px;
-		background: transparent;
-		color: #94a3b8;
-		border: 1px solid #334155;
-		border-radius: 12px;
-		cursor: pointer;
 	}
 
 	.success-screen {
