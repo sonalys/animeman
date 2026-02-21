@@ -8,20 +8,19 @@ import (
 	"strings"
 
 	"github.com/sonalys/animeman/internal/app/apperr"
+	"github.com/sonalys/animeman/internal/domain/authentication"
 	"google.golang.org/grpc/codes"
 )
 
 type authTransport struct {
-	next     http.RoundTripper
-	username string
-	password string
+	next http.RoundTripper
+	auth authentication.Authentication
 }
 
-func newAuthTransport(next http.RoundTripper, username, password string) http.RoundTripper {
+func newAuthTransport(next http.RoundTripper, auth authentication.Authentication) http.RoundTripper {
 	return &authTransport{
-		next:     next,
-		username: username,
-		password: password,
+		next: next,
+		auth: auth,
 	}
 }
 
@@ -30,7 +29,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	for {
 		resp, err := t.next.RoundTrip(req.Clone(ctx))
-		if err != nil || resp.StatusCode != http.StatusForbidden {
+		if err != nil || resp.StatusCode != http.StatusForbidden || t.auth.Type == authentication.AuthenticationTypeNone {
 			return resp, err
 		}
 
@@ -41,11 +40,17 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			return nil, fmt.Errorf("closing response body: %w", err)
 		}
 
+		if t.auth.Type == authentication.AuthenticationTypeAPIKey {
+			return nil, authentication.ErrUnsupportedAuthentication
+		}
+
+		auth := t.auth.AuthenticationUserPassword
+
 		var path = "/auth/login"
 
 		body := url.Values{
-			"username": {t.username},
-			"password": {t.password},
+			"username": {auth.Username},
+			"password": {string(auth.Password)},
 		}
 
 		authReq, err := http.NewRequestWithContext(ctx, http.MethodPost, path, strings.NewReader(body.Encode()))

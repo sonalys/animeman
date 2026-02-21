@@ -15,6 +15,7 @@ import (
 	"time"
 
 	"github.com/sonalys/animeman/internal/app/apperr"
+	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/utils/roundtripper"
 	"google.golang.org/grpc/codes"
@@ -26,15 +27,10 @@ type (
 	}
 )
 
-func New(ctx context.Context, host, username, password string) (*Client, error) {
+func New(ctx context.Context, basePath url.URL, auth authentication.Authentication) (*Client, error) {
 	cookieJar, err := cookiejar.New(nil)
 	if err != nil {
 		return nil, fmt.Errorf("creating cookie jar: %w", err)
-	}
-
-	basePath, err := url.Parse(host)
-	if err != nil {
-		return nil, fmt.Errorf("parsing host address: %w", err)
 	}
 
 	apiEndpoint := basePath.JoinPath("api", "v2")
@@ -46,8 +42,7 @@ func New(ctx context.Context, host, username, password string) (*Client, error) 
 				apiEndpoint,
 				newAuthTransport(
 					roundtripper.NewLoggerTransport(http.DefaultTransport),
-					username,
-					password,
+					auth,
 				),
 			),
 		},
