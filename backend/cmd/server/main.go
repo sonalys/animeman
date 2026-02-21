@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/cmd/server/handler"
+	"github.com/sonalys/animeman/internal/adapters/transferclient"
 	"github.com/sonalys/animeman/internal/app/jwt"
 	"github.com/sonalys/animeman/internal/app/usecases"
 	"github.com/sonalys/animeman/internal/utils/optional"
@@ -74,13 +75,20 @@ func main() {
 
 	adapters := initializeAdapters(ctx, postgresConnStr)
 	jwtClient := jwt.NewClient([]byte("secret"))
-	usecases := usecases.NewUsecases(usecases.Repositories{
+
+	repositories := usecases.Repositories{
 		UserRepository:           adapters.postgresClient.UserRepository(),
 		IndexerClientRepository:  adapters.postgresClient.IndexerClientRepository(),
 		TransferClientRepository: adapters.postgresClient.TransferClientRepository(),
 		CollectionRepository:     adapters.postgresClient.CollectionRepository(),
 		WatchlistRepository:      nil,
-	})
+	}
+
+	factories := usecases.Factories{
+		TransferClientControllerFactory: transferclient.NewTransferClientControllerFactory(),
+	}
+
+	usecases := usecases.NewUsecases(repositories, factories)
 
 	handler, err := handler.New(jwtClient, usecases)
 	if err != nil {

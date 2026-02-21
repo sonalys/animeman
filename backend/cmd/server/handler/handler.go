@@ -10,17 +10,67 @@ import (
 	"github.com/sonalys/animeman/cmd/server/middlewares"
 	"github.com/sonalys/animeman/cmd/server/ogen"
 	"github.com/sonalys/animeman/cmd/server/security"
+	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/app/jwt"
 	"github.com/sonalys/animeman/internal/app/usecases"
 	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/indexing"
+	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/utils/otel"
 	"github.com/sonalys/animeman/internal/utils/sliceutils"
+	"google.golang.org/grpc/codes"
 )
 
 type Handler struct {
 	JWTClient *jwt.Client
 	Usecases  usecases.Usecases
+}
+
+func (h *Handler) TestTransferClientConfiguration(ctx context.Context, req *ogen.TransferClientConfig) error {
+	userID, err := security.GetIdentity(ctx)
+	if err != nil {
+		return err
+	}
+
+	b := transfer.NewClientBuilder().
+		WithType(func() transfer.ClientType {
+			switch req.Type {
+			case ogen.TransferClientTypeQbittorrent:
+				return transfer.ClientTypeQBittorrent
+			default:
+				return transfer.ClientTypeUnknown
+			}
+		}()).
+		WithAddress(req.Hostname).
+		WithOwner(userID).
+		WithAuth(func() authentication.Authentication {
+			switch req.Auth.Type {
+			case ogen.AuthenticationTypeUserPassword:
+				auth := req.Auth.OneOf.AuthenticationUserPassword
+				return authentication.NewUserPasswordAuthentication(auth.Username, []byte(auth.Password))
+			default:
+				return authentication.Authentication{}
+			}
+		}())
+
+	if err := h.Usecases.TestTransferClientBuilder(ctx, b); err != nil {
+		if apperr.Code(err) == codes.Unauthenticated {
+			validation := apperr.NewFormValidation(
+				apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.username"),
+				apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.password"),
+			)
+
+			return apperr.NewPublicError(validation.Validate(), "username/password mismatch")
+		}
+
+		if apperr.Code(err) == codes.InvalidArgument {
+			return apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "hostname")
+		}
+
+		return err
+	}
+
+	return nil
 }
 
 func (h *Handler) IndexersGet(ctx context.Context) ([]ogen.Indexer, error) {
@@ -36,9 +86,9 @@ func (h *Handler) IndexersGet(ctx context.Context) ([]ogen.Indexer, error) {
 
 	return sliceutils.Map(response, func(from indexing.IndexerClient) ogen.Indexer {
 		return ogen.Indexer{
-			ID:   uuid.UUID(from.ID.UUID),
-			Type: ogen.IndexerType(from.Type.String()),
-			URL:  from.Address,
+			ID:       uuid.UUID(from.ID.UUID),
+			Type:     ogen.IndexerClientType(from.Type.String()),
+			Hostname: from.Address,
 		}
 	}), nil
 }
@@ -51,10 +101,10 @@ func (h *Handler) IndexersPost(ctx context.Context, req *ogen.IndexerConfig) (*o
 
 	client, err := h.Usecases.CreateIndexer(ctx, usecases.CreateIndexerArgs{
 		UserID: userID,
-		URL:    req.URL,
+		URL:    req.Hostname,
 		Type: func() indexing.IndexerType {
 			switch req.Type {
-			case ogen.IndexerTypeProwlarr:
+			case ogen.IndexerClientTypeProwlarr:
 				return indexing.IndexerTypeProwlarr
 			default:
 				return indexing.IndexerTypeUnknown

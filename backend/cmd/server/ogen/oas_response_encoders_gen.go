@@ -160,6 +160,13 @@ func encodeRegisterUserResponse(response RegisterUserRes, w http.ResponseWriter,
 	}
 }
 
+func encodeTestTransferClientConfigurationResponse(response *TestTransferClientConfigurationNoContent, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(204)
+	span.SetStatus(codes.Ok, http.StatusText(204))
+
+	return nil
+}
+
 func encodeErrorResponse(response *ErrorResponseStatusCode, w http.ResponseWriter, span trace.Span) error {
 	if err := func() error {
 		if err := response.Validate(); err != nil {

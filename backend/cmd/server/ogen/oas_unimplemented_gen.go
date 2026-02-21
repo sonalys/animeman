@@ -58,6 +58,15 @@ func (UnimplementedHandler) RegisterUser(ctx context.Context, req *UserRegistrat
 	return r, ht.ErrNotImplemented
 }
 
+// TestTransferClientConfiguration implements TestTransferClientConfiguration operation.
+//
+// Tests a transfer client configuration.
+//
+// POST /transfer-clients/test
+func (UnimplementedHandler) TestTransferClientConfiguration(ctx context.Context, req *TransferClientConfig) error {
+	return ht.ErrNotImplemented
+}
+
 // NewError creates *ErrorResponseStatusCode from error returned by handler.
 //
 // Used for common default response.

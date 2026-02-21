@@ -20,6 +20,9 @@ var (
 	rn6AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
+	rn7AllowedHeaders = map[string]string{
+		"POST": "Content-Type",
+	}
 )
 
 func (s *Server) cutPrefix(path string) (string, bool) {
@@ -180,6 +183,31 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 						s.notAllowed(w, r, notAllowedParams{
 							allowedMethods: "POST",
 							allowedHeaders: rn6AllowedHeaders,
+							acceptPost:     "application/json",
+							acceptPatch:    "",
+						})
+					}
+
+					return
+				}
+
+			case 't': // Prefix: "transfer-clients/test"
+
+				if l := len("transfer-clients/test"); len(elem) >= l && elem[0:l] == "transfer-clients/test" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch r.Method {
+					case "POST":
+						s.handleTestTransferClientConfigurationRequest([0]string{}, elemIsEscaped, w, r)
+					default:
+						s.notAllowed(w, r, notAllowedParams{
+							allowedMethods: "POST",
+							allowedHeaders: rn7AllowedHeaders,
 							acceptPost:     "application/json",
 							acceptPatch:    "",
 						})
@@ -403,6 +431,31 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 						r.operationID = "registerUser"
 						r.operationGroup = ""
 						r.pathPattern = "/register"
+						r.args = args
+						r.count = 0
+						return r, true
+					default:
+						return
+					}
+				}
+
+			case 't': // Prefix: "transfer-clients/test"
+
+				if l := len("transfer-clients/test"); len(elem) >= l && elem[0:l] == "transfer-clients/test" {
+					elem = elem[l:]
+				} else {
+					break
+				}
+
+				if len(elem) == 0 {
+					// Leaf node.
+					switch method {
+					case "POST":
+						r.name = TestTransferClientConfigurationOperation
+						r.summary = ""
+						r.operationID = "TestTransferClientConfiguration"
+						r.operationGroup = ""
+						r.pathPattern = "/transfer-clients/test"
 						r.args = args
 						r.count = 0
 						return r, true

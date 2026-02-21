@@ -13,16 +13,24 @@ type loggerTransport struct {
 
 func (l *loggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	t1 := time.Now()
+	ctx := req.Context()
+
+	log.
+		Trace().
+		Ctx(ctx).
+		Str("url", req.URL.String()).
+		Str("method", req.Method).
+		Msg("Sending request")
 
 	resp, err := l.wrap.RoundTrip(req)
 
 	if resp != nil {
 		log.
 			Trace().
-			Str("url", req.URL.String()).
-			Int("status_code", resp.StatusCode).
-			Dur("duration", time.Since(t1)).
-			Msg("outgoing request")
+			Ctx(ctx).
+			Dur("dur", time.Since(t1)).
+			Int("statusCode", resp.StatusCode).
+			Msg("Received response")
 	}
 
 	return resp, err

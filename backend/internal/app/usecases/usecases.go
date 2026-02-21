@@ -10,6 +10,7 @@ import (
 	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/domain/shared"
+	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/domain/users"
 	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/otel"
@@ -25,21 +26,33 @@ type (
 		ports.WatchlistRepository
 	}
 
+	Factories struct {
+		ports.TransferClientControllerFactory
+	}
+
 	usecases struct {
 		repositories Repositories
+		factories    Factories
 	}
 
 	Usecases interface {
 		RegisterUser(ctx context.Context, username string, password string) (*users.User, error)
 		Login(ctx context.Context, username string, password string) (*shared.UserID, error)
+
 		CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.IndexerClient, error)
 		ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.IndexerClient, error)
+
+		TestTransferClientBuilder(ctx context.Context, b *transfer.ClientBuilder) error
 	}
 )
 
-func NewUsecases(r Repositories) usecases {
+func NewUsecases(
+	r Repositories,
+	f Factories,
+) usecases {
 	return usecases{
 		repositories: r,
+		factories:    f,
 	}
 }
 
@@ -133,4 +146,19 @@ func (u usecases) ListIndexers(ctx context.Context, userID shared.UserID) ([]ind
 	}
 
 	return response, nil
+}
+
+func (u usecases) TestTransferClientBuilder(ctx context.Context, b *transfer.ClientBuilder) error {
+	client, err := b.Build()
+	if err != nil {
+		logError(ctx, err, "creating transfer client")
+		return err
+	}
+
+	if _, err = u.factories.TransferClientControllerFactory.New(ctx, client); err != nil {
+		logError(ctx, err, "testing transfer client configuration")
+		return err
+	}
+
+	return nil
 }

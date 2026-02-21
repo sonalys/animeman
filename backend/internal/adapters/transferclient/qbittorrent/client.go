@@ -3,6 +3,7 @@ package qbittorrent
 import (
 	"bytes"
 	"context"
+	"errors"
 	"fmt"
 	"io"
 	"mime/multipart"
@@ -13,8 +14,10 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sonalys/animeman/internal/app/apperr"
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/utils/roundtripper"
+	"google.golang.org/grpc/codes"
 )
 
 type (
@@ -45,7 +48,10 @@ func New(ctx context.Context, host, username, password string) (*Client, error) 
 			Timeout: 15 * time.Second,
 			Jar:     cookieJar,
 			Transport: &authTransport{
-				transport: roundtripper.NewBasePathTransport(http.DefaultTransport, basePath),
+				transport: roundtripper.NewBasePathTransport(
+					roundtripper.NewLoggerTransport(http.DefaultTransport),
+					basePath,
+				),
 			},
 		},
 	}
@@ -53,14 +59,16 @@ func New(ctx context.Context, host, username, password string) (*Client, error) 
 	return api, nil
 }
 
-func (c *Client) Wait(ctx context.Context) {
+func (c *Client) Wait(ctx context.Context) error {
+	var err error
+
 	for {
 		if ctx.Err() != nil {
-			return
+			return errors.Join(err, ctx.Err())
 		}
 
-		if _, err := c.Version(ctx); err == nil {
-			return
+		if _, err = c.Version(ctx); err == nil {
+			return nil
 		}
 
 		time.Sleep(time.Second)
@@ -68,18 +76,27 @@ func (c *Client) Wait(ctx context.Context) {
 }
 
 func (c *Client) Version(ctx context.Context) (string, error) {
-	resp, err := c.client.Get("/app/version")
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/app/version", nil)
+	if err != nil {
+		return "", err
+	}
+
+	resp, err := c.client.Do(req)
 	if err != nil {
 		return "", err
 	}
 	defer resp.Body.Close()
 
-	version, err := io.ReadAll(resp.Body)
+	textResponse, err := io.ReadAll(resp.Body)
 	if err != nil {
 		return "", err
 	}
 
-	return string(version), nil
+	if resp.StatusCode >= 400 {
+		return "", apperr.New(fmt.Errorf("reading version: %s", textResponse), codes.InvalidArgument, "hostname responded unexpectedly")
+	}
+
+	return string(textResponse), nil
 }
 
 func writePart(w *multipart.Writer, name string, contentType string, buffer []byte) error {

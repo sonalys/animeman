@@ -8,7 +8,10 @@ import (
 
 type (
 	TransferClientController interface {
-		Wait(ctx context.Context)
 		Download(ctx context.Context, releaseCandidate transfer.ReleaseCandidate) (*transfer.ReleaseDownload, error)
+	}
+
+	TransferClientControllerFactory interface {
+		New(ctx context.Context, client *transfer.Client) (TransferClientController, error)
 	}
 )

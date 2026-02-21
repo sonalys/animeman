@@ -35,13 +35,13 @@ export interface Authentication {
 
 export interface IndexerConfig {
     type: string;
-    url: string;
+    hostname: string;
     auth: Authentication;
 };
 
 export interface TransferClientConfig {
-    type: string;
-    url: string;
+    type: 'qbittorrent'
+    hostname: string;
     auth: Authentication;
 };
 

@@ -939,6 +939,8 @@ func (s *FieldErrorCode) Decode(d *jx.Decoder) error {
 		*s = FieldErrorCodeMaxLength
 	case FieldErrorCodeRequired:
 		*s = FieldErrorCodeRequired
+	case FieldErrorCodeInvalid:
+		*s = FieldErrorCodeInvalid
 	case FieldErrorCodeInvalidFormat:
 		*s = FieldErrorCodeInvalidFormat
 	case FieldErrorCodeUnknown:
@@ -981,15 +983,15 @@ func (s *Indexer) encodeFields(e *jx.Encoder) {
 		s.Type.Encode(e)
 	}
 	{
-		e.FieldStart("url")
-		json.EncodeURI(e, s.URL)
+		e.FieldStart("hostname")
+		json.EncodeURI(e, s.Hostname)
 	}
 }
 
 var jsonFieldsNameOfIndexer = [3]string{
 	0: "id",
 	1: "type",
-	2: "url",
+	2: "hostname",
 }
 
 // Decode decodes Indexer from json.
@@ -1023,17 +1025,17 @@ func (s *Indexer) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"type\"")
 			}
-		case "url":
+		case "hostname":
 			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				v, err := json.DecodeURI(d)
-				s.URL = v
+				s.Hostname = v
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"url\"")
+				return errors.Wrap(err, "decode field \"hostname\"")
 			}
 		default:
 			return d.Skip()
@@ -1091,6 +1093,44 @@ func (s *Indexer) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode encodes IndexerClientType as json.
+func (s IndexerClientType) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes IndexerClientType from json.
+func (s *IndexerClientType) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode IndexerClientType to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch IndexerClientType(v) {
+	case IndexerClientTypeProwlarr:
+		*s = IndexerClientTypeProwlarr
+	default:
+		*s = IndexerClientType(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s IndexerClientType) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *IndexerClientType) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode implements json.Marshaler.
 func (s *IndexerConfig) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -1105,8 +1145,8 @@ func (s *IndexerConfig) encodeFields(e *jx.Encoder) {
 		s.Type.Encode(e)
 	}
 	{
-		e.FieldStart("url")
-		json.EncodeURI(e, s.URL)
+		e.FieldStart("hostname")
+		json.EncodeURI(e, s.Hostname)
 	}
 	{
 		e.FieldStart("auth")
@@ -1116,7 +1156,7 @@ func (s *IndexerConfig) encodeFields(e *jx.Encoder) {
 
 var jsonFieldsNameOfIndexerConfig = [3]string{
 	0: "type",
-	1: "url",
+	1: "hostname",
 	2: "auth",
 }
 
@@ -1139,17 +1179,17 @@ func (s *IndexerConfig) Decode(d *jx.Decoder) error {
 			}(); err != nil {
 				return errors.Wrap(err, "decode field \"type\"")
 			}
-		case "url":
+		case "hostname":
 			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				v, err := json.DecodeURI(d)
-				s.URL = v
+				s.Hostname = v
 				if err != nil {
 					return err
 				}
 				return nil
 			}(); err != nil {
-				return errors.Wrap(err, "decode field \"url\"")
+				return errors.Wrap(err, "decode field \"hostname\"")
 			}
 		case "auth":
 			requiredBitSet[0] |= 1 << 2
@@ -1213,48 +1253,6 @@ func (s *IndexerConfig) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *IndexerConfig) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
-// Encode encodes IndexerType as json.
-func (s IndexerType) Encode(e *jx.Encoder) {
-	e.Str(string(s))
-}
-
-// Decode decodes IndexerType from json.
-func (s *IndexerType) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode IndexerType to nil")
-	}
-	v, err := d.StrBytes()
-	if err != nil {
-		return err
-	}
-	// Try to use constant string.
-	switch IndexerType(v) {
-	case IndexerTypeProwlarr:
-		*s = IndexerTypeProwlarr
-	case IndexerTypeJackett:
-		*s = IndexerTypeJackett
-	case IndexerTypeTorznab:
-		*s = IndexerTypeTorznab
-	default:
-		*s = IndexerType(v)
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s IndexerType) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *IndexerType) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -1517,6 +1515,170 @@ func (s *RegisterUserCreated) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *RegisterUserCreated) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode implements json.Marshaler.
+func (s *TransferClientConfig) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *TransferClientConfig) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("type")
+		s.Type.Encode(e)
+	}
+	{
+		e.FieldStart("hostname")
+		json.EncodeURI(e, s.Hostname)
+	}
+	{
+		e.FieldStart("auth")
+		s.Auth.Encode(e)
+	}
+}
+
+var jsonFieldsNameOfTransferClientConfig = [3]string{
+	0: "type",
+	1: "hostname",
+	2: "auth",
+}
+
+// Decode decodes TransferClientConfig from json.
+func (s *TransferClientConfig) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode TransferClientConfig to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "type":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				if err := s.Type.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"type\"")
+			}
+		case "hostname":
+			requiredBitSet[0] |= 1 << 1
+			if err := func() error {
+				v, err := json.DecodeURI(d)
+				s.Hostname = v
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"hostname\"")
+			}
+		case "auth":
+			requiredBitSet[0] |= 1 << 2
+			if err := func() error {
+				if err := s.Auth.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"auth\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode TransferClientConfig")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000111,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfTransferClientConfig) {
+					name = jsonFieldsNameOfTransferClientConfig[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *TransferClientConfig) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *TransferClientConfig) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes TransferClientType as json.
+func (s TransferClientType) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes TransferClientType from json.
+func (s *TransferClientType) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode TransferClientType to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch TransferClientType(v) {
+	case TransferClientTypeQbittorrent:
+		*s = TransferClientTypeQbittorrent
+	default:
+		*s = TransferClientType(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s TransferClientType) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *TransferClientType) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

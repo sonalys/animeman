@@ -12,9 +12,9 @@ type (
 	FieldErrorCode string
 
 	FieldError struct {
-		Field   string
-		Message string
-		Code    FieldErrorCode
+		Field     string
+		Message   string
+		ErrorCode FieldErrorCode
 	}
 
 	fieldErrors []FieldError
@@ -30,6 +30,7 @@ const (
 	FieldErrorCodeMaxLength     FieldErrorCode = "maxLength"
 	FieldErrorCodeRequired      FieldErrorCode = "required"
 	FieldErrorCodeInvalidFormat FieldErrorCode = "invalidFormat"
+	FieldErrorCodeInvalid       FieldErrorCode = "invalid"
 	FieldErrorCodeUnknown       FieldErrorCode = "unknown"
 )
 
@@ -37,12 +38,26 @@ var (
 	_ codedError = &fieldErrors{}
 )
 
-func NewFieldError(code FieldErrorCode, field string, mask string, args ...any) FieldError {
-	return FieldError{
-		Code:    code,
-		Field:   field,
-		Message: fmt.Sprintf(mask, args...),
+func NewFieldError(code FieldErrorCode, field string, maskAndArgs ...any) FieldError {
+	var message string
+
+	if len(maskAndArgs) > 0 {
+		mask, ok := maskAndArgs[0].(string)
+		if ok {
+			message = fmt.Sprintf(mask, maskAndArgs[1:]...)
+		}
 	}
+
+	return FieldError{
+		ErrorCode: code,
+		Field:     field,
+		Message:   message,
+	}
+}
+
+func NewFormValidation(errs ...FieldError) *FormValidation {
+	var fv FormValidation
+	return fv.Add(errs...)
 }
 
 func (c FieldErrorCode) String() string {
@@ -83,15 +98,12 @@ func (e FieldError) Is(err error) bool {
 		return false
 	}
 
-	return e.Field == targetErr.Field && e.Code == targetErr.Code
+	return e.Field == targetErr.Field && e.ErrorCode == targetErr.ErrorCode
 }
 
-func (f *FormValidation) Add(code FieldErrorCode, field string, message string) {
-	f.FieldErrors = append(f.FieldErrors, FieldError{
-		Field:   field,
-		Code:    code,
-		Message: message,
-	})
+func (f *FormValidation) Add(errs ...FieldError) *FormValidation {
+	f.FieldErrors = append(f.FieldErrors, errs...)
+	return f
 }
 
 func (f *FormValidation) Validate() error {
@@ -100,4 +112,8 @@ func (f *FormValidation) Validate() error {
 	}
 
 	return fieldErrors(f.FieldErrors)
+}
+
+func (f FieldError) Code() codes.Code {
+	return codes.InvalidArgument
 }

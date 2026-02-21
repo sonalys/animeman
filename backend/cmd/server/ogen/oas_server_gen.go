@@ -27,6 +27,12 @@ type Handler interface {
 	//
 	// POST /register
 	RegisterUser(ctx context.Context, req *UserRegistration) (RegisterUserRes, error)
+	// TestTransferClientConfiguration implements TestTransferClientConfiguration operation.
+	//
+	// Tests a transfer client configuration.
+	//
+	// POST /transfer-clients/test
+	TestTransferClientConfiguration(ctx context.Context, req *TransferClientConfig) error
 	// NewError creates *ErrorResponseStatusCode from error returned by handler.
 	//
 	// Used for common default response.

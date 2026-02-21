@@ -157,6 +157,24 @@ paths:
         default:
           $ref: "#/components/responses/ErrorResponse"
 
+  /transfer-clients/test:
+    post:
+      operationId: TestTransferClientConfiguration
+      description: Tests a transfer client configuration
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferClientConfig"
+      responses:
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+        "204":
+          description: Valid configuration
+
 components:
   securitySchemes:
     cookieAuth:
@@ -183,17 +201,33 @@ components:
                 items:
                   $ref: "#/components/schemas/FieldError"
   schemas:
-    IndexerType:
+    IndexerClientType:
       type: string
-      enum: [prowlarr, jackett, torznab]
+      enum: [prowlarr]
+
+    TransferClientType:
+      type: string
+      enum: [qbittorrent]
+
+    TransferClientConfig:
+      type: object
+      required: [type, hostname, auth]
+      properties:
+        type:
+          $ref: "#/components/schemas/TransferClientType"
+        hostname:
+          type: string
+          format: uri
+        auth:
+          $ref: "#/components/schemas/Authentication"
 
     IndexerConfig:
       type: object
-      required: [type, url, auth]
+      required: [type, hostname, auth]
       properties:
         type:
-          $ref: "#/components/schemas/IndexerType"
-        url:
+          $ref: "#/components/schemas/IndexerClientType"
+        hostname:
           type: string
           format: uri
         auth:
@@ -201,14 +235,14 @@ components:
 
     Indexer:
       type: object
-      required: [id, type, url]
+      required: [id, type, hostname]
       properties:
         id:
           type: string
           format: uuid
         type:
-          $ref: "#/components/schemas/IndexerType"
-        url:
+          $ref: "#/components/schemas/IndexerClientType"
+        hostname:
           type: string
           format: uri
 
@@ -257,6 +291,7 @@ components:
             - minLength
             - maxLength
             - required
+            - invalid
             - invalidFormat
             - unknown
         message:

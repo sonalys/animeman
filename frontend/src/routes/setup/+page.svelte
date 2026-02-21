@@ -9,14 +9,15 @@
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import { slide } from 'svelte/transition';
 
-	// Reactive state for the whole form
 	let formState = $state({
 		indexingClient: {
-			url: 'http://localhost:9696',
+			type: 'prowlarr',
+			hostname: 'http://localhost:9696',
 			auth: { type: 'apiKey', key: '' }
 		},
 		transferClient: {
-			url: 'http://localhost:8080',
+			type: 'qbittorrent',
+			hostname: 'http://localhost:8080',
 			auth: { type: 'userPassword', username: '', password: '' }
 		},
 		watchlist: {
@@ -28,10 +29,6 @@
 		transferClient: TransferClientConfig;
 		watchlist: WatchlistConfig;
 	});
-
-	function handleSubmit() {
-		console.log('Final Submission:', $state.snapshot(formState));
-	}
 
 	const authOptions = [
 		{ label: 'API Key', value: 'apiKey' },
@@ -57,6 +54,7 @@
 {#snippet indexerStep({ next }: any)}
 	<div class="step-content">
 		<div class="step-header">
+			hostnamehostnamehostname
 			<h2>Configure Indexer</h2>
 			<p>For finding your favorite episode</p>
 		</div>
@@ -66,7 +64,7 @@
 			<input
 				id="url"
 				type="url"
-				bind:value={formState.indexingClient.url}
+				bind:value={formState.indexingClient.hostname}
 				placeholder="http://localhost:9696"
 			/>
 		</div>
@@ -125,7 +123,7 @@
 			<input
 				id="url"
 				type="url"
-				bind:value={formState.transferClient.url}
+				bind:value={formState.transferClient.hostname}
 				placeholder="http://localhost:9696"
 			/>
 		</div>
@@ -170,7 +168,23 @@
 
 		<div class="btn-group">
 			<button class="btn-ghost" onclick={back}>Back</button>
-			<button class="btn-primary" onclick={next}> Continue </button>
+			<button
+				class="btn-primary"
+				onclick={async () => {
+					try {
+						await apiFetch('/transfer-clients/test', {
+							method: 'POST',
+							body: formState.transferClient
+						});
+
+						next();
+					} catch (error) {
+						console.log(error);
+					}
+				}}
+			>
+				Continue
+			</button>
 		</div>
 	</div>
 {/snippet}

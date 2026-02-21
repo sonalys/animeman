@@ -138,17 +138,9 @@
 		padding: 32px; /* Move padding here so height is measured accurately */
 	}
 
-	/* Rest of your existing pretty styles */
-	:global(body) {
-		color: #f8fafc;
-		font-family: 'Inter', system-ui, sans-serif;
-		margin: 0;
-	}
-
 	.setup-wrapper {
 		display: grid;
 		place-items: center;
-		min-height: 100dvh;
 	}
 
 	.container {
@@ -173,75 +165,23 @@
 		font-weight: 800;
 		font-size: 1.1rem;
 	}
+
 	.brand span {
 		color: #38bdf8;
 	}
 
 	.btn-primary {
-		width: 100%;
-		padding: 14px;
-		background: #38bdf8;
-		border: none;
-		border-radius: 12px;
-		font-weight: 700;
-		color: #0f172a;
-		cursor: pointer;
-		margin-top: 24px;
+		margin-top: 10px;
 	}
 
 	p {
-		margin: 0 0 32px;
+		margin: 0;
 		color: #94a3b8;
 		font-size: 0.95rem;
 		line-height: 1.5;
 	}
 
-	label {
-		display: block;
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: #64748b;
-		text-transform: uppercase;
-		margin-bottom: 8px;
-		letter-spacing: 0.5px;
-	}
-
-	input {
-		width: 100%;
-		background: #0f172a;
-		border: 1px solid #334155;
-		padding: 12px 16px;
-		border-radius: 12px;
-		color: white;
-		font-size: 1rem;
-		box-sizing: border-box;
-		transition: 0.2s;
-	}
-	input:focus {
-		border-color: #38bdf8;
-		outline: none;
-		box-shadow: 0 0 0 4px rgba(56, 189, 248, 0.1);
-	}
-
-	button {
-		width: 100%;
-		padding: 14px;
-		background: #38bdf8;
-		border: none;
-		border-radius: 12px;
-		font-weight: 700;
-		color: #0f172a;
-		cursor: pointer;
-		margin-top: 12px;
-		transition: 0.2s;
-	}
-	button:disabled {
-		background: #1e293b;
-		color: #475569;
-		cursor: not-allowed;
-	}
-	button:hover:not(:disabled) {
-		transform: translateY(-1px);
-		background: #7dd3fc;
+	.input-group {
+		margin-bottom: 10px;
 	}
 </style>

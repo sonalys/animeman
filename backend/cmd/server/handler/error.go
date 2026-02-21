@@ -27,6 +27,7 @@ func (h *Handler) NewError(ctx context.Context, err error) (resp *ogen.ErrorResp
 			resp.Response.Details = ogen.NewOptString("")
 		}
 	}()
+
 	if target := new(ogenerrors.SecurityError); errors.As(err, &target) {
 		return &ogen.ErrorResponseStatusCode{
 			StatusCode: http.StatusForbidden,
@@ -74,7 +75,6 @@ func (h *Handler) NewError(ctx context.Context, err error) (resp *ogen.ErrorResp
 	}
 
 	statusCode := GRPCCodeToHTTP(apperr.Code(err))
-
 	fieldErrors := apperr.FieldErrors(err)
 	details := apperr.PublicDetails(err)
 
@@ -88,7 +88,7 @@ func (h *Handler) NewError(ctx context.Context, err error) (resp *ogen.ErrorResp
 			FieldErrors: sliceutils.Map(fieldErrors, func(from apperr.FieldError) ogen.FieldError {
 				return ogen.FieldError{
 					Field:   from.Field,
-					Code:    ogen.FieldErrorCode(from.Code),
+					Code:    ogen.FieldErrorCode(from.ErrorCode),
 					Message: from.Message,
 				}
 			}),

@@ -171,6 +171,8 @@ func (s FieldErrorCode) Validate() error {
 		return nil
 	case "required":
 		return nil
+	case "invalid":
+		return nil
 	case "invalidFormat":
 		return nil
 	case "unknown":
@@ -201,6 +203,15 @@ func (s *Indexer) Validate() error {
 		return &validate.Error{Fields: failures}
 	}
 	return nil
+}
+
+func (s IndexerClientType) Validate() error {
+	switch s {
+	case "prowlarr":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
 }
 
 func (s *IndexerConfig) Validate() error {
@@ -237,13 +248,43 @@ func (s *IndexerConfig) Validate() error {
 	return nil
 }
 
-func (s IndexerType) Validate() error {
+func (s *TransferClientConfig) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Type.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "type",
+			Error: err,
+		})
+	}
+	if err := func() error {
+		if err := s.Auth.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "auth",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s TransferClientType) Validate() error {
 	switch s {
-	case "prowlarr":
-		return nil
-	case "jackett":
-		return nil
-	case "torznab":
+	case "qbittorrent":
 		return nil
 	default:
 		return errors.Errorf("invalid value: %v", s)

@@ -5,6 +5,9 @@ import (
 	"net/http"
 	"net/url"
 	"strings"
+
+	"github.com/sonalys/animeman/internal/app/apperr"
+	"google.golang.org/grpc/codes"
 )
 
 type authTransport struct {
@@ -41,7 +44,7 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 	resp, err = t.transport.RoundTrip(req)
 	if err != nil {
-		return nil, fmt.Errorf("logging in: %w", err)
+		return nil, apperr.New(err, codes.Unauthenticated, "authenticating with qbittorrent")
 	}
 
 	if err := resp.Body.Close(); err != nil {

@@ -379,6 +379,7 @@ const (
 	FieldErrorCodeMinLength     FieldErrorCode = "minLength"
 	FieldErrorCodeMaxLength     FieldErrorCode = "maxLength"
 	FieldErrorCodeRequired      FieldErrorCode = "required"
+	FieldErrorCodeInvalid       FieldErrorCode = "invalid"
 	FieldErrorCodeInvalidFormat FieldErrorCode = "invalidFormat"
 	FieldErrorCodeUnknown       FieldErrorCode = "unknown"
 )
@@ -390,6 +391,7 @@ func (FieldErrorCode) AllValues() []FieldErrorCode {
 		FieldErrorCodeMinLength,
 		FieldErrorCodeMaxLength,
 		FieldErrorCodeRequired,
+		FieldErrorCodeInvalid,
 		FieldErrorCodeInvalidFormat,
 		FieldErrorCodeUnknown,
 	}
@@ -405,6 +407,8 @@ func (s FieldErrorCode) MarshalText() ([]byte, error) {
 	case FieldErrorCodeMaxLength:
 		return []byte(s), nil
 	case FieldErrorCodeRequired:
+		return []byte(s), nil
+	case FieldErrorCodeInvalid:
 		return []byte(s), nil
 	case FieldErrorCodeInvalidFormat:
 		return []byte(s), nil
@@ -430,6 +434,9 @@ func (s *FieldErrorCode) UnmarshalText(data []byte) error {
 	case FieldErrorCodeRequired:
 		*s = FieldErrorCodeRequired
 		return nil
+	case FieldErrorCodeInvalid:
+		*s = FieldErrorCodeInvalid
+		return nil
 	case FieldErrorCodeInvalidFormat:
 		*s = FieldErrorCodeInvalidFormat
 		return nil
@@ -443,9 +450,9 @@ func (s *FieldErrorCode) UnmarshalText(data []byte) error {
 
 // Ref: #/components/schemas/Indexer
 type Indexer struct {
-	ID   uuid.UUID   `json:"id"`
-	Type IndexerType `json:"type"`
-	URL  url.URL     `json:"url"`
+	ID       uuid.UUID         `json:"id"`
+	Type     IndexerClientType `json:"type"`
+	Hostname url.URL           `json:"hostname"`
 }
 
 // GetID returns the value of ID.
@@ -454,13 +461,13 @@ func (s *Indexer) GetID() uuid.UUID {
 }
 
 // GetType returns the value of Type.
-func (s *Indexer) GetType() IndexerType {
+func (s *Indexer) GetType() IndexerClientType {
 	return s.Type
 }
 
-// GetURL returns the value of URL.
-func (s *Indexer) GetURL() url.URL {
-	return s.URL
+// GetHostname returns the value of Hostname.
+func (s *Indexer) GetHostname() url.URL {
+	return s.Hostname
 }
 
 // SetID sets the value of ID.
@@ -469,30 +476,65 @@ func (s *Indexer) SetID(val uuid.UUID) {
 }
 
 // SetType sets the value of Type.
-func (s *Indexer) SetType(val IndexerType) {
+func (s *Indexer) SetType(val IndexerClientType) {
 	s.Type = val
 }
 
-// SetURL sets the value of URL.
-func (s *Indexer) SetURL(val url.URL) {
-	s.URL = val
+// SetHostname sets the value of Hostname.
+func (s *Indexer) SetHostname(val url.URL) {
+	s.Hostname = val
+}
+
+// Ref: #/components/schemas/IndexerClientType
+type IndexerClientType string
+
+const (
+	IndexerClientTypeProwlarr IndexerClientType = "prowlarr"
+)
+
+// AllValues returns all IndexerClientType values.
+func (IndexerClientType) AllValues() []IndexerClientType {
+	return []IndexerClientType{
+		IndexerClientTypeProwlarr,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s IndexerClientType) MarshalText() ([]byte, error) {
+	switch s {
+	case IndexerClientTypeProwlarr:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *IndexerClientType) UnmarshalText(data []byte) error {
+	switch IndexerClientType(data) {
+	case IndexerClientTypeProwlarr:
+		*s = IndexerClientTypeProwlarr
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // Ref: #/components/schemas/IndexerConfig
 type IndexerConfig struct {
-	Type IndexerType    `json:"type"`
-	URL  url.URL        `json:"url"`
-	Auth Authentication `json:"auth"`
+	Type     IndexerClientType `json:"type"`
+	Hostname url.URL           `json:"hostname"`
+	Auth     Authentication    `json:"auth"`
 }
 
 // GetType returns the value of Type.
-func (s *IndexerConfig) GetType() IndexerType {
+func (s *IndexerConfig) GetType() IndexerClientType {
 	return s.Type
 }
 
-// GetURL returns the value of URL.
-func (s *IndexerConfig) GetURL() url.URL {
-	return s.URL
+// GetHostname returns the value of Hostname.
+func (s *IndexerConfig) GetHostname() url.URL {
+	return s.Hostname
 }
 
 // GetAuth returns the value of Auth.
@@ -501,67 +543,18 @@ func (s *IndexerConfig) GetAuth() Authentication {
 }
 
 // SetType sets the value of Type.
-func (s *IndexerConfig) SetType(val IndexerType) {
+func (s *IndexerConfig) SetType(val IndexerClientType) {
 	s.Type = val
 }
 
-// SetURL sets the value of URL.
-func (s *IndexerConfig) SetURL(val url.URL) {
-	s.URL = val
+// SetHostname sets the value of Hostname.
+func (s *IndexerConfig) SetHostname(val url.URL) {
+	s.Hostname = val
 }
 
 // SetAuth sets the value of Auth.
 func (s *IndexerConfig) SetAuth(val Authentication) {
 	s.Auth = val
-}
-
-// Ref: #/components/schemas/IndexerType
-type IndexerType string
-
-const (
-	IndexerTypeProwlarr IndexerType = "prowlarr"
-	IndexerTypeJackett  IndexerType = "jackett"
-	IndexerTypeTorznab  IndexerType = "torznab"
-)
-
-// AllValues returns all IndexerType values.
-func (IndexerType) AllValues() []IndexerType {
-	return []IndexerType{
-		IndexerTypeProwlarr,
-		IndexerTypeJackett,
-		IndexerTypeTorznab,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s IndexerType) MarshalText() ([]byte, error) {
-	switch s {
-	case IndexerTypeProwlarr:
-		return []byte(s), nil
-	case IndexerTypeJackett:
-		return []byte(s), nil
-	case IndexerTypeTorznab:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *IndexerType) UnmarshalText(data []byte) error {
-	switch IndexerType(data) {
-	case IndexerTypeProwlarr:
-		*s = IndexerTypeProwlarr
-		return nil
-	case IndexerTypeJackett:
-		*s = IndexerTypeJackett
-		return nil
-	case IndexerTypeTorznab:
-		*s = IndexerTypeTorznab
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
 }
 
 type IndexersPostCreated struct {
@@ -721,6 +714,81 @@ func (s *RegisterUserCreatedHeaders) SetResponse(val RegisterUserCreated) {
 }
 
 func (*RegisterUserCreatedHeaders) registerUserRes() {}
+
+// TestTransferClientConfigurationNoContent is response for TestTransferClientConfiguration operation.
+type TestTransferClientConfigurationNoContent struct{}
+
+// Ref: #/components/schemas/TransferClientConfig
+type TransferClientConfig struct {
+	Type     TransferClientType `json:"type"`
+	Hostname url.URL            `json:"hostname"`
+	Auth     Authentication     `json:"auth"`
+}
+
+// GetType returns the value of Type.
+func (s *TransferClientConfig) GetType() TransferClientType {
+	return s.Type
+}
+
+// GetHostname returns the value of Hostname.
+func (s *TransferClientConfig) GetHostname() url.URL {
+	return s.Hostname
+}
+
+// GetAuth returns the value of Auth.
+func (s *TransferClientConfig) GetAuth() Authentication {
+	return s.Auth
+}
+
+// SetType sets the value of Type.
+func (s *TransferClientConfig) SetType(val TransferClientType) {
+	s.Type = val
+}
+
+// SetHostname sets the value of Hostname.
+func (s *TransferClientConfig) SetHostname(val url.URL) {
+	s.Hostname = val
+}
+
+// SetAuth sets the value of Auth.
+func (s *TransferClientConfig) SetAuth(val Authentication) {
+	s.Auth = val
+}
+
+// Ref: #/components/schemas/TransferClientType
+type TransferClientType string
+
+const (
+	TransferClientTypeQbittorrent TransferClientType = "qbittorrent"
+)
+
+// AllValues returns all TransferClientType values.
+func (TransferClientType) AllValues() []TransferClientType {
+	return []TransferClientType{
+		TransferClientTypeQbittorrent,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s TransferClientType) MarshalText() ([]byte, error) {
+	switch s {
+	case TransferClientTypeQbittorrent:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *TransferClientType) UnmarshalText(data []byte) error {
+	switch TransferClientType(data) {
+	case TransferClientTypeQbittorrent:
+		*s = TransferClientTypeQbittorrent
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
 
 // Ref: #/components/schemas/UserRegistration
 type UserRegistration struct {

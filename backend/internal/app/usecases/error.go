@@ -22,12 +22,10 @@ func logError(ctx context.Context, err error, mask string, args ...any) {
 		if appErr.Code() != codes.Internal {
 			level = zerolog.InfoLevel
 		} else {
-
 			span.SetStatus(otelCodes.Error, "")
 			span.SetAttributes(
 				attribute.Stringer("code", appErr.Code()),
 			)
-
 		}
 
 		log.
