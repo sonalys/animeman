@@ -13,11 +13,29 @@
 		error?: string;
 	}>();
 
-	// Calculate index for the sliding logic
 	let activeIndex = $derived(options.findIndex((opt: any) => opt.value === active));
+
+	function handleKeyDown(e: KeyboardEvent) {
+		if (e.key !== 'ArrowLeft' && e.key !== 'ArrowRight') return;
+
+		e.preventDefault();
+		let newIndex = activeIndex;
+
+		if (e.key === 'ArrowLeft') {
+			newIndex = (activeIndex - 1 + options.length) % options.length;
+		} else if (e.key === 'ArrowRight') {
+			newIndex = (activeIndex + 1) % options.length;
+		}
+
+		const nextOption = options[newIndex];
+		if (active !== nextOption.value) error = undefined;
+		active = nextOption.value;
+
+		(e.currentTarget as HTMLElement).querySelectorAll('button')[newIndex]?.focus();
+	}
 </script>
 
-<div>
+<div onkeydown={handleKeyDown} role="radiogroup" tabindex="0" class="container">
 	<label for="group">{name}</label>
 	<div
 		id="group"
@@ -30,7 +48,10 @@
 		{#each options as option}
 			<button
 				type="button"
+				role="radio"
+				aria-checked={active === option.value}
 				class:active={active === option.value}
+				tabindex={active === option.value ? 0 : -1}
 				onclick={() => {
 					if (active !== option.value) error = undefined;
 					active = option.value;
@@ -77,6 +98,7 @@
 		background: var(--bg-primary);
 		padding: 0.25rem;
 		border-radius: 14px;
+		outline: none;
 		isolation: isolate;
 	}
 
@@ -112,5 +134,14 @@
 
 	.segmented-control:hover .pill {
 		background: var(--accent-hover);
+	}
+
+	.container {
+		outline: none;
+	}
+
+	.container:focus-within .pill {
+		filter: brightness(1.1);
+		box-shadow: 0 0px 0.8rem rgb(from var(--accent) r g b / 0.3);
 	}
 </style>
