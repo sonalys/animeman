@@ -24,7 +24,7 @@ func NewIndexerClientRepository(conn *pgxpool.Pool) ports.IndexerClientRepositor
 	}
 }
 
-func (r indexerClientRepository) Create(ctx context.Context, client *indexing.IndexerClient) error {
+func (r indexerClientRepository) Create(ctx context.Context, client *indexing.Client) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
 		auth, err := queries.CreateAuthentication(ctx, sqlcgen.CreateAuthenticationParams{
 			ID: shared.NewID[shared.ID](),
@@ -61,7 +61,7 @@ func (r indexerClientRepository) Create(ctx context.Context, client *indexing.In
 	})
 }
 
-func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]indexing.IndexerClient, error) {
+func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]indexing.Client, error) {
 	queries := sqlcgen.New(r.conn)
 
 	models, err := queries.ListIndexerClientsByOwner(ctx, owner)
@@ -69,12 +69,12 @@ func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.U
 		return nil, handleReadError(err)
 	}
 
-	response := make([]indexing.IndexerClient, 0, len(models))
+	response := make([]indexing.Client, 0, len(models))
 
 	for i := range models {
 		model := &models[i]
 
-		response = append(response, indexing.IndexerClient{
+		response = append(response, indexing.Client{
 			ID:             model.ID,
 			OwnerID:        model.OwnerID,
 			Type:           indexing.IndexerTypeProwlarr,
@@ -86,14 +86,14 @@ func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.U
 	return response, nil
 }
 
-func (r indexerClientRepository) Update(ctx context.Context, id indexing.IndexerID, update func(indexerClient *indexing.IndexerClient) error) error {
+func (r indexerClientRepository) Update(ctx context.Context, id indexing.IndexerID, update func(indexerClient *indexing.Client) error) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
 		model, err := queries.GetIndexerClient(ctx, id)
 		if err != nil {
 			return handleReadError(err)
 		}
 
-		indexerClient := &indexing.IndexerClient{
+		indexerClient := &indexing.Client{
 			ID:             model.ID,
 			OwnerID:        model.OwnerID,
 			Type:           indexing.IndexerTypeProwlarr,

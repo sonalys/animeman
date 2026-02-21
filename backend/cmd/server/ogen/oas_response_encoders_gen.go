@@ -54,7 +54,7 @@ func encodeAuthenticationWhoAmIResponse(response *AuthenticationWhoAmIOK, w http
 	return nil
 }
 
-func encodeIndexersGetResponse(response []Indexer, w http.ResponseWriter, span trace.Span) error {
+func encodeIndexingClientsGetResponse(response []Indexer, w http.ResponseWriter, span trace.Span) error {
 	if err := func() error {
 		if response == nil {
 			return errors.New("nil is invalid value")
@@ -97,7 +97,7 @@ func encodeIndexersGetResponse(response []Indexer, w http.ResponseWriter, span t
 	return nil
 }
 
-func encodeIndexersPostResponse(response *IndexersPostCreated, w http.ResponseWriter, span trace.Span) error {
+func encodeIndexingClientsPostResponse(response *IndexingClientsPostCreated, w http.ResponseWriter, span trace.Span) error {
 	w.Header().Set("Content-Type", "application/json; charset=utf-8")
 	w.WriteHeader(201)
 	span.SetStatus(codes.Ok, http.StatusText(201))
@@ -158,6 +158,13 @@ func encodeRegisterUserResponse(response RegisterUserRes, w http.ResponseWriter,
 	default:
 		return errors.Errorf("unexpected response type: %T", response)
 	}
+}
+
+func encodeTestIndexingClientConfigurationResponse(response *TestIndexingClientConfigurationNoContent, w http.ResponseWriter, span trace.Span) error {
+	w.WriteHeader(204)
+	span.SetStatus(codes.Ok, http.StatusText(204))
+
+	return nil
 }
 
 func encodeTestTransferClientConfigurationResponse(response *TestTransferClientConfigurationNoContent, w http.ResponseWriter, span trace.Span) error {

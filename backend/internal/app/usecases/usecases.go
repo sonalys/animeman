@@ -28,6 +28,7 @@ type (
 
 	Factories struct {
 		ports.TransferClientControllerFactory
+		ports.IndexingClientControllerFactory
 	}
 
 	usecases struct {
@@ -39,10 +40,11 @@ type (
 		RegisterUser(ctx context.Context, username string, password string) (*users.User, error)
 		Login(ctx context.Context, username string, password string) (*shared.UserID, error)
 
-		CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.IndexerClient, error)
-		ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.IndexerClient, error)
+		CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.Client, error)
+		ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.Client, error)
 
 		TestTransferClientBuilder(ctx context.Context, b *transfer.ClientBuilder) error
+		TestIndexingClientBuilder(ctx context.Context, b *indexing.ClientBuilder) error
 	}
 )
 
@@ -107,13 +109,13 @@ func (u usecases) Login(ctx context.Context, username string, password string) (
 }
 
 type CreateIndexerArgs struct {
-	Type   indexing.IndexerType
+	Type   indexing.ClientType
 	URL    url.URL
 	Auth   authentication.Authentication
 	UserID shared.UserID
 }
 
-func (u usecases) CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.IndexerClient, error) {
+func (u usecases) CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.Client, error) {
 	ctx, span := otel.Tracer.Start(ctx, "CreateIndexer")
 	defer span.End()
 
@@ -136,7 +138,7 @@ func (u usecases) CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*i
 	return client, nil
 }
 
-func (u usecases) ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.IndexerClient, error) {
+func (u usecases) ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.Client, error) {
 	ctx, span := otel.Tracer.Start(ctx, "ListIndexers")
 	defer span.End()
 
@@ -157,6 +159,21 @@ func (u usecases) TestTransferClientBuilder(ctx context.Context, b *transfer.Cli
 
 	if _, err = u.factories.TransferClientControllerFactory.New(ctx, client); err != nil {
 		logError(ctx, err, "Error testing transfer client configuration")
+		return err
+	}
+
+	return nil
+}
+
+func (u usecases) TestIndexingClientBuilder(ctx context.Context, b *indexing.ClientBuilder) error {
+	client, err := b.Build()
+	if err != nil {
+		logError(ctx, err, "creating indexing client")
+		return err
+	}
+
+	if _, err = u.factories.IndexingClientControllerFactory.New(ctx, client); err != nil {
+		logError(ctx, err, "Error testing indexing client configuration")
 		return err
 	}
 

@@ -1258,28 +1258,28 @@ func (s *IndexerConfig) UnmarshalJSON(data []byte) error {
 }
 
 // Encode implements json.Marshaler.
-func (s *IndexersPostCreated) Encode(e *jx.Encoder) {
+func (s *IndexingClientsPostCreated) Encode(e *jx.Encoder) {
 	e.ObjStart()
 	s.encodeFields(e)
 	e.ObjEnd()
 }
 
 // encodeFields encodes fields.
-func (s *IndexersPostCreated) encodeFields(e *jx.Encoder) {
+func (s *IndexingClientsPostCreated) encodeFields(e *jx.Encoder) {
 	{
 		e.FieldStart("id")
 		json.EncodeUUID(e, s.ID)
 	}
 }
 
-var jsonFieldsNameOfIndexersPostCreated = [1]string{
+var jsonFieldsNameOfIndexingClientsPostCreated = [1]string{
 	0: "id",
 }
 
-// Decode decodes IndexersPostCreated from json.
-func (s *IndexersPostCreated) Decode(d *jx.Decoder) error {
+// Decode decodes IndexingClientsPostCreated from json.
+func (s *IndexingClientsPostCreated) Decode(d *jx.Decoder) error {
 	if s == nil {
-		return errors.New("invalid: unable to decode IndexersPostCreated to nil")
+		return errors.New("invalid: unable to decode IndexingClientsPostCreated to nil")
 	}
 	var requiredBitSet [1]uint8
 
@@ -1302,7 +1302,7 @@ func (s *IndexersPostCreated) Decode(d *jx.Decoder) error {
 		}
 		return nil
 	}); err != nil {
-		return errors.Wrap(err, "decode IndexersPostCreated")
+		return errors.Wrap(err, "decode IndexingClientsPostCreated")
 	}
 	// Validate required fields.
 	var failures []validate.FieldError
@@ -1319,8 +1319,8 @@ func (s *IndexersPostCreated) Decode(d *jx.Decoder) error {
 				bitIdx := bits.TrailingZeros8(result)
 				fieldIdx := i*8 + bitIdx
 				var name string
-				if fieldIdx < len(jsonFieldsNameOfIndexersPostCreated) {
-					name = jsonFieldsNameOfIndexersPostCreated[fieldIdx]
+				if fieldIdx < len(jsonFieldsNameOfIndexingClientsPostCreated) {
+					name = jsonFieldsNameOfIndexingClientsPostCreated[fieldIdx]
 				} else {
 					name = strconv.Itoa(fieldIdx)
 				}
@@ -1341,14 +1341,14 @@ func (s *IndexersPostCreated) Decode(d *jx.Decoder) error {
 }
 
 // MarshalJSON implements stdjson.Marshaler.
-func (s *IndexersPostCreated) MarshalJSON() ([]byte, error) {
+func (s *IndexingClientsPostCreated) MarshalJSON() ([]byte, error) {
 	e := jx.Encoder{}
 	s.Encode(&e)
 	return e.Bytes(), nil
 }
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *IndexersPostCreated) UnmarshalJSON(data []byte) error {
+func (s *IndexingClientsPostCreated) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

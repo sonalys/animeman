@@ -47,7 +47,7 @@
 			<div class="step-tray" style="transform: translateX(-{currentStep * 100}%);">
 				{#each steps as step, i}
 					<div class="step-wrapper" bind:clientHeight={stepHeights[i]}>
-						{@render step.component({ next, back })}
+						{@render step.component({ next, back: i != 0 && back })}
 					</div>
 				{/each}
 			</div>

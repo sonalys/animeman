@@ -17,10 +17,13 @@ var (
 	rn5AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
+	rn7AllowedHeaders = map[string]string{
+		"POST": "Content-Type",
+	}
 	rn6AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
-	rn7AllowedHeaders = map[string]string{
+	rn8AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
 )
@@ -139,21 +142,20 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 				}
 
-			case 'i': // Prefix: "indexers"
+			case 'i': // Prefix: "indexing-clients"
 
-				if l := len("indexers"); len(elem) >= l && elem[0:l] == "indexers" {
+				if l := len("indexing-clients"); len(elem) >= l && elem[0:l] == "indexing-clients" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
 					switch r.Method {
 					case "GET":
-						s.handleIndexersGetRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleIndexingClientsGetRequest([0]string{}, elemIsEscaped, w, r)
 					case "POST":
-						s.handleIndexersPostRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleIndexingClientsPostRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, notAllowedParams{
 							allowedMethods: "GET,POST",
@@ -164,6 +166,33 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					}
 
 					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/test"
+
+					if l := len("/test"); len(elem) >= l && elem[0:l] == "/test" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleTestIndexingClientConfigurationRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, notAllowedParams{
+								allowedMethods: "POST",
+								allowedHeaders: rn7AllowedHeaders,
+								acceptPost:     "application/json",
+								acceptPatch:    "",
+							})
+						}
+
+						return
+					}
+
 				}
 
 			case 'r': // Prefix: "register"
@@ -207,7 +236,7 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					default:
 						s.notAllowed(w, r, notAllowedParams{
 							allowedMethods: "POST",
-							allowedHeaders: rn7AllowedHeaders,
+							allowedHeaders: rn8AllowedHeaders,
 							acceptPost:     "application/json",
 							acceptPatch:    "",
 						})
@@ -380,38 +409,64 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 
 				}
 
-			case 'i': // Prefix: "indexers"
+			case 'i': // Prefix: "indexing-clients"
 
-				if l := len("indexers"); len(elem) >= l && elem[0:l] == "indexers" {
+				if l := len("indexing-clients"); len(elem) >= l && elem[0:l] == "indexing-clients" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
 					switch method {
 					case "GET":
-						r.name = IndexersGetOperation
+						r.name = IndexingClientsGetOperation
 						r.summary = "List all configured indexers"
 						r.operationID = ""
 						r.operationGroup = ""
-						r.pathPattern = "/indexers"
+						r.pathPattern = "/indexing-clients"
 						r.args = args
 						r.count = 0
 						return r, true
 					case "POST":
-						r.name = IndexersPostOperation
+						r.name = IndexingClientsPostOperation
 						r.summary = "Add a new indexer"
 						r.operationID = ""
 						r.operationGroup = ""
-						r.pathPattern = "/indexers"
+						r.pathPattern = "/indexing-clients"
 						r.args = args
 						r.count = 0
 						return r, true
 					default:
 						return
 					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/test"
+
+					if l := len("/test"); len(elem) >= l && elem[0:l] == "/test" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "POST":
+							r.name = TestIndexingClientConfigurationOperation
+							r.summary = ""
+							r.operationID = "TestIndexingClientConfiguration"
+							r.operationGroup = ""
+							r.pathPattern = "/indexing-clients/test"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
 				}
 
 			case 'r': // Prefix: "register"

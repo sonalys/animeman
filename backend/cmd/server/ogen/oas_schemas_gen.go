@@ -557,17 +557,17 @@ func (s *IndexerConfig) SetAuth(val Authentication) {
 	s.Auth = val
 }
 
-type IndexersPostCreated struct {
+type IndexingClientsPostCreated struct {
 	ID uuid.UUID `json:"id"`
 }
 
 // GetID returns the value of ID.
-func (s *IndexersPostCreated) GetID() uuid.UUID {
+func (s *IndexingClientsPostCreated) GetID() uuid.UUID {
 	return s.ID
 }
 
 // SetID sets the value of ID.
-func (s *IndexersPostCreated) SetID(val uuid.UUID) {
+func (s *IndexingClientsPostCreated) SetID(val uuid.UUID) {
 	s.ID = val
 }
 
@@ -714,6 +714,9 @@ func (s *RegisterUserCreatedHeaders) SetResponse(val RegisterUserCreated) {
 }
 
 func (*RegisterUserCreatedHeaders) registerUserRes() {}
+
+// TestIndexingClientConfigurationNoContent is response for TestIndexingClientConfiguration operation.
+type TestIndexingClientConfigurationNoContent struct{}
 
 // TestTransferClientConfigurationNoContent is response for TestTransferClientConfiguration operation.
 type TestTransferClientConfigurationNoContent struct{}

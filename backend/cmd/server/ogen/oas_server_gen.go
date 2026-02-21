@@ -9,24 +9,30 @@ import (
 // Handler handles operations described by OpenAPI v3 specification.
 type Handler interface {
 	UsersHandler
-	// IndexersGet implements GET /indexers operation.
+	// IndexingClientsGet implements GET /indexing-clients operation.
 	//
 	// List all configured indexers.
 	//
-	// GET /indexers
-	IndexersGet(ctx context.Context) ([]Indexer, error)
-	// IndexersPost implements POST /indexers operation.
+	// GET /indexing-clients
+	IndexingClientsGet(ctx context.Context) ([]Indexer, error)
+	// IndexingClientsPost implements POST /indexing-clients operation.
 	//
 	// Add a new indexer.
 	//
-	// POST /indexers
-	IndexersPost(ctx context.Context, req *IndexerConfig) (*IndexersPostCreated, error)
+	// POST /indexing-clients
+	IndexingClientsPost(ctx context.Context, req *IndexerConfig) (*IndexingClientsPostCreated, error)
 	// RegisterUser implements registerUser operation.
 	//
 	// Creates a new user account with a unique username and a secure password.
 	//
 	// POST /register
 	RegisterUser(ctx context.Context, req *UserRegistration) (RegisterUserRes, error)
+	// TestIndexingClientConfiguration implements TestIndexingClientConfiguration operation.
+	//
+	// Tests an indexing client configuration.
+	//
+	// POST /indexing-clients/test
+	TestIndexingClientConfiguration(ctx context.Context, req *IndexerConfig) error
 	// TestTransferClientConfiguration implements TestTransferClientConfiguration operation.
 	//
 	// Tests a transfer client configuration.

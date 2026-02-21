@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/cmd/server/handler"
+	indexingclient "github.com/sonalys/animeman/internal/adapters/indexing"
 	"github.com/sonalys/animeman/internal/adapters/transferclient"
 	"github.com/sonalys/animeman/internal/app/jwt"
 	"github.com/sonalys/animeman/internal/app/usecases"
@@ -88,7 +89,8 @@ func main() {
 	}
 
 	factories := usecases.Factories{
-		TransferClientControllerFactory: transferclient.NewTransferClientControllerFactory(),
+		TransferClientControllerFactory: transferclient.NewFactory(),
+		IndexingClientControllerFactory: indexingclient.NewFactory(),
 	}
 
 	usecases := usecases.NewUsecases(repositories, factories)

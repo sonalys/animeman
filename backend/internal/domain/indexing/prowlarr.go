@@ -9,36 +9,36 @@ import (
 )
 
 type (
-	IndexerID   struct{ uuid.UUID }
-	IndexerType uint
+	IndexerID  struct{ uuid.UUID }
+	ClientType uint
 
-	IndexerClient struct {
+	Client struct {
 		ID      IndexerID
 		OwnerID shared.UserID
 
-		Type           IndexerType
+		Type           ClientType
 		Address        url.URL
 		Authentication authentication.Authentication
 	}
 )
 
 const (
-	IndexerTypeUnknown IndexerType = iota
+	IndexerTypeUnknown ClientType = iota
 	IndexerTypeProwlarr
 	indexerTypeSentinel
 )
 
-var indexerTypeStringer = map[IndexerType]string{
+var indexerTypeStringer = map[ClientType]string{
 	IndexerTypeProwlarr: "prowlarr",
 }
 
 func NewClient(
 	userID shared.UserID,
-	t IndexerType,
+	t ClientType,
 	address url.URL,
 	auth authentication.Authentication,
-) *IndexerClient {
-	return &IndexerClient{
+) *Client {
+	return &Client{
 		ID:             shared.NewID[IndexerID](),
 		OwnerID:        userID,
 		Type:           t,
@@ -47,13 +47,13 @@ func NewClient(
 	}
 }
 
-func (s IndexerType) String() string {
+func (s ClientType) String() string {
 	if value, ok := indexerTypeStringer[s]; ok {
 		return value
 	}
 	return ""
 }
 
-func (s IndexerType) IsValid() bool {
+func (s ClientType) IsValid() bool {
 	return s > IndexerTypeUnknown && s < indexerTypeSentinel
 }

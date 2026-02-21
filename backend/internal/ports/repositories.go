@@ -30,9 +30,9 @@ type (
 	}
 
 	IndexerClientRepository interface {
-		Create(ctx context.Context, client *indexing.IndexerClient) error
-		ListByOwner(ctx context.Context, id shared.UserID) ([]indexing.IndexerClient, error)
-		Update(ctx context.Context, id indexing.IndexerID, updateHandler UpdateHandler[indexing.IndexerClient]) error
+		Create(ctx context.Context, client *indexing.Client) error
+		ListByOwner(ctx context.Context, id shared.UserID) ([]indexing.Client, error)
+		Update(ctx context.Context, id indexing.IndexerID, updateHandler UpdateHandler[indexing.Client]) error
 		Delete(ctx context.Context, id indexing.IndexerID) error
 	}
 

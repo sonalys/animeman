@@ -22,9 +22,7 @@ import (
 
 type (
 	Client struct {
-		client interface {
-			Do(req *http.Request) (*http.Response, error)
-		}
+		client *http.Client
 	}
 )
 

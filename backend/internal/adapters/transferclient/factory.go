@@ -13,7 +13,7 @@ type (
 	factory struct{}
 )
 
-func NewTransferClientControllerFactory() ports.TransferClientControllerFactory {
+func NewFactory() factory {
 	return factory{}
 }
 
@@ -36,6 +36,6 @@ func (f factory) New(ctx context.Context, client *transfer.Client) (ports.Transf
 
 		return controller, nil
 	default:
-		return nil, fmt.Errorf("unexpected transfer client type: %s", client.Type)
+		return nil, fmt.Errorf("unexpected client type: %s", client.Type)
 	}
 }

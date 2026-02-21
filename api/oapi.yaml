@@ -110,7 +110,7 @@ paths:
                 type: string
                 example: SESSION_ID=abcde12345; Path=/; HttpOnly
 
-  /indexers:
+  /indexing-clients:
     get:
       summary: List all configured indexers
       tags:
@@ -169,6 +169,24 @@ paths:
           application/json:
             schema:
               $ref: "#/components/schemas/TransferClientConfig"
+      responses:
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+        "204":
+          description: Valid configuration
+
+  /indexing-clients/test:
+    post:
+      operationId: TestIndexingClientConfiguration
+      description: Tests an indexing client configuration
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/IndexerConfig"
       responses:
         default:
           $ref: "#/components/responses/ErrorResponse"

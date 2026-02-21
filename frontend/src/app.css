@@ -9,7 +9,7 @@
     /* Grey-blue */
     --accent: #38bdf8;
     /* Vivid Purple */
-    --accent-hover: #7c3aed;
+    --accent-hover: #7dd8ff;
     --error: #ef4444;
     --border: #334155;
 }
@@ -66,7 +66,11 @@ input {
 
 .btn-primary:hover {
     transform: translateY(-2px);
-    background: #7dd3fc;
+    background: var(--accent-hover);
+}
+
+.btn-ghost:hover {
+    transform: translateY(-2px);
 }
 
 .btn-ghost {

@@ -26,6 +26,53 @@ type Handler struct {
 	Usecases  usecases.Usecases
 }
 
+func (h *Handler) TestIndexingClientConfiguration(ctx context.Context, req *ogen.IndexerConfig) error {
+	userID, err := security.GetIdentity(ctx)
+	if err != nil {
+		return err
+	}
+
+	b := indexing.NewClientBuilder().
+		WithType(func() indexing.ClientType {
+			switch req.Type {
+			case ogen.IndexerClientTypeProwlarr:
+				return indexing.IndexerTypeProwlarr
+			default:
+				return indexing.IndexerTypeUnknown
+			}
+		}()).
+		WithAddress(req.Hostname).
+		WithOwner(userID).
+		WithAuth(func() authentication.Authentication {
+			switch req.Auth.Type {
+			case ogen.AuthenticationTypeApiKey:
+				auth := req.Auth.OneOf.AuthenticationAPIKey
+				return authentication.NewAPIKeyAuthentication(auth.Key)
+			default:
+				return authentication.Authentication{}
+			}
+		}())
+
+	if err := h.Usecases.TestIndexingClientBuilder(ctx, b); err != nil {
+		if apperr.Code(err) == codes.Unauthenticated {
+			validation := apperr.NewFormValidation(
+				apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.username"),
+				apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.password"),
+			)
+
+			return apperr.NewPublicError(validation.Validate(), "username/password mismatch")
+		}
+
+		if apperr.Code(err) == codes.InvalidArgument {
+			return apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "hostname")
+		}
+
+		return err
+	}
+
+	return nil
+}
+
 func (h *Handler) TestTransferClientConfiguration(ctx context.Context, req *ogen.TransferClientConfig) error {
 	userID, err := security.GetIdentity(ctx)
 	if err != nil {
@@ -73,7 +120,7 @@ func (h *Handler) TestTransferClientConfiguration(ctx context.Context, req *ogen
 	return nil
 }
 
-func (h *Handler) IndexersGet(ctx context.Context) ([]ogen.Indexer, error) {
+func (h *Handler) IndexingClientsGet(ctx context.Context) ([]ogen.Indexer, error) {
 	userID, err := security.GetIdentity(ctx)
 	if err != nil {
 		return nil, err
@@ -84,7 +131,7 @@ func (h *Handler) IndexersGet(ctx context.Context) ([]ogen.Indexer, error) {
 		return nil, err
 	}
 
-	return sliceutils.Map(response, func(from indexing.IndexerClient) ogen.Indexer {
+	return sliceutils.Map(response, func(from indexing.Client) ogen.Indexer {
 		return ogen.Indexer{
 			ID:       uuid.UUID(from.ID.UUID),
 			Type:     ogen.IndexerClientType(from.Type.String()),
@@ -93,7 +140,7 @@ func (h *Handler) IndexersGet(ctx context.Context) ([]ogen.Indexer, error) {
 	}), nil
 }
 
-func (h *Handler) IndexersPost(ctx context.Context, req *ogen.IndexerConfig) (*ogen.IndexersPostCreated, error) {
+func (h *Handler) IndexingClientsPost(ctx context.Context, req *ogen.IndexerConfig) (*ogen.IndexingClientsPostCreated, error) {
 	userID, err := security.GetIdentity(ctx)
 	if err != nil {
 		return nil, err
@@ -102,7 +149,7 @@ func (h *Handler) IndexersPost(ctx context.Context, req *ogen.IndexerConfig) (*o
 	client, err := h.Usecases.CreateIndexer(ctx, usecases.CreateIndexerArgs{
 		UserID: userID,
 		URL:    req.Hostname,
-		Type: func() indexing.IndexerType {
+		Type: func() indexing.ClientType {
 			switch req.Type {
 			case ogen.IndexerClientTypeProwlarr:
 				return indexing.IndexerTypeProwlarr
@@ -126,7 +173,7 @@ func (h *Handler) IndexersPost(ctx context.Context, req *ogen.IndexerConfig) (*o
 		}(),
 	})
 
-	return &ogen.IndexersPostCreated{
+	return &ogen.IndexingClientsPostCreated{
 		ID: uuid.UUID(client.ID.UUID),
 	}, nil
 }

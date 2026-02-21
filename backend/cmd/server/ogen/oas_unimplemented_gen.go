@@ -31,21 +31,21 @@ func (UnimplementedHandler) AuthenticationWhoAmI(ctx context.Context) (r *Authen
 	return r, ht.ErrNotImplemented
 }
 
-// IndexersGet implements GET /indexers operation.
+// IndexingClientsGet implements GET /indexing-clients operation.
 //
 // List all configured indexers.
 //
-// GET /indexers
-func (UnimplementedHandler) IndexersGet(ctx context.Context) (r []Indexer, _ error) {
+// GET /indexing-clients
+func (UnimplementedHandler) IndexingClientsGet(ctx context.Context) (r []Indexer, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
-// IndexersPost implements POST /indexers operation.
+// IndexingClientsPost implements POST /indexing-clients operation.
 //
 // Add a new indexer.
 //
-// POST /indexers
-func (UnimplementedHandler) IndexersPost(ctx context.Context, req *IndexerConfig) (r *IndexersPostCreated, _ error) {
+// POST /indexing-clients
+func (UnimplementedHandler) IndexingClientsPost(ctx context.Context, req *IndexerConfig) (r *IndexingClientsPostCreated, _ error) {
 	return r, ht.ErrNotImplemented
 }
 
@@ -56,6 +56,15 @@ func (UnimplementedHandler) IndexersPost(ctx context.Context, req *IndexerConfig
 // POST /register
 func (UnimplementedHandler) RegisterUser(ctx context.Context, req *UserRegistration) (r RegisterUserRes, _ error) {
 	return r, ht.ErrNotImplemented
+}
+
+// TestIndexingClientConfiguration implements TestIndexingClientConfiguration operation.
+//
+// Tests an indexing client configuration.
+//
+// POST /indexing-clients/test
+func (UnimplementedHandler) TestIndexingClientConfiguration(ctx context.Context, req *IndexerConfig) error {
+	return ht.ErrNotImplemented
 }
 
 // TestTransferClientConfiguration implements TestTransferClientConfiguration operation.

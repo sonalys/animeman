@@ -55,7 +55,6 @@
 		border-radius: 10px;
 		transform: translateX(calc(100% * var(--index)));
 		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-		z-index: -1;
 	}
 
 	button {
@@ -74,5 +73,9 @@
 
 	button.active {
 		color: var(--bg-primary);
+	}
+
+	.segmented-control:hover .pill {
+		background: var(--accent-hover);
 	}
 </style>

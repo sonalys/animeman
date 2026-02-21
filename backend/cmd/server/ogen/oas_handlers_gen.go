@@ -372,23 +372,23 @@ func (s *Server) handleAuthenticationWhoAmIRequest(args [0]string, argsEscaped b
 	}
 }
 
-// handleIndexersGetRequest handles GET /indexers operation.
+// handleIndexingClientsGetRequest handles GET /indexing-clients operation.
 //
 // List all configured indexers.
 //
-// GET /indexers
-func (s *Server) handleIndexersGetRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// GET /indexing-clients
+func (s *Server) handleIndexingClientsGetRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPRequestMethodKey.String("GET"),
-		semconv.HTTPRouteKey.String("/indexers"),
+		semconv.HTTPRouteKey.String("/indexing-clients"),
 	}
 	// Add attributes from config.
 	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), IndexersGetOperation,
+	ctx, span := s.cfg.Tracer.Start(r.Context(), IndexingClientsGetOperation,
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -443,7 +443,7 @@ func (s *Server) handleIndexersGetRequest(args [0]string, argsEscaped bool, w ht
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: IndexersGetOperation,
+			Name: IndexingClientsGetOperation,
 			ID:   "",
 		}
 	)
@@ -451,7 +451,7 @@ func (s *Server) handleIndexersGetRequest(args [0]string, argsEscaped bool, w ht
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityCookieAuth(ctx, IndexersGetOperation, r)
+			sctx, ok, err := s.securityCookieAuth(ctx, IndexingClientsGetOperation, r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
@@ -500,7 +500,7 @@ func (s *Server) handleIndexersGetRequest(args [0]string, argsEscaped bool, w ht
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    IndexersGetOperation,
+			OperationName:    IndexingClientsGetOperation,
 			OperationSummary: "List all configured indexers",
 			OperationID:      "",
 			Body:             nil,
@@ -523,12 +523,12 @@ func (s *Server) handleIndexersGetRequest(args [0]string, argsEscaped bool, w ht
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.IndexersGet(ctx)
+				response, err = s.h.IndexingClientsGet(ctx)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.IndexersGet(ctx)
+		response, err = s.h.IndexingClientsGet(ctx)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorResponseStatusCode](err); ok {
@@ -547,7 +547,7 @@ func (s *Server) handleIndexersGetRequest(args [0]string, argsEscaped bool, w ht
 		return
 	}
 
-	if err := encodeIndexersGetResponse(response, w, span); err != nil {
+	if err := encodeIndexingClientsGetResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
@@ -556,23 +556,23 @@ func (s *Server) handleIndexersGetRequest(args [0]string, argsEscaped bool, w ht
 	}
 }
 
-// handleIndexersPostRequest handles POST /indexers operation.
+// handleIndexingClientsPostRequest handles POST /indexing-clients operation.
 //
 // Add a new indexer.
 //
-// POST /indexers
-func (s *Server) handleIndexersPostRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+// POST /indexing-clients
+func (s *Server) handleIndexingClientsPostRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
 	statusWriter := &codeRecorder{ResponseWriter: w}
 	w = statusWriter
 	otelAttrs := []attribute.KeyValue{
 		semconv.HTTPRequestMethodKey.String("POST"),
-		semconv.HTTPRouteKey.String("/indexers"),
+		semconv.HTTPRouteKey.String("/indexing-clients"),
 	}
 	// Add attributes from config.
 	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
 
 	// Start a span for this request.
-	ctx, span := s.cfg.Tracer.Start(r.Context(), IndexersPostOperation,
+	ctx, span := s.cfg.Tracer.Start(r.Context(), IndexingClientsPostOperation,
 		trace.WithAttributes(otelAttrs...),
 		serverSpanKind,
 	)
@@ -627,7 +627,7 @@ func (s *Server) handleIndexersPostRequest(args [0]string, argsEscaped bool, w h
 		}
 		err          error
 		opErrContext = ogenerrors.OperationContext{
-			Name: IndexersPostOperation,
+			Name: IndexingClientsPostOperation,
 			ID:   "",
 		}
 	)
@@ -635,7 +635,7 @@ func (s *Server) handleIndexersPostRequest(args [0]string, argsEscaped bool, w h
 		type bitset = [1]uint8
 		var satisfied bitset
 		{
-			sctx, ok, err := s.securityCookieAuth(ctx, IndexersPostOperation, r)
+			sctx, ok, err := s.securityCookieAuth(ctx, IndexingClientsPostOperation, r)
 			if err != nil {
 				err = &ogenerrors.SecurityError{
 					OperationContext: opErrContext,
@@ -679,7 +679,7 @@ func (s *Server) handleIndexersPostRequest(args [0]string, argsEscaped bool, w h
 	}
 
 	var rawBody []byte
-	request, rawBody, close, err := s.decodeIndexersPostRequest(r)
+	request, rawBody, close, err := s.decodeIndexingClientsPostRequest(r)
 	if err != nil {
 		err = &ogenerrors.DecodeRequestError{
 			OperationContext: opErrContext,
@@ -695,11 +695,11 @@ func (s *Server) handleIndexersPostRequest(args [0]string, argsEscaped bool, w h
 		}
 	}()
 
-	var response *IndexersPostCreated
+	var response *IndexingClientsPostCreated
 	if m := s.cfg.Middleware; m != nil {
 		mreq := middleware.Request{
 			Context:          ctx,
-			OperationName:    IndexersPostOperation,
+			OperationName:    IndexingClientsPostOperation,
 			OperationSummary: "Add a new indexer",
 			OperationID:      "",
 			Body:             request,
@@ -711,7 +711,7 @@ func (s *Server) handleIndexersPostRequest(args [0]string, argsEscaped bool, w h
 		type (
 			Request  = *IndexerConfig
 			Params   = struct{}
-			Response = *IndexersPostCreated
+			Response = *IndexingClientsPostCreated
 		)
 		response, err = middleware.HookMiddleware[
 			Request,
@@ -722,12 +722,12 @@ func (s *Server) handleIndexersPostRequest(args [0]string, argsEscaped bool, w h
 			mreq,
 			nil,
 			func(ctx context.Context, request Request, params Params) (response Response, err error) {
-				response, err = s.h.IndexersPost(ctx, request)
+				response, err = s.h.IndexingClientsPost(ctx, request)
 				return response, err
 			},
 		)
 	} else {
-		response, err = s.h.IndexersPost(ctx, request)
+		response, err = s.h.IndexingClientsPost(ctx, request)
 	}
 	if err != nil {
 		if errRes, ok := errors.Into[*ErrorResponseStatusCode](err); ok {
@@ -746,7 +746,7 @@ func (s *Server) handleIndexersPostRequest(args [0]string, argsEscaped bool, w h
 		return
 	}
 
-	if err := encodeIndexersPostResponse(response, w, span); err != nil {
+	if err := encodeIndexingClientsPostResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)
@@ -901,6 +901,206 @@ func (s *Server) handleRegisterUserRequest(args [0]string, argsEscaped bool, w h
 	}
 
 	if err := encodeRegisterUserResponse(response, w, span); err != nil {
+		defer recordError("EncodeResponse", err)
+		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+		}
+		return
+	}
+}
+
+// handleTestIndexingClientConfigurationRequest handles TestIndexingClientConfiguration operation.
+//
+// Tests an indexing client configuration.
+//
+// POST /indexing-clients/test
+func (s *Server) handleTestIndexingClientConfigurationRequest(args [0]string, argsEscaped bool, w http.ResponseWriter, r *http.Request) {
+	statusWriter := &codeRecorder{ResponseWriter: w}
+	w = statusWriter
+	otelAttrs := []attribute.KeyValue{
+		otelogen.OperationID("TestIndexingClientConfiguration"),
+		semconv.HTTPRequestMethodKey.String("POST"),
+		semconv.HTTPRouteKey.String("/indexing-clients/test"),
+	}
+	// Add attributes from config.
+	otelAttrs = append(otelAttrs, s.cfg.Attributes...)
+
+	// Start a span for this request.
+	ctx, span := s.cfg.Tracer.Start(r.Context(), TestIndexingClientConfigurationOperation,
+		trace.WithAttributes(otelAttrs...),
+		serverSpanKind,
+	)
+	defer span.End()
+
+	// Add Labeler to context.
+	labeler := &Labeler{attrs: otelAttrs}
+	ctx = contextWithLabeler(ctx, labeler)
+
+	// Run stopwatch.
+	startTime := time.Now()
+	defer func() {
+		elapsedDuration := time.Since(startTime)
+
+		attrSet := labeler.AttributeSet()
+		attrs := attrSet.ToSlice()
+		code := statusWriter.status
+		if code != 0 {
+			codeAttr := semconv.HTTPResponseStatusCode(code)
+			attrs = append(attrs, codeAttr)
+			span.SetAttributes(codeAttr)
+		}
+		attrOpt := metric.WithAttributes(attrs...)
+
+		// Increment request counter.
+		s.requests.Add(ctx, 1, attrOpt)
+
+		// Use floating point division here for higher precision (instead of Millisecond method).
+		s.duration.Record(ctx, float64(elapsedDuration)/float64(time.Millisecond), attrOpt)
+	}()
+
+	var (
+		recordError = func(stage string, err error) {
+			span.RecordError(err)
+
+			// https://opentelemetry.io/docs/specs/semconv/http/http-spans/#status
+			// Span Status MUST be left unset if HTTP status code was in the 1xx, 2xx or 3xx ranges,
+			// unless there was another error (e.g., network error receiving the response body; or 3xx codes with
+			// max redirects exceeded), in which case status MUST be set to Error.
+			code := statusWriter.status
+			if code < 100 || code >= 500 {
+				span.SetStatus(codes.Error, stage)
+			}
+
+			attrSet := labeler.AttributeSet()
+			attrs := attrSet.ToSlice()
+			if code != 0 {
+				attrs = append(attrs, semconv.HTTPResponseStatusCode(code))
+			}
+
+			s.errors.Add(ctx, 1, metric.WithAttributes(attrs...))
+		}
+		err          error
+		opErrContext = ogenerrors.OperationContext{
+			Name: TestIndexingClientConfigurationOperation,
+			ID:   "TestIndexingClientConfiguration",
+		}
+	)
+	{
+		type bitset = [1]uint8
+		var satisfied bitset
+		{
+			sctx, ok, err := s.securityCookieAuth(ctx, TestIndexingClientConfigurationOperation, r)
+			if err != nil {
+				err = &ogenerrors.SecurityError{
+					OperationContext: opErrContext,
+					Security:         "CookieAuth",
+					Err:              err,
+				}
+				if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
+					defer recordError("Security:CookieAuth", err)
+				}
+				return
+			}
+			if ok {
+				satisfied[0] |= 1 << 0
+				ctx = sctx
+			}
+		}
+
+		if ok := func() bool {
+		nextRequirement:
+			for _, requirement := range []bitset{
+				{0b00000001},
+			} {
+				for i, mask := range requirement {
+					if satisfied[i]&mask != mask {
+						continue nextRequirement
+					}
+				}
+				return true
+			}
+			return false
+		}(); !ok {
+			err = &ogenerrors.SecurityError{
+				OperationContext: opErrContext,
+				Err:              ogenerrors.ErrSecurityRequirementIsNotSatisfied,
+			}
+			if encodeErr := encodeErrorResponse(s.h.NewError(ctx, err), w, span); encodeErr != nil {
+				defer recordError("Security", err)
+			}
+			return
+		}
+	}
+
+	var rawBody []byte
+	request, rawBody, close, err := s.decodeTestIndexingClientConfigurationRequest(r)
+	if err != nil {
+		err = &ogenerrors.DecodeRequestError{
+			OperationContext: opErrContext,
+			Err:              err,
+		}
+		defer recordError("DecodeRequest", err)
+		s.cfg.ErrorHandler(ctx, w, r, err)
+		return
+	}
+	defer func() {
+		if err := close(); err != nil {
+			recordError("CloseRequest", err)
+		}
+	}()
+
+	var response *TestIndexingClientConfigurationNoContent
+	if m := s.cfg.Middleware; m != nil {
+		mreq := middleware.Request{
+			Context:          ctx,
+			OperationName:    TestIndexingClientConfigurationOperation,
+			OperationSummary: "",
+			OperationID:      "TestIndexingClientConfiguration",
+			Body:             request,
+			RawBody:          rawBody,
+			Params:           middleware.Parameters{},
+			Raw:              r,
+		}
+
+		type (
+			Request  = *IndexerConfig
+			Params   = struct{}
+			Response = *TestIndexingClientConfigurationNoContent
+		)
+		response, err = middleware.HookMiddleware[
+			Request,
+			Params,
+			Response,
+		](
+			m,
+			mreq,
+			nil,
+			func(ctx context.Context, request Request, params Params) (response Response, err error) {
+				err = s.h.TestIndexingClientConfiguration(ctx, request)
+				return response, err
+			},
+		)
+	} else {
+		err = s.h.TestIndexingClientConfiguration(ctx, request)
+	}
+	if err != nil {
+		if errRes, ok := errors.Into[*ErrorResponseStatusCode](err); ok {
+			if err := encodeErrorResponse(errRes, w, span); err != nil {
+				defer recordError("Internal", err)
+			}
+			return
+		}
+		if errors.Is(err, ht.ErrNotImplemented) {
+			s.cfg.ErrorHandler(ctx, w, r, err)
+			return
+		}
+		if err := encodeErrorResponse(s.h.NewError(ctx, err), w, span); err != nil {
+			defer recordError("Internal", err)
+		}
+		return
+	}
+
+	if err := encodeTestIndexingClientConfigurationResponse(response, w, span); err != nil {
 		defer recordError("EncodeResponse", err)
 		if !errors.Is(err, ht.ErrInternalServerErrorResponse) {
 			s.cfg.ErrorHandler(ctx, w, r, err)

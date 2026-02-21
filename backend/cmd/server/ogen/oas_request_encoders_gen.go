@@ -24,7 +24,7 @@ func encodeAuthenticationLoginRequest(
 	return nil
 }
 
-func encodeIndexersPostRequest(
+func encodeIndexingClientsPostRequest(
 	req *IndexerConfig,
 	r *http.Request,
 ) error {
@@ -40,6 +40,20 @@ func encodeIndexersPostRequest(
 
 func encodeRegisterUserRequest(
 	req *UserRegistration,
+	r *http.Request,
+) error {
+	const contentType = "application/json"
+	e := new(jx.Encoder)
+	{
+		req.Encode(e)
+	}
+	encoded := e.Bytes()
+	ht.SetBody(r, bytes.NewReader(encoded), contentType)
+	return nil
+}
+
+func encodeTestIndexingClientConfigurationRequest(
+	req *IndexerConfig,
 	r *http.Request,
 ) error {
 	const contentType = "application/json"

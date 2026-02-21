@@ -71,3 +71,11 @@ func (a Authentication) AsUserPassword() (AuthenticationUserPassword, bool) {
 
 	return *a.AuthenticationUserPassword, true
 }
+
+func (a Authentication) AsAPIKey() (AuthenticationAPIKey, bool) {
+	if a.AuthenticationAPIKey == nil {
+		return AuthenticationAPIKey{}, false
+	}
+
+	return *a.AuthenticationAPIKey, true
+}
