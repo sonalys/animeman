@@ -27,6 +27,12 @@ type Handler interface {
 	//
 	// POST /register
 	RegisterUser(ctx context.Context, req *UserRegistration) (RegisterUserRes, error)
+	// SetupGet implements GET /setup operation.
+	//
+	// Gets the initial configuration progress.
+	//
+	// GET /setup
+	SetupGet(ctx context.Context) (*SetupGetOK, error)
 	// TestIndexingClientConfiguration implements TestIndexingClientConfiguration operation.
 	//
 	// Tests an indexing client configuration.

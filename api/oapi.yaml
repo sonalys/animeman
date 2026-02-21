@@ -9,6 +9,32 @@ servers:
     description: Local Server
 
 paths:
+  /setup:
+    get:
+      summary: Gets the initial configuration progress
+      tags:
+        - setup
+      security:
+        - cookieAuth: []
+      responses:
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+        "200":
+          content:
+            application/json:
+              schema:
+                type: object
+                required: [completedSteps, missingSteps]
+                properties:
+                  completedSteps:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SetupSteps"
+                  missingSteps:
+                    type: array
+                    items:
+                      $ref: "#/components/schemas/SetupSteps"
+
   /register:
     post:
       summary: Register a new user
@@ -118,6 +144,8 @@ paths:
       security:
         - cookieAuth: []
       responses:
+        default:
+          $ref: "#/components/responses/ErrorResponse"
         "200":
           description: List of indexers retrieved successfully
           content:
@@ -126,8 +154,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Indexer"
-        default:
-          $ref: "#/components/responses/ErrorResponse"
 
     post:
       summary: Add a new indexer
@@ -219,6 +245,10 @@ components:
                 items:
                   $ref: "#/components/schemas/FieldError"
   schemas:
+    SetupSteps:
+      type: string
+      enum: [watchlist, indexing, transfer, collection, qualityProfile]
+
     IndexerClientType:
       type: string
       enum: [prowlarr]

@@ -58,6 +58,15 @@ func (UnimplementedHandler) RegisterUser(ctx context.Context, req *UserRegistrat
 	return r, ht.ErrNotImplemented
 }
 
+// SetupGet implements GET /setup operation.
+//
+// Gets the initial configuration progress.
+//
+// GET /setup
+func (UnimplementedHandler) SetupGet(ctx context.Context) (r *SetupGetOK, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // TestIndexingClientConfiguration implements TestIndexingClientConfiguration operation.
 //
 // Tests an indexing client configuration.

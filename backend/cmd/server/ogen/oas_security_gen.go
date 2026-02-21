@@ -37,6 +37,7 @@ var operationRolesCookieAuth = map[string][]string{
 	AuthenticationWhoAmIOperation:            []string{},
 	IndexingClientsGetOperation:              []string{},
 	IndexingClientsPostOperation:             []string{},
+	SetupGetOperation:                        []string{},
 	TestIndexingClientConfigurationOperation: []string{},
 	TestTransferClientConfigurationOperation: []string{},
 }

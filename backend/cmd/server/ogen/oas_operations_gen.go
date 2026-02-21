@@ -11,6 +11,7 @@ const (
 	IndexingClientsGetOperation              OperationName = "IndexingClientsGet"
 	IndexingClientsPostOperation             OperationName = "IndexingClientsPost"
 	RegisterUserOperation                    OperationName = "RegisterUser"
+	SetupGetOperation                        OperationName = "SetupGet"
 	TestIndexingClientConfigurationOperation OperationName = "TestIndexingClientConfiguration"
 	TestTransferClientConfigurationOperation OperationName = "TestTransferClientConfiguration"
 )

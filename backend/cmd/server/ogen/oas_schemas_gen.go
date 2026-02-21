@@ -806,6 +806,94 @@ func (s *RegisterUserCreatedHeaders) SetResponse(val RegisterUserCreated) {
 
 func (*RegisterUserCreatedHeaders) registerUserRes() {}
 
+type SetupGetOK struct {
+	CompletedSteps []SetupSteps `json:"completedSteps"`
+	MissingSteps   []SetupSteps `json:"missingSteps"`
+}
+
+// GetCompletedSteps returns the value of CompletedSteps.
+func (s *SetupGetOK) GetCompletedSteps() []SetupSteps {
+	return s.CompletedSteps
+}
+
+// GetMissingSteps returns the value of MissingSteps.
+func (s *SetupGetOK) GetMissingSteps() []SetupSteps {
+	return s.MissingSteps
+}
+
+// SetCompletedSteps sets the value of CompletedSteps.
+func (s *SetupGetOK) SetCompletedSteps(val []SetupSteps) {
+	s.CompletedSteps = val
+}
+
+// SetMissingSteps sets the value of MissingSteps.
+func (s *SetupGetOK) SetMissingSteps(val []SetupSteps) {
+	s.MissingSteps = val
+}
+
+// Ref: #/components/schemas/SetupSteps
+type SetupSteps string
+
+const (
+	SetupStepsWatchlist      SetupSteps = "watchlist"
+	SetupStepsIndexing       SetupSteps = "indexing"
+	SetupStepsTransfer       SetupSteps = "transfer"
+	SetupStepsCollection     SetupSteps = "collection"
+	SetupStepsQualityProfile SetupSteps = "qualityProfile"
+)
+
+// AllValues returns all SetupSteps values.
+func (SetupSteps) AllValues() []SetupSteps {
+	return []SetupSteps{
+		SetupStepsWatchlist,
+		SetupStepsIndexing,
+		SetupStepsTransfer,
+		SetupStepsCollection,
+		SetupStepsQualityProfile,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s SetupSteps) MarshalText() ([]byte, error) {
+	switch s {
+	case SetupStepsWatchlist:
+		return []byte(s), nil
+	case SetupStepsIndexing:
+		return []byte(s), nil
+	case SetupStepsTransfer:
+		return []byte(s), nil
+	case SetupStepsCollection:
+		return []byte(s), nil
+	case SetupStepsQualityProfile:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *SetupSteps) UnmarshalText(data []byte) error {
+	switch SetupSteps(data) {
+	case SetupStepsWatchlist:
+		*s = SetupStepsWatchlist
+		return nil
+	case SetupStepsIndexing:
+		*s = SetupStepsIndexing
+		return nil
+	case SetupStepsTransfer:
+		*s = SetupStepsTransfer
+		return nil
+	case SetupStepsCollection:
+		*s = SetupStepsCollection
+		return nil
+	case SetupStepsQualityProfile:
+		*s = SetupStepsQualityProfile
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
+}
+
 // TestIndexingClientConfigurationNoContent is response for TestIndexingClientConfiguration operation.
 type TestIndexingClientConfigurationNoContent struct{}
 
