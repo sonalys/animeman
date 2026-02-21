@@ -27,6 +27,13 @@ type Handler struct {
 	Usecases  usecases.Usecases
 }
 
+func (h *Handler) SetupGet(ctx context.Context) (*ogen.SetupGetOK, error) {
+	return &ogen.SetupGetOK{
+		CompletedSteps: []ogen.SetupSteps{},
+		MissingSteps:   []ogen.SetupSteps{},
+	}, nil
+}
+
 func (h *Handler) TestIndexingClientConfiguration(ctx context.Context, req *ogen.IndexerConfig) error {
 	userID, err := security.GetIdentity(ctx)
 	if err != nil {
