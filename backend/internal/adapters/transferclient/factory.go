@@ -5,8 +5,11 @@ import (
 	"fmt"
 
 	"github.com/sonalys/animeman/internal/adapters/transferclient/qbittorrent"
+	"github.com/sonalys/animeman/internal/app/apperr"
+	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/ports"
+	"google.golang.org/grpc/codes"
 )
 
 type (
@@ -22,7 +25,7 @@ func (f factory) New(ctx context.Context, client *transfer.Client) (ports.Transf
 	case transfer.ClientTypeQBittorrent:
 		auth, ok := client.Authentication.AsUserPassword()
 		if !ok {
-			return nil, fmt.Errorf("unsupported authentication type: %s", client.Authentication.Type)
+			return nil, apperr.New(authentication.ErrUnsupportedAuthentication, codes.InvalidArgument, "unsupported authentication type: %s", client.Authentication.Type)
 		}
 
 		controller, err := qbittorrent.New(ctx, client.Address.String(), auth.Username, string(auth.Password))

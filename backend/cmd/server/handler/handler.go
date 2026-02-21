@@ -3,6 +3,7 @@ package handler
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"net/http"
 
 	"github.com/google/uuid"
@@ -54,13 +55,22 @@ func (h *Handler) TestIndexingClientConfiguration(ctx context.Context, req *ogen
 		}())
 
 	if err := h.Usecases.TestIndexingClientBuilder(ctx, b); err != nil {
-		if apperr.Code(err) == codes.Unauthenticated {
-			validation := apperr.NewFormValidation(
-				apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.username"),
-				apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.password"),
-			)
+		if errors.Is(err, authentication.ErrUnsupportedAuthentication) {
+			return apperr.NewFieldError(apperr.FieldErrorCodeUnsupported, "auth.type")
+		}
 
-			return apperr.NewPublicError(validation.Validate(), "username/password mismatch")
+		if apperr.Code(err) == codes.Unauthenticated {
+			switch req.Auth.Type {
+			case ogen.AuthenticationTypeUserPassword:
+				validation := apperr.NewFormValidation(
+					apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.username"),
+					apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.password"),
+				)
+
+				return apperr.NewPublicError(validation.Validate(), "username/password mismatch")
+			case ogen.AuthenticationTypeApiKey:
+				return apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.key")
+			}
 		}
 
 		if apperr.Code(err) == codes.InvalidArgument {
@@ -101,13 +111,22 @@ func (h *Handler) TestTransferClientConfiguration(ctx context.Context, req *ogen
 		}())
 
 	if err := h.Usecases.TestTransferClientBuilder(ctx, b); err != nil {
-		if apperr.Code(err) == codes.Unauthenticated {
-			validation := apperr.NewFormValidation(
-				apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.username"),
-				apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.password"),
-			)
+		if errors.Is(err, authentication.ErrUnsupportedAuthentication) {
+			return apperr.NewFieldError(apperr.FieldErrorCodeUnsupported, "auth.type")
+		}
 
-			return apperr.NewPublicError(validation.Validate(), "username/password mismatch")
+		if apperr.Code(err) == codes.Unauthenticated {
+			switch req.Auth.Type {
+			case ogen.AuthenticationTypeUserPassword:
+				validation := apperr.NewFormValidation(
+					apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.username"),
+					apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.password"),
+				)
+
+				return apperr.NewPublicError(validation.Validate(), "username/password mismatch")
+			case ogen.AuthenticationTypeApiKey:
+				return apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.key")
+			}
 		}
 
 		if apperr.Code(err) == codes.InvalidArgument {

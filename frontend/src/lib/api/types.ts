@@ -24,7 +24,7 @@ export interface UserRegistration {
     password: string;
 };
 
-export type AuthType = 'userPassword' | 'apiKey';
+export type AuthType = 'none' | 'userPassword' | 'apiKey';
 
 export interface Authentication {
     type: AuthType;

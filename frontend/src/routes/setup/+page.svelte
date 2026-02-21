@@ -24,13 +24,14 @@
 			required: 'Required',
 			invalidFormat: 'Invalid format',
 			invalid: 'Invalid value',
+			unsupported: 'Unsupported value',
 			unknown: 'Unexpected error'
 		};
 
 		return {
-			get: (field: string) => {
+			get: (field: string): string | undefined => {
 				const err = fieldMap[field];
-				if (!err) return null;
+				if (!err) return;
 
 				if (err.message.length == 0) {
 					return ERROR_MESSAGES[err.code];
@@ -55,8 +56,6 @@
 					},
 					{} as Record<string, FieldError>
 				);
-
-				console.log(fieldMap);
 			},
 
 			clear: () => {
@@ -72,12 +71,12 @@
 		indexingClient: {
 			type: 'prowlarr',
 			hostname: 'http://localhost:9696',
-			auth: { type: 'apiKey', key: '' }
+			auth: { type: 'none' }
 		},
 		transferClient: {
 			type: 'qbittorrent',
 			hostname: 'http://localhost:8080',
-			auth: { type: 'userPassword', username: '', password: '' }
+			auth: { type: 'none' }
 		},
 		watchlist: {
 			externalID: '',
@@ -90,6 +89,7 @@
 	});
 
 	const authOptions = [
+		{ label: 'None', value: 'none' },
 		{ label: 'API Key', value: 'apiKey' },
 		{ label: 'Credentials', value: 'userPassword' }
 	];
@@ -155,7 +155,7 @@
 		</div>
 
 		{@render FormInput({
-			id: 'url',
+			id: 'indexingClientHostname',
 			label: 'Instance URL',
 			validationName: 'hostname',
 			target: formState.indexingClient,
@@ -171,14 +171,14 @@
 
 		{#if formState.indexingClient.auth.type === 'apiKey'}
 			{@render FormInput({
-				id: 'apiKey',
+				id: 'indexingClientAPIKey',
 				label: 'API Key',
 				validationName: 'auth.key',
 				target: formState.indexingClient.auth,
 				key: 'key',
 				placeholder: ''
 			})}
-		{:else}
+		{:else if formState.indexingClient.auth.type === 'userPassword'}
 			<div class="field-row">
 				{@render FormInput({
 					id: 'username',
@@ -253,7 +253,7 @@
 		</div>
 
 		{@render FormInput({
-			id: 'url',
+			id: 'transferClientHostname',
 			label: 'Instance URL',
 			validationName: 'hostname',
 			target: formState.transferClient,
@@ -264,19 +264,20 @@
 		<SegmentedControl
 			bind:active={formState.transferClient.auth.type}
 			options={authOptions}
+			error={errors.get('auth.type')}
 			name="Auth Type"
 		/>
 
 		{#if formState.transferClient.auth.type === 'apiKey'}
 			{@render FormInput({
-				id: 'apiKey',
+				id: 'transferClientAPIKey',
 				label: 'API Key',
 				validationName: 'auth.key',
 				target: formState.transferClient.auth,
 				key: 'key',
 				placeholder: ''
 			})}
-		{:else}
+		{:else if formState.transferClient.auth.type === 'userPassword'}
 			<div class="field-row">
 				{@render FormInput({
 					id: 'username',
@@ -408,6 +409,10 @@
 />
 
 <style>
+	.error-banner {
+		color: var(--error);
+	}
+
 	input.error {
 		border-color: #ef4444;
 		background: rgba(239, 68, 68, 0.05);

@@ -5,8 +5,11 @@ import (
 	"fmt"
 
 	"github.com/sonalys/animeman/internal/adapters/indexing/prowlarr"
+	"github.com/sonalys/animeman/internal/app/apperr"
+	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/indexing"
 	"github.com/sonalys/animeman/internal/ports"
+	"google.golang.org/grpc/codes"
 )
 
 type (
@@ -22,7 +25,7 @@ func (f factory) New(ctx context.Context, client *indexing.Client) (ports.Indexi
 	case indexing.IndexerTypeProwlarr:
 		auth, ok := client.Authentication.AsAPIKey()
 		if !ok {
-			return nil, fmt.Errorf("unsupported authentication type: %s", client.Authentication.Type)
+			return nil, apperr.New(authentication.ErrUnsupportedAuthentication, codes.InvalidArgument, "unsupported authentication type: %s", client.Authentication.Type)
 		}
 
 		client := prowlarr.New(client.Address, auth.Key)

@@ -321,6 +321,138 @@ func (s *AuthenticationLoginReq) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
+// Encode implements json.Marshaler.
+func (s *AuthenticationNone) Encode(e *jx.Encoder) {
+	e.ObjStart()
+	s.encodeFields(e)
+	e.ObjEnd()
+}
+
+// encodeFields encodes fields.
+func (s *AuthenticationNone) encodeFields(e *jx.Encoder) {
+	{
+		e.FieldStart("type")
+		s.Type.Encode(e)
+	}
+}
+
+var jsonFieldsNameOfAuthenticationNone = [1]string{
+	0: "type",
+}
+
+// Decode decodes AuthenticationNone from json.
+func (s *AuthenticationNone) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode AuthenticationNone to nil")
+	}
+	var requiredBitSet [1]uint8
+
+	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
+		switch string(k) {
+		case "type":
+			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				if err := s.Type.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"type\"")
+			}
+		default:
+			return d.Skip()
+		}
+		return nil
+	}); err != nil {
+		return errors.Wrap(err, "decode AuthenticationNone")
+	}
+	// Validate required fields.
+	var failures []validate.FieldError
+	for i, mask := range [1]uint8{
+		0b00000001,
+	} {
+		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
+			// Mask only required fields and check equality to mask using XOR.
+			//
+			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
+			// Bits of fields which would be set are actually bits of missed fields.
+			missed := bits.OnesCount8(result)
+			for bitN := 0; bitN < missed; bitN++ {
+				bitIdx := bits.TrailingZeros8(result)
+				fieldIdx := i*8 + bitIdx
+				var name string
+				if fieldIdx < len(jsonFieldsNameOfAuthenticationNone) {
+					name = jsonFieldsNameOfAuthenticationNone[fieldIdx]
+				} else {
+					name = strconv.Itoa(fieldIdx)
+				}
+				failures = append(failures, validate.FieldError{
+					Name:  name,
+					Error: validate.ErrFieldRequired,
+				})
+				// Reset bit.
+				result &^= 1 << bitIdx
+			}
+		}
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s *AuthenticationNone) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *AuthenticationNone) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes AuthenticationNoneType as json.
+func (s AuthenticationNoneType) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes AuthenticationNoneType from json.
+func (s *AuthenticationNoneType) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode AuthenticationNoneType to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch AuthenticationNoneType(v) {
+	case AuthenticationNoneTypeNone:
+		*s = AuthenticationNoneTypeNone
+	default:
+		*s = AuthenticationNoneType(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s AuthenticationNoneType) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *AuthenticationNoneType) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
 // Encode encodes AuthenticationSum as json.
 func (s AuthenticationSum) Encode(e *jx.Encoder) {
 	switch s.Type {
@@ -328,6 +460,8 @@ func (s AuthenticationSum) Encode(e *jx.Encoder) {
 		s.AuthenticationUserPassword.Encode(e)
 	case AuthenticationAPIKeyAuthenticationSum:
 		s.AuthenticationAPIKey.Encode(e)
+	case AuthenticationNoneAuthenticationSum:
+		s.AuthenticationNone.Encode(e)
 	}
 }
 
@@ -337,6 +471,8 @@ func (s AuthenticationSum) encodeFields(e *jx.Encoder) {
 		s.AuthenticationUserPassword.encodeFields(e)
 	case AuthenticationAPIKeyAuthenticationSum:
 		s.AuthenticationAPIKey.encodeFields(e)
+	case AuthenticationNoneAuthenticationSum:
+		s.AuthenticationNone.encodeFields(e)
 	}
 }
 
@@ -380,6 +516,19 @@ func (s *AuthenticationSum) Decode(d *jx.Decoder) error {
 				}
 				found = true
 				s.Type = match
+			case "type":
+				// Type-based discrimination: check if field has expected JSON type
+				if typ := d.Next(); typ != jx.String {
+					// Field exists but has wrong type, not a match for this variant
+					return d.Skip()
+				}
+				match := AuthenticationNoneAuthenticationSum
+				if found && s.Type != match {
+					s.Type = ""
+					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+				}
+				found = true
+				s.Type = match
 			case "username":
 				// Type-based discrimination: check if field has expected JSON type
 				if typ := d.Next(); typ != jx.String {
@@ -409,6 +558,10 @@ func (s *AuthenticationSum) Decode(d *jx.Decoder) error {
 		}
 	case AuthenticationAPIKeyAuthenticationSum:
 		if err := s.AuthenticationAPIKey.Decode(d); err != nil {
+			return err
+		}
+	case AuthenticationNoneAuthenticationSum:
+		if err := s.AuthenticationNone.Decode(d); err != nil {
 			return err
 		}
 	default:
@@ -446,6 +599,8 @@ func (s *AuthenticationType) Decode(d *jx.Decoder) error {
 	}
 	// Try to use constant string.
 	switch AuthenticationType(v) {
+	case AuthenticationTypeNone:
+		*s = AuthenticationTypeNone
 	case AuthenticationTypeUserPassword:
 		*s = AuthenticationTypeUserPassword
 	case AuthenticationTypeApiKey:
@@ -943,6 +1098,8 @@ func (s *FieldErrorCode) Decode(d *jx.Decoder) error {
 		*s = FieldErrorCodeInvalid
 	case FieldErrorCodeInvalidFormat:
 		*s = FieldErrorCodeInvalidFormat
+	case FieldErrorCodeUnsupported:
+		*s = FieldErrorCodeUnsupported
 	case FieldErrorCodeUnknown:
 		*s = FieldErrorCodeUnknown
 	default:

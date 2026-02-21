@@ -31,6 +31,7 @@ const (
 	FieldErrorCodeRequired      FieldErrorCode = "required"
 	FieldErrorCodeInvalidFormat FieldErrorCode = "invalidFormat"
 	FieldErrorCodeInvalid       FieldErrorCode = "invalid"
+	FieldErrorCodeUnsupported   FieldErrorCode = "unsupported"
 	FieldErrorCodeUnknown       FieldErrorCode = "unknown"
 )
 

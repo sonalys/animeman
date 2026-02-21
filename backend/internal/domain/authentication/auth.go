@@ -1,5 +1,7 @@
 package authentication
 
+import "github.com/sonalys/animeman/internal/domain/shared"
+
 type (
 	AuthenticationType uint
 
@@ -22,13 +24,20 @@ type (
 
 const (
 	AuthenticationTypeUnknown AuthenticationType = iota
+	AuthenticationTypeNone
 	AuthenticationTypeUserPassword
 	AuthenticationTypeAPIKey
 	authenticationTypeSentinel
 )
 
+const (
+	ErrUnsupportedAuthentication shared.StringError = "unsupported authentication type"
+)
+
 func (s AuthenticationType) String() string {
 	switch s {
+	case AuthenticationTypeNone:
+		return "none"
 	case AuthenticationTypeUserPassword:
 		return "userPassword"
 	case AuthenticationTypeAPIKey:

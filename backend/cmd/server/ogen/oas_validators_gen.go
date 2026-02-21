@@ -26,6 +26,17 @@ func (s *Authentication) Validate() error {
 			Error: err,
 		})
 	}
+	if err := func() error {
+		if err := s.OneOf.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "OneOf",
+			Error: err,
+		})
+	}
 	if len(failures) > 0 {
 		return &validate.Error{Fields: failures}
 	}
@@ -67,8 +78,58 @@ func (s *AuthenticationLoginReq) Validate() error {
 	return nil
 }
 
+func (s *AuthenticationNone) Validate() error {
+	if s == nil {
+		return validate.ErrNilPointer
+	}
+
+	var failures []validate.FieldError
+	if err := func() error {
+		if err := s.Type.Validate(); err != nil {
+			return err
+		}
+		return nil
+	}(); err != nil {
+		failures = append(failures, validate.FieldError{
+			Name:  "type",
+			Error: err,
+		})
+	}
+	if len(failures) > 0 {
+		return &validate.Error{Fields: failures}
+	}
+	return nil
+}
+
+func (s AuthenticationNoneType) Validate() error {
+	switch s {
+	case "none":
+		return nil
+	default:
+		return errors.Errorf("invalid value: %v", s)
+	}
+}
+
+func (s AuthenticationSum) Validate() error {
+	switch s.Type {
+	case AuthenticationUserPasswordAuthenticationSum:
+		return nil // no validation needed
+	case AuthenticationAPIKeyAuthenticationSum:
+		return nil // no validation needed
+	case AuthenticationNoneAuthenticationSum:
+		if err := s.AuthenticationNone.Validate(); err != nil {
+			return err
+		}
+		return nil
+	default:
+		return errors.Errorf("invalid type %q", s.Type)
+	}
+}
+
 func (s AuthenticationType) Validate() error {
 	switch s {
+	case "none":
+		return nil
 	case "userPassword":
 		return nil
 	case "apiKey":
@@ -174,6 +235,8 @@ func (s FieldErrorCode) Validate() error {
 	case "invalid":
 		return nil
 	case "invalidFormat":
+		return nil
+	case "unsupported":
 		return nil
 	case "unknown":
 		return nil

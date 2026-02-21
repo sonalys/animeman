@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"net/http"
 	"net/url"
 	"syscall"
 
@@ -35,6 +36,12 @@ func (c *Client) Version(ctx context.Context) (string, error) {
 	if err != nil {
 		if errors.Is(err, syscall.ECONNREFUSED) {
 			return "", apperr.New(err, codes.InvalidArgument, "hostname refused the connection")
+		}
+
+		if err, ok := errors.AsType[*starr.ReqError](err); ok {
+			if err.Code == http.StatusUnauthorized {
+				return "", apperr.New(err, codes.Unauthenticated, "authenticating with prowlarr")
+			}
 		}
 
 		return "", fmt.Errorf("getting system status: %w", err)

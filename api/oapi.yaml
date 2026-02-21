@@ -270,10 +270,19 @@ components:
       properties:
         type:
           type: string
-          enum: [userPassword, apiKey]
+          enum: [none, userPassword, apiKey]
       oneOf:
         - $ref: "#/components/schemas/AuthenticationUserPassword"
         - $ref: "#/components/schemas/AuthenticationAPIKey"
+        - $ref: "#/components/schemas/AuthenticationNone"
+
+    AuthenticationNone:
+      type: object
+      required: [type]
+      properties:
+        type:
+          type: string
+          enum: [none]
 
     AuthenticationUserPassword:
       type: object
@@ -311,6 +320,7 @@ components:
             - required
             - invalid
             - invalidFormat
+            - unsupported
             - unknown
         message:
           type: string

@@ -1,12 +1,16 @@
 <script lang="ts">
+	import { slide } from 'svelte/transition';
+
 	let {
 		options,
 		active = $bindable(),
-		name
+		name,
+		error = $bindable()
 	} = $props<{
 		options: { label: string; value: any }[];
 		active: any;
 		name: string;
+		error?: string;
 	}>();
 
 	// Calculate index for the sliding logic
@@ -18,6 +22,7 @@
 	<div
 		id="group"
 		class="segmented-control"
+		class:error={!!error}
 		style="--total: {options.length}; --index: {activeIndex};"
 	>
 		<div class="pill"></div>
@@ -26,15 +31,45 @@
 			<button
 				type="button"
 				class:active={active === option.value}
-				onclick={() => (active = option.value)}
+				onclick={() => {
+					if (active !== option.value) error = undefined;
+					active = option.value;
+				}}
 			>
 				{option.label}
 			</button>
 		{/each}
 	</div>
+	{#if error}
+		<span class="error-msg" transition:slide={{ duration: 200 }}>
+			{error}
+		</span>
+	{/if}
 </div>
 
 <style>
+	.error {
+		> .pill {
+			background: var(--error);
+		}
+
+		border: solid 1px var(--error);
+		background: rgba(239, 68, 68, 0.05);
+	}
+
+	.segmented-control.error:hover .pill {
+		background: rgb(255, 179, 179) !important;
+	}
+
+	.error-msg {
+		color: var(--error);
+		font-size: 0.75rem;
+		margin-top: 4px;
+		display: block;
+		font-weight: 500;
+		animation: shake 0.2s ease-in-out;
+	}
+
 	.segmented-control {
 		position: relative;
 		display: grid;
