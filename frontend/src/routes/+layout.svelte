@@ -40,17 +40,12 @@
 		color: var(--accent);
 	}
 	.loader {
-		width: 40px;
-		height: 40px;
-		border: 3px solid #334155;
+		width: 2.5rem;
+		height: 2.5rem;
+		border: 0.15rem solid #334155;
 		border-top-color: #38bdf8;
 		border-radius: 50%;
 		animation: spin 0.8s linear infinite;
 		margin: 0 auto 16px;
-	}
-	@keyframes spin {
-		to {
-			transform: rotate(360deg);
-		}
 	}
 </style>

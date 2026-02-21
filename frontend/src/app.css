@@ -1,17 +1,15 @@
 :root {
     --bg-primary: #0f172a;
-    /* Deep Navy/Black */
     --bg-secondary: #293343;
-    /* Lighter Slate */
+    --bg-terciary: rgba(30, 41, 59, 0.6);
     --text-main: #f8fafc;
-    /* Off-white */
     --text-muted: #94a3b8;
-    /* Grey-blue */
     --accent: #38bdf8;
-    /* Vivid Purple */
     --accent-hover: #7dd8ff;
     --error: #ef4444;
     --border: #334155;
+
+    font-size: medium;
 }
 
 body {
@@ -26,8 +24,7 @@ select:focus {
     outline: none;
     border-color: var(--accent);
     box-shadow:
-        0 0 0 2px rgba(var(--accent-rgb, 124, 58, 237), 0.2),
-        0 0 8px var(--accent);
+        0 0 8px rgb(from var(--accent) r g b / 0.3);
     transition: all 0.2s ease;
 }
 
@@ -39,45 +36,56 @@ label {
     text-transform: uppercase;
     letter-spacing: 0.5px;
     margin-bottom: 5px;
+    margin-top: .7rem;
 }
 
 input {
     width: 100%;
     box-sizing: border-box;
-    padding: 14px;
+    padding: .8rem;
     background: var(--bg-primary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: none;
     border-radius: 12px;
-    color: white;
+    color: var(--text-main);
 }
 
 .btn-primary {
     flex: 1;
     width: 100%;
-    padding: 14px;
-    background: #38bdf8;
+    padding: 1rem 1.2rem;
+    background: var(--accent);
     border: none;
     border-radius: 12px;
     font-weight: 700;
-    color: #0f172a;
+    color: var(--bg-primary);
     cursor: pointer;
     transition: transform 0.2s;
 }
 
-.btn-primary:hover {
-    transform: translateY(-2px);
-    background: var(--accent-hover);
+.btn-primary:hover:not(:disabled),
+.btn-primary:focus {
+    filter: brightness(1.05);
+    outline: none;
+    box-shadow: 0 0px .8rem rgb(from var(--accent) r g b / 0.3);
 }
 
-.btn-ghost:hover {
+button:hover:not(:disabled),
+button:focus {
+    outline: none;
     transform: translateY(-2px);
 }
 
 .btn-ghost {
-    padding: 14px 24px;
+    padding: 1rem 1.2rem;
     background: transparent;
     color: #94a3b8;
     border: 1px solid #334155;
     border-radius: 12px;
     cursor: pointer;
+}
+
+@keyframes spin {
+    to {
+        transform: rotate(360deg);
+    }
 }

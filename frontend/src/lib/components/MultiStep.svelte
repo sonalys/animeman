@@ -68,8 +68,8 @@
 	.container {
 		width: 100%;
 		max-width: 460px;
-		background: rgba(30, 41, 59, 0.6);
-		backdrop-filter: blur(16px);
+		background: var(--bg-terciary);
+		backdrop-filter: blur(1rem);
 		border: 1px solid rgba(255, 255, 255, 0.1);
 		border-radius: 28px;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
@@ -77,7 +77,7 @@
 	}
 
 	header {
-		padding: 24px 32px;
+		padding: 1.5rem 2rem;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
@@ -86,24 +86,21 @@
 
 	.brand {
 		font-weight: 800;
-		font-size: 1.1rem;
-		letter-spacing: -0.5px;
+		font-size: 1.4rem;
 	}
+
 	.brand span {
-		color: var(--accent);
-		text-transform: uppercase;
-		font-size: 0.8rem;
-		margin-left: 4px;
-		opacity: 0.8;
+		color: #38bdf8;
+		font-size: 1rem;
 	}
 
 	.dots {
 		display: flex;
-		gap: 6px;
+		gap: 0.3rem;
 	}
 	.dot {
-		width: 6px;
-		height: 6px;
+		width: 0.5rem;
+		height: 0.5rem;
 		background: #334155;
 		border-radius: 10px;
 		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -112,8 +109,8 @@
 		background: var(--accent);
 	}
 	.dot.current {
-		width: 20px;
-		box-shadow: 0 0 12px rgba(56, 189, 248, 0.4);
+		width: 1.5rem;
+		box-shadow: 0 0 0.8rem var(--accent);
 	}
 
 	.content-area {
@@ -131,7 +128,7 @@
 
 	.step-wrapper {
 		min-width: 100%;
-		padding: 32px;
+		padding: 2rem;
 		box-sizing: border-box;
 	}
 </style>

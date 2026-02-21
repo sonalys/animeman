@@ -80,7 +80,7 @@
 		},
 		watchlist: {
 			externalID: '',
-			syncFrequencySeconds: 300
+			syncFrequencySeconds: 900
 		}
 	} as {
 		indexingClient: IndexerClientConfig;
@@ -359,21 +359,11 @@
 					<input id="extId" bind:value={formState.watchlist.externalID} placeholder="Username" />
 				</div>
 
-				<div class="field-group">
-					<label for="freq">Sync Frequency</label>
-					<div class="frequency-grid" id="freq">
-						{#each frequencies as freq}
-							<button
-								type="button"
-								class="freq-btn"
-								class:active={formState.watchlist.syncFrequencySeconds === freq.value}
-								onclick={() => (formState.watchlist.syncFrequencySeconds = freq.value)}
-							>
-								{freq.label}
-							</button>
-						{/each}
-					</div>
-				</div>
+				<SegmentedControl
+					bind:active={formState.watchlist.syncFrequencySeconds}
+					options={frequencies}
+					name="Sync Frequency"
+				/>
 			</div>
 		{/if}
 
@@ -401,9 +391,9 @@
 
 <Stepper
 	steps={[
+		{ name: 'Watchlist', component: watchlistStep },
 		{ name: 'Transfer', component: transferStep },
 		{ name: 'Indexing', component: indexerStep },
-		{ name: 'Watchlist', component: watchlistStep },
 		{ name: 'Finish', component: successStep }
 	]}
 />
@@ -414,19 +404,19 @@
 	}
 
 	input.error {
-		border-color: #ef4444;
+		border: 1px solid var(--error);
 		background: rgba(239, 68, 68, 0.05);
 	}
 
 	input.error:focus {
 		outline: none;
-		box-shadow: 0 0 0 2px rgba(239, 68, 68, 0.2);
+		box-shadow: 0 0 0 0.2rem rgba(239, 68, 68, 0.2);
 	}
 
 	.error-msg {
 		color: #ef4444;
 		font-size: 0.75rem;
-		margin-top: 4px;
+		margin-top: 0.2rem;
 		display: block;
 		font-weight: 500;
 		animation: shake 0.2s ease-in-out;
@@ -438,10 +428,10 @@
 			transform: translateX(0);
 		}
 		25% {
-			transform: translateX(4px);
+			transform: translateX(0.3rem);
 		}
 		75% {
-			transform: translateX(-4px);
+			transform: translateX(-0.3rem);
 		}
 	}
 
@@ -474,27 +464,18 @@
 	.loader-container {
 		z-index: 1;
 		display: flex;
-		gap: 0 10px;
+		gap: 0 0.6rem;
 		justify-content: center;
 	}
 
 	.spinner {
-		width: 14px;
-		height: 14px;
+		width: 1rem;
+		height: 1rem;
 		border: 2px solid currentColor;
 		border-bottom-color: transparent;
 		border-radius: 50%;
 		display: inline-block;
-		animation: rotation 0.6s linear infinite;
-	}
-
-	@keyframes rotation {
-		0% {
-			transform: rotate(0deg);
-		}
-		100% {
-			transform: rotate(360deg);
-		}
+		animation: spin 0.6s linear infinite;
 	}
 
 	@keyframes shimmer {
@@ -506,50 +487,10 @@
 		}
 	}
 
-	/* Subtle hover for the non-loading state */
-	.btn-primary:hover:not(:disabled) {
-		filter: brightness(1.1);
-		box-shadow: 0 4px 12px rgba(56, 189, 248, 0.3);
-	}
-
-	.field-group {
-		margin-bottom: 5px;
-	}
-
-	/* Specific Frequency Button Grid */
-	.frequency-grid {
-		display: grid;
-		grid-template-columns: repeat(4, 1fr);
-		gap: 8px;
-		margin-bottom: 20px;
-	}
-
-	.freq-btn {
-		background: rgba(255, 255, 255, 0.03);
-		border: 1px solid rgba(255, 255, 255, 0.05);
-		color: #94a3b8;
-		padding: 10px;
-		border-radius: 10px;
-		font-weight: 600;
-		cursor: pointer;
-		transition: all 0.2s;
-	}
-
-	.freq-btn:hover {
-		background: rgba(255, 255, 255, 0.08);
-	}
-
-	.freq-btn.active {
-		background: rgba(56, 189, 248, 0.15);
-		border-color: #38bdf8;
-		color: #38bdf8;
-	}
-
 	.step-content {
 		justify-items: stretch;
 		display: flex;
 		flex-direction: column;
-		gap: 10px;
 	}
 
 	/* Styles for the inside of your snippets */
@@ -560,21 +501,23 @@
 
 	.step-content p {
 		margin: 0;
-		margin-bottom: 20px;
+		margin-bottom: 1.2rem;
 		color: #94a3b8;
 	}
 
 	.btn-group {
 		display: flex;
-		gap: 12px;
+		gap: 0.8rem;
+		margin-top: 2rem;
 	}
 
 	.success-screen {
 		text-align: center;
 	}
+
 	.icon-check {
-		width: 64px;
-		height: 64px;
+		width: 4rem;
+		height: 4rem;
 		background: #059669;
 		border-radius: 50%;
 		display: grid;

@@ -77,7 +77,6 @@
 		justify-content: space-between;
 		align-items: flex-start;
 		width: 100%;
-		max-width: 1000px;
 		margin: 0 auto 3rem;
 	}
 

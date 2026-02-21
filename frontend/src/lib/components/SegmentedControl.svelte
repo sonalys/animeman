@@ -75,17 +75,17 @@
 		display: grid;
 		grid-template-columns: repeat(var(--total), 1fr);
 		background: var(--bg-primary);
-		padding: 4px;
+		padding: 0.25rem;
 		border-radius: 14px;
 		isolation: isolate;
 	}
 
 	.pill {
 		position: absolute;
-		top: 4px;
-		bottom: 4px;
-		left: 4px;
-		width: calc((100% - 8px) / var(--total));
+		top: 0.3rem;
+		bottom: 0.3rem;
+		left: 0.3rem;
+		width: calc((100% - 0.5rem) / var(--total));
 		background: var(--accent);
 		border-radius: 10px;
 		transform: translateX(calc(100% * var(--index)));
@@ -96,7 +96,7 @@
 		background: transparent;
 		border: none;
 		color: var(--text-muted);
-		padding: 10px 4px;
+		padding: 0.6rem;
 		border-radius: 10px;
 		cursor: pointer;
 		font-weight: 600;

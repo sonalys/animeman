@@ -113,7 +113,6 @@
 		text-decoration: underline;
 	}
 
-	/* The outer box that hides the overflow */
 	.content-area {
 		position: relative;
 		overflow: hidden;
@@ -121,21 +120,19 @@
 		width: 100%;
 	}
 
-	/* The long horizontal strip containing all steps */
 	.step-tray {
 		display: flex;
 		width: 100%;
 		transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
 		will-change: transform;
-		align-items: flex-start; /* Ensures height is measured correctly per step */
+		align-items: flex-start;
 	}
 
-	/* Each individual step is exactly 100% of the container's width */
 	.step-wrapper {
 		min-width: 100%;
 		width: 100%;
 		box-sizing: border-box;
-		padding: 32px; /* Move padding here so height is measured accurately */
+		padding: 2rem;
 	}
 
 	.setup-wrapper {
@@ -145,33 +142,35 @@
 
 	.container {
 		width: 100%;
-		max-width: 440px;
-		background: rgba(30, 41, 59, 0.7);
-		backdrop-filter: blur(12px);
+		max-width: 460px;
+		background: var(--bg-terciary);
+		backdrop-filter: blur(16px);
 		border: 1px solid rgba(255, 255, 255, 0.1);
-		border-radius: 24px;
+		border-radius: 28px;
 		box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+		overflow: hidden;
 	}
 
 	header {
-		padding: 24px 32px;
+		padding: 1.5rem 2rem;
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+		background: var(--bg-secondary);
 	}
 
 	.brand {
 		font-weight: 800;
-		font-size: 1.1rem;
+		font-size: 1.4rem;
 	}
 
 	.brand span {
 		color: #38bdf8;
+		font-size: 1rem;
 	}
 
 	.btn-primary {
-		margin-top: 10px;
+		margin-top: 2rem;
 	}
 
 	p {
