@@ -35,25 +35,13 @@
 </div>
 
 <style>
-	label {
-		display: block;
-		font-size: 0.75rem;
-		font-weight: 700;
-		color: #64748b;
-		text-transform: uppercase;
-		letter-spacing: 0.5px;
-		margin-bottom: 5px;
-	}
-
 	.segmented-control {
 		position: relative;
 		display: grid;
-		/* Create a column for every option */
 		grid-template-columns: repeat(var(--total), 1fr);
-		background: rgba(15, 23, 42, 0.6);
+		background: var(--bg-primary);
 		padding: 4px;
 		border-radius: 14px;
-		border: 1px solid rgba(255, 255, 255, 0.05);
 		isolation: isolate;
 	}
 
@@ -63,7 +51,7 @@
 		bottom: 4px;
 		left: 4px;
 		width: calc((100% - 8px) / var(--total));
-		background: #38bdf8;
+		background: var(--accent);
 		border-radius: 10px;
 		transform: translateX(calc(100% * var(--index)));
 		transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
@@ -73,7 +61,7 @@
 	button {
 		background: transparent;
 		border: none;
-		color: #94a3b8;
+		color: var(--text-muted);
 		padding: 10px 4px;
 		border-radius: 10px;
 		cursor: pointer;
@@ -85,6 +73,6 @@
 	}
 
 	button.active {
-		color: #0f172a;
+		color: var(--bg-primary);
 	}
 </style>

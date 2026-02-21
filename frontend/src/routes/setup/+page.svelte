@@ -47,7 +47,7 @@
 
 	// Helper to display friendly frequency names
 	const frequencies = [
-		{ label: '5m', value: 300 },
+		{ label: '15m', value: 900 },
 		{ label: '1h', value: 3600 },
 		{ label: '6h', value: 21600 },
 		{ label: 'Daily', value: 86400 }
@@ -234,7 +234,6 @@
 {/snippet}
 
 <Stepper
-	onComplete={handleSubmit}
 	steps={[
 		{ name: 'Indexer', component: indexerStep },
 		{ name: 'Library', component: transferStep },

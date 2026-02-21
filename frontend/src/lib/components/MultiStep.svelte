@@ -7,18 +7,13 @@
 		component: Snippet<[arg: { next: () => void; back: () => void }]>;
 	}
 
-	let { steps, onComplete } = $props<{
+	let { steps } = $props<{
 		steps: Step[];
-		onComplete: () => void;
 	}>();
 
 	let currentStep = $state(0);
-
-	// Initialize as an empty array; Svelte 5 proxies will handle dynamic growth
-	// when the template binds to stepHeights[i].
 	let stepHeights = $state<number[]>([]);
 
-	// Ensure the array stays in sync if steps are added/removed dynamically
 	$effect(() => {
 		if (stepHeights.length !== steps.length) {
 			// We preserve existing heights if possible, or reset
@@ -65,9 +60,9 @@
 		display: grid;
 		place-items: center;
 		min-height: 100dvh;
-		background: radial-gradient(circle at top right, #1e293b, #0f172a);
 		font-family: 'Inter', system-ui, sans-serif;
 		color: #f8fafc;
+		background-color: transparent;
 	}
 
 	.container {
@@ -86,7 +81,7 @@
 		display: flex;
 		justify-content: space-between;
 		align-items: center;
-		background: rgba(255, 255, 255, 0.03);
+		background: var(--bg-secondary);
 	}
 
 	.brand {
@@ -95,7 +90,7 @@
 		letter-spacing: -0.5px;
 	}
 	.brand span {
-		color: #38bdf8;
+		color: var(--accent);
 		text-transform: uppercase;
 		font-size: 0.8rem;
 		margin-left: 4px;
@@ -114,7 +109,7 @@
 		transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 	.dot.active {
-		background: #38bdf8;
+		background: var(--accent);
 	}
 	.dot.current {
 		width: 20px;

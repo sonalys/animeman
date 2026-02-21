@@ -4,11 +4,11 @@
 	import type { ErrorResponse, FieldError } from '$lib/api/types';
 	import { scale } from 'svelte/transition';
 
-	let username = '';
-	let password = '';
-	let loading = false;
-	let errorMessage = '';
-	let fieldErrors: Record<string, string> = {};
+	let username = $state('');
+	let password = $state('');
+	let loading = $state(false);
+	let errorMessage = $state('');
+	let fieldErrors: Record<string, string> = $state({});
 
 	let steps = ['Login', 'Register'];
 	let currentStep = $state(0);
@@ -113,49 +113,6 @@
 		text-decoration: underline;
 	}
 
-	.step-nav {
-		display: flex;
-		gap: 12px;
-		align-items: center;
-	}
-	.dot-wrapper {
-		background: none;
-		border: none;
-		padding: 0;
-		display: flex;
-		align-items: center;
-		gap: 8px;
-		cursor: default;
-	}
-	.dot {
-		width: 8px;
-		height: 8px;
-		background: #334155;
-		border-radius: 50%;
-		transition: 0.3s;
-	}
-	.dot.active {
-		background: #38bdf8;
-		box-shadow: 0 0 10px #38bdf8;
-	}
-	.dot.clickable {
-		cursor: pointer;
-	}
-	.dot.clickable:hover {
-		transform: scale(1.4);
-		background: #7dd3fc;
-	}
-
-	.step-label {
-		font-size: 0.7rem;
-		color: #94a3b8;
-		opacity: 0;
-		transition: 0.3s;
-		width: 0;
-		overflow: hidden;
-		white-space: nowrap;
-	}
-
 	/* The outer box that hides the overflow */
 	.content-area {
 		position: relative;
@@ -183,7 +140,6 @@
 
 	/* Rest of your existing pretty styles */
 	:global(body) {
-		background: radial-gradient(circle at top right, #1e293b, #0f172a);
 		color: #f8fafc;
 		font-family: 'Inter', system-ui, sans-serif;
 		margin: 0;
@@ -219,36 +175,6 @@
 	}
 	.brand span {
 		color: #38bdf8;
-	}
-	.dots {
-		display: flex;
-		gap: 8px;
-	}
-	.dot {
-		width: 8px;
-		height: 8px;
-		background: #334155;
-		border-radius: 50%;
-		transition: 0.3s;
-	}
-	.dot.active {
-		background: #38bdf8;
-		box-shadow: 0 0 10px #38bdf8;
-	}
-
-	.success-screen {
-		text-align: center;
-	}
-	.icon-check {
-		width: 64px;
-		height: 64px;
-		background: #059669;
-		color: white;
-		font-size: 32px;
-		display: grid;
-		place-items: center;
-		border-radius: 50%;
-		margin: 0 auto 24px;
 	}
 
 	.btn-primary {
@@ -317,15 +243,5 @@
 	button:hover:not(:disabled) {
 		transform: translateY(-1px);
 		background: #7dd3fc;
-	}
-
-	.error-toast {
-		background: rgba(239, 68, 68, 0.1);
-		color: #f87171;
-		padding: 12px;
-		border-radius: 8px;
-		font-size: 0.85rem;
-		margin-bottom: 16px;
-		border: 1px solid rgba(239, 68, 68, 0.2);
 	}
 </style>
