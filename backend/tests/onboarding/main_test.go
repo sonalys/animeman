@@ -30,11 +30,13 @@ func Test_Onboarding(t *testing.T) {
 	)
 	require.NotNil(t, indexerClient)
 
-	transferClient := user.NewTransferClient(
+	transferClient, err := transfer.NewClient(
+		user.ID,
 		transfer.ClientTypeQBittorrent,
 		*errutils.Must(url.Parse("http://192.168.1.219:8088")),
 		authentication.NewUserPasswordAuthentication("username", []byte("password")),
 	)
+	require.NoError(t, err)
 	require.NotNil(t, transferClient)
 
 	collection := user.NewCollection(

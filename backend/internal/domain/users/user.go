@@ -2,16 +2,13 @@ package users
 
 import (
 	"fmt"
-	"net/url"
 	"slices"
 	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/app/apperr"
-	"github.com/sonalys/animeman/internal/domain/authentication"
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/domain/shared"
-	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/domain/watchlists"
 	"golang.org/x/crypto/bcrypt"
 	"google.golang.org/grpc/codes"
@@ -57,20 +54,6 @@ func (u User) Login(password []byte) error {
 	}
 
 	return nil
-}
-
-func (u User) NewTransferClient(
-	clientType transfer.ClientType,
-	address url.URL,
-	auth authentication.Authentication,
-) *transfer.Client {
-	return &transfer.Client{
-		ID:             shared.NewID[transfer.ClientID](),
-		OwnerID:        u.ID,
-		Type:           clientType,
-		Address:        address,
-		Authentication: auth,
-	}
 }
 
 func (u User) NewExternalWatchList(
