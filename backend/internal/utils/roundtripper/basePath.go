@@ -3,26 +3,30 @@ package roundtripper
 import (
 	"net/http"
 	"net/url"
-	"path"
 )
 
-type basePathTransport struct {
-	base    http.RoundTripper
-	baseURL *url.URL
+type prefixRoundTripper struct {
+	prefix *url.URL
+	base   http.RoundTripper
 }
 
-func NewBasePathTransport(wrap http.RoundTripper, basePath *url.URL) http.RoundTripper {
-	return &basePathTransport{
-		base:    wrap,
-		baseURL: basePath,
+func NewPrefix(prefix *url.URL, next http.RoundTripper) http.RoundTripper {
+	return &prefixRoundTripper{
+		prefix: prefix,
+		base:   next,
 	}
 }
 
-func (t *basePathTransport) RoundTrip(req *http.Request) (*http.Response, error) {
-	newReq := req.Clone(req.Context())
-	newReq.URL.Host = t.baseURL.Host
-	newReq.URL.Scheme = t.baseURL.Scheme
-	newReq.URL.Path = path.Join(t.baseURL.Path, req.URL.Path)
+func (t *prefixRoundTripper) RoundTrip(req *http.Request) (*http.Response, error) {
+	req = req.Clone(req.Context())
 
-	return t.base.RoundTrip(newReq)
+	req.URL = t.prefix.ResolveReference(t.prefix.JoinPath(req.URL.Path))
+	req.Host = req.URL.Host
+
+	base := t.base
+	if base == nil {
+		base = http.DefaultTransport
+	}
+
+	return base.RoundTrip(req)
 }

@@ -22,9 +22,9 @@ import (
 
 type (
 	Client struct {
-		username string
-		password string
-		client   *http.Client
+		client interface {
+			Do(req *http.Request) (*http.Response, error)
+		}
 	}
 )
 
@@ -39,20 +39,19 @@ func New(ctx context.Context, host, username, password string) (*Client, error) 
 		return nil, fmt.Errorf("parsing host address: %w", err)
 	}
 
-	basePath = basePath.JoinPath("api", "v2")
+	apiEndpoint := basePath.JoinPath("api", "v2")
 
 	api := &Client{
-		username: username,
-		password: password,
 		client: &http.Client{
-			Timeout: 15 * time.Second,
-			Jar:     cookieJar,
-			Transport: &authTransport{
-				transport: roundtripper.NewBasePathTransport(
+			Jar: cookieJar,
+			Transport: roundtripper.NewPrefix(
+				apiEndpoint,
+				newAuthTransport(
 					roundtripper.NewLoggerTransport(http.DefaultTransport),
-					basePath,
+					username,
+					password,
 				),
-			},
+			),
 		},
 	}
 
@@ -76,7 +75,7 @@ func (c *Client) Wait(ctx context.Context) error {
 }
 
 func (c *Client) Version(ctx context.Context) (string, error) {
-	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "/app/version", nil)
+	req, err := http.NewRequestWithContext(ctx, http.MethodGet, "http:///app/version", nil)
 	if err != nil {
 		return "", err
 	}

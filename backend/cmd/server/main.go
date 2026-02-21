@@ -25,16 +25,19 @@ var (
 
 	_ = roundtripper.NewUserAgentTransport(
 		roundtripper.NewLoggerTransport(http.DefaultTransport),
-		"github.com/sonalys/animeman",
+		"github.com/sonalys/animeman@"+version,
 	)
 )
 
 func init() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{
-		Out:        os.Stdout,
-		TimeFormat: time.DateTime,
-	}).Hook(otel.OTelHook{})
+	log.Logger = log.
+		Hook(otel.OTelHook{}).
+		Output(zerolog.ConsoleWriter{
+			Out:        os.Stdout,
+			TimeFormat: time.DateTime,
+		})
 
+	zerolog.LevelColors[zerolog.DebugLevel] = 35
 	zerolog.DefaultContextLogger = &log.Logger
 }
 

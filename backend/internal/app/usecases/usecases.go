@@ -156,7 +156,7 @@ func (u usecases) TestTransferClientBuilder(ctx context.Context, b *transfer.Cli
 	}
 
 	if _, err = u.factories.TransferClientControllerFactory.New(ctx, client); err != nil {
-		logError(ctx, err, "testing transfer client configuration")
+		logError(ctx, err, "Error testing transfer client configuration")
 		return err
 	}
 

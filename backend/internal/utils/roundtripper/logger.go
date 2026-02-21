@@ -8,7 +8,7 @@ import (
 )
 
 type loggerTransport struct {
-	wrap http.RoundTripper
+	next http.RoundTripper
 }
 
 func (l *loggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
@@ -16,19 +16,21 @@ func (l *loggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	ctx := req.Context()
 
 	log.
-		Trace().
+		Debug().
 		Ctx(ctx).
-		Str("url", req.URL.String()).
+		Stringer("url", req.URL).
 		Str("method", req.Method).
+		Any("headers", req.Header).
 		Msg("Sending request")
 
-	resp, err := l.wrap.RoundTrip(req)
+	resp, err := l.next.RoundTrip(req)
 
 	if resp != nil {
 		log.
-			Trace().
+			Debug().
 			Ctx(ctx).
 			Dur("dur", time.Since(t1)).
+			Any("headers", resp.Header).
 			Int("statusCode", resp.StatusCode).
 			Msg("Received response")
 	}
@@ -38,6 +40,6 @@ func (l *loggerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 
 func NewLoggerTransport(wrap http.RoundTripper) http.RoundTripper {
 	return &loggerTransport{
-		wrap: wrap,
+		next: wrap,
 	}
 }
