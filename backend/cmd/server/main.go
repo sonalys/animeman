@@ -85,7 +85,7 @@ func main() {
 		IndexerClientRepository:  adapters.postgresClient.IndexerClientRepository(),
 		TransferClientRepository: adapters.postgresClient.TransferClientRepository(),
 		CollectionRepository:     adapters.postgresClient.CollectionRepository(),
-		WatchlistRepository:      nil,
+		WatchlistRepository:      adapters.postgresClient.WatchlistRepository(),
 	}
 
 	factories := usecases.Factories{

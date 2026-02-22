@@ -24,6 +24,10 @@ func (h *Handler) NewError(ctx context.Context, err error) (resp *ogen.ErrorResp
 		}
 
 		if !resp.Response.Details.IsSet() {
+			if len(resp.Response.FieldErrors) == 0 {
+				resp.Response.Details = ogen.NewOptString("internal server error")
+				return
+			}
 			resp.Response.Details = ogen.NewOptString("")
 		}
 	}()

@@ -13,8 +13,8 @@ import (
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/domain/users"
 	"github.com/sonalys/animeman/internal/ports"
+	"github.com/sonalys/animeman/internal/utils/errgroup"
 	"github.com/sonalys/animeman/internal/utils/otel"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 )
 
@@ -243,5 +243,10 @@ func (u usecases) GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, e
 		return err
 	})
 
-	return status, errgrp.Wait()
+	if err := errgrp.Wait(); err != nil {
+		logError(ctx, err, "Failed to retrieve onboarding status")
+		return nil, err
+	}
+
+	return status, nil
 }

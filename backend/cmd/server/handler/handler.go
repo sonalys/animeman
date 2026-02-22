@@ -34,6 +34,9 @@ func (h *Handler) SetupGet(ctx context.Context) (*ogen.SetupGetOK, error) {
 	}
 
 	status, err := h.Usecases.GetOnboardingStatus(ctx)
+	if err != nil {
+		return nil, err
+	}
 
 	remapStatus := func(from usecases.SetupStep) ogen.SetupSteps {
 		switch from {
@@ -241,8 +244,8 @@ func New(
 		ogen.WithErrorHandler(validationErrorHandler(handler)),
 		ogen.WithNotFound(notFound),
 		ogen.WithMiddleware(
-			middlewares.Logger,
 			middlewares.Recoverer,
+			middlewares.Logger,
 		),
 	)
 }

@@ -53,6 +53,10 @@ func (c Client) CollectionRepository() ports.CollectionRepository {
 	return repositories.NewCollectionRepository(c.conn)
 }
 
+func (c Client) WatchlistRepository() ports.WatchlistRepository {
+	return repositories.NewWatchlistRepository(c.conn)
+}
+
 func waitConnection(ctx context.Context, conn *pgxpool.Pool) error {
 	for {
 		if err := conn.Ping(ctx); err == nil {
