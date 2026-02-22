@@ -23,6 +23,9 @@ var (
 	rn6AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
+	rn10AllowedHeaders = map[string]string{
+		"POST": "Content-Type",
+	}
 	rn9AllowedHeaders = map[string]string{
 		"POST": "Content-Type",
 	}
@@ -245,29 +248,57 @@ func (s *Server) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 					return
 				}
 
-			case 't': // Prefix: "transfer-clients/test"
+			case 't': // Prefix: "transfer-clients"
 
-				if l := len("transfer-clients/test"); len(elem) >= l && elem[0:l] == "transfer-clients/test" {
+				if l := len("transfer-clients"); len(elem) >= l && elem[0:l] == "transfer-clients" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
 					switch r.Method {
+					case "GET":
+						s.handleTransferClientsGetRequest([0]string{}, elemIsEscaped, w, r)
 					case "POST":
-						s.handleTestTransferClientConfigurationRequest([0]string{}, elemIsEscaped, w, r)
+						s.handleTransferClientsPostRequest([0]string{}, elemIsEscaped, w, r)
 					default:
 						s.notAllowed(w, r, notAllowedParams{
-							allowedMethods: "POST",
-							allowedHeaders: rn9AllowedHeaders,
+							allowedMethods: "GET,POST",
+							allowedHeaders: rn10AllowedHeaders,
 							acceptPost:     "application/json",
 							acceptPatch:    "",
 						})
 					}
 
 					return
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/test"
+
+					if l := len("/test"); len(elem) >= l && elem[0:l] == "/test" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch r.Method {
+						case "POST":
+							s.handleTestTransferClientConfigurationRequest([0]string{}, elemIsEscaped, w, r)
+						default:
+							s.notAllowed(w, r, notAllowedParams{
+								allowedMethods: "POST",
+								allowedHeaders: rn9AllowedHeaders,
+								acceptPost:     "application/json",
+								acceptPatch:    "",
+							})
+						}
+
+						return
+					}
+
 				}
 
 			}
@@ -544,29 +575,64 @@ func (s *Server) FindPath(method string, u *url.URL) (r Route, _ bool) {
 					}
 				}
 
-			case 't': // Prefix: "transfer-clients/test"
+			case 't': // Prefix: "transfer-clients"
 
-				if l := len("transfer-clients/test"); len(elem) >= l && elem[0:l] == "transfer-clients/test" {
+				if l := len("transfer-clients"); len(elem) >= l && elem[0:l] == "transfer-clients" {
 					elem = elem[l:]
 				} else {
 					break
 				}
 
 				if len(elem) == 0 {
-					// Leaf node.
 					switch method {
-					case "POST":
-						r.name = TestTransferClientConfigurationOperation
-						r.summary = ""
-						r.operationID = "TestTransferClientConfiguration"
+					case "GET":
+						r.name = TransferClientsGetOperation
+						r.summary = "Lists all configured transfer clients"
+						r.operationID = ""
 						r.operationGroup = ""
-						r.pathPattern = "/transfer-clients/test"
+						r.pathPattern = "/transfer-clients"
+						r.args = args
+						r.count = 0
+						return r, true
+					case "POST":
+						r.name = TransferClientsPostOperation
+						r.summary = "Add a new indexer"
+						r.operationID = ""
+						r.operationGroup = ""
+						r.pathPattern = "/transfer-clients"
 						r.args = args
 						r.count = 0
 						return r, true
 					default:
 						return
 					}
+				}
+				switch elem[0] {
+				case '/': // Prefix: "/test"
+
+					if l := len("/test"); len(elem) >= l && elem[0:l] == "/test" {
+						elem = elem[l:]
+					} else {
+						break
+					}
+
+					if len(elem) == 0 {
+						// Leaf node.
+						switch method {
+						case "POST":
+							r.name = TestTransferClientConfigurationOperation
+							r.summary = ""
+							r.operationID = "TestTransferClientConfiguration"
+							r.operationGroup = ""
+							r.pathPattern = "/transfer-clients/test"
+							r.args = args
+							r.count = 0
+							return r, true
+						default:
+							return
+						}
+					}
+
 				}
 
 			}

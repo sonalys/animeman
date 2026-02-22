@@ -2,7 +2,7 @@
 	import { type Snippet } from 'svelte';
 	import { scale } from 'svelte/transition';
 
-	interface Step {
+	export interface Step {
 		name: string;
 		component: Snippet<[arg: { next: () => void; back: () => void }]>;
 	}
@@ -35,7 +35,7 @@
 <div class="setup-wrapper">
 	<div class="container" in:scale={{ start: 0.9, duration: 400 }}>
 		<header>
-			<div class="brand">Animeman <span>{steps[currentStep].name}</span></div>
+			<div class="brand">Animeman <span>{steps[currentStep]?.name}</span></div>
 			<div class="dots">
 				{#each steps as _, i}
 					<div class="dot" class:active={currentStep >= i} class:current={currentStep === i}></div>

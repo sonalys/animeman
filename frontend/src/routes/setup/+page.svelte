@@ -1,32 +1,21 @@
 <script lang="ts">
 	import { apiFetch } from '$lib/api';
-	import type {
-		ErrorResponse,
-		FieldError,
-		IndexerConfig as IndexerClientConfig,
-		TransferClientConfig,
-		WatchlistConfig
+	import {
+		type OnboardingStatus,
+		type ErrorResponse,
+		type IndexerConfig as IndexerClientConfig,
+		type TransferClientConfig,
+		type WatchlistConfig,
+		type FieldError,
+		ERROR_MESSAGES
 	} from '$lib/api/types';
-	import Stepper from '$lib/components/MultiStep.svelte';
+	import Stepper, { type Step } from '$lib/components/MultiStep.svelte';
 	import SegmentedControl from '$lib/components/SegmentedControl.svelte';
 	import { slide } from 'svelte/transition';
-
-	let isLoading = $state(false);
 
 	function createErrorState() {
 		let fieldMap = $state<Record<string, FieldError>>({});
 		let globalDetails = $state<string | null>(null);
-
-		const ERROR_MESSAGES: Record<string, string> = {
-			alreadyExists: 'Already in use',
-			minLength: 'Too short',
-			maxLength: 'Too long',
-			required: 'Required',
-			invalidFormat: 'Invalid format',
-			invalid: 'Invalid value',
-			unsupported: 'Unsupported value',
-			unknown: 'Unexpected error'
-		};
 
 		return {
 			get: (field: string): string | undefined => {
@@ -66,6 +55,9 @@
 	}
 
 	const errors = createErrorState();
+	const onboardingStatus = apiFetch<OnboardingStatus>('/setup');
+
+	let isLoading = $state(false);
 
 	let formState = $state({
 		indexingClient: {
@@ -101,7 +93,6 @@
 		{ label: 'Local', value: 'local' }
 	];
 
-	// Helper to display friendly frequency names
 	const frequencies = [
 		{ label: '15m', value: 900 },
 		{ label: '1h', value: 3600 },
@@ -118,6 +109,28 @@
 		target: any;
 		key: string;
 	}
+
+	const getSteps = (status: OnboardingStatus): Step[] => {
+		const steps = status.missingSteps.reduce<Step[]>((acc, step) => {
+			switch (step) {
+				case 'watchlist':
+					acc.push({ name: 'Watchlist', component: watchlistStep });
+					return acc;
+				case 'transfer':
+					acc.push({ name: 'Transfer', component: transferStep });
+					return acc;
+				case 'indexing':
+					acc.push({ name: 'Indexing', component: indexerStep });
+					return acc;
+				default:
+					return acc;
+			}
+		}, []);
+
+		if (steps.length > 0) steps.push({ name: 'Finish', component: successStep });
+
+		return steps;
+	};
 </script>
 
 {#snippet FormInput({
@@ -211,7 +224,7 @@
 					isLoading = true;
 
 					try {
-						await apiFetch('/indexing-clients/test', {
+						await apiFetch('/indexing-clients', {
 							method: 'POST',
 							body: formState.indexingClient
 						});
@@ -310,7 +323,7 @@
 					isLoading = true;
 
 					try {
-						await apiFetch('/transfer-clients/test', {
+						await apiFetch('/transfer-clients', {
 							method: 'POST',
 							body: formState.transferClient
 						});
@@ -389,14 +402,11 @@
 	</div>
 {/snippet}
 
-<Stepper
-	steps={[
-		{ name: 'Watchlist', component: watchlistStep },
-		{ name: 'Transfer', component: transferStep },
-		{ name: 'Indexing', component: indexerStep },
-		{ name: 'Finish', component: successStep }
-	]}
-/>
+{#await onboardingStatus}
+	<p>Loading...</p>
+{:then status}
+	<Stepper steps={getSteps(status)} />
+{/await}
 
 <style>
 	.error-banner {

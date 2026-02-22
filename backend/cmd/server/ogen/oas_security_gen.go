@@ -40,6 +40,8 @@ var operationRolesCookieAuth = map[string][]string{
 	SetupGetOperation:                        []string{},
 	TestIndexingClientConfigurationOperation: []string{},
 	TestTransferClientConfigurationOperation: []string{},
+	TransferClientsGetOperation:              []string{},
+	TransferClientsPostOperation:             []string{},
 }
 
 // GetRolesForCookieAuth returns the required roles for the given operation.

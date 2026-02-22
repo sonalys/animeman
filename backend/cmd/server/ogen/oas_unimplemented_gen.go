@@ -85,6 +85,24 @@ func (UnimplementedHandler) TestTransferClientConfiguration(ctx context.Context,
 	return ht.ErrNotImplemented
 }
 
+// TransferClientsGet implements GET /transfer-clients operation.
+//
+// Lists all configured transfer clients.
+//
+// GET /transfer-clients
+func (UnimplementedHandler) TransferClientsGet(ctx context.Context) (r []TransferClient, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
+// TransferClientsPost implements POST /transfer-clients operation.
+//
+// Add a new indexer.
+//
+// POST /transfer-clients
+func (UnimplementedHandler) TransferClientsPost(ctx context.Context, req *TransferClientConfig) (r *TransferClientsPostCreated, _ error) {
+	return r, ht.ErrNotImplemented
+}
+
 // NewError creates *ErrorResponseStatusCode from error returned by handler.
 //
 // Used for common default response.

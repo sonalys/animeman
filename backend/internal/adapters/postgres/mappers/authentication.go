@@ -3,12 +3,13 @@ package mappers
 import (
 	"encoding/json"
 
+	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
 	"github.com/sonalys/animeman/internal/domain/authentication"
 )
 
 type (
 	Authentication struct {
-		Type string `json:"type,omitempty"`
+		Type sqlcgen.AuthType `json:"type,omitempty"`
 		*AuthenticationUserPassword
 		*AuthenticationAPIKey
 	}
@@ -29,10 +30,12 @@ func NewAuthentication(from []byte) authentication.Authentication {
 	_ = json.Unmarshal(from, &target)
 
 	switch target.Type {
-	case "apiKey":
+	case sqlcgen.AuthTypeApiKey:
 		return authentication.NewAPIKeyAuthentication(target.Key)
-	default:
+	case sqlcgen.AuthTypeUserPassword:
 		return authentication.NewUserPasswordAuthentication(target.Username, target.Password)
+	default:
+		return authentication.Authentication{}
 	}
 }
 
@@ -47,16 +50,31 @@ func NewAuthenticationModel(from authentication.Authentication) []byte {
 				Key: from.Key,
 			},
 		}
-	default:
+	case authentication.AuthenticationTypeUserPassword:
 		model = Authentication{
-			Type: "userPassword",
+			Type: sqlcgen.AuthTypeUserPassword,
 			AuthenticationUserPassword: &AuthenticationUserPassword{
 				Username: from.Username,
 				Password: from.Password,
 			},
 		}
+	case authentication.AuthenticationTypeNone:
+		model = Authentication{
+			Type: "none",
+		}
 	}
 
 	buf, _ := json.Marshal(model)
 	return buf
+}
+
+func NewAuthenticationTypeModel(from authentication.AuthenticationType) sqlcgen.AuthType {
+	switch from {
+	case authentication.AuthenticationTypeAPIKey:
+		return sqlcgen.AuthTypeApiKey
+	case authentication.AuthenticationTypeUserPassword:
+		return sqlcgen.AuthTypeUserPassword
+	default:
+		return sqlcgen.AuthTypeNone
+	}
 }

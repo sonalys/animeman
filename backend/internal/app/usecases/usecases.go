@@ -43,9 +43,11 @@ type (
 
 		CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*indexing.Client, error)
 		ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.Client, error)
-
-		TestTransferClientBuilder(ctx context.Context, b *transfer.ClientBuilder) error
 		TestIndexingClientBuilder(ctx context.Context, b *indexing.ClientBuilder) error
+
+		CreateTransferClient(ctx context.Context, args CreateTransferClientArgs) (*transfer.Client, error)
+		ListTransferClients(ctx context.Context, userID shared.UserID) ([]transfer.Client, error)
+		TestTransferClientBuilder(ctx context.Context, b *transfer.ClientBuilder) error
 
 		GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, error)
 	}
@@ -141,11 +143,57 @@ func (u usecases) CreateIndexer(ctx context.Context, args CreateIndexerArgs) (*i
 	return client, nil
 }
 
+type CreateTransferClientArgs struct {
+	Type   transfer.ClientType
+	URL    url.URL
+	Auth   authentication.Authentication
+	UserID shared.UserID
+}
+
+func (u usecases) CreateTransferClient(ctx context.Context, args CreateTransferClientArgs) (*transfer.Client, error) {
+	ctx, span := otel.Tracer.Start(ctx, "CreateTransferClient")
+	defer span.End()
+
+	client, err := transfer.NewClient(
+		args.UserID,
+		args.Type,
+		args.URL,
+		args.Auth,
+	)
+	if err != nil {
+		logError(ctx, err, "Failed creating transfer client")
+		return nil, apperr.New(err, codes.InvalidArgument)
+	}
+
+	if err := u.repositories.TransferClientRepository.Create(ctx, client); err != nil {
+		logError(ctx, err, "Failed creating transfer client")
+		return nil, apperr.New(err, codes.InvalidArgument)
+	}
+
+	log.Info().
+		Ctx(ctx).
+		Msg("Created transfer client")
+
+	return client, nil
+}
+
 func (u usecases) ListIndexers(ctx context.Context, userID shared.UserID) ([]indexing.Client, error) {
 	ctx, span := otel.Tracer.Start(ctx, "ListIndexers")
 	defer span.End()
 
 	response, err := u.repositories.IndexerClientRepository.ListByOwner(ctx, userID)
+	if err != nil {
+		return nil, err
+	}
+
+	return response, nil
+}
+
+func (u usecases) ListTransferClients(ctx context.Context, userID shared.UserID) ([]transfer.Client, error) {
+	ctx, span := otel.Tracer.Start(ctx, "ListIndexers")
+	defer span.End()
+
+	response, err := u.repositories.TransferClientRepository.ListByOwner(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -205,7 +253,7 @@ func (u usecases) GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, e
 		entries, err := u.repositories.TransferClientRepository.List(grpctx)
 
 		if err == nil {
-			if len(entries) == 0 {
+			if len(entries) > 0 {
 				status.CompletedSteps = append(status.CompletedSteps, SetupStepTransferClient)
 			} else {
 				status.MissingSteps = append(status.MissingSteps, SetupStepTransferClient)
@@ -219,7 +267,7 @@ func (u usecases) GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, e
 		entries, err := u.repositories.IndexerClientRepository.List(grpctx)
 
 		if err == nil {
-			if len(entries) == 0 {
+			if len(entries) > 0 {
 				status.CompletedSteps = append(status.CompletedSteps, SetupStepIndexingClient)
 			} else {
 				status.MissingSteps = append(status.MissingSteps, SetupStepIndexingClient)
@@ -233,7 +281,7 @@ func (u usecases) GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, e
 		entries, err := u.repositories.WatchlistRepository.List(grpctx)
 
 		if err == nil {
-			if len(entries) == 0 {
+			if len(entries) > 0 {
 				status.CompletedSteps = append(status.CompletedSteps, SetupStepWatchlistSetupStep)
 			} else {
 				status.MissingSteps = append(status.MissingSteps, SetupStepWatchlistSetupStep)

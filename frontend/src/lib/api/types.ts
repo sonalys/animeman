@@ -66,3 +66,21 @@ export interface WatchlistConfig {
     externalID: string;
     syncFrequencySeconds: number;
 };
+
+export type OnboardingStep = 'watchlist' | 'indexing' | 'transfer';
+
+export interface OnboardingStatus {
+    completedSteps: OnboardingStep[];
+    missingSteps: OnboardingStep[];
+}
+
+export const ERROR_MESSAGES: Record<string, string> = {
+    alreadyExists: 'Already in use',
+    minLength: 'Too short',
+    maxLength: 'Too long',
+    required: 'Required',
+    invalidFormat: 'Invalid format',
+    invalid: 'Invalid value',
+    unsupported: 'Unsupported value',
+    unknown: 'Unexpected error'
+};

@@ -154,7 +154,6 @@ paths:
                 type: array
                 items:
                   $ref: "#/components/schemas/Indexer"
-
     post:
       summary: Add a new indexer
       tags:
@@ -170,6 +169,50 @@ paths:
       responses:
         "201":
           description: Indexer configured successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - id
+                properties:
+                  id:
+                    type: string
+                    format: uuid
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+
+  /transfer-clients:
+    get:
+      summary: Lists all configured transfer clients
+      tags:
+        - TransferClients
+      security:
+        - cookieAuth: []
+      responses:
+        default:
+          $ref: "#/components/responses/ErrorResponse"
+        "200":
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: "#/components/schemas/TransferClient"
+    post:
+      summary: Add a new indexer
+      tags:
+        - Indexers
+      security:
+        - cookieAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: "#/components/schemas/TransferClientConfig"
+      responses:
+        "201":
           content:
             application/json:
               schema:
@@ -268,6 +311,19 @@ components:
           format: uri
         auth:
           $ref: "#/components/schemas/Authentication"
+
+    TransferClient:
+      type: object
+      required: [id, type, hostname]
+      properties:
+        id:
+          type: string
+          format: uuid
+        type:
+          $ref: "#/components/schemas/TransferClientType"
+        hostname:
+          type: string
+          format: uri
 
     IndexerConfig:
       type: object

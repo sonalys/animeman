@@ -4,7 +4,7 @@ CREATE TABLE users (
     password_hash TEXT NOT NULL
 );
 
-CREATE TYPE auth_type AS ENUM ('userPassword', 'apiKey');
+CREATE TYPE auth_type AS ENUM ('none', 'userPassword', 'apiKey');
 
 CREATE TABLE authentications (
     id          UUID PRIMARY KEY,

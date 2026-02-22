@@ -45,6 +45,18 @@ type Handler interface {
 	//
 	// POST /transfer-clients/test
 	TestTransferClientConfiguration(ctx context.Context, req *TransferClientConfig) error
+	// TransferClientsGet implements GET /transfer-clients operation.
+	//
+	// Lists all configured transfer clients.
+	//
+	// GET /transfer-clients
+	TransferClientsGet(ctx context.Context) ([]TransferClient, error)
+	// TransferClientsPost implements POST /transfer-clients operation.
+	//
+	// Add a new indexer.
+	//
+	// POST /transfer-clients
+	TransferClientsPost(ctx context.Context, req *TransferClientConfig) (*TransferClientsPostCreated, error)
 	// NewError creates *ErrorResponseStatusCode from error returned by handler.
 	//
 	// Used for common default response.

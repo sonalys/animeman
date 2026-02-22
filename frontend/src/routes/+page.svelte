@@ -16,7 +16,7 @@
 
 	async function refreshIndexers() {
 		try {
-			indexers = await apiFetch<Indexer[]>('/indexers');
+			indexers = await apiFetch<Indexer[]>('/indexing-clients');
 		} catch (e) {
 			console.error('Failed to load indexers', e);
 		}

@@ -93,6 +93,53 @@ func (q *Queries) GetTransferClient(ctx context.Context, id shared.ID) (GetTrans
 	return i, err
 }
 
+const listTransferClients = `-- name: ListTransferClients :many
+SELECT 
+    tc.id, tc.owner_id, tc.address, tc.type,
+    a.id as auth_id, a.type as auth_type, a.credentials as auth_credentials
+FROM transfer_clients tc
+JOIN authentications a ON tc.auth_id = a.id
+ORDER BY tc.id
+`
+
+type ListTransferClientsRow struct {
+	ID              shared.ID
+	OwnerID         shared.ID
+	Address         string
+	Type            TransferClientType
+	AuthID          shared.ID
+	AuthType        AuthType
+	AuthCredentials []byte
+}
+
+func (q *Queries) ListTransferClients(ctx context.Context) ([]ListTransferClientsRow, error) {
+	rows, err := q.db.Query(ctx, listTransferClients)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListTransferClientsRow
+	for rows.Next() {
+		var i ListTransferClientsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.OwnerID,
+			&i.Address,
+			&i.Type,
+			&i.AuthID,
+			&i.AuthType,
+			&i.AuthCredentials,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listTransferClientsByOwner = `-- name: ListTransferClientsByOwner :many
 SELECT 
     tc.id, tc.owner_id, tc.address, tc.type,

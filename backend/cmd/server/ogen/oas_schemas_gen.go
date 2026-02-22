@@ -931,6 +931,43 @@ type TestIndexingClientConfigurationNoContent struct{}
 // TestTransferClientConfigurationNoContent is response for TestTransferClientConfiguration operation.
 type TestTransferClientConfigurationNoContent struct{}
 
+// Ref: #/components/schemas/TransferClient
+type TransferClient struct {
+	ID       uuid.UUID          `json:"id"`
+	Type     TransferClientType `json:"type"`
+	Hostname url.URL            `json:"hostname"`
+}
+
+// GetID returns the value of ID.
+func (s *TransferClient) GetID() uuid.UUID {
+	return s.ID
+}
+
+// GetType returns the value of Type.
+func (s *TransferClient) GetType() TransferClientType {
+	return s.Type
+}
+
+// GetHostname returns the value of Hostname.
+func (s *TransferClient) GetHostname() url.URL {
+	return s.Hostname
+}
+
+// SetID sets the value of ID.
+func (s *TransferClient) SetID(val uuid.UUID) {
+	s.ID = val
+}
+
+// SetType sets the value of Type.
+func (s *TransferClient) SetType(val TransferClientType) {
+	s.Type = val
+}
+
+// SetHostname sets the value of Hostname.
+func (s *TransferClient) SetHostname(val url.URL) {
+	s.Hostname = val
+}
+
 // Ref: #/components/schemas/TransferClientConfig
 type TransferClientConfig struct {
 	Type     TransferClientType `json:"type"`
@@ -1001,6 +1038,20 @@ func (s *TransferClientType) UnmarshalText(data []byte) error {
 	default:
 		return errors.Errorf("invalid value: %q", data)
 	}
+}
+
+type TransferClientsPostCreated struct {
+	ID uuid.UUID `json:"id"`
+}
+
+// GetID returns the value of ID.
+func (s *TransferClientsPostCreated) GetID() uuid.UUID {
+	return s.ID
+}
+
+// SetID sets the value of ID.
+func (s *TransferClientsPostCreated) SetID(val uuid.UUID) {
+	s.ID = val
 }
 
 // Ref: #/components/schemas/UserRegistration

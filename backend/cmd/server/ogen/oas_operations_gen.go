@@ -14,4 +14,6 @@ const (
 	SetupGetOperation                        OperationName = "SetupGet"
 	TestIndexingClientConfigurationOperation OperationName = "TestIndexingClientConfiguration"
 	TestTransferClientConfigurationOperation OperationName = "TestTransferClientConfiguration"
+	TransferClientsGetOperation              OperationName = "TransferClientsGet"
+	TransferClientsPostOperation             OperationName = "TransferClientsPost"
 )

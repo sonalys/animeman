@@ -24,26 +24,37 @@ func NewTransferClientRepository(conn *pgxpool.Pool) ports.TransferClientReposit
 }
 
 func (r transferClientRepository) Create(ctx context.Context, client *transfer.Client) error {
-	queries := sqlcgen.New(r.conn)
+	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
+		auth, err := queries.CreateAuthentication(ctx, sqlcgen.CreateAuthenticationParams{
+			ID:          shared.NewID[shared.ID](),
+			Type:        mappers.NewAuthenticationTypeModel(client.Authentication.Type),
+			Credentials: mappers.NewAuthenticationModel(client.Authentication),
+		})
 
-	params := sqlcgen.CreateIndexerClientParams{
-		ID:      client.ID,
-		OwnerID: client.OwnerID,
-		Address: client.Address.String(),
-		Type:    sqlcgen.IndexerClientType(client.Type.String()),
-	}
+		if err != nil {
+			return handleWriteError(err)
+		}
 
-	if _, err := queries.CreateIndexerClient(ctx, params); err != nil {
-		return handleWriteError(err)
-	}
+		params := sqlcgen.CreateTransferClientParams{
+			ID:      client.ID,
+			OwnerID: client.OwnerID,
+			Address: client.Address.String(),
+			Type:    sqlcgen.TransferClientType(client.Type.String()),
+			AuthID:  auth.ID,
+		}
 
-	return nil
+		if _, err := queries.CreateTransferClient(ctx, params); err != nil {
+			return handleWriteError(err)
+		}
+
+		return nil
+	})
 }
 
 func (r transferClientRepository) List(ctx context.Context) ([]transfer.Client, error) {
 	queries := sqlcgen.New(r.conn)
 
-	models, err := queries.ListIndexerClients(ctx)
+	models, err := queries.ListTransferClients(ctx)
 	if err != nil {
 		return nil, handleReadError(err)
 	}

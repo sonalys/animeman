@@ -15,6 +15,14 @@ FROM transfer_clients tc
 JOIN authentications a ON tc.auth_id = a.id
 WHERE tc.id = $1 LIMIT 1 FOR UPDATE;
 
+-- name: ListTransferClients :many
+SELECT 
+    tc.id, tc.owner_id, tc.address, tc.type,
+    a.id as auth_id, a.type as auth_type, a.credentials as auth_credentials
+FROM transfer_clients tc
+JOIN authentications a ON tc.auth_id = a.id
+ORDER BY tc.id;
+
 -- name: ListTransferClientsByOwner :many
 SELECT 
     tc.id, tc.owner_id, tc.address, tc.type,

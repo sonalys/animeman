@@ -108,6 +108,7 @@ func (ns NullAudioCodec) Value() (driver.Value, error) {
 type AuthType string
 
 const (
+	AuthTypeNone         AuthType = "none"
 	AuthTypeUserPassword AuthType = "userPassword"
 	AuthTypeApiKey       AuthType = "apiKey"
 )
