@@ -10,7 +10,6 @@
 	let errorMessage = $state('');
 	let fieldErrors: Record<string, string> = $state({});
 
-	let steps = ['Login', 'Register'];
 	let currentStep = $state(0);
 	let stepHeights = $state([0, 0]);
 	let activeHeight = $derived(stepHeights[currentStep]);
