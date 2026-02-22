@@ -1,21 +1,27 @@
 <script lang="ts">
-	export let label: string;
-	export let value: string;
-	export let options: { value: string; label: string }[];
-	export let id: string = Math.random().toString(36).substring(2, 9);
-	export let autofocus: boolean = false;
+	let {
+		label,
+		options,
+		value = $bindable(),
+		id = crypto.randomUUID(),
+		autofocus = false
+	} = $props<{
+		label: string;
+		value: string;
+		options: { value: string; label: string }[];
+		id?: string;
+		autofocus?: boolean;
+	}>();
 
 	function handleKeyDown(e: KeyboardEvent) {
-		const index = options.findIndex((opt) => opt.value === value);
+		const index = options.findIndex((opt: any) => opt.value === value);
 
-		if (e.key === 'ArrowDown') {
+		if (e.key === 'ArrowDown' && index < options.length - 1) {
 			e.preventDefault();
-			const next = options[index + 1];
-			if (next) value = next.value;
-		} else if (e.key === 'ArrowUp') {
+			value = options[index + 1].value;
+		} else if (e.key === 'ArrowUp' && index > 0) {
 			e.preventDefault();
-			const prev = options[index - 1];
-			if (prev) value = prev.value;
+			value = options[index - 1].value;
 		}
 	}
 
@@ -26,11 +32,15 @@
 
 <div class="select-group">
 	<label for={id}>{label}</label>
-	<select {id} bind:value use:focusOnMount on:keydown={handleKeyDown}>
-		{#each options as option}
-			<option value={option.value}>{option.label}</option>
-		{/each}
-	</select>
+
+	<div class="select-wrapper">
+		<select {id} bind:value use:focusOnMount onkeydown={handleKeyDown}>
+			{#each options as option}
+				<option value={option.value}>{option.label}</option>
+			{/each}
+		</select>
+		<span class="chevron" aria-hidden="true">▼</span>
+	</div>
 </div>
 
 <style>
@@ -39,34 +49,46 @@
 		flex-direction: column;
 		gap: 0.5rem;
 		width: 100%;
+		font-family: sans-serif;
 	}
 
 	label {
-		font-size: 0.8rem;
-		color: var(--text-muted);
+		font-size: 0.875rem;
+		font-weight: 500;
+		color: var(--text-muted, #94a3b8);
+	}
+
+	.select-wrapper {
+		position: relative;
+		display: flex;
+		align-items: center;
 	}
 
 	select {
-		background: var(--bg-primary);
-		border: 1px solid var(--border);
-		color: white;
-		padding: 0.75rem;
+		width: 100%;
+		appearance: none;
+		background: var(--bg-primary, #1e293b);
+		border: 1px solid var(--border, #334155);
+		color: var(--text-main);
+		padding: 0.75rem 1rem;
 		border-radius: 8px;
 		cursor: pointer;
-		appearance: none; /* Removes default OS arrow to allow for custom styling */
-		background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 24 24' stroke='white'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M19 9l-7 7-7-7'%3E%3C/path%3E%3C/svg%3E");
-		background-repeat: no-repeat;
-		background-position: right 1rem center;
-		background-size: 1rem;
-		padding-right: 2.5rem;
-		transition: all 0.2s ease;
+		font-size: 1rem;
+		transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
 	}
 
 	select:focus {
-		outline: none;
-		border-color: var(--accent);
-		box-shadow:
-			0 0 0 2px rgba(124, 58, 237, 0.2),
-			0 0 8px var(--accent);
+		outline: 2px solid transparent;
+		border-color: var(--accent, #7c3aed);
+		box-shadow: 0 0 0 2px rgba(124, 58, 237, 0.2);
+	}
+
+	/* Separating the icon from the background-image for easier styling */
+	.chevron {
+		position: absolute;
+		right: 1rem;
+		pointer-events: none;
+		font-size: 0.7rem;
+		color: var(--text-muted, #94a3b8);
 	}
 </style>
