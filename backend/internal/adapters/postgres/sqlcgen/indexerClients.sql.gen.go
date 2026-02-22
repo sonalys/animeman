@@ -91,6 +91,53 @@ func (q *Queries) GetIndexerClient(ctx context.Context, id shared.ID) (GetIndexe
 	return i, err
 }
 
+const listIndexerClients = `-- name: ListIndexerClients :many
+SELECT 
+    c.id, c.owner_id, c.address, c.type,
+    a.id as auth_id, a.type as auth_type, a.credentials as auth_credentials
+FROM indexer_clients c
+JOIN authentications a ON c.auth_id = a.id
+ORDER BY c.id ASC
+`
+
+type ListIndexerClientsRow struct {
+	ID              shared.ID
+	OwnerID         shared.ID
+	Address         string
+	Type            IndexerClientType
+	AuthID          shared.ID
+	AuthType        AuthType
+	AuthCredentials []byte
+}
+
+func (q *Queries) ListIndexerClients(ctx context.Context) ([]ListIndexerClientsRow, error) {
+	rows, err := q.db.Query(ctx, listIndexerClients)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []ListIndexerClientsRow
+	for rows.Next() {
+		var i ListIndexerClientsRow
+		if err := rows.Scan(
+			&i.ID,
+			&i.OwnerID,
+			&i.Address,
+			&i.Type,
+			&i.AuthID,
+			&i.AuthType,
+			&i.AuthCredentials,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listIndexerClientsByOwner = `-- name: ListIndexerClientsByOwner :many
 SELECT 
     c.id, c.owner_id, c.address, c.type,

@@ -40,6 +40,31 @@ func (r transferClientRepository) Create(ctx context.Context, client *transfer.C
 	return nil
 }
 
+func (r transferClientRepository) List(ctx context.Context) ([]transfer.Client, error) {
+	queries := sqlcgen.New(r.conn)
+
+	models, err := queries.ListIndexerClients(ctx)
+	if err != nil {
+		return nil, handleReadError(err)
+	}
+
+	response := make([]transfer.Client, 0, len(models))
+
+	for i := range models {
+		model := &models[i]
+
+		response = append(response, transfer.Client{
+			ID:             model.ID,
+			OwnerID:        model.OwnerID,
+			Type:           transfer.ClientTypeQBittorrent,
+			Address:        *errutils.Must(url.Parse(model.Address)),
+			Authentication: mappers.NewAuthentication(model.AuthCredentials),
+		})
+	}
+
+	return response, nil
+}
+
 func (r transferClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]transfer.Client, error) {
 	queries := sqlcgen.New(r.conn)
 

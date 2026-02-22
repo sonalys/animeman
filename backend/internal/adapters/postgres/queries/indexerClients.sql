@@ -14,6 +14,14 @@ FROM indexer_clients c
 JOIN authentications a ON c.auth_id = a.id
 WHERE c.id = $1 LIMIT 1 FOR UPDATE;
 
+-- name: ListIndexerClients :many
+SELECT 
+    c.id, c.owner_id, c.address, c.type,
+    a.id as auth_id, a.type as auth_type, a.credentials as auth_credentials
+FROM indexer_clients c
+JOIN authentications a ON c.auth_id = a.id
+ORDER BY c.id ASC;
+
 -- name: ListIndexerClientsByOwner :many
 SELECT 
     c.id, c.owner_id, c.address, c.type,

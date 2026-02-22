@@ -183,6 +183,39 @@ func (q *Queries) GetWatchlistEntries(ctx context.Context, watchlistID shared.ID
 	return items, nil
 }
 
+const listWatchlists = `-- name: ListWatchlists :many
+SELECT id, owner_id, source, external_id, sync_frequency, last_synced_at, created_at FROM watchlists
+ORDER BY created_at DESC
+`
+
+func (q *Queries) ListWatchlists(ctx context.Context) ([]Watchlist, error) {
+	rows, err := q.db.Query(ctx, listWatchlists)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Watchlist
+	for rows.Next() {
+		var i Watchlist
+		if err := rows.Scan(
+			&i.ID,
+			&i.OwnerID,
+			&i.Source,
+			&i.ExternalID,
+			&i.SyncFrequency,
+			&i.LastSyncedAt,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listWatchlistsByOwner = `-- name: ListWatchlistsByOwner :many
 SELECT id, owner_id, source, external_id, sync_frequency, last_synced_at, created_at FROM watchlists
 WHERE owner_id = $1

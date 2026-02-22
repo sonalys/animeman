@@ -61,6 +61,31 @@ func (r indexerClientRepository) Create(ctx context.Context, client *indexing.Cl
 	})
 }
 
+func (r indexerClientRepository) List(ctx context.Context) ([]indexing.Client, error) {
+	queries := sqlcgen.New(r.conn)
+
+	models, err := queries.ListIndexerClients(ctx)
+	if err != nil {
+		return nil, handleReadError(err)
+	}
+
+	response := make([]indexing.Client, 0, len(models))
+
+	for i := range models {
+		model := &models[i]
+
+		response = append(response, indexing.Client{
+			ID:             model.ID,
+			OwnerID:        model.OwnerID,
+			Type:           indexing.IndexerTypeProwlarr,
+			Address:        *errutils.Must(url.Parse(model.Address)),
+			Authentication: mappers.NewAuthentication(model.AuthCredentials),
+		})
+	}
+
+	return response, nil
+}
+
 func (r indexerClientRepository) ListByOwner(ctx context.Context, owner shared.UserID) ([]indexing.Client, error) {
 	queries := sqlcgen.New(r.conn)
 

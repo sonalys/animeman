@@ -14,6 +14,7 @@ import (
 	"github.com/sonalys/animeman/internal/domain/users"
 	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/otel"
+	"golang.org/x/sync/errgroup"
 	"google.golang.org/grpc/codes"
 )
 
@@ -45,6 +46,8 @@ type (
 
 		TestTransferClientBuilder(ctx context.Context, b *transfer.ClientBuilder) error
 		TestIndexingClientBuilder(ctx context.Context, b *indexing.ClientBuilder) error
+
+		GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, error)
 	}
 )
 
@@ -178,4 +181,67 @@ func (u usecases) TestIndexingClientBuilder(ctx context.Context, b *indexing.Cli
 	}
 
 	return nil
+}
+
+type SetupStep string
+
+const (
+	SetupStepTransferClient     SetupStep = "transferClient"
+	SetupStepIndexingClient     SetupStep = "indexingClient"
+	SetupStepWatchlistSetupStep SetupStep = "watchlist"
+)
+
+type OnboardingStatus struct {
+	MissingSteps   []SetupStep
+	CompletedSteps []SetupStep
+}
+
+func (u usecases) GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, error) {
+	status := &OnboardingStatus{}
+
+	errgrp, grpctx := errgroup.WithContext(ctx)
+
+	errgrp.Go(func() error {
+		entries, err := u.repositories.TransferClientRepository.List(grpctx)
+
+		if err == nil {
+			if len(entries) == 0 {
+				status.CompletedSteps = append(status.CompletedSteps, SetupStepTransferClient)
+			} else {
+				status.MissingSteps = append(status.MissingSteps, SetupStepTransferClient)
+			}
+		}
+
+		return err
+	})
+
+	errgrp.Go(func() error {
+		entries, err := u.repositories.IndexerClientRepository.List(grpctx)
+
+		if err == nil {
+			if len(entries) == 0 {
+				status.CompletedSteps = append(status.CompletedSteps, SetupStepIndexingClient)
+			} else {
+				status.MissingSteps = append(status.MissingSteps, SetupStepIndexingClient)
+			}
+		}
+
+		return err
+	})
+
+	errgrp.Go(func() error {
+		entries, err := u.repositories.WatchlistRepository.List(grpctx)
+
+		if err == nil {
+			if len(entries) == 0 {
+				status.CompletedSteps = append(status.CompletedSteps, SetupStepWatchlistSetupStep)
+			} else {
+				status.MissingSteps = append(status.MissingSteps, SetupStepWatchlistSetupStep)
+			}
+		}
+
+		return err
+	})
+
+	return status, errgrp.Wait()
 }

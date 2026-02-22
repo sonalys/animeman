@@ -19,6 +19,10 @@ INSERT INTO watchlists (
 SELECT * FROM watchlists
 WHERE id = sqlc.arg(id) LIMIT 1;
 
+-- name: ListWatchlists :many
+SELECT * FROM watchlists
+ORDER BY created_at DESC;
+
 -- name: ListWatchlistsByOwner :many
 SELECT * FROM watchlists
 WHERE owner_id = sqlc.arg(owner_id)

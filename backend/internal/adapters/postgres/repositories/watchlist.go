@@ -88,6 +88,33 @@ func (r *watchlistRepository) DeleteEntry(ctx context.Context, id watchlists.Wat
 	return nil
 }
 
+func (r *watchlistRepository) List(ctx context.Context) ([]watchlists.Watchlist, error) {
+	queries := sqlcgen.New(r.conn)
+
+	models, err := queries.ListWatchlists(ctx)
+	if err != nil {
+		return nil, handleReadError(err)
+	}
+
+	response := make([]watchlists.Watchlist, 0, len(models))
+
+	for i := range models {
+		model := &models[i]
+
+		response = append(response, watchlists.Watchlist{
+			ID:            model.ID,
+			Owner:         model.OwnerID,
+			Source:        mappers.NewWatchlistSource(model.Source),
+			ExternalID:    model.ExternalID.String,
+			LastSyncedAt:  model.LastSyncedAt.Time,
+			CreatedAt:     model.CreatedAt.Time,
+			SyncFrequency: time.Duration(model.SyncFrequency.Microseconds * int64(time.Microsecond)),
+		})
+	}
+
+	return response, nil
+}
+
 func (r *watchlistRepository) ListByOwner(ctx context.Context, id shared.UserID) ([]watchlists.Watchlist, error) {
 	queries := sqlcgen.New(r.conn)
 

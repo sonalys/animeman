@@ -31,6 +31,7 @@ type (
 
 	IndexerClientRepository interface {
 		Create(ctx context.Context, client *indexing.Client) error
+		List(ctx context.Context) ([]indexing.Client, error)
 		ListByOwner(ctx context.Context, id shared.UserID) ([]indexing.Client, error)
 		Update(ctx context.Context, id indexing.IndexerID, updateHandler UpdateHandler[indexing.Client]) error
 		Delete(ctx context.Context, id indexing.IndexerID) error
@@ -38,6 +39,7 @@ type (
 
 	TransferClientRepository interface {
 		Create(ctx context.Context, client *transfer.Client) error
+		List(ctx context.Context) ([]transfer.Client, error)
 		ListByOwner(ctx context.Context, id shared.UserID) ([]transfer.Client, error)
 		Update(ctx context.Context, id transfer.ClientID, updateHandler UpdateHandler[transfer.Client]) error
 		Delete(ctx context.Context, id transfer.ClientID) error
@@ -81,6 +83,7 @@ type (
 	WatchlistRepository interface {
 		Create(ctx context.Context, watchlist *watchlists.Watchlist) error
 		CreateEntry(ctx context.Context, entry *watchlists.WatchlistEntry) error
+		List(ctx context.Context) ([]watchlists.Watchlist, error)
 		ListByOwner(ctx context.Context, id shared.UserID) ([]watchlists.Watchlist, error)
 		ListEntries(ctx context.Context, id watchlists.WatchlistID) ([]watchlists.WatchlistEntry, error)
 		Update(ctx context.Context, id watchlists.WatchlistID, updateHandler UpdateHandler[watchlists.Watchlist]) error

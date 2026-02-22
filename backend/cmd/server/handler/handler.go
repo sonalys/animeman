@@ -28,9 +28,29 @@ type Handler struct {
 }
 
 func (h *Handler) SetupGet(ctx context.Context) (*ogen.SetupGetOK, error) {
+	_, err := security.GetIdentity(ctx)
+	if err != nil {
+		return nil, err
+	}
+
+	status, err := h.Usecases.GetOnboardingStatus(ctx)
+
+	remapStatus := func(from usecases.SetupStep) ogen.SetupSteps {
+		switch from {
+		case usecases.SetupStepIndexingClient:
+			return ogen.SetupStepsIndexing
+		case usecases.SetupStepTransferClient:
+			return ogen.SetupStepsTransfer
+		case usecases.SetupStepWatchlistSetupStep:
+			return ogen.SetupStepsWatchlist
+		default:
+			return ""
+		}
+	}
+
 	return &ogen.SetupGetOK{
-		CompletedSteps: []ogen.SetupSteps{},
-		MissingSteps:   []ogen.SetupSteps{},
+		CompletedSteps: sliceutils.Map(status.CompletedSteps, remapStatus),
+		MissingSteps:   sliceutils.Map(status.MissingSteps, remapStatus),
 	}, nil
 }
 
