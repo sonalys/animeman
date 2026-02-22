@@ -296,15 +296,10 @@ components:
 
     Authentication:
       type: object
-      required: [type]
-      properties:
-        type:
-          type: string
-          enum: [none, userPassword, apiKey]
       oneOf:
+        - $ref: "#/components/schemas/AuthenticationNone"
         - $ref: "#/components/schemas/AuthenticationUserPassword"
         - $ref: "#/components/schemas/AuthenticationAPIKey"
-        - $ref: "#/components/schemas/AuthenticationNone"
 
     AuthenticationNone:
       type: object
@@ -316,8 +311,11 @@ components:
 
     AuthenticationUserPassword:
       type: object
-      required: [username, password]
+      required: [type, username, password]
       properties:
+        type:
+          type: string
+          enum: [userPassword]
         username:
           type: string
         password:
@@ -326,8 +324,11 @@ components:
 
     AuthenticationAPIKey:
       type: object
-      required: [key]
+      required: [type, key]
       properties:
+        type:
+          type: string
+          enum: [apiKey]
         key:
           type: string
           format: password

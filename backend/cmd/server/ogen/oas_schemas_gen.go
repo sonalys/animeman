@@ -16,23 +16,12 @@ func (s *ErrorResponseStatusCode) Error() string {
 
 // Ref: #/components/schemas/Authentication
 type Authentication struct {
-	Type  AuthenticationType `json:"type"`
 	OneOf AuthenticationSum
-}
-
-// GetType returns the value of Type.
-func (s *Authentication) GetType() AuthenticationType {
-	return s.Type
 }
 
 // GetOneOf returns the value of OneOf.
 func (s *Authentication) GetOneOf() AuthenticationSum {
 	return s.OneOf
-}
-
-// SetType sets the value of Type.
-func (s *Authentication) SetType(val AuthenticationType) {
-	s.Type = val
 }
 
 // SetOneOf sets the value of OneOf.
@@ -42,7 +31,13 @@ func (s *Authentication) SetOneOf(val AuthenticationSum) {
 
 // Ref: #/components/schemas/AuthenticationAPIKey
 type AuthenticationAPIKey struct {
-	Key string `json:"key"`
+	Type AuthenticationAPIKeyType `json:"type"`
+	Key  string                   `json:"key"`
+}
+
+// GetType returns the value of Type.
+func (s *AuthenticationAPIKey) GetType() AuthenticationAPIKeyType {
+	return s.Type
 }
 
 // GetKey returns the value of Key.
@@ -50,9 +45,48 @@ func (s *AuthenticationAPIKey) GetKey() string {
 	return s.Key
 }
 
+// SetType sets the value of Type.
+func (s *AuthenticationAPIKey) SetType(val AuthenticationAPIKeyType) {
+	s.Type = val
+}
+
 // SetKey sets the value of Key.
 func (s *AuthenticationAPIKey) SetKey(val string) {
 	s.Key = val
+}
+
+type AuthenticationAPIKeyType string
+
+const (
+	AuthenticationAPIKeyTypeApiKey AuthenticationAPIKeyType = "apiKey"
+)
+
+// AllValues returns all AuthenticationAPIKeyType values.
+func (AuthenticationAPIKeyType) AllValues() []AuthenticationAPIKeyType {
+	return []AuthenticationAPIKeyType{
+		AuthenticationAPIKeyTypeApiKey,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AuthenticationAPIKeyType) MarshalText() ([]byte, error) {
+	switch s {
+	case AuthenticationAPIKeyTypeApiKey:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AuthenticationAPIKeyType) UnmarshalText(data []byte) error {
+	switch AuthenticationAPIKeyType(data) {
+	case AuthenticationAPIKeyTypeApiKey:
+		*s = AuthenticationAPIKeyTypeApiKey
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 // AuthenticationLoginNoContent is response for AuthenticationLogin operation.
@@ -149,9 +183,9 @@ func (s *AuthenticationNoneType) UnmarshalText(data []byte) error {
 // AuthenticationSum represents sum type.
 type AuthenticationSum struct {
 	Type                       AuthenticationSumType // switch on this field
+	AuthenticationNone         AuthenticationNone
 	AuthenticationUserPassword AuthenticationUserPassword
 	AuthenticationAPIKey       AuthenticationAPIKey
-	AuthenticationNone         AuthenticationNone
 }
 
 // AuthenticationSumType is oneOf type of AuthenticationSum.
@@ -159,10 +193,15 @@ type AuthenticationSumType string
 
 // Possible values for AuthenticationSumType.
 const (
+	AuthenticationNoneAuthenticationSum         AuthenticationSumType = "AuthenticationNone"
 	AuthenticationUserPasswordAuthenticationSum AuthenticationSumType = "AuthenticationUserPassword"
 	AuthenticationAPIKeyAuthenticationSum       AuthenticationSumType = "AuthenticationAPIKey"
-	AuthenticationNoneAuthenticationSum         AuthenticationSumType = "AuthenticationNone"
 )
+
+// IsAuthenticationNone reports whether AuthenticationSum is AuthenticationNone.
+func (s AuthenticationSum) IsAuthenticationNone() bool {
+	return s.Type == AuthenticationNoneAuthenticationSum
+}
 
 // IsAuthenticationUserPassword reports whether AuthenticationSum is AuthenticationUserPassword.
 func (s AuthenticationSum) IsAuthenticationUserPassword() bool {
@@ -174,9 +213,25 @@ func (s AuthenticationSum) IsAuthenticationAPIKey() bool {
 	return s.Type == AuthenticationAPIKeyAuthenticationSum
 }
 
-// IsAuthenticationNone reports whether AuthenticationSum is AuthenticationNone.
-func (s AuthenticationSum) IsAuthenticationNone() bool {
-	return s.Type == AuthenticationNoneAuthenticationSum
+// SetAuthenticationNone sets AuthenticationSum to AuthenticationNone.
+func (s *AuthenticationSum) SetAuthenticationNone(v AuthenticationNone) {
+	s.Type = AuthenticationNoneAuthenticationSum
+	s.AuthenticationNone = v
+}
+
+// GetAuthenticationNone returns AuthenticationNone and true boolean if AuthenticationSum is AuthenticationNone.
+func (s AuthenticationSum) GetAuthenticationNone() (v AuthenticationNone, ok bool) {
+	if !s.IsAuthenticationNone() {
+		return v, false
+	}
+	return s.AuthenticationNone, true
+}
+
+// NewAuthenticationNoneAuthenticationSum returns new AuthenticationSum from AuthenticationNone.
+func NewAuthenticationNoneAuthenticationSum(v AuthenticationNone) AuthenticationSum {
+	var s AuthenticationSum
+	s.SetAuthenticationNone(v)
+	return s
 }
 
 // SetAuthenticationUserPassword sets AuthenticationSum to AuthenticationUserPassword.
@@ -221,79 +276,16 @@ func NewAuthenticationAPIKeyAuthenticationSum(v AuthenticationAPIKey) Authentica
 	return s
 }
 
-// SetAuthenticationNone sets AuthenticationSum to AuthenticationNone.
-func (s *AuthenticationSum) SetAuthenticationNone(v AuthenticationNone) {
-	s.Type = AuthenticationNoneAuthenticationSum
-	s.AuthenticationNone = v
-}
-
-// GetAuthenticationNone returns AuthenticationNone and true boolean if AuthenticationSum is AuthenticationNone.
-func (s AuthenticationSum) GetAuthenticationNone() (v AuthenticationNone, ok bool) {
-	if !s.IsAuthenticationNone() {
-		return v, false
-	}
-	return s.AuthenticationNone, true
-}
-
-// NewAuthenticationNoneAuthenticationSum returns new AuthenticationSum from AuthenticationNone.
-func NewAuthenticationNoneAuthenticationSum(v AuthenticationNone) AuthenticationSum {
-	var s AuthenticationSum
-	s.SetAuthenticationNone(v)
-	return s
-}
-
-type AuthenticationType string
-
-const (
-	AuthenticationTypeNone         AuthenticationType = "none"
-	AuthenticationTypeUserPassword AuthenticationType = "userPassword"
-	AuthenticationTypeApiKey       AuthenticationType = "apiKey"
-)
-
-// AllValues returns all AuthenticationType values.
-func (AuthenticationType) AllValues() []AuthenticationType {
-	return []AuthenticationType{
-		AuthenticationTypeNone,
-		AuthenticationTypeUserPassword,
-		AuthenticationTypeApiKey,
-	}
-}
-
-// MarshalText implements encoding.TextMarshaler.
-func (s AuthenticationType) MarshalText() ([]byte, error) {
-	switch s {
-	case AuthenticationTypeNone:
-		return []byte(s), nil
-	case AuthenticationTypeUserPassword:
-		return []byte(s), nil
-	case AuthenticationTypeApiKey:
-		return []byte(s), nil
-	default:
-		return nil, errors.Errorf("invalid value: %q", s)
-	}
-}
-
-// UnmarshalText implements encoding.TextUnmarshaler.
-func (s *AuthenticationType) UnmarshalText(data []byte) error {
-	switch AuthenticationType(data) {
-	case AuthenticationTypeNone:
-		*s = AuthenticationTypeNone
-		return nil
-	case AuthenticationTypeUserPassword:
-		*s = AuthenticationTypeUserPassword
-		return nil
-	case AuthenticationTypeApiKey:
-		*s = AuthenticationTypeApiKey
-		return nil
-	default:
-		return errors.Errorf("invalid value: %q", data)
-	}
-}
-
 // Ref: #/components/schemas/AuthenticationUserPassword
 type AuthenticationUserPassword struct {
-	Username string `json:"username"`
-	Password string `json:"password"`
+	Type     AuthenticationUserPasswordType `json:"type"`
+	Username string                         `json:"username"`
+	Password string                         `json:"password"`
+}
+
+// GetType returns the value of Type.
+func (s *AuthenticationUserPassword) GetType() AuthenticationUserPasswordType {
+	return s.Type
 }
 
 // GetUsername returns the value of Username.
@@ -306,6 +298,11 @@ func (s *AuthenticationUserPassword) GetPassword() string {
 	return s.Password
 }
 
+// SetType sets the value of Type.
+func (s *AuthenticationUserPassword) SetType(val AuthenticationUserPasswordType) {
+	s.Type = val
+}
+
 // SetUsername sets the value of Username.
 func (s *AuthenticationUserPassword) SetUsername(val string) {
 	s.Username = val
@@ -314,6 +311,40 @@ func (s *AuthenticationUserPassword) SetUsername(val string) {
 // SetPassword sets the value of Password.
 func (s *AuthenticationUserPassword) SetPassword(val string) {
 	s.Password = val
+}
+
+type AuthenticationUserPasswordType string
+
+const (
+	AuthenticationUserPasswordTypeUserPassword AuthenticationUserPasswordType = "userPassword"
+)
+
+// AllValues returns all AuthenticationUserPasswordType values.
+func (AuthenticationUserPasswordType) AllValues() []AuthenticationUserPasswordType {
+	return []AuthenticationUserPasswordType{
+		AuthenticationUserPasswordTypeUserPassword,
+	}
+}
+
+// MarshalText implements encoding.TextMarshaler.
+func (s AuthenticationUserPasswordType) MarshalText() ([]byte, error) {
+	switch s {
+	case AuthenticationUserPasswordTypeUserPassword:
+		return []byte(s), nil
+	default:
+		return nil, errors.Errorf("invalid value: %q", s)
+	}
+}
+
+// UnmarshalText implements encoding.TextUnmarshaler.
+func (s *AuthenticationUserPasswordType) UnmarshalText(data []byte) error {
+	switch AuthenticationUserPasswordType(data) {
+	case AuthenticationUserPasswordTypeUserPassword:
+		*s = AuthenticationUserPasswordTypeUserPassword
+		return nil
+	default:
+		return errors.Errorf("invalid value: %q", data)
+	}
 }
 
 type AuthenticationWhoAmIOK struct {

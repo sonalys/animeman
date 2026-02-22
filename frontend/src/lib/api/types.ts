@@ -24,14 +24,22 @@ export interface UserRegistration {
     password: string;
 };
 
-export type AuthType = 'none' | 'userPassword' | 'apiKey';
+export interface AuthenticationUserPassword {
+    type: 'userPassword'
+    username: string;
+    password: string;
+}
 
-export interface Authentication {
-    type: AuthType;
-    username?: string;
-    password?: string;
-    key?: string;
-};
+export interface AuthenticationAPIKey {
+    type: 'apiKey';
+    key: string;
+}
+
+export interface AuthenticationNone {
+    type: 'none';
+}
+
+export type Authentication = AuthenticationUserPassword | AuthenticationAPIKey | AuthenticationNone;
 
 export interface IndexerConfig {
     type: string;

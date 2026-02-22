@@ -21,16 +21,10 @@ func (s *Authentication) Encode(e *jx.Encoder) {
 
 // encodeFields encodes fields.
 func (s *Authentication) encodeFields(e *jx.Encoder) {
-	{
-		e.FieldStart("type")
-		s.Type.Encode(e)
-	}
 	s.OneOf.encodeFields(e)
 }
 
-var jsonFieldsNameOfAuthentication = [1]string{
-	0: "type",
-}
+var jsonFieldsNameOfAuthentication = [0]string{}
 
 // Decode decodes Authentication from json.
 func (s *Authentication) Decode(d *jx.Decoder) error {
@@ -42,58 +36,14 @@ func (s *Authentication) Decode(d *jx.Decoder) error {
 	}); err != nil {
 		return errors.Wrap(err, "decode field OneOf")
 	}
-	var requiredBitSet [1]uint8
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "type":
-			requiredBitSet[0] |= 1 << 0
-			if err := func() error {
-				if err := s.Type.Decode(d); err != nil {
-					return err
-				}
-				return nil
-			}(); err != nil {
-				return errors.Wrap(err, "decode field \"type\"")
-			}
 		default:
 			return d.Skip()
 		}
-		return nil
 	}); err != nil {
 		return errors.Wrap(err, "decode Authentication")
-	}
-	// Validate required fields.
-	var failures []validate.FieldError
-	for i, mask := range [1]uint8{
-		0b00000001,
-	} {
-		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
-			// Mask only required fields and check equality to mask using XOR.
-			//
-			// If XOR result is not zero, result is not equal to expected, so some fields are missed.
-			// Bits of fields which would be set are actually bits of missed fields.
-			missed := bits.OnesCount8(result)
-			for bitN := 0; bitN < missed; bitN++ {
-				bitIdx := bits.TrailingZeros8(result)
-				fieldIdx := i*8 + bitIdx
-				var name string
-				if fieldIdx < len(jsonFieldsNameOfAuthentication) {
-					name = jsonFieldsNameOfAuthentication[fieldIdx]
-				} else {
-					name = strconv.Itoa(fieldIdx)
-				}
-				failures = append(failures, validate.FieldError{
-					Name:  name,
-					Error: validate.ErrFieldRequired,
-				})
-				// Reset bit.
-				result &^= 1 << bitIdx
-			}
-		}
-	}
-	if len(failures) > 0 {
-		return &validate.Error{Fields: failures}
 	}
 
 	return nil
@@ -122,13 +72,18 @@ func (s *AuthenticationAPIKey) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *AuthenticationAPIKey) encodeFields(e *jx.Encoder) {
 	{
+		e.FieldStart("type")
+		s.Type.Encode(e)
+	}
+	{
 		e.FieldStart("key")
 		e.Str(s.Key)
 	}
 }
 
-var jsonFieldsNameOfAuthenticationAPIKey = [1]string{
-	0: "key",
+var jsonFieldsNameOfAuthenticationAPIKey = [2]string{
+	0: "type",
+	1: "key",
 }
 
 // Decode decodes AuthenticationAPIKey from json.
@@ -140,8 +95,18 @@ func (s *AuthenticationAPIKey) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "key":
+		case "type":
 			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				if err := s.Type.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"type\"")
+			}
+		case "key":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				v, err := d.Str()
 				s.Key = string(v)
@@ -162,7 +127,7 @@ func (s *AuthenticationAPIKey) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000001,
+		0b00000011,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -204,6 +169,44 @@ func (s *AuthenticationAPIKey) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *AuthenticationAPIKey) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes AuthenticationAPIKeyType as json.
+func (s AuthenticationAPIKeyType) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes AuthenticationAPIKeyType from json.
+func (s *AuthenticationAPIKeyType) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode AuthenticationAPIKeyType to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch AuthenticationAPIKeyType(v) {
+	case AuthenticationAPIKeyTypeApiKey:
+		*s = AuthenticationAPIKeyTypeApiKey
+	default:
+		*s = AuthenticationAPIKeyType(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s AuthenticationAPIKeyType) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *AuthenticationAPIKeyType) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }
@@ -456,23 +459,23 @@ func (s *AuthenticationNoneType) UnmarshalJSON(data []byte) error {
 // Encode encodes AuthenticationSum as json.
 func (s AuthenticationSum) Encode(e *jx.Encoder) {
 	switch s.Type {
+	case AuthenticationNoneAuthenticationSum:
+		s.AuthenticationNone.Encode(e)
 	case AuthenticationUserPasswordAuthenticationSum:
 		s.AuthenticationUserPassword.Encode(e)
 	case AuthenticationAPIKeyAuthenticationSum:
 		s.AuthenticationAPIKey.Encode(e)
-	case AuthenticationNoneAuthenticationSum:
-		s.AuthenticationNone.Encode(e)
 	}
 }
 
 func (s AuthenticationSum) encodeFields(e *jx.Encoder) {
 	switch s.Type {
+	case AuthenticationNoneAuthenticationSum:
+		s.AuthenticationNone.encodeFields(e)
 	case AuthenticationUserPasswordAuthenticationSum:
 		s.AuthenticationUserPassword.encodeFields(e)
 	case AuthenticationAPIKeyAuthenticationSum:
 		s.AuthenticationAPIKey.encodeFields(e)
-	case AuthenticationNoneAuthenticationSum:
-		s.AuthenticationNone.encodeFields(e)
 	}
 }
 
@@ -516,19 +519,6 @@ func (s *AuthenticationSum) Decode(d *jx.Decoder) error {
 				}
 				found = true
 				s.Type = match
-			case "type":
-				// Type-based discrimination: check if field has expected JSON type
-				if typ := d.Next(); typ != jx.String {
-					// Field exists but has wrong type, not a match for this variant
-					return d.Skip()
-				}
-				match := AuthenticationNoneAuthenticationSum
-				if found && s.Type != match {
-					s.Type = ""
-					return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
-				}
-				found = true
-				s.Type = match
 			case "username":
 				// Type-based discrimination: check if field has expected JSON type
 				if typ := d.Next(); typ != jx.String {
@@ -542,6 +532,44 @@ func (s *AuthenticationSum) Decode(d *jx.Decoder) error {
 				}
 				found = true
 				s.Type = match
+			case "type":
+				// Value-based discrimination: check enum value
+				if typ := d.Next(); typ != jx.String {
+					return d.Skip()
+				}
+				value, err := d.StrBytes()
+				if err != nil {
+					return err
+				}
+				switch string(value) {
+				case "apiKey":
+					match := AuthenticationAPIKeyAuthenticationSum
+					if found && s.Type != match {
+						s.Type = ""
+						return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+					}
+					found = true
+					s.Type = match
+				case "none":
+					match := AuthenticationNoneAuthenticationSum
+					if found && s.Type != match {
+						s.Type = ""
+						return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+					}
+					found = true
+					s.Type = match
+				case "userPassword":
+					match := AuthenticationUserPasswordAuthenticationSum
+					if found && s.Type != match {
+						s.Type = ""
+						return errors.Errorf("multiple oneOf matches: (%v, %v)", s.Type, match)
+					}
+					found = true
+					s.Type = match
+				default:
+					// Unknown enum value, ignore and continue
+				}
+				return nil
 			}
 			return d.Skip()
 		})
@@ -552,16 +580,16 @@ func (s *AuthenticationSum) Decode(d *jx.Decoder) error {
 		return errors.New("unable to detect sum type variant")
 	}
 	switch s.Type {
+	case AuthenticationNoneAuthenticationSum:
+		if err := s.AuthenticationNone.Decode(d); err != nil {
+			return err
+		}
 	case AuthenticationUserPasswordAuthenticationSum:
 		if err := s.AuthenticationUserPassword.Decode(d); err != nil {
 			return err
 		}
 	case AuthenticationAPIKeyAuthenticationSum:
 		if err := s.AuthenticationAPIKey.Decode(d); err != nil {
-			return err
-		}
-	case AuthenticationNoneAuthenticationSum:
-		if err := s.AuthenticationNone.Decode(d); err != nil {
 			return err
 		}
 	default:
@@ -583,48 +611,6 @@ func (s *AuthenticationSum) UnmarshalJSON(data []byte) error {
 	return s.Decode(d)
 }
 
-// Encode encodes AuthenticationType as json.
-func (s AuthenticationType) Encode(e *jx.Encoder) {
-	e.Str(string(s))
-}
-
-// Decode decodes AuthenticationType from json.
-func (s *AuthenticationType) Decode(d *jx.Decoder) error {
-	if s == nil {
-		return errors.New("invalid: unable to decode AuthenticationType to nil")
-	}
-	v, err := d.StrBytes()
-	if err != nil {
-		return err
-	}
-	// Try to use constant string.
-	switch AuthenticationType(v) {
-	case AuthenticationTypeNone:
-		*s = AuthenticationTypeNone
-	case AuthenticationTypeUserPassword:
-		*s = AuthenticationTypeUserPassword
-	case AuthenticationTypeApiKey:
-		*s = AuthenticationTypeApiKey
-	default:
-		*s = AuthenticationType(v)
-	}
-
-	return nil
-}
-
-// MarshalJSON implements stdjson.Marshaler.
-func (s AuthenticationType) MarshalJSON() ([]byte, error) {
-	e := jx.Encoder{}
-	s.Encode(&e)
-	return e.Bytes(), nil
-}
-
-// UnmarshalJSON implements stdjson.Unmarshaler.
-func (s *AuthenticationType) UnmarshalJSON(data []byte) error {
-	d := jx.DecodeBytes(data)
-	return s.Decode(d)
-}
-
 // Encode implements json.Marshaler.
 func (s *AuthenticationUserPassword) Encode(e *jx.Encoder) {
 	e.ObjStart()
@@ -635,6 +621,10 @@ func (s *AuthenticationUserPassword) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *AuthenticationUserPassword) encodeFields(e *jx.Encoder) {
 	{
+		e.FieldStart("type")
+		s.Type.Encode(e)
+	}
+	{
 		e.FieldStart("username")
 		e.Str(s.Username)
 	}
@@ -644,9 +634,10 @@ func (s *AuthenticationUserPassword) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfAuthenticationUserPassword = [2]string{
-	0: "username",
-	1: "password",
+var jsonFieldsNameOfAuthenticationUserPassword = [3]string{
+	0: "type",
+	1: "username",
+	2: "password",
 }
 
 // Decode decodes AuthenticationUserPassword from json.
@@ -658,8 +649,18 @@ func (s *AuthenticationUserPassword) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "username":
+		case "type":
 			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				if err := s.Type.Decode(d); err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"type\"")
+			}
+		case "username":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				v, err := d.Str()
 				s.Username = string(v)
@@ -671,7 +672,7 @@ func (s *AuthenticationUserPassword) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"username\"")
 			}
 		case "password":
-			requiredBitSet[0] |= 1 << 1
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				v, err := d.Str()
 				s.Password = string(v)
@@ -692,7 +693,7 @@ func (s *AuthenticationUserPassword) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.
@@ -734,6 +735,44 @@ func (s *AuthenticationUserPassword) MarshalJSON() ([]byte, error) {
 
 // UnmarshalJSON implements stdjson.Unmarshaler.
 func (s *AuthenticationUserPassword) UnmarshalJSON(data []byte) error {
+	d := jx.DecodeBytes(data)
+	return s.Decode(d)
+}
+
+// Encode encodes AuthenticationUserPasswordType as json.
+func (s AuthenticationUserPasswordType) Encode(e *jx.Encoder) {
+	e.Str(string(s))
+}
+
+// Decode decodes AuthenticationUserPasswordType from json.
+func (s *AuthenticationUserPasswordType) Decode(d *jx.Decoder) error {
+	if s == nil {
+		return errors.New("invalid: unable to decode AuthenticationUserPasswordType to nil")
+	}
+	v, err := d.StrBytes()
+	if err != nil {
+		return err
+	}
+	// Try to use constant string.
+	switch AuthenticationUserPasswordType(v) {
+	case AuthenticationUserPasswordTypeUserPassword:
+		*s = AuthenticationUserPasswordTypeUserPassword
+	default:
+		*s = AuthenticationUserPasswordType(v)
+	}
+
+	return nil
+}
+
+// MarshalJSON implements stdjson.Marshaler.
+func (s AuthenticationUserPasswordType) MarshalJSON() ([]byte, error) {
+	e := jx.Encoder{}
+	s.Encode(&e)
+	return e.Bytes(), nil
+}
+
+// UnmarshalJSON implements stdjson.Unmarshaler.
+func (s *AuthenticationUserPasswordType) UnmarshalJSON(data []byte) error {
 	d := jx.DecodeBytes(data)
 	return s.Decode(d)
 }

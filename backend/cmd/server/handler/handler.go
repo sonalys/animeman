@@ -52,8 +52,8 @@ func (h *Handler) TestIndexingClientConfiguration(ctx context.Context, req *ogen
 		WithAddress(req.Hostname).
 		WithOwner(userID).
 		WithAuth(func() authentication.Authentication {
-			switch req.Auth.Type {
-			case ogen.AuthenticationTypeApiKey:
+			switch req.Auth.OneOf.Type {
+			case ogen.AuthenticationAPIKeyAuthenticationSum:
 				auth := req.Auth.OneOf.AuthenticationAPIKey
 				return authentication.NewAPIKeyAuthentication(auth.Key)
 			default:
@@ -67,15 +67,15 @@ func (h *Handler) TestIndexingClientConfiguration(ctx context.Context, req *ogen
 		}
 
 		if apperr.Code(err) == codes.Unauthenticated {
-			switch req.Auth.Type {
-			case ogen.AuthenticationTypeUserPassword:
+			switch req.Auth.OneOf.Type {
+			case ogen.AuthenticationUserPasswordAuthenticationSum:
 				validation := apperr.NewFormValidation(
 					apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.username"),
 					apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.password"),
 				)
 
 				return apperr.NewPublicError(validation.Validate(), "username/password mismatch")
-			case ogen.AuthenticationTypeApiKey:
+			case ogen.AuthenticationAPIKeyAuthenticationSum:
 				return apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.key")
 			}
 		}
@@ -108,8 +108,8 @@ func (h *Handler) TestTransferClientConfiguration(ctx context.Context, req *ogen
 		WithAddress(req.Hostname).
 		WithOwner(userID).
 		WithAuth(func() authentication.Authentication {
-			switch req.Auth.Type {
-			case ogen.AuthenticationTypeUserPassword:
+			switch req.Auth.OneOf.Type {
+			case ogen.AuthenticationUserPasswordAuthenticationSum:
 				auth := req.Auth.OneOf.AuthenticationUserPassword
 				return authentication.NewUserPasswordAuthentication(auth.Username, []byte(auth.Password))
 			default:
@@ -123,15 +123,15 @@ func (h *Handler) TestTransferClientConfiguration(ctx context.Context, req *ogen
 		}
 
 		if apperr.Code(err) == codes.Unauthenticated {
-			switch req.Auth.Type {
-			case ogen.AuthenticationTypeUserPassword:
+			switch req.Auth.OneOf.Type {
+			case ogen.AuthenticationUserPasswordAuthenticationSum:
 				validation := apperr.NewFormValidation(
 					apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.username"),
 					apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.password"),
 				)
 
 				return apperr.NewPublicError(validation.Validate(), "username/password mismatch")
-			case ogen.AuthenticationTypeApiKey:
+			case ogen.AuthenticationAPIKeyAuthenticationSum:
 				return apperr.NewFieldError(apperr.FieldErrorCodeInvalid, "auth.key")
 			}
 		}
@@ -184,12 +184,12 @@ func (h *Handler) IndexingClientsPost(ctx context.Context, req *ogen.IndexerConf
 			}
 		}(),
 		Auth: func() authentication.Authentication {
-			switch req.Auth.Type {
-			case ogen.AuthenticationTypeApiKey:
+			switch req.Auth.OneOf.Type {
+			case ogen.AuthenticationAPIKeyAuthenticationSum:
 				auth := req.Auth.OneOf.AuthenticationAPIKey
 
 				return authentication.NewAPIKeyAuthentication(auth.Key)
-			case ogen.AuthenticationTypeUserPassword:
+			case ogen.AuthenticationUserPasswordAuthenticationSum:
 				auth := req.Auth.OneOf.AuthenticationUserPassword
 
 				return authentication.NewUserPasswordAuthentication(auth.Username, []byte(auth.Password))
