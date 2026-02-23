@@ -1725,6 +1725,10 @@ func (s *SetupGetOK) Encode(e *jx.Encoder) {
 // encodeFields encodes fields.
 func (s *SetupGetOK) encodeFields(e *jx.Encoder) {
 	{
+		e.FieldStart("isCompleted")
+		e.Bool(s.IsCompleted)
+	}
+	{
 		e.FieldStart("completedSteps")
 		e.ArrStart()
 		for _, elem := range s.CompletedSteps {
@@ -1742,9 +1746,10 @@ func (s *SetupGetOK) encodeFields(e *jx.Encoder) {
 	}
 }
 
-var jsonFieldsNameOfSetupGetOK = [2]string{
-	0: "completedSteps",
-	1: "missingSteps",
+var jsonFieldsNameOfSetupGetOK = [3]string{
+	0: "isCompleted",
+	1: "completedSteps",
+	2: "missingSteps",
 }
 
 // Decode decodes SetupGetOK from json.
@@ -1756,8 +1761,20 @@ func (s *SetupGetOK) Decode(d *jx.Decoder) error {
 
 	if err := d.ObjBytes(func(d *jx.Decoder, k []byte) error {
 		switch string(k) {
-		case "completedSteps":
+		case "isCompleted":
 			requiredBitSet[0] |= 1 << 0
+			if err := func() error {
+				v, err := d.Bool()
+				s.IsCompleted = bool(v)
+				if err != nil {
+					return err
+				}
+				return nil
+			}(); err != nil {
+				return errors.Wrap(err, "decode field \"isCompleted\"")
+			}
+		case "completedSteps":
+			requiredBitSet[0] |= 1 << 1
 			if err := func() error {
 				s.CompletedSteps = make([]SetupSteps, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -1775,7 +1792,7 @@ func (s *SetupGetOK) Decode(d *jx.Decoder) error {
 				return errors.Wrap(err, "decode field \"completedSteps\"")
 			}
 		case "missingSteps":
-			requiredBitSet[0] |= 1 << 1
+			requiredBitSet[0] |= 1 << 2
 			if err := func() error {
 				s.MissingSteps = make([]SetupSteps, 0)
 				if err := d.Arr(func(d *jx.Decoder) error {
@@ -1802,7 +1819,7 @@ func (s *SetupGetOK) Decode(d *jx.Decoder) error {
 	// Validate required fields.
 	var failures []validate.FieldError
 	for i, mask := range [1]uint8{
-		0b00000011,
+		0b00000111,
 	} {
 		if result := (requiredBitSet[i] & mask) ^ mask; result != 0 {
 			// Mask only required fields and check equality to mask using XOR.

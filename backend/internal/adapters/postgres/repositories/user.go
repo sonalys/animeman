@@ -68,6 +68,17 @@ func (r userRepository) Get(ctx context.Context, id shared.UserID) (*users.User,
 	return user, nil
 }
 
+func (r userRepository) IsSetupCompleted(ctx context.Context, id shared.UserID) (bool, error) {
+	queries := sqlcgen.New(r.conn)
+
+	flag, err := queries.IsUserSetupComplete(ctx, id)
+	if err != nil {
+		return false, handleReadError(err)
+	}
+
+	return flag, nil
+}
+
 func (r *userRepository) GetByUsername(ctx context.Context, username string) (*users.User, error) {
 	queries := sqlcgen.New(r.conn)
 

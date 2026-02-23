@@ -49,7 +49,7 @@ type (
 		ListTransferClients(ctx context.Context, userID shared.UserID) ([]transfer.Client, error)
 		TestTransferClientBuilder(ctx context.Context, b *transfer.ClientBuilder) error
 
-		GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, error)
+		GetOnboardingStatus(ctx context.Context, id shared.UserID) (*OnboardingStatus, error)
 	}
 )
 
@@ -240,12 +240,25 @@ const (
 )
 
 type OnboardingStatus struct {
-	MissingSteps   []SetupStep
-	CompletedSteps []SetupStep
+	IsSetupCompleted bool
+	OptionalSteps    []SetupStep
+	MissingSteps     []SetupStep
+	CompletedSteps   []SetupStep
 }
 
-func (u usecases) GetOnboardingStatus(ctx context.Context) (*OnboardingStatus, error) {
+func (u usecases) GetOnboardingStatus(ctx context.Context, id shared.UserID) (*OnboardingStatus, error) {
 	status := &OnboardingStatus{}
+
+	isCompleted, err := u.repositories.UserRepository.IsSetupCompleted(ctx, id)
+	if err != nil {
+		logError(ctx, err, "Failed to retrieve user setup completedness")
+		return nil, err
+	}
+
+	if isCompleted {
+		status.IsSetupCompleted = isCompleted
+		return status, nil
+	}
 
 	errgrp, grpctx := errgroup.WithContext(ctx)
 

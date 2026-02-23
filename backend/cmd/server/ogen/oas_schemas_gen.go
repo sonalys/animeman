@@ -838,8 +838,14 @@ func (s *RegisterUserCreatedHeaders) SetResponse(val RegisterUserCreated) {
 func (*RegisterUserCreatedHeaders) registerUserRes() {}
 
 type SetupGetOK struct {
+	IsCompleted    bool         `json:"isCompleted"`
 	CompletedSteps []SetupSteps `json:"completedSteps"`
 	MissingSteps   []SetupSteps `json:"missingSteps"`
+}
+
+// GetIsCompleted returns the value of IsCompleted.
+func (s *SetupGetOK) GetIsCompleted() bool {
+	return s.IsCompleted
 }
 
 // GetCompletedSteps returns the value of CompletedSteps.
@@ -850,6 +856,11 @@ func (s *SetupGetOK) GetCompletedSteps() []SetupSteps {
 // GetMissingSteps returns the value of MissingSteps.
 func (s *SetupGetOK) GetMissingSteps() []SetupSteps {
 	return s.MissingSteps
+}
+
+// SetIsCompleted sets the value of IsCompleted.
+func (s *SetupGetOK) SetIsCompleted(val bool) {
+	s.IsCompleted = val
 }
 
 // SetCompletedSteps sets the value of CompletedSteps.

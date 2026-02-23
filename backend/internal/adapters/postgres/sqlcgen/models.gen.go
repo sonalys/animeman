@@ -849,6 +849,11 @@ type User struct {
 	PasswordHash string
 }
 
+type UserSetup struct {
+	UserID      shared.ID
+	IsCompleted bool
+}
+
 type Watchlist struct {
 	ID            shared.ID
 	OwnerID       shared.ID

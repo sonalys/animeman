@@ -21,12 +21,12 @@ type Handler struct {
 }
 
 func (h *Handler) SetupGet(ctx context.Context) (*ogen.SetupGetOK, error) {
-	_, err := security.GetIdentity(ctx)
+	userID, err := security.GetIdentity(ctx)
 	if err != nil {
 		return nil, err
 	}
 
-	status, err := h.Usecases.GetOnboardingStatus(ctx)
+	status, err := h.Usecases.GetOnboardingStatus(ctx, userID)
 	if err != nil {
 		return nil, err
 	}
@@ -45,6 +45,7 @@ func (h *Handler) SetupGet(ctx context.Context) (*ogen.SetupGetOK, error) {
 	}
 
 	return &ogen.SetupGetOK{
+		IsCompleted:    status.IsSetupCompleted,
 		CompletedSteps: sliceutils.Map(status.CompletedSteps, remapStatus),
 		MissingSteps:   sliceutils.Map(status.MissingSteps, remapStatus),
 	}, nil

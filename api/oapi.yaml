@@ -24,8 +24,10 @@ paths:
             application/json:
               schema:
                 type: object
-                required: [completedSteps, missingSteps]
+                required: [isCompleted, completedSteps, missingSteps]
                 properties:
+                  isCompleted:
+                    type: boolean
                   completedSteps:
                     type: array
                     items:

@@ -260,3 +260,10 @@ CREATE INDEX idx_tasks_next_retry ON orchestration_tasks (next_retry_at) WHERE s
 
 CREATE INDEX idx_task_logs_rotation ON task_logs (created_at DESC);
 CREATE INDEX idx_task_logs_lookup ON task_logs (task_id, created_at DESC);
+
+CREATE TABLE user_setup (
+    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+    is_completed BOOLEAN NOT NULL,
+
+    UNIQUE(user_id, is_completed)
+);

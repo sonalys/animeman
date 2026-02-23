@@ -27,6 +27,7 @@ type (
 		GetByUsername(ctx context.Context, username string) (*users.User, error)
 		Update(ctx context.Context, id shared.UserID, updateHandler UpdateHandler[users.User]) error
 		Delete(ctx context.Context, id shared.UserID) error
+		IsSetupCompleted(ctx context.Context, id shared.UserID) (bool, error)
 	}
 
 	IndexerClientRepository interface {
