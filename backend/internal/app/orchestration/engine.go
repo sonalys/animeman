@@ -2,6 +2,8 @@ package orchestration
 
 import (
 	"context"
+	"errors"
+	"sync"
 	"time"
 
 	"github.com/rs/zerolog/log"
@@ -9,25 +11,29 @@ import (
 	"github.com/sonalys/animeman/internal/ports"
 )
 
-type TaskProcessor func(ctx context.Context, task *orchestration.Task) error
+type (
+	TaskProcessor func(ctx context.Context, task *orchestration.Task) error
 
-type Engine struct {
-	store      ports.TaskRepository
-	processors map[string]TaskProcessor
-	config     EngineConfig
-}
+	Engine struct {
+		store      ports.TaskRepository
+		processors map[string]TaskProcessor
+		config     EngineConfig
+		shutdown   func()
+		wg         sync.WaitGroup
+	}
 
-type EngineConfig struct {
-	MaxWorkers     int
-	PollInterval   time.Duration
-	DefaultTimeout time.Duration
-}
+	EngineConfig struct {
+		MaxWorkers     int
+		PollInterval   time.Duration
+		DefaultTimeout time.Duration
+	}
+)
 
-func NewEngine(store ports.TaskRepository, cfg EngineConfig) *Engine {
+func NewEngine(repository ports.TaskRepository, c EngineConfig) *Engine {
 	return &Engine{
-		store:      store,
+		store:      repository,
 		processors: make(map[string]TaskProcessor),
-		config:     cfg,
+		config:     c,
 	}
 }
 
@@ -36,6 +42,9 @@ func (e *Engine) Register(taskType string, fn TaskProcessor) {
 }
 
 func (e *Engine) Start(ctx context.Context) {
+	ctx, shutdown := context.WithCancel(ctx)
+	e.shutdown = shutdown
+
 	for i := 0; i < e.config.MaxWorkers; i++ {
 		go e.workerLoop(ctx)
 	}
@@ -43,22 +52,44 @@ func (e *Engine) Start(ctx context.Context) {
 	go e.janitorLoop(ctx)
 }
 
+func (e *Engine) Shutdown(ctx context.Context) error {
+	e.shutdown()
+
+	close := make(chan struct{}, 1)
+
+	go func() {
+		e.wg.Wait()
+		close <- struct{}{}
+	}()
+
+	select {
+	case <-ctx.Done():
+		return errors.New("could not shutdown gracefully")
+	case <-close:
+		return nil
+	}
+
+}
+
 func (e *Engine) workerLoop(ctx context.Context) {
 	ticker := time.NewTicker(e.config.PollInterval)
 	defer ticker.Stop()
 
+	e.wg.Add(1)
+	defer e.wg.Done()
+
 	for {
+		task, err := e.store.ClaimTask(ctx, e.config.DefaultTimeout)
+		if err != nil {
+			continue
+		}
+
+		e.execute(ctx, task)
+
 		select {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-
-			task, err := e.store.ClaimTask(ctx, e.config.DefaultTimeout)
-			if err != nil {
-				continue
-			}
-
-			e.execute(ctx, task)
 		}
 	}
 }
@@ -125,17 +156,21 @@ func (e *Engine) execute(ctx context.Context, task *orchestration.Task) {
 func (e *Engine) janitorLoop(ctx context.Context) {
 	ticker := time.NewTicker(time.Hour)
 
+	e.wg.Add(1)
+	defer e.wg.Done()
+
 	for {
+		err := e.store.RotateLogs(ctx, 30*24*time.Hour, 500_000)
+		if err != nil {
+			log.Error().
+				Err(err).
+				Msg("failed to run janitor for task logs")
+		}
+
 		select {
 		case <-ctx.Done():
 			return
 		case <-ticker.C:
-			err := e.store.RotateLogs(ctx, 30*24*time.Hour, 500_000)
-			if err != nil {
-				log.Error().
-					Err(err).
-					Msg("failed to run janitor for task logs")
-			}
 		}
 	}
 }
