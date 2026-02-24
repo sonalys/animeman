@@ -2,6 +2,8 @@ package repositories
 
 import (
 	"context"
+	"database/sql"
+	"errors"
 
 	"github.com/jackc/pgerrcode"
 	"github.com/jackc/pgx/v5/pgconn"
@@ -72,7 +74,7 @@ func (r userRepository) IsSetupCompleted(ctx context.Context, id shared.UserID) 
 	queries := sqlcgen.New(r.conn)
 
 	flag, err := queries.IsUserSetupComplete(ctx, id)
-	if err != nil {
+	if err != nil && !errors.Is(err, sql.ErrNoRows) {
 		return false, handleReadError(err)
 	}
 

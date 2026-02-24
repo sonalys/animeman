@@ -6,6 +6,7 @@
 
 	let username = $state('');
 	let password = $state('');
+	let passwordConfirmation = $state('');
 	let loading = $state(false);
 	let errorMessage = $state('');
 	let fieldErrors: Record<string, string> = $state({});
@@ -21,6 +22,11 @@
 		loading = true;
 		errorMessage = '';
 		fieldErrors = {};
+
+		if (password !== passwordConfirmation) {
+			fieldErrors['password'] = 'Password confirmation mismatch';
+			return;
+		}
 
 		const endpoint = currentStep == 0 ? '/authentication/login' : '/register';
 
@@ -86,7 +92,12 @@
 
 						<div class="input-group">
 							<label for="pass">Confirm Password</label>
-							<input id="pass" type="password" bind:value={password} placeholder="••••••••" />
+							<input
+								id="pass"
+								type="password"
+								bind:value={passwordConfirmation}
+								placeholder="••••••••"
+							/>
 							{#if fieldErrors.password}<span class="err">{fieldErrors.password}</span>{/if}
 						</div>
 

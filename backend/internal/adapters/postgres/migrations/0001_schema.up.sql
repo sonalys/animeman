@@ -1,5 +1,5 @@
 CREATE TABLE users (
-    id UUID NOT NULL,
+    id UUID NOT NULL UNIQUE,
     username TEXT PRIMARY KEY,
     password_hash TEXT NOT NULL
 );
@@ -262,8 +262,6 @@ CREATE INDEX idx_task_logs_rotation ON task_logs (created_at DESC);
 CREATE INDEX idx_task_logs_lookup ON task_logs (task_id, created_at DESC);
 
 CREATE TABLE user_setup (
-    user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
-    is_completed BOOLEAN NOT NULL,
-
-    UNIQUE(user_id, is_completed)
+    user_id UUID NOT NULL UNIQUE REFERENCES users(id) ON DELETE CASCADE,
+    is_completed BOOLEAN NOT NULL
 );

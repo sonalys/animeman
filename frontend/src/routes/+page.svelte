@@ -3,8 +3,7 @@
 	import { userId } from '$lib/userStore';
 	import { apiFetch } from '$lib/api';
 	import AuthController from '$lib/components/AuthController.svelte';
-	import type { Indexer, IndexerConfig } from '$lib/api/types';
-	import Select from '$lib/components/Select.svelte';
+	import type { Indexer } from '$lib/api/types';
 
 	let indexers: Indexer[] = [];
 	let loading = true;

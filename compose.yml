@@ -13,10 +13,10 @@ services:
       - postgres_data:/var/lib/postgresql
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U animeman -d animeman"]
-      interval: 5s     # How often to check
-      timeout: 5s      # How long to wait for a response
-      retries: 5       # How many failures before giving up
-      start_period: 2s # Give DB time to initialize before first check
+      interval: 1s     # How often to check
+      timeout: 10s      # How long to wait for a response
+      retries: 100       # How many failures before giving up
+      start_period: 1s # Give DB time to initialize before first check
     # ----------------------
 
   # This is your Go backend
