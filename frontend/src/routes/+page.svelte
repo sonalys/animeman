@@ -3,12 +3,19 @@
 	import { userId } from '$lib/userStore';
 	import { apiFetch } from '$lib/api';
 	import AuthController from '$lib/components/AuthController.svelte';
-	import type { Indexer } from '$lib/api/types';
+	import type { Indexer, OnboardingStatus } from '$lib/api/types';
+	import { goto } from '$app/navigation';
 
 	let indexers: Indexer[] = [];
 	let loading = true;
 
 	onMount(async () => {
+		const onboardingStatus = await apiFetch<OnboardingStatus>('/setup');
+
+		if (!onboardingStatus.isCompleted) {
+			goto('/setup');
+		}
+
 		if ($userId) await refreshIndexers();
 		loading = false;
 	});

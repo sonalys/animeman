@@ -70,6 +70,7 @@ export interface WatchlistConfig {
 export type OnboardingStep = 'watchlist' | 'indexing' | 'transfer';
 
 export interface OnboardingStatus {
+    isCompleted: boolean;
     completedSteps: OnboardingStep[];
     missingSteps: OnboardingStep[];
 }
