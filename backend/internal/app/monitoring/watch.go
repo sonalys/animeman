@@ -2,93 +2,118 @@ package monitoring
 
 import (
 	"context"
-	"io/fs"
-	"path/filepath"
+	"fmt"
 	"sync"
-	"time"
 
-	"github.com/fsnotify/fsnotify"
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/ports"
 )
 
 type (
 	collectionMonitor struct {
-		repository ports.CollectionRepository
-		shutdown   func()
-		wg         sync.WaitGroup
-		config     Config
-	}
-
-	Config struct {
-		MaxWorkers     int
-		PollInterval   time.Duration
-		DefaultTimeout time.Duration
+		repository               ports.CollectionRepository
+		shutdown                 func()
+		wg                       sync.WaitGroup
+		collectionWatchersResync map[collections.CollectionID]func()
+		lock                     sync.Mutex
 	}
 )
 
-func New() *collectionMonitor {
-	return &collectionMonitor{}
+func New(
+	repository ports.CollectionRepository,
+) *collectionMonitor {
+	return &collectionMonitor{
+		repository:               repository,
+		collectionWatchersResync: make(map[collections.CollectionID]func()),
+	}
 }
 
-func (m *collectionMonitor) Start(ctx context.Context) {
+func (m *collectionMonitor) Start(ctx context.Context) error {
 	ctx, shutdown := context.WithCancel(ctx)
+	defer shutdown()
+
 	m.shutdown = shutdown
 
-	for i := 0; i < m.config.MaxWorkers; i++ {
-		go m.workerLoop(ctx)
-	}
-}
-
-func (m *collectionMonitor) workerLoop(ctx context.Context) {
-	ticker := time.NewTicker(max(m.config.PollInterval, time.Minute))
-	defer ticker.Stop()
-
-	m.wg.Add(1)
-	defer m.wg.Done()
-
-	for {
-		m.routine(ctx)
-
-		select {
-		case <-ctx.Done():
-			return
-		case <-ticker.C:
-		}
-	}
-}
-
-func (m *collectionMonitor) routine(ctx context.Context) {
-	collection := collections.Collection{
-		BasePath: "./",
+	if err := m.initExisting(ctx); err != nil {
+		return err
 	}
 
-	watcher, err := fsnotify.NewWatcher()
-	if err != nil {
-		return
-	}
-	defer watcher.Close()
-
-	err = filepath.WalkDir(collection.BasePath, func(path string, entry fs.DirEntry, err error) error {
-		return watcher.Add(path)
-	})
-	if err != nil {
-		return
-	}
-
-	for {
-		select {
-		case <-ctx.Done():
-			return
-		case _, ok := <-watcher.Events:
-			if !ok {
-				return
+	for notification := range m.repository.Listen(ctx) {
+		switch notification.Action {
+		case ports.RepositoryActionCreate:
+			collection, err := m.repository.Get(ctx, notification.ID)
+			if err != nil {
+				log.Error().
+					Err(err).
+					Stringer("collectionID", notification.ID).
+					Msg("Could not read collection")
+				continue
 			}
 
-		case _, ok := <-watcher.Errors:
-			if !ok {
-				return
+			go m.startWatch(ctx, collection)
+		case ports.RepositoryActionUpdate:
+			collection, err := m.repository.Get(ctx, notification.ID)
+			if err != nil {
+				log.Error().
+					Err(err).
+					Stringer("collectionID", notification.ID).
+					Msg("Could not get read collection")
+				continue
 			}
+
+			if !collection.Monitored {
+				m.stopWatch(notification.ID)
+			}
+		case ports.RepositoryActionDelete:
+			m.stopWatch(notification.ID)
+		default:
+			log.Error().
+				Msg("Received an unknown repository notification action")
 		}
 	}
+
+	return nil
+}
+
+func (m *collectionMonitor) initExisting(ctx context.Context) error {
+	existingCollections, err := m.repository.List(ctx, ports.ListOptions{PageSize: 10})
+	if err != nil {
+		return fmt.Errorf("listing existing collections: %w", err)
+	}
+
+	for _, collection := range existingCollections {
+		go m.startWatch(ctx, &collection)
+	}
+
+	return nil
+}
+
+func (m *collectionMonitor) stopWatch(id collections.CollectionID) {
+	m.lock.Lock()
+	defer m.lock.Unlock()
+
+	shutdown, exists := m.collectionWatchersResync[id]
+	if !exists {
+		return
+	}
+
+	shutdown()
+
+	log.Debug().
+		Stringer("collectionID", id).
+		Msg("Triggered collection watch removal")
+
+	delete(m.collectionWatchersResync, id)
+}
+
+func (m *collectionMonitor) startWatch(ctx context.Context, collection *collections.Collection) {
+	m.lock.Lock()
+	ctx, cancel := context.WithCancel(ctx)
+	m.collectionWatchersResync[collection.ID] = cancel
+	m.lock.Unlock()
+
+	routine := newRoutine(collection)
+
+	routine.start(ctx)
 }

@@ -2,10 +2,12 @@ package repositories
 
 import (
 	"context"
+	"iter"
 
 	"github.com/jackc/pgx/v5/pgtype"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"github.com/sonalys/animeman/internal/adapters/postgres/sqlcgen"
+	"github.com/sonalys/animeman/internal/adapters/utils/listener"
 	"github.com/sonalys/animeman/internal/domain/collections"
 	"github.com/sonalys/animeman/internal/domain/shared"
 	"github.com/sonalys/animeman/internal/ports"
@@ -78,6 +80,39 @@ func (r *collectionRepository) ListByOwner(ctx context.Context, owner shared.Use
 	return response, nil
 }
 
+func (r *collectionRepository) List(ctx context.Context, opts ports.ListOptions) ([]collections.Collection, error) {
+	queries := sqlcgen.New(r.conn)
+
+	models, err := queries.ListCollections(ctx, sqlcgen.ListCollectionsParams{
+		Limit: opts.PageSize,
+		LastID: pgtype.UUID{
+			Bytes: opts.Cursor.UUID,
+			Valid: !opts.Cursor.IsNil(),
+		},
+	})
+	if err != nil {
+		return nil, handleReadError(err)
+	}
+
+	response := make([]collections.Collection, 0, len(models))
+
+	for i := range models {
+		model := &models[i]
+
+		response = append(response, collections.Collection{
+			ID:        model.ID,
+			Owner:     model.OwnerID,
+			Name:      model.Name,
+			BasePath:  model.BasePath,
+			Tags:      model.Tags,
+			Monitored: model.Monitored,
+			CreatedAt: model.CreatedAt.Time,
+		})
+	}
+
+	return response, nil
+}
+
 func (r *collectionRepository) Update(ctx context.Context, id collections.CollectionID, update func(collection *collections.Collection) error) error {
 	return transaction(ctx, r.conn, func(queries *sqlcgen.Queries) error {
 		model, err := queries.GetCollection(ctx, id)
@@ -117,4 +152,27 @@ func (r *collectionRepository) Update(ctx context.Context, id collections.Collec
 
 		return nil
 	})
+}
+
+func (r *collectionRepository) Listen(ctx context.Context) iter.Seq[ports.RepositoryNotification] {
+	return listener.Listen(ctx, r.conn, "collections_updates")
+}
+
+func (r *collectionRepository) Get(ctx context.Context, id collections.CollectionID) (*collections.Collection, error) {
+	queries := sqlcgen.New(r.conn)
+
+	model, err := queries.GetCollection(ctx, id)
+	if err != nil {
+		return nil, handleReadError(err)
+	}
+
+	return &collections.Collection{
+		ID:        model.ID,
+		Owner:     model.OwnerID,
+		Name:      model.Name,
+		BasePath:  model.BasePath,
+		Tags:      model.Tags,
+		Monitored: model.Monitored,
+		CreatedAt: model.CreatedAt.Time,
+	}, nil
 }

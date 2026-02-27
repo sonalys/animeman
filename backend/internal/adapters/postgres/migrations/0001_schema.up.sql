@@ -58,6 +58,39 @@ CREATE TABLE collections (
 CREATE INDEX idx_collections_tags ON collections USING GIN (tags);
 CREATE INDEX idx_collections_owner ON collections(owner_id);
 
+CREATE OR REPLACE FUNCTION notify_collections_changes() 
+RETURNS trigger AS $$
+DECLARE
+  payload jsonb;
+  target_id text;
+BEGIN
+  -- Select the ID based on the action
+  IF (TG_OP = 'DELETE') THEN
+    target_id := CAST(OLD.id AS text);
+  ELSE
+    target_id := CAST(NEW.id AS text);
+  END IF;
+
+  -- Build a JSON object with multiple columns/fields
+  payload := json_build_object(
+    'action', TG_OP,
+    'id', target_id,
+    'table', TG_TABLE_NAME,
+    'changed_at', NOW()
+  );
+
+  -- Send the JSON string as the notification payload
+  PERFORM pg_notify('collections_updates', payload::text);
+  
+  -- Return appropriate record
+  IF (TG_OP = 'DELETE') THEN RETURN OLD; ELSE RETURN NEW; END IF;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER collections_changed_trigger
+AFTER INSERT OR UPDATE OR DELETE ON collections
+FOR EACH ROW EXECUTE FUNCTION notify_collections_changes();
+
 CREATE TYPE monitoring_status AS ENUM ('unknown', 'all', 'future', 'missing', 'existing', 'firstSeason', 'latestSeason', 'none');
 CREATE TYPE resolution AS ENUM ('unknown', '480p', '720p', '1080p', '2160p');
 CREATE TYPE video_codec AS ENUM ('unknown', 'x264', 'x265', 'av1');

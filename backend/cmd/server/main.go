@@ -15,6 +15,7 @@ import (
 	indexingclient "github.com/sonalys/animeman/internal/adapters/indexing"
 	"github.com/sonalys/animeman/internal/adapters/transferclient"
 	"github.com/sonalys/animeman/internal/app/jwt"
+	"github.com/sonalys/animeman/internal/app/monitoring"
 	"github.com/sonalys/animeman/internal/app/usecases"
 	"github.com/sonalys/animeman/internal/utils/optional"
 	"github.com/sonalys/animeman/internal/utils/otel"
@@ -93,6 +94,19 @@ func main() {
 		IndexingClientControllerFactory: indexingclient.NewFactory(),
 	}
 
+	watcher := monitoring.New(repositories.CollectionRepository)
+
+	go func() {
+		log.Info().
+			Msg("Starting collection watcher")
+
+		if err := watcher.Start(ctx); err != nil {
+			log.Fatal().
+				Err(err).
+				Msg("Could not initialize collection watcher")
+		}
+	}()
+
 	usecases := usecases.NewUsecases(repositories, factories)
 
 	handler, err := handler.New(jwtClient, usecases)
@@ -108,10 +122,6 @@ func main() {
 		ReadTimeout:  10 * time.Second,
 		Handler:      handler,
 	}
-
-	log.Info().
-		Str("addr", httpServer.Addr).
-		Msg("Serving http api")
 
 	go func() {
 		<-ctx.Done()
@@ -135,6 +145,10 @@ func main() {
 			}
 		}()
 	}()
+
+	log.Info().
+		Str("addr", httpServer.Addr).
+		Msg("Serving http api")
 
 	if err := httpServer.ListenAndServe(); err != nil && !errors.Is(err, http.ErrServerClosed) {
 		log.Fatal().

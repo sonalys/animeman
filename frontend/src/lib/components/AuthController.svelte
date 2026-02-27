@@ -23,7 +23,7 @@
 		errorMessage = '';
 		fieldErrors = {};
 
-		if (password !== passwordConfirmation) {
+		if (currentStep === 1 && password !== passwordConfirmation) {
 			fieldErrors['password'] = 'Password confirmation mismatch';
 			return;
 		}

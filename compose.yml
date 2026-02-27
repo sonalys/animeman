@@ -41,9 +41,10 @@ services:
       - ./backend/.config:/etc/app:ro
 
   migrate:
+    container_name: migrate
     image: migrate/migrate
     volumes:
-      - ./backend/internal/adapters/postgres/migrations:/migrations:z
+      - ./backend/internal/adapters/postgres/migrations:/migrations
     command: -path=/migrations/ -database "postgres://animeman:animeman@postgres:5432/animeman?sslmode=disable" up
     depends_on:
       postgres:

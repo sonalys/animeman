@@ -2,6 +2,7 @@ package ports
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"github.com/sonalys/animeman/internal/domain/collections"
@@ -19,6 +20,14 @@ type (
 	ListOptions struct {
 		PageSize int32
 		Cursor   shared.ID
+	}
+
+	RepositoryAction uint
+
+	RepositoryNotification struct {
+		Action    RepositoryAction
+		ID        shared.ID
+		ChangedAt time.Time
 	}
 
 	UserRepository interface {
@@ -48,9 +57,12 @@ type (
 
 	CollectionRepository interface {
 		Create(ctx context.Context, collection *collections.Collection) error
+		Get(ctx context.Context, id collections.CollectionID) (*collections.Collection, error)
 		ListByOwner(ctx context.Context, id shared.UserID) ([]collections.Collection, error)
 		Update(ctx context.Context, id collections.CollectionID, updateHandler UpdateHandler[collections.Collection]) error
 		Delete(ctx context.Context, id collections.CollectionID) error
+		Listen(ctx context.Context) iter.Seq[RepositoryNotification]
+		List(ctx context.Context, opts ListOptions) ([]collections.Collection, error)
 	}
 
 	QualityProfileRepository interface {
@@ -109,4 +121,12 @@ type (
 		// Maintenance
 		RotateLogs(ctx context.Context, retention time.Duration, maxLogs int32) error
 	}
+)
+
+const (
+	RepositoryActionUnknown RepositoryAction = iota
+	RepositoryActionCreate
+	RepositoryActionUpdate
+	RepositoryActionDelete
+	_repositoryActionSentinel
 )

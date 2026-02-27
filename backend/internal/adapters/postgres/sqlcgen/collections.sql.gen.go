@@ -123,6 +123,47 @@ func (q *Queries) GetCollection(ctx context.Context, id shared.ID) (Collection, 
 	return i, err
 }
 
+const listCollections = `-- name: ListCollections :many
+SELECT id, owner_id, name, base_path, tags, monitored, created_at FROM collections
+WHERE
+    $2::uuid is NULL OR id < $2::uuid
+ORDER BY id DESC
+LIMIT $1
+`
+
+type ListCollectionsParams struct {
+	Limit  int32
+	LastID pgtype.UUID
+}
+
+func (q *Queries) ListCollections(ctx context.Context, arg ListCollectionsParams) ([]Collection, error) {
+	rows, err := q.db.Query(ctx, listCollections, arg.Limit, arg.LastID)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []Collection
+	for rows.Next() {
+		var i Collection
+		if err := rows.Scan(
+			&i.ID,
+			&i.OwnerID,
+			&i.Name,
+			&i.BasePath,
+			&i.Tags,
+			&i.Monitored,
+			&i.CreatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const listCollectionsByOwner = `-- name: ListCollectionsByOwner :many
 SELECT id, owner_id, name, base_path, tags, monitored, created_at FROM collections
 WHERE owner_id = $1
