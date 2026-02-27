@@ -9,6 +9,7 @@ import (
 	"context"
 
 	"github.com/jackc/pgx/v5/pgtype"
+	"github.com/sonalys/animeman/internal/adapters/postgres/dtos"
 	shared "github.com/sonalys/animeman/internal/domain/shared"
 )
 
@@ -21,9 +22,37 @@ func (q *Queries) DeleteCollectionFile(ctx context.Context, id shared.ID) error 
 	return err
 }
 
+const getCollectionFile = `-- name: GetCollectionFile :one
+SELECT id, episode_id, season_id, media_id, relative_path, size_bytes, release_group, version, source, video_info, audio_streams, subtitle_streams, chapters, hashes, created_at FROM collection_files 
+WHERE id = $1 FOR UPDATE
+`
+
+func (q *Queries) GetCollectionFile(ctx context.Context, id shared.ID) (CollectionFile, error) {
+	row := q.db.QueryRow(ctx, getCollectionFile, id)
+	var i CollectionFile
+	err := row.Scan(
+		&i.ID,
+		&i.EpisodeID,
+		&i.SeasonID,
+		&i.MediaID,
+		&i.RelativePath,
+		&i.SizeBytes,
+		&i.ReleaseGroup,
+		&i.Version,
+		&i.Source,
+		&i.VideoInfo,
+		&i.AudioStreams,
+		&i.SubtitleStreams,
+		&i.Chapters,
+		&i.Hashes,
+		&i.CreatedAt,
+	)
+	return i, err
+}
+
 const getCollectionFileByEpisode = `-- name: GetCollectionFileByEpisode :one
 SELECT id, episode_id, season_id, media_id, relative_path, size_bytes, release_group, version, source, video_info, audio_streams, subtitle_streams, chapters, hashes, created_at FROM collection_files 
-WHERE episode_id = $1 LIMIT 1 FOR UPDATE
+WHERE episode_id = $1 FOR UPDATE
 `
 
 func (q *Queries) GetCollectionFileByEpisode(ctx context.Context, episodeID shared.ID) (CollectionFile, error) {
@@ -93,18 +122,21 @@ func (q *Queries) ListCollectionFilesBySeason(ctx context.Context, seasonID shar
 
 const listCollectionFilesPaginated = `-- name: ListCollectionFilesPaginated :many
 SELECT id, episode_id, season_id, media_id, relative_path, size_bytes, release_group, version, source, video_info, audio_streams, subtitle_streams, chapters, hashes, created_at FROM collection_files
-WHERE (id) < ($1::uuid)
+WHERE 
+    $1::uuid is NULL OR id < $1::uuid AND
+    $2::uuid is NULL OR collection_id = $2::uuid
 ORDER BY id DESC
-LIMIT $2
+LIMIT $3::integer
 `
 
 type ListCollectionFilesPaginatedParams struct {
-	Column1 shared.ID
-	Limit   int32
+	LastID       pgtype.UUID
+	CollectionID pgtype.UUID
+	Limit        pgtype.Int4
 }
 
 func (q *Queries) ListCollectionFilesPaginated(ctx context.Context, arg ListCollectionFilesPaginatedParams) ([]CollectionFile, error) {
-	rows, err := q.db.Query(ctx, listCollectionFilesPaginated, arg.Column1, arg.Limit)
+	rows, err := q.db.Query(ctx, listCollectionFilesPaginated, arg.LastID, arg.CollectionID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}
@@ -161,11 +193,11 @@ type RegisterCollectionFileParams struct {
 	ReleaseGroup    pgtype.Text
 	Version         int32
 	Source          FileSource
-	VideoInfo       []byte
-	AudioStreams    []byte
-	SubtitleStreams []byte
-	Chapters        []byte
-	Hashes          []byte
+	VideoInfo       dtos.VideoInfo
+	AudioStreams    dtos.AudioStreams
+	SubtitleStreams dtos.Subtitles
+	Chapters        dtos.Chapters
+	Hashes          dtos.Hashes
 	CreatedAt       pgtype.Timestamptz
 }
 
@@ -228,11 +260,11 @@ type UpdateCollectionFileParams struct {
 	RelativePath    string
 	SizeBytes       int64
 	Version         int32
-	VideoInfo       []byte
-	AudioStreams    []byte
-	SubtitleStreams []byte
-	Chapters        []byte
-	Hashes          []byte
+	VideoInfo       dtos.VideoInfo
+	AudioStreams    dtos.AudioStreams
+	SubtitleStreams dtos.Subtitles
+	Chapters        dtos.Chapters
+	Hashes          dtos.Hashes
 }
 
 func (q *Queries) UpdateCollectionFile(ctx context.Context, arg UpdateCollectionFileParams) (CollectionFile, error) {

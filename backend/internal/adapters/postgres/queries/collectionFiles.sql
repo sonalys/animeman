@@ -9,9 +9,13 @@ INSERT INTO collection_files (
 )
 RETURNING *;
 
+-- name: GetCollectionFile :one
+SELECT * FROM collection_files 
+WHERE id = $1 FOR UPDATE;
+
 -- name: GetCollectionFileByEpisode :one
 SELECT * FROM collection_files 
-WHERE episode_id = $1 LIMIT 1 FOR UPDATE;
+WHERE episode_id = $1 FOR UPDATE;
 
 -- name: ListCollectionFilesBySeason :many
 SELECT * FROM collection_files 
@@ -20,9 +24,11 @@ ORDER BY relative_path ASC;
 
 -- name: ListCollectionFilesPaginated :many
 SELECT * FROM collection_files
-WHERE (id) < ($1::uuid)
+WHERE 
+    sqlc.narg(last_id)::uuid is NULL OR id < sqlc.narg(last_id)::uuid AND
+    sqlc.narg(collection_id)::uuid is NULL OR collection_id = sqlc.narg(collection_id)::uuid
 ORDER BY id DESC
-LIMIT $2;
+LIMIT sqlc.narg('limit')::integer;
 
 -- name: UpdateCollectionFile :one
 UPDATE collection_files

@@ -84,10 +84,13 @@ func (r *collectionRepository) List(ctx context.Context, opts ports.ListOptions)
 	queries := sqlcgen.New(r.conn)
 
 	models, err := queries.ListCollections(ctx, sqlcgen.ListCollectionsParams{
-		Limit: opts.PageSize,
+		Limit: pgtype.Int4{
+			Int32: opts.PageSize.Value(),
+			Valid: opts.PageSize.IsSet(),
+		},
 		LastID: pgtype.UUID{
-			Bytes: opts.Cursor.UUID,
-			Valid: !opts.Cursor.IsNil(),
+			Bytes: opts.Cursor.Value().UUID,
+			Valid: opts.Cursor.IsSet(),
 		},
 	})
 	if err != nil {

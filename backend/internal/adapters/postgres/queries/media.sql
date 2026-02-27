@@ -15,10 +15,10 @@ SELECT * FROM media WHERE id = $1 LIMIT 1 FOR UPDATE;
 -- name: ListMediaPaginated :many
 SELECT * FROM media
 WHERE 
-    id < sqlc.arg(last_id)::uuid AND
-    collection_id = $2
+    id < sqlc.narg(last_id)::uuid AND
+    collection_id = $1
 ORDER BY id DESC
-LIMIT $1;
+LIMIT sqlc.narg('limit')::integer;
 
 -- name: SearchMediaByTitlePaginated :many
 -- Paginates fuzzy search results based on the last seen score and ID

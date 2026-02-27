@@ -125,19 +125,20 @@ func (q *Queries) GetCollection(ctx context.Context, id shared.ID) (Collection, 
 
 const listCollections = `-- name: ListCollections :many
 SELECT id, owner_id, name, base_path, tags, monitored, created_at FROM collections
-WHERE
-    $2::uuid is NULL OR id < $2::uuid
+WHERE 
+    $1::uuid is NULL OR
+    id < $1::uuid
 ORDER BY id DESC
-LIMIT $1
+LIMIT $2::integer
 `
 
 type ListCollectionsParams struct {
-	Limit  int32
 	LastID pgtype.UUID
+	Limit  pgtype.Int4
 }
 
 func (q *Queries) ListCollections(ctx context.Context, arg ListCollectionsParams) ([]Collection, error) {
-	rows, err := q.db.Query(ctx, listCollections, arg.Limit, arg.LastID)
+	rows, err := q.db.Query(ctx, listCollections, arg.LastID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

@@ -8,6 +8,8 @@ import (
 	"github.com/fsnotify/fsnotify"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/domain/collections"
+	"github.com/sonalys/animeman/internal/domain/orchestration"
+	"github.com/sonalys/animeman/internal/ports"
 	"github.com/sonalys/animeman/internal/utils/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/trace"
@@ -15,11 +17,20 @@ import (
 
 type routine struct {
 	collection *collections.Collection
+
+	taskRepository ports.TaskRepository
+	fileRepository ports.FileRepository
 }
 
-func newRoutine(collection *collections.Collection) *routine {
+func newRoutine(
+	collection *collections.Collection,
+	taskRepository ports.TaskRepository,
+	fileRepository ports.FileRepository,
+) *routine {
 	return &routine{
-		collection: collection,
+		collection:     collection,
+		taskRepository: taskRepository,
+		fileRepository: fileRepository,
 	}
 }
 
@@ -28,6 +39,7 @@ func (r *routine) start(ctx context.Context) {
 		if r := recover(); r != nil {
 			log.Error().
 				Ctx(ctx).
+				Stack().
 				Any("r", r).
 				Msg("Recovered from panic")
 		}
@@ -61,6 +73,8 @@ func (r *routine) start(ctx context.Context) {
 		return
 	}
 
+	r.fullSync(ctx)
+
 	for {
 		select {
 		case <-ctx.Done():
@@ -84,6 +98,35 @@ func (r *routine) start(ctx context.Context) {
 	}
 }
 
+func (r *routine) fullSync(ctx context.Context) {
+	ctx, span := otel.Tracer.Start(ctx, "collectionMonitor.fullSync",
+		trace.WithAttributes(
+			attribute.Stringer("collectionID", r.collection.ID),
+		),
+	)
+	defer span.End()
+
+	logger := log.Ctx(ctx).With().
+		Ctx(ctx).
+		Stringer("collectionID", r.collection.ID).
+		Logger()
+
+	files, err := r.fileRepository.ListByCollection(ctx, r.collection.ID, ports.ListOptions{})
+	if err != nil {
+		logger.Error().
+			Err(err).
+			Msg("Could not synchronize collection files")
+
+		return
+	}
+
+	fileMap := make(map[string]*collections.File, len(files))
+
+	for _, file := range files {
+		fileMap[file.RelativePath] = &file
+	}
+}
+
 func (r *routine) handleEvent(ctx context.Context, event fsnotify.Event) {
 	ctx, span := otel.Tracer.Start(ctx, "collectionMonitor.handleEvent",
 		trace.WithAttributes(
@@ -94,9 +137,17 @@ func (r *routine) handleEvent(ctx context.Context, event fsnotify.Event) {
 
 	logger := log.Ctx(ctx).With().
 		Ctx(ctx).
+		Stringer("collectionID", r.collection.ID).
 		Logger()
 
 	logger.Debug().
 		Any("event", event).
 		Msg("Received event")
+
+	err := r.taskRepository.CreateTask(ctx, orchestration.NewTask(ctx, "file", nil, 3))
+	if err != nil {
+		logger.Error().
+			Err(err).
+			Msg("Could not create task")
+	}
 }

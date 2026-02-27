@@ -15,6 +15,16 @@ sql:
         output_querier_file_name: querier.gen.go
         output_copyfrom_file_name: copyfrom.gen.go
         overrides:
+          - column: "collection_files.chapters"
+            go_type: github.com/sonalys/animeman/internal/adapters/postgres/dtos.Chapters
+          - column: "collection_files.hashes"
+            go_type: github.com/sonalys/animeman/internal/adapters/postgres/dtos.Hashes
+          - column: "collection_files.subtitle_streams"
+            go_type: github.com/sonalys/animeman/internal/adapters/postgres/dtos.Subtitles
+          - column: "collection_files.video_info"
+            go_type: github.com/sonalys/animeman/internal/adapters/postgres/dtos.VideoInfo
+          - column: "collection_files.audio_streams"
+            go_type: github.com/sonalys/animeman/internal/adapters/postgres/dtos.AudioStreams
           - column: "media.titles"
             go_type: github.com/sonalys/animeman/internal/adapters/postgres/dtos.Titles
           - column: "episodes.titles"

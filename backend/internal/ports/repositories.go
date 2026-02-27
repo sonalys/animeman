@@ -12,14 +12,15 @@ import (
 	"github.com/sonalys/animeman/internal/domain/transfer"
 	"github.com/sonalys/animeman/internal/domain/users"
 	"github.com/sonalys/animeman/internal/domain/watchlists"
+	"github.com/sonalys/animeman/internal/utils/optional"
 )
 
 type (
 	UpdateHandler[T any] = func(*T) error
 
 	ListOptions struct {
-		PageSize int32
-		Cursor   shared.ID
+		PageSize optional.Value[int32]
+		Cursor   optional.Value[shared.ID]
 	}
 
 	RepositoryAction uint
@@ -120,6 +121,13 @@ type (
 
 		// Maintenance
 		RotateLogs(ctx context.Context, retention time.Duration, maxLogs int32) error
+	}
+
+	FileRepository interface {
+		Create(ctx context.Context, file *collections.File) error
+		Update(ctx context.Context, id collections.FileID, updateHandler UpdateHandler[collections.File]) error
+		Delete(ctx context.Context, id collections.FileID) error
+		ListByCollection(ctx context.Context, id collections.CollectionID, opts ListOptions) ([]collections.File, error)
 	}
 )
 

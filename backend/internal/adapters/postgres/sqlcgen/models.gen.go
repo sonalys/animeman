@@ -753,11 +753,11 @@ type CollectionFile struct {
 	ReleaseGroup    pgtype.Text
 	Version         int32
 	Source          FileSource
-	VideoInfo       []byte
-	AudioStreams    []byte
-	SubtitleStreams []byte
-	Chapters        []byte
-	Hashes          []byte
+	VideoInfo       dtos.VideoInfo
+	AudioStreams    dtos.AudioStreams
+	SubtitleStreams dtos.Subtitles
+	Chapters        dtos.Chapters
+	Hashes          dtos.Hashes
 	CreatedAt       pgtype.Timestamptz
 }
 

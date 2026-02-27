@@ -60,8 +60,14 @@ func (r *mediaRepository) ListByCollection(ctx context.Context, id collections.C
 
 	params := sqlcgen.ListMediaPaginatedParams{
 		CollectionID: id,
-		LastID:       opts.Cursor,
-		Limit:        opts.PageSize,
+		Limit: pgtype.Int4{
+			Int32: opts.PageSize.Value(),
+			Valid: opts.PageSize.IsSet(),
+		},
+		LastID: pgtype.UUID{
+			Bytes: opts.Cursor.Value().UUID,
+			Valid: opts.Cursor.IsSet(),
+		},
 	}
 
 	models, err := queries.ListMediaPaginated(ctx, params)

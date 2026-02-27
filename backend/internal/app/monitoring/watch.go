@@ -12,7 +12,10 @@ import (
 
 type (
 	collectionMonitor struct {
-		repository               ports.CollectionRepository
+		collectionRepository ports.CollectionRepository
+		taskRepository       ports.TaskRepository
+		fileRepository       ports.FileRepository
+
 		shutdown                 func()
 		wg                       sync.WaitGroup
 		collectionWatchersResync map[collections.CollectionID]func()
@@ -21,10 +24,14 @@ type (
 )
 
 func New(
-	repository ports.CollectionRepository,
+	collectionRepository ports.CollectionRepository,
+	taskRepository ports.TaskRepository,
+	fileRepository ports.FileRepository,
 ) *collectionMonitor {
 	return &collectionMonitor{
-		repository:               repository,
+		collectionRepository:     collectionRepository,
+		taskRepository:           taskRepository,
+		fileRepository:           fileRepository,
 		collectionWatchersResync: make(map[collections.CollectionID]func()),
 	}
 }
@@ -39,10 +46,10 @@ func (m *collectionMonitor) Start(ctx context.Context) error {
 		return err
 	}
 
-	for notification := range m.repository.Listen(ctx) {
+	for notification := range m.collectionRepository.Listen(ctx) {
 		switch notification.Action {
 		case ports.RepositoryActionCreate:
-			collection, err := m.repository.Get(ctx, notification.ID)
+			collection, err := m.collectionRepository.Get(ctx, notification.ID)
 			if err != nil {
 				log.Error().
 					Err(err).
@@ -53,7 +60,7 @@ func (m *collectionMonitor) Start(ctx context.Context) error {
 
 			go m.startWatch(ctx, collection)
 		case ports.RepositoryActionUpdate:
-			collection, err := m.repository.Get(ctx, notification.ID)
+			collection, err := m.collectionRepository.Get(ctx, notification.ID)
 			if err != nil {
 				log.Error().
 					Err(err).
@@ -77,7 +84,7 @@ func (m *collectionMonitor) Start(ctx context.Context) error {
 }
 
 func (m *collectionMonitor) initExisting(ctx context.Context) error {
-	existingCollections, err := m.repository.List(ctx, ports.ListOptions{PageSize: 10})
+	existingCollections, err := m.collectionRepository.List(ctx, ports.ListOptions{})
 	if err != nil {
 		return fmt.Errorf("listing existing collections: %w", err)
 	}
@@ -113,7 +120,7 @@ func (m *collectionMonitor) startWatch(ctx context.Context, collection *collecti
 	m.collectionWatchersResync[collection.ID] = cancel
 	m.lock.Unlock()
 
-	routine := newRoutine(collection)
+	routine := newRoutine(collection, m.taskRepository, m.fileRepository)
 
 	routine.start(ctx)
 }

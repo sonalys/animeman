@@ -17,10 +17,11 @@ ORDER BY created_at DESC;
 
 -- name: ListCollections :many
 SELECT * FROM collections
-WHERE
-    sqlc.narg(last_id)::uuid is NULL OR id < sqlc.narg(last_id)::uuid
+WHERE 
+    sqlc.narg(last_id)::uuid is NULL OR
+    id < sqlc.narg(last_id)::uuid
 ORDER BY id DESC
-LIMIT $1;
+LIMIT sqlc.narg('limit')::integer;
 
 -- name: FindCollectionsByTag :many
 -- Uses the GIN index to find collections containing the specified tag

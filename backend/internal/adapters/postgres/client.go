@@ -57,6 +57,14 @@ func (c Client) WatchlistRepository() ports.WatchlistRepository {
 	return repositories.NewWatchlistRepository(c.conn)
 }
 
+func (c Client) TaskRepository() ports.TaskRepository {
+	return repositories.NewTaskRepository(c.conn)
+}
+
+func (c Client) CollectionFileRepository() ports.FileRepository {
+	return repositories.NewFileRepository(c.conn)
+}
+
 func waitConnection(ctx context.Context, conn *pgxpool.Pool) error {
 	for {
 		if err := conn.Ping(ctx); err == nil {

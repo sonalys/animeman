@@ -140,20 +140,20 @@ func (q *Queries) GetMedia(ctx context.Context, id shared.ID) (Medium, error) {
 const listMediaPaginated = `-- name: ListMediaPaginated :many
 SELECT id, collection_id, quality_profile_id, titles, monitoring_status, monitored_since, genres, airing_started_at, airing_ended_at, created_at, titles_search_vector FROM media
 WHERE 
-    id < $3::uuid AND
-    collection_id = $2
+    id < $2::uuid AND
+    collection_id = $1
 ORDER BY id DESC
-LIMIT $1
+LIMIT $3::integer
 `
 
 type ListMediaPaginatedParams struct {
-	Limit        int32
 	CollectionID shared.ID
-	LastID       shared.ID
+	LastID       pgtype.UUID
+	Limit        pgtype.Int4
 }
 
 func (q *Queries) ListMediaPaginated(ctx context.Context, arg ListMediaPaginatedParams) ([]Medium, error) {
-	rows, err := q.db.Query(ctx, listMediaPaginated, arg.Limit, arg.CollectionID, arg.LastID)
+	rows, err := q.db.Query(ctx, listMediaPaginated, arg.CollectionID, arg.LastID, arg.Limit)
 	if err != nil {
 		return nil, err
 	}

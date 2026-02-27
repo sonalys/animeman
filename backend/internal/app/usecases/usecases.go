@@ -24,7 +24,9 @@ type (
 		ports.IndexerClientRepository
 		ports.TransferClientRepository
 		ports.CollectionRepository
+		ports.TaskRepository
 		ports.WatchlistRepository
+		ports.FileRepository
 	}
 
 	Factories struct {

@@ -87,6 +87,8 @@ func main() {
 		TransferClientRepository: adapters.postgresClient.TransferClientRepository(),
 		CollectionRepository:     adapters.postgresClient.CollectionRepository(),
 		WatchlistRepository:      adapters.postgresClient.WatchlistRepository(),
+		TaskRepository:           adapters.postgresClient.TaskRepository(),
+		FileRepository:           adapters.postgresClient.CollectionFileRepository(),
 	}
 
 	factories := usecases.Factories{
@@ -94,7 +96,11 @@ func main() {
 		IndexingClientControllerFactory: indexingclient.NewFactory(),
 	}
 
-	watcher := monitoring.New(repositories.CollectionRepository)
+	watcher := monitoring.New(
+		repositories.CollectionRepository,
+		repositories.TaskRepository,
+		repositories.FileRepository,
+	)
 
 	go func() {
 		log.Info().

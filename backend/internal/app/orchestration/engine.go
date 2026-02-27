@@ -15,11 +15,11 @@ type (
 	TaskProcessor func(ctx context.Context, task *orchestration.Task) error
 
 	Engine struct {
-		store      ports.TaskRepository
-		processors map[string]TaskProcessor
-		config     EngineConfig
-		shutdown   func()
-		wg         sync.WaitGroup
+		taskRepository ports.TaskRepository
+		processors     map[string]TaskProcessor
+		config         EngineConfig
+		shutdown       func()
+		wg             sync.WaitGroup
 	}
 
 	EngineConfig struct {
@@ -29,11 +29,11 @@ type (
 	}
 )
 
-func NewEngine(repository ports.TaskRepository, c EngineConfig) *Engine {
+func NewEngine(taskRepository ports.TaskRepository, cfg EngineConfig) *Engine {
 	return &Engine{
-		store:      repository,
-		processors: make(map[string]TaskProcessor),
-		config:     c,
+		taskRepository: taskRepository,
+		processors:     make(map[string]TaskProcessor),
+		config:         cfg,
 	}
 }
 
@@ -79,7 +79,7 @@ func (e *Engine) workerLoop(ctx context.Context) {
 	defer e.wg.Done()
 
 	for {
-		task, err := e.store.ClaimTask(ctx, e.config.DefaultTimeout)
+		task, err := e.taskRepository.ClaimTask(ctx, e.config.DefaultTimeout)
 		if err != nil {
 			continue
 		}
@@ -97,7 +97,7 @@ func (e *Engine) workerLoop(ctx context.Context) {
 func (e *Engine) execute(ctx context.Context, task *orchestration.Task) {
 	ctx = injectTelemetry(ctx, task.TraceID, task.SpanID)
 	ctx = log.Ctx(ctx).
-		Hook(newLoggerOrchestrationHook(e.store, task)).
+		Hook(newLoggerOrchestrationHook(e.taskRepository, task)).
 		WithContext(ctx)
 
 	log.Info().
@@ -127,7 +127,7 @@ func (e *Engine) execute(ctx context.Context, task *orchestration.Task) {
 				Msg("Task ran out of retries")
 		}
 
-		if err := e.store.MarkFailed(ctx, task.ID, nextRetry); err != nil {
+		if err := e.taskRepository.MarkFailed(ctx, task.ID, nextRetry); err != nil {
 			log.Warn().
 				Ctx(ctx).
 				Err(err).
@@ -141,7 +141,7 @@ func (e *Engine) execute(ctx context.Context, task *orchestration.Task) {
 		return
 	}
 
-	if err := e.store.MarkCompleted(ctx, task.ID); err != nil {
+	if err := e.taskRepository.MarkCompleted(ctx, task.ID); err != nil {
 		log.Warn().
 			Ctx(ctx).
 			Err(err).
@@ -160,7 +160,7 @@ func (e *Engine) janitorLoop(ctx context.Context) {
 	defer e.wg.Done()
 
 	for {
-		err := e.store.RotateLogs(ctx, 30*24*time.Hour, 500_000)
+		err := e.taskRepository.RotateLogs(ctx, 30*24*time.Hour, 500_000)
 		if err != nil {
 			log.Error().
 				Err(err).
