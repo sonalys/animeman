@@ -10,7 +10,7 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 )
 
-const ignoreCharset = " \t,.:`'\"/\\;-[](){}*【】"
+const ignoreCharset = " \t!,.:`'\"/\\;-[](){}*【】"
 
 // filterMetadata ensures that only coherent and expected nyaa entries are considered for donwload.
 // This function avoids download unrelated torrents.
