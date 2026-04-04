@@ -159,7 +159,7 @@ func GenerateBoilerplateConfig() {
 			Username: "YOUR_USERNAME",
 		},
 		RSSConfig: RSSConfig{
-			SearchSuffix:  `!"dub"`,
+			SearchSuffix:  `-"dub"`,
 			Sources:       []string{},
 			Qualities:     []string{"1080 HEVC", "720"},
 			PollFrequency: 15 * time.Minute,
