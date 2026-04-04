@@ -5,6 +5,7 @@ import (
 )
 
 type Config struct {
+	SearchSuffix     string
 	Sources          []string
 	Qualitites       []string
 	Category         string

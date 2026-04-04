@@ -55,6 +55,7 @@ func (t RSSType) Validate() error {
 
 type RSSConfig struct {
 	Type             RSSType           `yaml:"type"`
+	SearchSuffix     string            `yaml:"searchSuffix"`
 	Sources          []string          `yaml:"sources"`
 	Qualities        []string          `yaml:"qualities"`
 	PollFrequency    time.Duration     `yaml:"pollFrequency"`
@@ -158,6 +159,7 @@ func GenerateBoilerplateConfig() {
 			Username: "YOUR_USERNAME",
 		},
 		RSSConfig: RSSConfig{
+			SearchSuffix:  `!"dub"`,
 			Sources:       []string{},
 			Qualities:     []string{"1080 HEVC", "720"},
 			PollFrequency: 15 * time.Minute,

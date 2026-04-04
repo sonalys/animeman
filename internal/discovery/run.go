@@ -213,6 +213,7 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 	sanitizedTitles = slices.Compact(sanitizedTitles)
 
 	entries, err := c.dep.NYAA.List(ctx, nyaa.ListOptions{
+		SearchSuffix:        c.dep.Config.SearchSuffix,
 		Titles:              sanitizedTitles,
 		VerticalResolutions: c.dep.Config.Qualitites,
 		Sources:             c.dep.Config.Sources,

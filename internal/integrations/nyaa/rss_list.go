@@ -12,6 +12,7 @@ import (
 )
 
 type ListOptions struct {
+	SearchSuffix        string
 	Titles              []string
 	VerticalResolutions []string
 	Sources             []string
@@ -29,6 +30,10 @@ func (opt ListOptions) Query() string {
 
 	if sources := opt.Sources; len(sources) > 0 {
 		fmt.Fprintf(&b, " (%s)", strings.Join(sources, "|"))
+	}
+
+	if opt.SearchSuffix != "" {
+		fmt.Fprintf(&b, " %s", opt.SearchSuffix)
 	}
 
 	return b.String()

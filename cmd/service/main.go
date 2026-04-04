@@ -102,6 +102,7 @@ func main() {
 		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
 		Config: discovery.Config{
+			SearchSuffix:     config.SearchSuffix,
 			Sources:          config.Sources,
 			Qualitites:       config.Qualities,
 			Category:         config.Category,
