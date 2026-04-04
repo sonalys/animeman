@@ -29,5 +29,5 @@ dockers_v2:
       - "ghcr.io/sonalys/animeman"
     tags:
       - "v{{ .Version }}"
-      - "{{ if not .IsNightly }}latest{{ end }}"
+      - "{{ if and (not .IsNightly) (not .IsDraft) }}latest{{ end }}"
       - "v{{ .Major }}"
