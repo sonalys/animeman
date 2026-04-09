@@ -65,7 +65,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		}
 
 		// Update the interval tracker with the scan results
-		c.intervalTracker.UpdateState(entry, foundNew)
+		nextScanAt := c.intervalTracker.UpdateState(entry, foundNew)
 
 		scannedCount++
 
@@ -73,6 +73,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 			Debug().
 			Str("title", selectIdealTitle(entry.Titles)).
 			Bool("foundNew", foundNew).
+			Time("nextScanAt", nextScanAt).
 			Msgf("discovery finished for entry")
 	}
 

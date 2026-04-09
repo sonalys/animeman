@@ -53,16 +53,19 @@ func (it *IntervalTracker) GetState(entry animelist.Entry) ShowScanState {
 }
 
 // UpdateState updates the scan state for a show after a discovery scan.
-func (it *IntervalTracker) UpdateState(entry animelist.Entry, foundNewEpisodes bool) {
+func (it *IntervalTracker) UpdateState(entry animelist.Entry, foundNewEpisodes bool) time.Time {
 	key := getShowKey(entry.Titles)
 	nextInterval := it.calculateNextInterval(entry)
+	nextScanTime := time.Now().Add(nextInterval)
 
 	it.mu.Lock()
 	defer it.mu.Unlock()
 	it.state[key] = ShowScanState{
-		NextScanTime:     time.Now().Add(nextInterval),
+		NextScanTime:     nextScanTime,
 		FoundNewEpisodes: foundNewEpisodes,
 	}
+
+	return nextScanTime
 }
 
 // ShouldScanNow determines if a show should be scanned based on its last scan time and interval.
