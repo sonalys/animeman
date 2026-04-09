@@ -52,7 +52,7 @@ func StripTags(title string) string {
 		title = expr.ReplaceAllString(title, "")
 	}
 
-	return title
+	return strings.TrimSpace(title)
 }
 
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
