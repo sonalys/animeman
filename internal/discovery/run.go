@@ -49,7 +49,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 			log.
 				Trace().
 				Str("title", selectIdealTitle(entry.Titles)).
-				Dur("timeUntilNext", c.intervalTracker.TimeUntilNextScan(entry)).
+				Time("nextScanAt", c.intervalTracker.GetNextScanTime(entry)).
 				Msgf("skipping entry: not due for scan yet")
 			continue
 		}

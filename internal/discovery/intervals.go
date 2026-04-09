@@ -124,25 +124,16 @@ func (it *IntervalTracker) CalculateNextInterval(entry animelist.Entry) time.Dur
 
 // ShouldScanNow determines if a show should be scanned based on its last scan time and interval.
 func (it *IntervalTracker) ShouldScanNow(entry animelist.Entry) bool {
-	return it.TimeUntilNextScan(entry) == 0
+	return it.GetNextScanTime(entry).Before(time.Now())
 }
 
-// TimeUntilNextScan returns the duration until a show should be scanned again.
-// Returns 0 if the show should be scanned immediately.
-func (it *IntervalTracker) TimeUntilNextScan(entry animelist.Entry) time.Duration {
+// GetNextScanTime calculates the next optimal scan time for a show.
+func (it *IntervalTracker) GetNextScanTime(entry animelist.Entry) time.Time {
 	state := it.GetState(entry)
-
 	if state.LastScanTime.IsZero() {
-		return 0
+		// If we've never scanned this show, we can scan immediately
+		return time.Now()
 	}
-
-	interval := it.CalculateNextInterval(entry)
-	nextScanTime := state.LastScanTime.Add(interval)
-	remaining := time.Until(nextScanTime)
-
-	if remaining < 0 {
-		return 0
-	}
-
-	return remaining
+	nextInterval := it.CalculateNextInterval(entry)
+	return state.LastScanTime.Add(nextInterval)
 }
