@@ -53,9 +53,9 @@ func initializeAnimeList(c configs.AnimeListConfig) discovery.AnimeListSource {
 
 	switch c.Type {
 	case configs.AnimeListTypeMAL:
-		return myanimelist.New(httpClient, c.Username)
+		return myanimelist.New(httpClient, c.Username, c.CacheTTL)
 	case configs.AnimeListTypeAnilist:
-		return anilist.New(httpClient, c.Username)
+		return anilist.New(httpClient, c.Username, c.CacheTTL)
 	default:
 		log.Panic().Msgf("animeListType %s not implemented", c.Type)
 	}

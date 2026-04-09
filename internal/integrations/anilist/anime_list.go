@@ -133,6 +133,11 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 }
 
 func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, error) {
+	// Check if cache is still valid
+	if len(api.cachedAnimeList) > 0 && time.Now().Before(api.cachedAt.Add(api.cacheTTL)) {
+		return api.cachedAnimeList, nil
+	}
+
 	var path = API_URL + "/animelist/" + api.Username + "/load.json"
 
 	reqBody := GraphqlQuery{
@@ -181,6 +186,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 
 	response := convertEntry(out)
 	api.cachedAnimeList = response
+	api.cachedAt = time.Now()
 
 	return response, nil
 }

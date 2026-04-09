@@ -28,6 +28,7 @@ func (t AnimeListType) Validate() error {
 type AnimeListConfig struct {
 	Type     AnimeListType `yaml:"type"`
 	Username string        `yaml:"username"`
+	CacheTTL time.Duration `yaml:"cacheTTL"`
 }
 
 func (c AnimeListConfig) Validate() error {
@@ -36,6 +37,9 @@ func (c AnimeListConfig) Validate() error {
 	}
 	if c.Username == "" {
 		return fmt.Errorf("username: is empty")
+	}
+	if c.CacheTTL < 30*time.Minute {
+		return fmt.Errorf("cacheTTL: must be at least 30 minutes")
 	}
 	return nil
 }
@@ -157,6 +161,7 @@ func GenerateBoilerplateConfig() {
 		AnimeListConfig: AnimeListConfig{
 			Type:     AnimeListTypeMAL,
 			Username: "YOUR_USERNAME",
+			CacheTTL: 30 * time.Minute,
 		},
 		RSSConfig: RSSConfig{
 			SearchSuffix:  `-"dub"`,
