@@ -1,0 +1,24 @@
+name: Publish Latest
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-latest:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write
+    steps:
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Tag and push latest image
+        run: |
+          docker pull ghcr.io/sonalys/animeman:${{ github.event.release.tag_name }}
+          docker tag ghcr.io/sonalys/animeman:${{ github.event.release.tag_name }} ghcr.io/sonalys/animeman:latest
+          docker push ghcr.io/sonalys/animeman:latest
