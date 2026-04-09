@@ -10,7 +10,7 @@ import (
 type ListStatus int
 type AiringStatus int
 
-type Episode struct {
+type EpisodeSchedule struct {
 	Number  int
 	AirDate time.Time
 }
@@ -37,7 +37,7 @@ type Entry struct {
 	AiringStatus    AiringStatus
 	StartDate       time.Time
 	NumEpisodes     int
-	EpisodeSchedule []Episode
+	EpisodeSchedule []EpisodeSchedule
 }
 
 func NewEntry(
@@ -46,7 +46,7 @@ func NewEntry(
 	airingStatus AiringStatus,
 	startDate time.Time,
 	numEpisodes int,
-	episodeSchedule []Episode,
+	episodeSchedule []EpisodeSchedule,
 ) Entry {
 	titles = utils.Filter(titles, func(s string) bool { return len(s) > 0 })
 	titles = slices.Compact(titles)

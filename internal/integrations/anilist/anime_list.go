@@ -138,9 +138,9 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 		titles := in[i].Media.Title
 
 		// Build episode schedule from airingSchedule
-		episodes := make([]animelist.Episode, 0, len(in[i].Media.AiringSchedule.Edges))
+		episodes := make([]animelist.EpisodeSchedule, 0, len(in[i].Media.AiringSchedule.Edges))
 		for _, edge := range in[i].Media.AiringSchedule.Edges {
-			episodes = append(episodes, animelist.Episode{
+			episodes = append(episodes, animelist.EpisodeSchedule{
 				Number:  edge.Node.Episode,
 				AirDate: time.Unix(int64(edge.Node.AiringAt), 0),
 			})

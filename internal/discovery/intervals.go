@@ -39,8 +39,8 @@ func getShowKey(titles []string) string {
 	return titles[0]
 }
 
-// GetState retrieves the current scan state for a show.
-func (it *IntervalTracker) GetState(entry animelist.Entry) ShowScanState {
+// getState retrieves the current scan state for a show.
+func (it *IntervalTracker) getState(entry animelist.Entry) ShowScanState {
 	it.mu.RLock()
 	defer it.mu.RUnlock()
 
@@ -78,7 +78,7 @@ func (it *IntervalTracker) ShouldScanNow(entry animelist.Entry) bool {
 
 // GetNextScanTime calculates the next optimal scan time for a show.
 func (it *IntervalTracker) GetNextScanTime(entry animelist.Entry) time.Time {
-	state := it.GetState(entry)
+	state := it.getState(entry)
 
 	if state.NextScanTime.IsZero() {
 		// If we've never scanned this show, we can scan immediately
@@ -91,7 +91,7 @@ func (it *IntervalTracker) GetNextScanTime(entry animelist.Entry) time.Time {
 // calculateNextInterval determines the optimal polling interval based on show airing schedule.
 func (it *IntervalTracker) calculateNextInterval(entry animelist.Entry) time.Duration {
 	now := time.Now()
-	state := it.GetState(entry)
+	state := it.getState(entry)
 
 	if entry.AiringStatus == animelist.AiringStatusAired {
 		if state.FoundNewEpisodes {
