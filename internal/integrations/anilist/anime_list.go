@@ -91,7 +91,7 @@ const getCurrentlyWatchingQuery = `query($userName:String,$type:MediaType){
 					type 
 					status(version:2)
 					episodes
-					airingSchedule(notYetAired: false, sort: EPISODE) {
+					airingSchedule {
 						edges {
 							node {
 								episode
