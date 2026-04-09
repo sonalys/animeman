@@ -31,12 +31,15 @@ type AnimeListConfig struct {
 	CacheTTL time.Duration `yaml:"cacheTTL"`
 }
 
-func (c AnimeListConfig) Validate() error {
+func (c *AnimeListConfig) Validate() error {
 	if err := c.Type.Validate(); err != nil {
 		return fmt.Errorf("type: %w", err)
 	}
 	if c.Username == "" {
 		return fmt.Errorf("username: is empty")
+	}
+	if c.CacheTTL == 0 {
+		c.CacheTTL = 30 * time.Minute
 	}
 	if c.CacheTTL < 30*time.Minute {
 		return fmt.Errorf("cacheTTL: must be at least 30 minutes")
@@ -66,9 +69,12 @@ type RSSConfig struct {
 	CustomParameters map[string]string `yaml:"customParameters"`
 }
 
-func (c RSSConfig) Validate() error {
+func (c *RSSConfig) Validate() error {
 	if err := c.Type.Validate(); err != nil {
 		return fmt.Errorf("type: %w", err)
+	}
+	if c.PollFrequency == 0 {
+		c.PollFrequency = 15 * time.Minute
 	}
 	if c.PollFrequency < time.Minute {
 		return fmt.Errorf("pollFrequency: should be at least 1 minute")
@@ -139,7 +145,7 @@ func (l LogLevel) Convert() zerolog.Level {
 	}
 }
 
-func (c Config) Validate() error {
+func (c *Config) Validate() error {
 	if err := c.AnimeListConfig.Validate(); err != nil {
 		return fmt.Errorf("animeList.%w", err)
 	}
