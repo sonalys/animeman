@@ -164,8 +164,6 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 		return api.cachedAnimeList, nil
 	}
 
-	var path = API_URL + "/animelist/" + api.Username + "/load.json"
-
 	reqBody := GraphqlQuery{
 		Query: getCurrentlyWatchingQuery,
 		Variables: map[string]any{
@@ -174,7 +172,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 		},
 	}
 
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodPost, path, bytes.NewReader(utils.Must(json.Marshal(reqBody)))))
+	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodPost, API_URL, bytes.NewReader(utils.Must(json.Marshal(reqBody)))))
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 
