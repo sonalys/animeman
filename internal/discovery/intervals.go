@@ -64,67 +64,11 @@ func (it *IntervalTracker) UpdateState(entry animelist.Entry, foundNewEpisodes b
 	it.state[key] = state
 }
 
-// CalculateNextInterval determines the optimal polling interval based on show airing schedule.
-// Dynamic intervals relative to the configured poll frequency:
-// - For shows not yet aired: Interval increases as air date approaches (more frequent as it approaches)
-// - For currently airing shows: Very short interval (1x poll frequency)
-// - For completed shows with recent discoveries: Short interval (3x poll frequency)
-// - For completed shows with no new episodes: Long interval (100x poll frequency)
-func (it *IntervalTracker) CalculateNextInterval(entry animelist.Entry) time.Duration {
-	now := time.Now()
-	state := it.GetState(entry)
-
-	// For shows that haven't aired yet
-	if entry.StartDate.After(now) {
-		timeUntilAir := entry.StartDate.Sub(now)
-
-		// Scale interval based on proximity to air date, relative to poll frequency
-		// Very far away (> 30 days): scan every 50x poll frequency
-		if timeUntilAir > 30*24*time.Hour {
-			return it.pollFrequency * 50
-		}
-		// Far away (7-30 days): scan every 20x poll frequency
-		if timeUntilAir > 7*24*time.Hour {
-			return it.pollFrequency * 20
-		}
-		// Close (< 7 days): scan every 5x poll frequency
-		if timeUntilAir > 12*time.Hour {
-			return it.pollFrequency * 5
-		}
-		// Very close (< 12 hours): scan every 1x poll frequency (frequent)
-		return it.pollFrequency
-	}
-
-	// For currently airing shows - scan very frequently
-	if entry.AiringStatus == animelist.AiringStatusAiring {
-		return it.pollFrequency
-	}
-
-	// For completed shows
-	if entry.AiringStatus == animelist.AiringStatusAired {
-		// If we haven't found any new episodes in the last scan, use long interval
-		if !state.FoundNewEpisodes && !state.LastScanTime.IsZero() {
-			// Scan every 100x poll frequency for completed shows with no new content
-			return it.pollFrequency * 100
-		}
-
-		// If we recently found episodes, scan more frequently
-		if state.FoundNewEpisodes && !state.LastScanTime.IsZero() {
-			// Scan every 3x poll frequency to catch remaining episodes
-			return it.pollFrequency * 3
-		}
-
-		// First scan for completed show - moderate interval
-		return it.pollFrequency * 10
-	}
-
-	// Unknown status - default to base poll frequency
-	return it.pollFrequency
-}
-
 // ShouldScanNow determines if a show should be scanned based on its last scan time and interval.
+// It should be scanned if next scan time is within the next poll frequency window, allowing for some flexibility in scheduling.
 func (it *IntervalTracker) ShouldScanNow(entry animelist.Entry) bool {
-	return it.GetNextScanTime(entry).Before(time.Now())
+	nextScanTime := it.GetNextScanTime(entry)
+	return time.Until(nextScanTime) <= it.pollFrequency
 }
 
 // GetNextScanTime calculates the next optimal scan time for a show.
@@ -134,6 +78,62 @@ func (it *IntervalTracker) GetNextScanTime(entry animelist.Entry) time.Time {
 		// If we've never scanned this show, we can scan immediately
 		return time.Now()
 	}
-	nextInterval := it.CalculateNextInterval(entry)
+	nextInterval := it.calculateNextInterval(entry)
 	return state.LastScanTime.Add(nextInterval)
+}
+
+// calculateNextInterval determines the optimal polling interval based on show airing schedule.
+// Dynamic intervals relative to the configured poll frequency:
+// - For airing shows with episode schedule: interval based on next episode air date
+// - For shows not yet aired: Interval increases as air date approaches (more frequent as it approaches)
+// - For currently airing shows: Very short interval (1x poll frequency)
+// - For completed shows with recent discoveries: Short interval (3x poll frequency)
+// - For completed shows with no new episodes: Long interval (100x poll frequency)
+func (it *IntervalTracker) calculateNextInterval(entry animelist.Entry) time.Duration {
+	now := time.Now()
+	state := it.GetState(entry)
+
+	switch entry.AiringStatus {
+	case animelist.AiringStatusAiring:
+		for _, episode := range entry.EpisodeSchedule {
+			if episode.AirDate.After(now) {
+				timeUntilEpisode := episode.AirDate.Sub(now)
+
+				if timeUntilEpisode > 7*24*time.Hour {
+					return it.pollFrequency * 20
+				}
+				if timeUntilEpisode > 24*time.Hour {
+					return it.pollFrequency * 5
+				}
+				if timeUntilEpisode > 12*time.Hour {
+					return it.pollFrequency * 2
+				}
+				return it.pollFrequency
+			}
+		}
+		return it.pollFrequency
+	case animelist.AiringStatusAired:
+		if !state.FoundNewEpisodes && !state.LastScanTime.IsZero() {
+			return it.pollFrequency * 100
+		}
+
+		if state.FoundNewEpisodes && !state.LastScanTime.IsZero() {
+			return it.pollFrequency * 3
+		}
+
+		return it.pollFrequency * 10
+	default:
+		timeUntilAir := entry.StartDate.Sub(now)
+
+		if timeUntilAir > 30*24*time.Hour {
+			return it.pollFrequency * 50
+		}
+		if timeUntilAir > 7*24*time.Hour {
+			return it.pollFrequency * 20
+		}
+		if timeUntilAir > 12*time.Hour {
+			return it.pollFrequency * 5
+		}
+		return it.pollFrequency
+	}
 }

@@ -35,6 +35,14 @@ type (
 				English string `json:"english"`
 				Native  string `json:"native"`
 			} `json:"title"`
+			AiringSchedule struct {
+				Edges []struct {
+					Node struct {
+						Episode  int `json:"episode"`
+						AiringAt int `json:"airingAt"`
+					} `json:"node"`
+				} `json:"edges"`
+			} `json:"airingSchedule"`
 		} `json:"media"`
 	}
 
@@ -83,6 +91,14 @@ const getCurrentlyWatchingQuery = `query($userName:String,$type:MediaType){
 					type 
 					status(version:2)
 					episodes
+					airingSchedule(notYetAired: false, sort: EPISODE) {
+						edges {
+							node {
+								episode
+								airingAt
+							}
+						}
+					}
 				}
 			}
 		}
@@ -121,12 +137,22 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 	for i := range in {
 		titles := in[i].Media.Title
 
+		// Build episode schedule from airingSchedule
+		episodes := make([]animelist.Episode, 0, len(in[i].Media.AiringSchedule.Edges))
+		for _, edge := range in[i].Media.AiringSchedule.Edges {
+			episodes = append(episodes, animelist.Episode{
+				Number:  edge.Node.Episode,
+				AirDate: time.Unix(int64(edge.Node.AiringAt), 0),
+			})
+		}
+
 		out = append(out, animelist.NewEntry(
 			[]string{titles.English, titles.Romaji, titles.Native},
 			convertStatus(in[i].Status),
 			convertAiringStatus(in[i].Media.AiringStatus),
 			time.Date(in[i].Media.StartDate.Year, time.Month(in[i].Media.StartDate.Month), in[i].Media.StartDate.Day, 0, 0, 0, 0, time.UTC),
 			in[i].Media.Episodes,
+			episodes,
 		))
 	}
 	return out

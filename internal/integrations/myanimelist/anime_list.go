@@ -52,6 +52,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			animelist.AiringStatus(in[i].AiringStatus),
 			utils.Must(time.Parse(timeFormat, in[i].AnimeStartDateString)),
 			in[i].NumEpisodes,
+			nil,
 		))
 	}
 	return out
