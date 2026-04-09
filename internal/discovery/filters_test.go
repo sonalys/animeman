@@ -133,6 +133,17 @@ func Test_filterMetadata(t *testing.T) {
 			},
 			wantResult: true,
 		},
+		{
+			name: "Valid - Trailing number should still match",
+			entry: animelist.Entry{
+				Titles: []string{"One Piece 2nd season"},
+			},
+			nyaaItem: nyaa.Item{
+				Title:   "One Piece 2nd season",
+				PubDate: fmtTime(now),
+			},
+			wantResult: true,
+		},
 	}
 
 	for _, tt := range tests {

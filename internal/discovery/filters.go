@@ -42,16 +42,20 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Item) bool {
 			return false
 		}
 
+		nyaaTitleWithoutTags := parser.StripTags(nyaaEntry.Title)
+
 		for _, originalTitle := range entry.Titles {
-			withoutSeason := parser.StripSeason(originalTitle)
-			if utils.MatchPrefixFlexible(meta.Title, withoutSeason, ignoreCharset) {
+			// Remove season information from the original title, as it is not always present in the nyaa entry.
+			originalTitleWithoutSeason := parser.StripSeason(originalTitle)
+
+			if utils.MatchPrefixFlexible(nyaaTitleWithoutTags, originalTitleWithoutSeason, ignoreCharset) {
 				return true
 			}
 		}
 
 		log.
 			Trace().
-			Str("nyaaTitle", meta.Title).
+			Str("nyaaTitle", nyaaTitleWithoutTags).
 			Strs("expectedTitlePrefixes", entry.Titles).
 			Msg("discarding torrent candidate due to mismatching titles")
 

@@ -35,7 +35,7 @@ func StripTitle(title string) string {
 		title = title[:index]
 	}
 
-	title = removeTags(title)
+	title = StripTags(title)
 	title = strings.TrimSpace(title)
 
 	return title
@@ -47,7 +47,7 @@ func removeDotSpacing(title string) string {
 	return title
 }
 
-func removeTags(title string) string {
+func StripTags(title string) string {
 	for _, expr := range titleCleanupExpr {
 		title = expr.ReplaceAllString(title, "")
 	}
@@ -62,6 +62,7 @@ func Parse(title string, fallbackSeason int) Metadata {
 		VerticalResolution: parseVerticalResolution(title),
 		Tag:                tags.Tag{},
 	}
+
 	if tags := tagsExpr.FindAllStringSubmatch(title, -1); len(tags) > 0 {
 		resp.Source = tags[0][1]
 		resp.Labels = make([]string, 0, len(tags[1:]))
@@ -69,7 +70,8 @@ func Parse(title string, fallbackSeason int) Metadata {
 			resp.Labels = append(resp.Labels, strings.Split(matches[1], " ")...)
 		}
 	}
-	title = removeTags(title)
+
+	title = StripTags(title)
 
 	resp.Tag.Episodes = ParseEpisode(title)
 
@@ -78,6 +80,7 @@ func Parse(title string, fallbackSeason int) Metadata {
 	} else {
 		resp.Tag.Seasons = []int{fallbackSeason}
 	}
+
 	return resp
 }
 
