@@ -12,7 +12,7 @@ func Test_Map(t *testing.T) {
 	t.Run("should run and return new slice of type with value of func", func(t *testing.T) {
 		from := []int{1, 2, 3}
 
-		var to []string = utils.Map(from, func(cur int) string {
+		to := utils.Map(from, func(cur int) string {
 			return strconv.Itoa(cur)
 		})
 

@@ -39,12 +39,18 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		return fmt.Errorf("fetching anime list: %w", err)
 	}
 
+	scannedCount := 0
+	skippedCount := 0
+
 	for _, entry := range entries {
-		if !entry.StartDate.IsZero() && entry.StartDate.After(time.Now()) {
+		// Check if this show should be scanned based on adaptive intervals
+		if !c.intervalTracker.ShouldScanNow(entry) {
+			skippedCount++
 			log.
-				Debug().
-				Strs("title", entry.Titles).
-				Msgf("skipping entry as it hasn't aired yet")
+				Trace().
+				Str("title", selectIdealTitle(entry.Titles)).
+				Dur("timeUntilNext", c.intervalTracker.TimeUntilNextScan(entry)).
+				Msgf("skipping entry: not due for scan yet")
 			continue
 		}
 
@@ -53,19 +59,27 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 			Str("title", selectIdealTitle(entry.Titles)).
 			Msgf("starting discovery for entry")
 
-		if err := c.DiscoverEntry(ctx, entry); errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
+		foundNew, err := c.DiscoverEntry(ctx, entry)
+		if errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 			return fmt.Errorf("failed to digest entry: %w", err)
 		}
+
+		// Update the interval tracker with the scan results
+		c.intervalTracker.UpdateState(entry, foundNew)
+
+		scannedCount++
 
 		log.
 			Debug().
 			Str("title", selectIdealTitle(entry.Titles)).
+			Bool("foundNew", foundNew).
 			Msgf("discovery finished for entry")
 	}
 
 	log.
 		Debug().
-		Int("entries", len(entries)).
+		Int("scanned", scannedCount).
+		Int("skipped", skippedCount).
 		Dur("duration", time.Since(t1)).
 		Msg("discovery finished")
 
@@ -246,12 +260,13 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 }
 
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.
-func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) error {
+// It returns the latest discovered tag, whether new episodes were found, and any error.
+func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (bool, error) {
 	logger := getLogger(ctx)
 
 	searchResults, err := c.NyaaSearch(ctx, entry)
 	if err != nil {
-		return fmt.Errorf("searching torrent for anime: %w", err)
+		return false, fmt.Errorf("searching torrent for anime: %w", err)
 	}
 
 	// Remove results without seeders.
@@ -262,12 +277,12 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 			Trace().
 			Msg("no seeded torrent results")
 
-		return nil
+		return false, nil
 	}
 
 	latestTag, err := c.findLatestTag(ctx, entry)
 	if err != nil {
-		return fmt.Errorf("finding latest anime season episode tag: %w", err)
+		return false, fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 
 	if !latestTag.IsZero() {
@@ -280,9 +295,11 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 	parsedTorrents := parseResults(entry, torrentResults)
 	parsedTorrents = filterRelevantResults(entry, parsedTorrents, latestTag)
 
+	foundNewEpisodes := len(parsedTorrents) > 0
+
 	for _, episodeTorrent := range parsedTorrents {
 		if err := c.AddTorrentEntry(ctx, entry, episodeTorrent); err != nil {
-			return fmt.Errorf("adding torrent to client: %w", err)
+			return false, fmt.Errorf("adding torrent to client: %w", err)
 		}
 
 		meta := episodeTorrent.ExtractedMetadata
@@ -296,5 +313,5 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) e
 			Msg("new episode added")
 	}
 
-	return nil
+	return foundNewEpisodes, nil
 }

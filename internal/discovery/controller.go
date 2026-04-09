@@ -17,32 +17,33 @@ type (
 	}
 
 	Controller struct {
-		dep Dependencies
+		dep             Dependencies
+		intervalTracker *IntervalTracker
 	}
 )
 
 func New(dep Dependencies) *Controller {
 	return &Controller{
-		dep: dep,
+		dep:             dep,
+		intervalTracker: NewIntervalTracker(dep.Config.PollFrequency),
 	}
 }
 
 func (c *Controller) Start(ctx context.Context) error {
 	log.Info().Msgf("starting polling with frequency %s", c.dep.Config.PollFrequency.String())
-	timer := time.NewTicker(c.dep.Config.PollFrequency)
-	defer timer.Stop()
 
-	if err := c.RunDiscovery(ctx); err != nil {
-		log.Error().Msgf("discovery failed: %s", err)
-	}
+	ticker := time.NewTicker(c.dep.Config.PollFrequency)
+	defer ticker.Stop()
 
 	for {
+		if err := c.RunDiscovery(ctx); err != nil {
+			log.Error().Msgf("discovery scan failed: %s", err)
+		}
+
 		select {
-		case <-timer.C:
-			if err := c.RunDiscovery(ctx); err != nil {
-				log.Error().Msgf("scan failed: %s", err)
-			}
+		case <-ticker.C:
 		case <-ctx.Done():
+			log.Info().Msgf("stopping discovery: %s", ctx.Err())
 			return nil
 		}
 	}
