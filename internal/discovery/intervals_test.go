@@ -251,8 +251,8 @@ func TestCalculateNextInterval(t *testing.T) {
 			name:             "aired show without new episodes",
 			airingStatus:     animelist.AiringStatusAired,
 			foundNewEpisodes: false,
-			expectedInterval: pollFrequency * 100,
-			description:      "aired show without new episodes should use 100x poll frequency",
+			expectedInterval: 24 * time.Hour,
+			description:      "aired show without new episodes should use 24 hour interval",
 		},
 		{
 			name:         "airing show with episode in <3 hours",
@@ -275,8 +275,8 @@ func TestCalculateNextInterval(t *testing.T) {
 					AirDate: time.Now().Add(12 * time.Hour),
 				},
 			},
-			expectedInterval: pollFrequency * 10,
-			description:      "airing show with episode in 3-24 hours should use 10x poll frequency",
+			expectedInterval: 1 * time.Hour,
+			description:      "airing show with episode in 3-24 hours should use 1 hour interval",
 		},
 		{
 			name:         "airing show with episode in >24 hours",
@@ -287,8 +287,8 @@ func TestCalculateNextInterval(t *testing.T) {
 					AirDate: time.Now().Add(48 * time.Hour),
 				},
 			},
-			expectedInterval: pollFrequency * 20,
-			description:      "airing show with episode in >24 hours should use 20x poll frequency",
+			expectedInterval: 6 * time.Hour,
+			description:      "airing show with episode in >24 hours should use 6 hour interval",
 		},
 		{
 			name:         "airing show with no upcoming episodes",
@@ -299,8 +299,8 @@ func TestCalculateNextInterval(t *testing.T) {
 					AirDate: time.Now().Add(-24 * time.Hour),
 				},
 			},
-			expectedInterval: pollFrequency * 20,
-			description:      "airing show with no upcoming episodes should use 20x poll frequency",
+			expectedInterval: 6 * time.Hour,
+			description:      "airing show with no upcoming episodes should use 6 hour interval",
 		},
 	}
 
