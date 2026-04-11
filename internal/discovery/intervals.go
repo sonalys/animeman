@@ -99,13 +99,14 @@ func (it *IntervalTracker) calculateNextInterval(entry animelist.Entry) time.Dur
 		}
 
 		// If the show has finished airing, and we didn't find new episodes in the last scan, we can check much less frequently.
-		return it.pollFrequency * 100
+		return 24 * time.Hour
 	}
 
 	nextEpisodeAirDate := entry.StartDate
 
 	for _, episode := range entry.EpisodeSchedule {
-		if !episode.AirDate.After(now) {
+		// Consider delay between episode release and when it becomes available for streaming.
+		if !episode.AirDate.After(now.Add(-24 * time.Hour)) {
 			continue
 		}
 
@@ -120,8 +121,8 @@ func (it *IntervalTracker) calculateNextInterval(entry animelist.Entry) time.Dur
 	}
 
 	if timeUntilEpisode < 24*time.Hour {
-		return it.pollFrequency * 10
+		return time.Hour
 	}
 
-	return it.pollFrequency * 20
+	return 6 * time.Hour
 }
