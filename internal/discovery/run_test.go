@@ -143,7 +143,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 
 func Test_filterNyaaFeed(t *testing.T) {
 	newEntry := func(airingStatus animelist.AiringStatus) animelist.Entry {
-		return animelist.NewEntry(nil, animelist.ListStatusWatching, airingStatus, time.Now(), 0, nil)
+		return animelist.NewEntry(nil, animelist.ListStatusWatching, airingStatus, time.Now(), time.Now(), 0, nil)
 	}
 
 	t.Run("empty", func(t *testing.T) {

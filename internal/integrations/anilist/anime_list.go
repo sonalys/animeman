@@ -30,6 +30,11 @@ type (
 				Month int `json:"month"`
 				Day   int `json:"day"`
 			} `json:"startDate"`
+			EndDate struct {
+				Year  int `json:"year"`
+				Month int `json:"month"`
+				Day   int `json:"day"`
+			} `json:"endDate"`
 			Title struct {
 				Romaji  string `json:"romaji"`
 				English string `json:"english"`
@@ -83,6 +88,11 @@ const getCurrentlyWatchingQuery = `query($userName:String,$type:MediaType){
 				status
 				media{
 					startDate{
+						year
+						month
+						day
+					}
+					endDate{
 						year
 						month
 						day
@@ -151,6 +161,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			convertStatus(in[i].Status),
 			convertAiringStatus(in[i].Media.AiringStatus),
 			time.Date(in[i].Media.StartDate.Year, time.Month(in[i].Media.StartDate.Month), in[i].Media.StartDate.Day, 0, 0, 0, 0, time.UTC),
+			time.Date(in[i].Media.EndDate.Year, time.Month(in[i].Media.EndDate.Month), in[i].Media.EndDate.Day, 0, 0, 0, 0, time.UTC),
 			in[i].Media.Episodes,
 			episodes,
 		))

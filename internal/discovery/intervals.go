@@ -91,38 +91,57 @@ func (it *IntervalTracker) GetNextScanTime(entry animelist.Entry) time.Time {
 // calculateNextInterval determines the optimal polling interval based on show airing schedule.
 func (it *IntervalTracker) calculateNextInterval(entry animelist.Entry) time.Duration {
 	now := time.Now()
+	hasEpisodeSchedule := len(entry.EpisodeSchedule) > 0
 	state := it.getState(entry)
 
-	if entry.AiringStatus == animelist.AiringStatusAired {
-		if state.FoundNewEpisodes {
-			return it.pollFrequency
-		}
-
-		// If the show has finished airing, and we didn't find new episodes in the last scan, we can check much less frequently.
-		return 24 * time.Hour
-	}
-
-	nextEpisodeAirDate := entry.StartDate
-
-	for _, episode := range entry.EpisodeSchedule {
-		// Consider delay between episode release and when it becomes available for streaming.
-		if !episode.AirDate.After(now.Add(-24 * time.Hour)) {
-			continue
-		}
-
-		nextEpisodeAirDate = episode.AirDate
-		break
-	}
-
-	timeUntilEpisode := time.Until(nextEpisodeAirDate)
-
-	if timeUntilEpisode < 3*time.Hour {
+	if state.FoundNewEpisodes {
+		// If we found new episodes in the last scan, we can check more frequently for updates
 		return it.pollFrequency
 	}
 
-	if timeUntilEpisode < 24*time.Hour {
+	if !hasEpisodeSchedule {
+		switch entry.AiringStatus {
+		case animelist.AiringStatusAiring:
+			return it.pollFrequency
+		case animelist.AiringStatusAired:
+			endDate := entry.EndDate
+
+			// If we don't have an end date, but the show has started, we can assume it might be ongoing and check more frequently.
+			if endDate.IsZero() {
+				endDate = entry.StartDate.AddDate(1, 0, 0)
+			}
+
+			switch {
+			case endDate.IsZero():
+				return 24 * time.Hour
+			case endDate.Before(now.AddDate(0, 0, -7)):
+				return 7 * 24 * time.Hour
+			default:
+				return it.pollFrequency
+			}
+		}
+	}
+
+	timeUntilRelease := entry.StartDate.Sub(now)
+	timeUntilRelease = max(timeUntilRelease, -timeUntilRelease)
+
+	// Find the closest episode air date.
+	for _, episode := range entry.EpisodeSchedule {
+		delta := episode.AirDate.Sub(now)
+		delta = max(delta, -delta)
+
+		if delta < timeUntilRelease {
+			timeUntilRelease = delta
+		}
+	}
+
+	if timeUntilRelease < 3*time.Hour {
+		return it.pollFrequency
+	}
+
+	if timeUntilRelease < 24*time.Hour {
 		return time.Hour
 	}
 
-	return 6 * time.Hour
+	return 24 * time.Hour
 }

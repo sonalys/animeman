@@ -229,96 +229,284 @@ func TestShouldScanNow(t *testing.T) {
 }
 
 func TestCalculateNextInterval(t *testing.T) {
-	pollFrequency := 5 * time.Minute
-
 	tests := []struct {
 		name             string
-		airingStatus     animelist.AiringStatus
-		foundNewEpisodes bool
-		episodeSchedule  []animelist.EpisodeSchedule
-		startDate        time.Time
+		pollFrequency    time.Duration
+		entry            animelist.Entry
+		setupState       func(*IntervalTracker, animelist.Entry)
 		expectedInterval time.Duration
 		description      string
 	}{
+		// FoundNewEpisodes scenarios
 		{
-			name:             "aired show with new episodes",
-			airingStatus:     animelist.AiringStatusAired,
-			foundNewEpisodes: true,
-			expectedInterval: pollFrequency,
-			description:      "aired show with new episodes should use base poll frequency",
+			name:          "found new episodes returns poll frequency",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles: []string{"New Episodes Found"},
+			},
+			setupState: func(it *IntervalTracker, entry animelist.Entry) {
+				key := getShowKey(entry.Titles)
+				it.mu.Lock()
+				it.state[key] = ShowScanState{
+					NextScanTime:     time.Now().Add(1 * time.Hour),
+					FoundNewEpisodes: true,
+				}
+				it.mu.Unlock()
+			},
+			expectedInterval: 5 * time.Minute,
+			description:      "should return poll frequency when FoundNewEpisodes is true",
+		},
+
+		// No episode schedule - Airing status
+		{
+			name:          "no episodes, airing status",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Currently Airing"},
+				AiringStatus:    animelist.AiringStatusAiring,
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 5 * time.Minute,
+			description:      "should return poll frequency for airing show with no episode schedule",
+		},
+
+		// No episode schedule - Aired status with end date scenarios
+		{
+			name:          "no episodes, aired status, no end date",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Completed Show"},
+				AiringStatus:    animelist.AiringStatusAired,
+				StartDate:       time.Now().Add(-100 * 24 * time.Hour),
+				EndDate:         time.Time{}, // zero value
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 5 * time.Minute,
+			description:      "should check recently ended shows frequently when no end date provided",
 		},
 		{
-			name:             "aired show without new episodes",
-			airingStatus:     animelist.AiringStatusAired,
-			foundNewEpisodes: false,
+			name:          "no episodes, aired status, end date more than 7 days ago",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Old Show"},
+				AiringStatus:    animelist.AiringStatusAired,
+				StartDate:       time.Now().AddDate(0, 0, -200),
+				EndDate:         time.Now().AddDate(0, 0, -20),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 7 * 24 * time.Hour,
+			description:      "should return 7 days for old completed shows",
+		},
+		{
+			name:          "no episodes, aired status, end date within 7 days",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Recently Completed"},
+				AiringStatus:    animelist.AiringStatusAired,
+				StartDate:       time.Now().AddDate(0, 0, -30),
+				EndDate:         time.Now().AddDate(0, 0, -2),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 5 * time.Minute,
+			description:      "should poll frequently for recently completed shows",
+		},
+		{
+			name:          "no episodes, aired status, end date exactly 7 days ago (boundary)",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Boundary Show"},
+				AiringStatus:    animelist.AiringStatusAired,
+				StartDate:       time.Now().AddDate(0, 0, -40),
+				EndDate:         time.Now().AddDate(0, 0, -6).Add(-20 * time.Hour),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 5 * time.Minute,
+			description:      "should use poll frequency when within 7 days of now",
+		},
+
+		// Episode schedule scenarios
+		{
+			name:          "start date within 3 hours",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Test Anime"},
+				StartDate:       time.Now().Add(1 * time.Hour),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 5 * time.Minute,
+			description:      "should return poll frequency when show starts within 3 hours",
+		},
+		{
+			name:          "start date within 24 hours but after 3 hours",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Test Anime"},
+				StartDate:       time.Now().Add(12 * time.Hour),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 1 * time.Hour,
+			description:      "should return 1 hour when show starts between 3 and 24 hours",
+		},
+		{
+			name:          "start date far in future",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Test Anime"},
+				StartDate:       time.Now().AddDate(0, 0, 7),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
 			expectedInterval: 24 * time.Hour,
-			description:      "aired show without new episodes should use 24 hour interval",
+			description:      "should return 24 hours when show starts more than 24 hours away",
 		},
 		{
-			name:         "airing show with episode in <3 hours",
-			airingStatus: animelist.AiringStatusAiring,
-			startDate:    time.Now().AddDate(0, 0, -1),
-			episodeSchedule: []animelist.EpisodeSchedule{
-				{
-					AirDate: time.Now().Add(1 * time.Hour),
+			name:          "episode schedule within 3 hours",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:    []string{"Test Anime"},
+				StartDate: time.Now().AddDate(0, 0, 1),
+				EpisodeSchedule: []animelist.EpisodeSchedule{
+					{
+						AirDate: time.Now().Add(2 * time.Hour),
+					},
 				},
 			},
-			expectedInterval: pollFrequency,
-			description:      "airing show with episode in <3 hours should use base poll frequency",
+			expectedInterval: 5 * time.Minute,
+			description:      "should use episode schedule when closer than start date",
 		},
 		{
-			name:         "airing show with episode in 3-24 hours",
-			airingStatus: animelist.AiringStatusAiring,
-			startDate:    time.Now().AddDate(0, 0, -1),
-			episodeSchedule: []animelist.EpisodeSchedule{
-				{
-					AirDate: time.Now().Add(12 * time.Hour),
+			name:          "episode schedule within 24 hours",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:    []string{"Test Anime"},
+				StartDate: time.Now().AddDate(0, 0, 1),
+				EpisodeSchedule: []animelist.EpisodeSchedule{
+					{
+						AirDate: time.Now().Add(6 * time.Hour),
+					},
 				},
 			},
 			expectedInterval: 1 * time.Hour,
-			description:      "airing show with episode in 3-24 hours should use 1 hour interval",
+			description:      "should return 1 hour when episode airs within 24 hours",
 		},
 		{
-			name:         "airing show with episode in >24 hours",
-			airingStatus: animelist.AiringStatusAiring,
-			startDate:    time.Now().AddDate(0, 0, -1),
-			episodeSchedule: []animelist.EpisodeSchedule{
-				{
-					AirDate: time.Now().Add(48 * time.Hour),
+			name:          "multiple episodes, closest one determines interval",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:    []string{"Test Anime"},
+				StartDate: time.Now().AddDate(0, 0, 7),
+				EpisodeSchedule: []animelist.EpisodeSchedule{
+					{
+						AirDate: time.Now().AddDate(0, 0, 5),
+					},
+					{
+						AirDate: time.Now().Add(2 * time.Hour),
+					},
+					{
+						AirDate: time.Now().AddDate(0, 0, 10),
+					},
 				},
 			},
-			expectedInterval: 6 * time.Hour,
-			description:      "airing show with episode in >24 hours should use 6 hour interval",
+			expectedInterval: 5 * time.Minute,
+			description:      "should find the closest episode air date",
 		},
 		{
-			name:         "airing show with no upcoming episodes",
-			airingStatus: animelist.AiringStatusAiring,
-			startDate:    time.Now().AddDate(0, 0, 3),
-			episodeSchedule: []animelist.EpisodeSchedule{
-				{
-					AirDate: time.Now().Add(-24 * time.Hour),
+			name:          "past start date with future episodes",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:    []string{"Test Anime"},
+				StartDate: time.Now().Add(-30 * 24 * time.Hour),
+				EpisodeSchedule: []animelist.EpisodeSchedule{
+					{
+						AirDate: time.Now().Add(2 * time.Hour),
+					},
 				},
 			},
-			expectedInterval: 6 * time.Hour,
-			description:      "airing show with no upcoming episodes should use 6 hour interval",
+			expectedInterval: 5 * time.Minute,
+			description:      "should handle past start dates and use episodes correctly",
+		},
+		{
+			name:          "all episodes in the past",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:    []string{"Test Anime"},
+				StartDate: time.Now().Add(-30 * 24 * time.Hour),
+				EpisodeSchedule: []animelist.EpisodeSchedule{
+					{
+						AirDate: time.Now().Add(-5 * 24 * time.Hour),
+					},
+					{
+						AirDate: time.Now().Add(-2 * 24 * time.Hour),
+					},
+				},
+			},
+			expectedInterval: 24 * time.Hour,
+			description:      "should use absolute values for past dates",
+		},
+		{
+			name:          "edge case: just under 3 hours",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Test Anime"},
+				StartDate:       time.Now().Add(3*time.Hour - 1*time.Second),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 5 * time.Minute,
+			description:      "should return poll frequency when just under 3 hours away",
+		},
+		{
+			name:          "edge case: just over 3 hours",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Test Anime"},
+				StartDate:       time.Now().Add(3*time.Hour + 1*time.Minute),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 1 * time.Hour,
+			description:      "should return 1 hour when just over 3 hours away",
+		},
+		{
+			name:          "edge case: just under 24 hours",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Test Anime"},
+				StartDate:       time.Now().Add(24*time.Hour - 1*time.Second),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 1 * time.Hour,
+			description:      "should return 1 hour when just under 24 hours away",
+		},
+		{
+			name:          "edge case: just over 24 hours",
+			pollFrequency: 5 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Test Anime"},
+				StartDate:       time.Now().Add(24*time.Hour + 1*time.Minute),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 24 * time.Hour,
+			description:      "should return 24 hours when just over 24 hours away",
+		},
+		{
+			name:          "different poll frequency",
+			pollFrequency: 10 * time.Minute,
+			entry: animelist.Entry{
+				Titles:          []string{"Test Anime"},
+				StartDate:       time.Now().Add(1 * time.Hour),
+				EpisodeSchedule: []animelist.EpisodeSchedule{},
+			},
+			expectedInterval: 10 * time.Minute,
+			description:      "should respect the configured poll frequency",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			tracker := NewIntervalTracker(pollFrequency)
-			entry := animelist.Entry{
-				Titles:          []string{tt.name},
-				AiringStatus:    tt.airingStatus,
-				StartDate:       tt.startDate,
-				EpisodeSchedule: tt.episodeSchedule,
+			tracker := NewIntervalTracker(tt.pollFrequency)
+			if tt.setupState != nil {
+				tt.setupState(tracker, tt.entry)
 			}
+			interval := tracker.calculateNextInterval(tt.entry)
 
-			if tt.foundNewEpisodes && tt.airingStatus == animelist.AiringStatusAired {
-				tracker.UpdateState(entry, true)
-			}
-
-			interval := tracker.calculateNextInterval(entry)
 			assert.Equal(t, tt.expectedInterval, interval, tt.description)
 		})
 	}

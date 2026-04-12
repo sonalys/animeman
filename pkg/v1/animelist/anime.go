@@ -36,6 +36,7 @@ type Entry struct {
 	Titles          []string
 	AiringStatus    AiringStatus
 	StartDate       time.Time
+	EndDate         time.Time
 	NumEpisodes     int
 	EpisodeSchedule []EpisodeSchedule
 }
@@ -45,6 +46,7 @@ func NewEntry(
 	listStatus ListStatus,
 	airingStatus AiringStatus,
 	startDate time.Time,
+	endDate time.Time,
 	numEpisodes int,
 	episodeSchedule []EpisodeSchedule,
 ) Entry {
@@ -57,6 +59,7 @@ func NewEntry(
 		ListStatus:      listStatus,
 		AiringStatus:    airingStatus,
 		StartDate:       startDate,
+		EndDate:         endDate,
 		NumEpisodes:     numEpisodes,
 		EpisodeSchedule: episodeSchedule,
 	}
