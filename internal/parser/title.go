@@ -41,6 +41,15 @@ func StripTitle(title string) string {
 	return title
 }
 
+func StripSubtitle(title string) string {
+	indexOf := strings.LastIndex(title, ": ")
+	if indexOf == -1 {
+		return title
+	}
+
+	return title[:indexOf]
+}
+
 func removeDotSpacing(title string) string {
 	dotReplaceRegexp := regexp.MustCompile(`([^ ])\.([^ ])`)
 	title = dotReplaceRegexp.ReplaceAllString(title, "$1 $2")

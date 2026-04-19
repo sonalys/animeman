@@ -47,8 +47,9 @@ func filterMetadata(entry animelist.Entry) func(e nyaa.Item) bool {
 		for _, originalTitle := range entry.Titles {
 			// Remove season information from the original title, as it is not always present in the nyaa entry.
 			originalTitleWithoutSeason := parser.StripSeason(originalTitle)
+			originalTitleWithoutSubtitle := parser.StripSubtitle(originalTitleWithoutSeason)
 
-			if utils.MatchPrefixFlexible(nyaaTitleWithoutTags, originalTitleWithoutSeason, ignoreCharset) {
+			if utils.MatchPrefixFlexible(nyaaTitleWithoutTags, originalTitleWithoutSubtitle, ignoreCharset) {
 				return true
 			}
 		}
