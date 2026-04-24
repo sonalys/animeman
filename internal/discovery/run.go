@@ -224,8 +224,12 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
-	sanitizedTitles := utils.Map(entry.Titles, func(title string) string { return titleSanitization.Replace(strings.ToLower(title)) })
-	sanitizedTitles = utils.Map(sanitizedTitles, func(title string) string { return parser.StripSubtitle(title) })
+	sanitizedTitles := utils.Transform(entry.Titles,
+		strings.ToLower,
+		parser.StripTitle,
+		parser.StripSubtitle,
+		titleSanitization.Replace,
+	)
 	sanitizedTitles = slices.Compact(sanitizedTitles)
 
 	entries, err := c.dep.NYAA.List(ctx, nyaa.ListOptions{

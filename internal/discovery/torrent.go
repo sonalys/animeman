@@ -3,6 +3,7 @@ package discovery
 import (
 	"context"
 	"fmt"
+	"sort"
 	"strings"
 	"unicode"
 
@@ -93,10 +94,21 @@ func selectIdealTitle(titles []string) string {
 		return ""
 	}
 
+	viableCandidates := make([]string, 0, len(titles))
+
 	for _, t := range titles {
 		if isASCII(t) {
-			return t
+			viableCandidates = append(viableCandidates, t)
 		}
+	}
+
+	// Prefer the shortest title for the tags.
+	sort.Slice(viableCandidates, func(i, j int) bool {
+		return len(viableCandidates[i]) < len(viableCandidates[j])
+	})
+
+	if len(viableCandidates) > 0 {
+		return viableCandidates[0]
 	}
 
 	// Fallback to first element if no ASCII title is found

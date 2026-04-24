@@ -8,6 +8,20 @@ func Map[T1, T2 any](in []T1, f func(T1) T2) []T2 {
 	return out
 }
 
+func Transform[T any](in []T, fns ...func(T) T) []T {
+	out := make([]T, 0, len(in))
+	for i := range in {
+		value := in[i]
+
+		for _, fn := range fns {
+			value = fn(value)
+		}
+
+		out = append(out, value)
+	}
+	return out
+}
+
 func Filter[T any](in []T, filters ...func(T) bool) []T {
 	out := make([]T, 0, len(in))
 outer:

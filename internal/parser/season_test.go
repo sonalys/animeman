@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"strings"
 	"testing"
 )
 
@@ -10,6 +11,7 @@ func Test_matchSeason(t *testing.T) {
 		title string
 		want  int
 	}{
+		{name: "4th season should work", title: "4th season subtitle", want: 4},
 		{
 			name:  "episode with provider and dash",
 			title: "[Provider] episode with dash - 02 (1080p) [hash].mkv",
@@ -43,6 +45,23 @@ func Test_matchSeason(t *testing.T) {
 		t.Run(tt.name, func(t *testing.T) {
 			if got := ParseSeason(tt.title); got != tt.want {
 				t.Errorf("seasonMatch() = season '%v', want '%v'", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_seasonIndexMatch(t *testing.T) {
+	tests := []struct {
+		title string
+		want  string
+	}{
+		{title: "title 4th season 2 subtitle", want: "title"},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.title, func(t *testing.T) {
+			if got := seasonIndexMatch(tc.title); strings.TrimSpace(tc.title[:got]) != tc.want {
+				t.Errorf("seasonIndexMatch() =	'%v', want '%v'", strings.TrimSpace(tc.title[:got]), tc.want)
 			}
 		})
 	}
