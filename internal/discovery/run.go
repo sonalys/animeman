@@ -108,13 +108,13 @@ func filterEpisodes(
 		currentTag := nyaaEntry.ExtractedMetadata.Tag
 
 		if tagCompare(currentTag, initialTag) <= 0 || tagCompare(currentTag, latestDetectedTag) <= 0 {
-			filterData.DiscardedMap[DiscardReasonOlderEpisode]++
+			filterData.DiscardReason[DiscardReasonOlderEpisode]++
 			continue
 		}
 
 		if !latestDetectedTag.IsZero() {
 			if latestDetectedTag.IsMultiEpisode() && latestDetectedTag.Contains(currentTag) {
-				filterData.DiscardedMap[DiscardReasonOlderEpisode]++
+				filterData.DiscardReason[DiscardReasonOlderEpisode]++
 				continue
 			}
 
@@ -124,7 +124,7 @@ func filterEpisodes(
 			if currentTag.IsMultiEpisode() && currentTag.Contains(latestDetectedTag) {
 				out = utils.Filter(out, func(previous parser.ParsedNyaa) bool {
 					if currentTag.Contains(previous.ExtractedMetadata.Tag) {
-						filterData.DiscardedMap[DiscardReasonOlderEpisode]++
+						filterData.DiscardReason[DiscardReasonOlderEpisode]++
 						return false
 					}
 
@@ -205,7 +205,7 @@ func filterRelevantResults(
 			return entry.ExtractedMetadata.Tag.IsMultiEpisode()
 		})
 		if len(batchResults) > 0 {
-			filterData.DiscardedMap[DiscardReasonNotBatch] += uint(len(batchResults))
+			filterData.DiscardReason[DiscardReasonNotBatch] += uint(len(batchResults))
 			results = batchResults
 		}
 	} else {
@@ -216,7 +216,7 @@ func filterRelevantResults(
 	}
 
 	results, latestDetectedTag := filterEpisodes(results, latestTag, filterData)
-	filterData.LatestFoundTag = latestDetectedTag
+	filterData.NewLatestTag = latestDetectedTag
 
 	return results
 }
@@ -225,11 +225,11 @@ type (
 	DiscardReason string
 
 	FilterData struct {
-		LatestTag      tags.Tag
-		LatestFoundTag tags.Tag
-		SearchCount    int
-		NewCount       int
-		DiscardedMap   map[DiscardReason]uint
+		LatestTag     tags.Tag               `json:"latest_tag,omitzero"`
+		NewLatestTag  tags.Tag               `json:"new_latest_tag,omitzero"`
+		SearchCount   int                    `json:"search_count,omitempty"`
+		NewCount      int                    `json:"new_count,omitempty"`
+		DiscardReason map[DiscardReason]uint `json:"discard_reason,omitempty"`
 	}
 )
 
@@ -302,8 +302,8 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 	logger := getLogger(ctx)
 
 	filterData := &FilterData{
-		SearchCount:  0,
-		DiscardedMap: make(map[DiscardReason]uint),
+		SearchCount:   0,
+		DiscardReason: make(map[DiscardReason]uint),
 	}
 
 	searchResults, err := c.NyaaSearch(ctx, entry, filterData)
@@ -315,7 +315,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 	torrentResults := utils.Filter(searchResults,
 		func(e nyaa.Item) bool {
 			if e.Seeders == 0 {
-				filterData.DiscardedMap[DiscardReasonNoSeeder]++
+				filterData.DiscardReason[DiscardReasonNoSeeder]++
 				return false
 			}
 

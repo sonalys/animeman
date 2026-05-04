@@ -22,7 +22,7 @@ func filterMetadata(
 
 		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
 		if publishedDate.Before(entry.StartDate.AddDate(0, 0, -2)) {
-			filterData.DiscardedMap[DiscardReasonPublishedDateMismatch]++
+			filterData.DiscardReason[DiscardReasonPublishedDateMismatch]++
 
 			return false
 		}
@@ -31,7 +31,7 @@ func filterMetadata(
 
 		// Check if nyaa entry episode is greater than the animelist episode count.
 		if entry.NumEpisodes > 0 && meta.Tag.LastEpisode() > float64(entry.NumEpisodes) {
-			filterData.DiscardedMap[DiscardReasonEpisodeCountMismatch]++
+			filterData.DiscardReason[DiscardReasonEpisodeCountMismatch]++
 
 			return false
 		}
@@ -48,7 +48,7 @@ func filterMetadata(
 			}
 		}
 
-		filterData.DiscardedMap[DiscardReasonTitleMismatch]++
+		filterData.DiscardReason[DiscardReasonTitleMismatch]++
 
 		return false
 	}

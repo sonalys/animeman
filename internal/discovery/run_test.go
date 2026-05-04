@@ -91,7 +91,7 @@ func Test_filterEpisodes(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got, _ := filterEpisodes(tt.args.list, tt.args.latestTag, &FilterData{DiscardedMap: make(map[DiscardReason]uint)}); !reflect.DeepEqual(got, tt.want) {
+			if got, _ := filterEpisodes(tt.args.list, tt.args.latestTag, &FilterData{DiscardReason: make(map[DiscardReason]uint)}); !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("filterEpisodes() = %v, want %v", got, tt.want)
 			}
 		})
@@ -147,7 +147,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 	}
 
 	t.Run("empty", func(t *testing.T) {
-		got := filterRelevantResults(animelist.Entry{}, []parser.ParsedNyaa{}, tags.Zero, &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(animelist.Entry{}, []parser.ParsedNyaa{}, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 		require.Empty(t, got)
 	})
 
@@ -159,7 +159,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.Zero, &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(animelist.Entry{}, parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Len(t, got, len(input))
 		for i := 1; i < len(got); i++ {
@@ -178,7 +178,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		parsedTorrents := parseResults(animelist.Entry{}, input)
 		latestTag := tags.SeasonEpisode(3, 2)
 
-		got := filterRelevantResults(entry, parsedTorrents, latestTag, &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(entry, parsedTorrents, latestTag, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Equal(t, parsedTorrents[:1], got)
 	})
@@ -191,7 +191,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 1), &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 1), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Len(t, got, 1)
 		require.Equal(t, parsed[0:1], got)
@@ -206,7 +206,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Len(t, got, 1)
 		require.Equal(t, parsed[1:2], got)
@@ -220,7 +220,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Len(t, got, 1)
 		require.Equal(t, parsed[:1], got)
@@ -234,7 +234,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Equal(t, parsed[2:], got)
 	})
@@ -246,7 +246,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Equal(t, parsed[1:], got)
 	})
@@ -258,7 +258,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Len(t, got, 1)
 		require.Equal(t, parsed[1:], got)
@@ -272,7 +272,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Len(t, got, 1)
 		require.Equal(t, parsed[:1], got)
@@ -286,7 +286,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Len(t, got, 1)
 		require.Equal(t, parsed[1:2], got)
@@ -300,7 +300,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
 
 		require.Len(t, got, 3)
 	})
