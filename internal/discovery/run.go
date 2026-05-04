@@ -306,11 +306,6 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 		DiscardedMap: make(map[DiscardReason]uint),
 	}
 
-	logger = logger.
-		With().
-		Any("filterData", filterData).
-		Logger()
-
 	searchResults, err := c.NyaaSearch(ctx, entry, filterData)
 	if err != nil {
 		return false, fmt.Errorf("searching torrent for anime: %w", err)
@@ -331,6 +326,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 	if len(torrentResults) == 0 {
 		logger.
 			Debug().
+			Any("filterData", filterData).
 			Msg("entry discovery stopped: no valid torrent results found")
 
 		return false, nil
@@ -358,6 +354,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 
 	logger.
 		Info().
+		Any("filterData", filterData).
 		Msg("entry discovery finished")
 
 	return foundNewEpisodes, nil
