@@ -54,9 +54,15 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 			continue
 		}
 
-		log.
-			Trace().
+		logger := log.Logger.
+			With().
 			Str("title", selectIdealTitle(entry.Titles)).
+			Logger()
+
+		ctx := logger.WithContext(ctx)
+
+		logger.
+			Trace().
 			Msgf("starting discovery for entry")
 
 		foundNew, err := c.DiscoverEntry(ctx, entry)
@@ -69,9 +75,8 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 
 		scannedCount++
 
-		log.
+		logger.
 			Debug().
-			Str("title", selectIdealTitle(entry.Titles)).
 			Bool("foundNew", foundNew).
 			Time("nextScanAt", nextScanAt).
 			Msgf("discovery finished for entry")
@@ -90,7 +95,11 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 // filterEpisodes will only return ParsedNyaa entries that are more recent than the given latestTag.
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
-func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) ([]parser.ParsedNyaa, tags.Tag) {
+func filterEpisodes(
+	results []parser.ParsedNyaa,
+	initialTag tags.Tag,
+	filterData *FilterData,
+) ([]parser.ParsedNyaa, tags.Tag) {
 	out := make([]parser.ParsedNyaa, 0, len(results))
 
 	var latestDetectedTag tags.Tag
@@ -99,11 +108,13 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) ([]parser.
 		currentTag := nyaaEntry.ExtractedMetadata.Tag
 
 		if tagCompare(currentTag, initialTag) <= 0 || tagCompare(currentTag, latestDetectedTag) <= 0 {
+			filterData.DiscardedMap[DiscardReasonOlderEpisode]++
 			continue
 		}
 
 		if !latestDetectedTag.IsZero() {
 			if latestDetectedTag.IsMultiEpisode() && latestDetectedTag.Contains(currentTag) {
+				filterData.DiscardedMap[DiscardReasonOlderEpisode]++
 				continue
 			}
 
@@ -111,7 +122,14 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) ([]parser.
 			// Example: S01E01-13, followed by S01.
 			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
 			if currentTag.IsMultiEpisode() && currentTag.Contains(latestDetectedTag) {
-				out = utils.Filter(out, func(previous parser.ParsedNyaa) bool { return !currentTag.Contains(previous.ExtractedMetadata.Tag) })
+				out = utils.Filter(out, func(previous parser.ParsedNyaa) bool {
+					if currentTag.Contains(previous.ExtractedMetadata.Tag) {
+						filterData.DiscardedMap[DiscardReasonOlderEpisode]++
+						return false
+					}
+
+					return true
+				})
 			}
 		}
 
@@ -123,7 +141,9 @@ func filterEpisodes(results []parser.ParsedNyaa, initialTag tags.Tag) ([]parser.
 }
 
 func parseResults(entry animelist.Entry, results []nyaa.Item) []parser.ParsedNyaa {
-	return utils.Map(results, func(item nyaa.Item) parser.ParsedNyaa { return parser.NewParsedNyaa(entry, item) })
+	return utils.Map(results, func(item nyaa.Item) parser.ParsedNyaa {
+		return parser.NewParsedNyaa(entry, item)
+	})
 }
 
 // sortResults will digest the raw data from Nyaa into a parsed metadata struct `ParsedNyaa`.
@@ -174,44 +194,59 @@ func filterRelevantResults(
 	entry animelist.Entry,
 	results []parser.ParsedNyaa,
 	latestTag tags.Tag,
+	filterData *FilterData,
 ) []parser.ParsedNyaa {
 	results = slices.Clone(results)
 	// Requires sorted input, since we use tag progression.
 	results = sortResults(entry, results)
 
 	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
-		batchResults := utils.Filter(results, func(entry parser.ParsedNyaa) bool { return entry.ExtractedMetadata.Tag.IsMultiEpisode() })
+		batchResults := utils.Filter(results, func(entry parser.ParsedNyaa) bool {
+			return entry.ExtractedMetadata.Tag.IsMultiEpisode()
+		})
 		if len(batchResults) > 0 {
-			log.
-				Debug().
-				Msg("batch detected for aired show, prioritizing batch torrent over individual episodes")
+			filterData.DiscardedMap[DiscardReasonNotBatch] += uint(len(batchResults))
+			results = batchResults
 		}
 	} else {
 		// Remove batches when there are latest tags, avoid episode download duplication.
-		results = utils.Filter(results, func(entry parser.ParsedNyaa) bool { return !entry.ExtractedMetadata.Tag.IsMultiEpisode() })
+		results = utils.Filter(results, func(entry parser.ParsedNyaa) bool {
+			return !entry.ExtractedMetadata.Tag.IsMultiEpisode()
+		})
 	}
 
-	results, latestDetectedTag := filterEpisodes(results, latestTag)
-
-	if len(results) == 0 {
-		log.
-			Debug().
-			Stringer("latestLocalTag", latestTag).
-			Stringer("latestNyaaTag", latestDetectedTag).
-			Msg("no new episodes detected")
-
-		return nil
-	}
-
-	log.
-		Debug().
-		Int("results", len(results)).
-		Msg("newer episodes detected")
+	results, latestDetectedTag := filterEpisodes(results, latestTag, filterData)
+	filterData.LatestFoundTag = latestDetectedTag
 
 	return results
 }
 
-func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]nyaa.Item, error) {
+type (
+	DiscardReason string
+
+	FilterData struct {
+		LatestTag      tags.Tag
+		LatestFoundTag tags.Tag
+		SearchCount    int
+		NewCount       int
+		DiscardedMap   map[DiscardReason]uint
+	}
+)
+
+const (
+	DiscardReasonNotBatch              DiscardReason = "not_batch"
+	DiscardReasonNoSeeder              DiscardReason = "no_seeder"
+	DiscardReasonOlderEpisode          DiscardReason = "older_episode"
+	DiscardReasonPublishedDateMismatch DiscardReason = "publish_date_mismatch"
+	DiscardReasonEpisodeCountMismatch  DiscardReason = "episode_count_mismatch"
+	DiscardReasonTitleMismatch         DiscardReason = "title_mismatch"
+)
+
+func (c *Controller) NyaaSearch(
+	ctx context.Context,
+	entry animelist.Entry,
+	filterData *FilterData,
+) ([]nyaa.Item, error) {
 	logger := getLogger(ctx)
 
 	titleSanitization := strings.NewReplacer(
@@ -242,23 +277,19 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 		return nil, fmt.Errorf("getting nyaa list: %w", err)
 	}
 
-	logger.
-		Debug().
-		Int("results", len(entries)).
-		Msg("searched nyaa for torrent candidates")
+	filterData.SearchCount = len(entries)
 
 	if len(entries) == 0 {
 		return nil, nil
 	}
 
 	entries = utils.Filter(entries,
-		filterMetadata(entry),
+		filterMetadata(entry, filterData),
 	)
 
 	if len(entries) == 0 {
 		logger.
 			Debug().
-			Strs("titles", sanitizedTitles).
 			Msg("no results passed the metadata filter")
 	}
 
@@ -270,18 +301,37 @@ func (c *Controller) NyaaSearch(ctx context.Context, entry animelist.Entry) ([]n
 func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (bool, error) {
 	logger := getLogger(ctx)
 
-	searchResults, err := c.NyaaSearch(ctx, entry)
+	filterData := &FilterData{
+		SearchCount:  0,
+		DiscardedMap: make(map[DiscardReason]uint),
+	}
+
+	logger = logger.
+		With().
+		Any("filterData", filterData).
+		Logger()
+
+	searchResults, err := c.NyaaSearch(ctx, entry, filterData)
 	if err != nil {
 		return false, fmt.Errorf("searching torrent for anime: %w", err)
 	}
 
 	// Remove results without seeders.
-	torrentResults := utils.Filter(searchResults, func(e nyaa.Item) bool { return e.Seeders > 0 })
+	torrentResults := utils.Filter(searchResults,
+		func(e nyaa.Item) bool {
+			if e.Seeders == 0 {
+				filterData.DiscardedMap[DiscardReasonNoSeeder]++
+				return false
+			}
+
+			return true
+		},
+	)
 
 	if len(torrentResults) == 0 {
 		logger.
-			Trace().
-			Msg("no seeded torrent results")
+			Debug().
+			Msg("entry discovery stopped: no valid torrent results found")
 
 		return false, nil
 	}
@@ -291,15 +341,10 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 		return false, fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 
-	if !latestTag.IsZero() {
-		logger.
-			Debug().
-			Str("latestTag", latestTag.String()).
-			Msg("detected latest tag")
-	}
+	filterData.LatestTag = latestTag
 
 	parsedTorrents := parseResults(entry, torrentResults)
-	parsedTorrents = filterRelevantResults(entry, parsedTorrents, latestTag)
+	parsedTorrents = filterRelevantResults(entry, parsedTorrents, latestTag, filterData)
 
 	foundNewEpisodes := len(parsedTorrents) > 0
 
@@ -307,17 +352,13 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 		if err := c.AddTorrentEntry(ctx, entry, episodeTorrent); err != nil {
 			return false, fmt.Errorf("adding torrent to client: %w", err)
 		}
-
-		meta := episodeTorrent.ExtractedMetadata
-
-		logger.
-			Info().
-			Int("verticalResolution", meta.VerticalResolution).
-			Str("title", meta.Title).
-			Stringer("latestTag", latestTag).
-			Stringer("tag", meta.Tag).
-			Msg("new episode added")
 	}
+
+	filterData.NewCount = len(parsedTorrents)
+
+	logger.
+		Info().
+		Msg("entry discovery finished")
 
 	return foundNewEpisodes, nil
 }

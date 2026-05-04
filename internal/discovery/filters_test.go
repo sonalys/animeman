@@ -148,7 +148,7 @@ func Test_filterMetadata(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			filter := filterMetadata(tt.entry)
+			filter := filterMetadata(tt.entry, &FilterData{DiscardedMap: make(map[DiscardReason]uint)})
 			got := filter(tt.nyaaItem)
 			assert.Equal(t, tt.wantResult, got)
 		})
