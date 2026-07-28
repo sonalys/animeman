@@ -114,7 +114,6 @@ For the image you can run `make image`
 
 There are a couple things that will be iterated:
 
-* Use some calendar service like anilist.co for scanning Nyaa only when close to the release date
 * Improve interfaces for allowing other RSS feeds
 
 ## Contribution
