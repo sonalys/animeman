@@ -105,7 +105,7 @@ services:
 
 ### Dependencies
 
-You will need at least go 1.22 for building the binary.  
+You will need at least go 1.27 for building the binary.  
 For the image you will need docker.  
 To build you can simply run `make build`  
 For the image you can run `make image`

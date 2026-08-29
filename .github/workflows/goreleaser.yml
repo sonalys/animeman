@@ -12,7 +12,7 @@ jobs:
       contents: write
       packages: write
     env:
-      GO_VERSION: 1.25
+      GO_VERSION: 1.27
     steps:
       - name: Checkout
         uses: actions/checkout@v4
