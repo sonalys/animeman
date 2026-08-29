@@ -7,7 +7,6 @@ import (
 
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/utils"
 	"gopkg.in/yaml.v3"
 )
 
@@ -169,12 +168,10 @@ func GenerateBoilerplateConfig() {
 			Username: "YOUR_USERNAME",
 			CacheTTL: 30 * time.Minute,
 		},
-		RSSConfig: RSSConfig{
-			SearchSuffix:  `-"dub"`,
-			Sources:       []string{},
-			Qualities:     []string{"1080 HEVC", "720"},
-			PollFrequency: 15 * time.Minute,
-		},
+		SearchSuffix:  `-"dub"`,
+		Sources:       []string{},
+		Qualities:     []string{"1080 HEVC", "720"},
+		PollFrequency: 15 * time.Minute,
 		TorrentConfig: TorrentConfig{
 			Category:         "Animes",
 			DownloadPath:     "/downloads/animes",
@@ -182,7 +179,7 @@ func GenerateBoilerplateConfig() {
 			Username:         "admin",
 			Password:         "adminadmin",
 			CreateShowFolder: true,
-			RenameTorrent:    utils.Pointer(true),
+			RenameTorrent:    new(true),
 			Type:             TorrentClientTypeQBittorrent,
 		},
 	})

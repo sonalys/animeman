@@ -107,7 +107,7 @@ func main() {
 			Sources:          config.Sources,
 			Qualitites:       config.Qualities,
 			Category:         config.Category,
-			RenameTorrent:    *utils.Coalesce(config.RenameTorrent, utils.Pointer(true)),
+			RenameTorrent:    *utils.Coalesce(config.RenameTorrent, new(true)),
 			DownloadPath:     config.DownloadPath,
 			CreateShowFolder: config.CreateShowFolder,
 			PollFrequency:    config.PollFrequency,

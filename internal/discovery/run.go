@@ -107,7 +107,8 @@ func filterEpisodes(
 	for _, nyaaEntry := range results {
 		currentTag := nyaaEntry.ExtractedMetadata.Tag
 
-		if tagCompare(currentTag, initialTag) <= 0 || tagCompare(currentTag, latestDetectedTag) <= 0 {
+		if tagCompare(currentTag, initialTag) <= 0 ||
+			tagCompare(currentTag, latestDetectedTag) <= 0 {
 			filterData.DiscardReason[DiscardReasonOlderEpisode]++
 			continue
 		}
@@ -163,11 +164,19 @@ func sortResults(entry animelist.Entry, results []parser.ParsedNyaa) []parser.Pa
 
 		// Then title similarity.
 		titleSimilarityI := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
-			return utils.CalculateTextSimilarity(curTitle, first.ExtractedMetadata.Title, ignoreCharset)
+			return utils.CalculateTextSimilarity(
+				curTitle,
+				first.ExtractedMetadata.Title,
+				ignoreCharset,
+			)
 		})...)
 
 		titleSimilarityJ := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
-			return utils.CalculateTextSimilarity(curTitle, second.ExtractedMetadata.Title, ignoreCharset)
+			return utils.CalculateTextSimilarity(
+				curTitle,
+				second.ExtractedMetadata.Title,
+				ignoreCharset,
+			)
 		})...)
 
 		if titleSimilarityI != titleSimilarityJ {
