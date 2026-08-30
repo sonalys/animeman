@@ -8,13 +8,14 @@ import (
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
 func Test_buildTaggedNyaaList(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
 		got := parseResults(animelist.Entry{}, []nyaa.Item{})
-		got = sortResults(animelist.Entry{}, got)
+		got = sortResults(animelist.Entry{}, got, Config{})
 		require.Empty(t, got)
 	})
 
@@ -27,7 +28,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 		}
 
 		got := parseResults(animelist.Entry{}, input)
-		got = sortResults(animelist.Entry{}, got)
+		got = sortResults(animelist.Entry{}, got, Config{})
 
 		require.Len(t, got, len(input))
 
@@ -39,6 +40,27 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 		}
 	})
 
+	t.Run("sort by source", func(t *testing.T) {
+		input := []nyaa.Item{
+			{Title: "Show3: S03E01 [sourceA]"},
+			{Title: "Show3: S03E01 [sourceB]"},
+			{Title: "Show3: S03E01 [sourceC]"},
+		}
+
+		got := parseResults(animelist.Entry{}, input)
+		got = sortResults(animelist.Entry{}, got, Config{
+			Sources: []string{"sourceB", "sourceA", "sourceC"},
+		})
+
+		require.Len(t, got, len(input))
+
+		assert.Equal(t, []string{"sourceB", "sourceA", "sourceC"}, []string{
+			got[0].ExtractedMetadata.Source,
+			got[1].ExtractedMetadata.Source,
+			got[2].ExtractedMetadata.Source,
+		})
+	})
+
 	t.Run("sort by seeds", func(t *testing.T) {
 		input := []nyaa.Item{
 			{Title: "Show3: S03E01", Seeders: 1},
@@ -47,7 +69,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 		}
 
 		got := parseResults(animelist.Entry{}, input)
-		got = sortResults(animelist.Entry{}, got)
+		got = sortResults(animelist.Entry{}, got, Config{})
 
 		require.Len(t, got, len(input))
 
@@ -76,6 +98,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			[]parser.ParsedNyaa{},
 			tags.Zero,
 			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+			Config{},
 		)
 		require.Empty(t, got)
 	})
@@ -93,6 +116,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			parsed,
 			tags.Zero,
 			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+			Config{},
 		)
 
 		require.Len(t, got, len(input))
@@ -117,6 +141,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			parsed,
 			tags.Zero,
 			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+			Config{},
 		)
 
 		require.Equal(t, parsed[2:], got)
@@ -134,6 +159,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			parsed,
 			tags.Zero,
 			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+			Config{},
 		)
 
 		require.Equal(t, parsed[1:], got)
@@ -151,6 +177,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			parsed,
 			tags.Zero,
 			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+			Config{},
 		)
 
 		require.Len(t, got, 1)
@@ -170,6 +197,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			parsed,
 			tags.Zero,
 			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+			Config{},
 		)
 
 		require.Len(t, got, 3)

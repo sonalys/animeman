@@ -151,7 +151,11 @@ func parseResults(entry animelist.Entry, results []nyaa.Item) []parser.ParsedNya
 // it will also sort the response by season and episode.
 // it's important it returns a crescent season/episode list, so you don't download a recent episode and
 // don't download the oldest ones in case you don't have all episodes since your latestTag.
-func sortResults(entry animelist.Entry, results []parser.ParsedNyaa) []parser.ParsedNyaa {
+func sortResults(
+	entry animelist.Entry,
+	results []parser.ParsedNyaa,
+	config Config,
+) []parser.ParsedNyaa {
 	smallerFunc := func(i, j int) bool {
 		first := results[i]
 		second := results[j]
@@ -189,6 +193,21 @@ func sortResults(entry animelist.Entry, results []parser.ParsedNyaa) []parser.Pa
 			return cmp < 0
 		}
 
+		// Then source.
+		if len(config.Sources) > 0 &&
+			first.ExtractedMetadata.Source != second.ExtractedMetadata.Source {
+			cmp = slices.Index(
+				config.Sources,
+				first.ExtractedMetadata.Source,
+			) - slices.Index(
+				config.Sources,
+				second.ExtractedMetadata.Source,
+			)
+			if cmp != 0 {
+				return cmp < 0
+			}
+		}
+
 		// Then prioritize number of seeds
 		return first.NyaaTorrent.Seeders > second.NyaaTorrent.Seeders
 	}
@@ -204,10 +223,11 @@ func filterRelevantResults(
 	results []parser.ParsedNyaa,
 	latestTag tags.Tag,
 	filterData *FilterData,
+	config Config,
 ) []parser.ParsedNyaa {
 	results = slices.Clone(results)
 	// Requires sorted input, since we use tag progression.
-	results = sortResults(entry, results)
+	results = sortResults(entry, results, config)
 
 	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
 		batchResults := utils.Filter(results, func(entry parser.ParsedNyaa) bool {
@@ -349,7 +369,13 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 	filterData.LatestTag = latestTag
 
 	parsedTorrents := parseResults(entry, torrentResults)
-	parsedTorrents = filterRelevantResults(entry, parsedTorrents, latestTag, filterData)
+	parsedTorrents = filterRelevantResults(
+		entry,
+		parsedTorrents,
+		latestTag,
+		filterData,
+		c.dep.Config,
+	)
 
 	foundNewEpisodes := len(parsedTorrents) > 0
 

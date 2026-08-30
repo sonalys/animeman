@@ -45,11 +45,13 @@ animeList:
 rssConfig:
   type: nyaa
   pollFrequency: 5m0s # min 1m0s.
-  sources:
-      - source1 # replace with your sources or remove the sources field to fetch all.
+  sources: # specify which sources to use, and in which priority. Keep empty to accept all.
+      - source1
       - source2
-  qualities:
-      - 1080 # filter for 1080, 720, HEVC or remove to fetch all.
+  qualities: # OR filter. Example 1080 HEVC or 720
+      - 1080 HEVC
+      - 720
+  searchSuffix: -"dub" # you can specify search suffixes like negative match on keywords.
   customParameters:
     c: 1_2 # you can configure custom query parameters for the rss list call. In this example it will set ?c=1_2.
 torrentConfig:
