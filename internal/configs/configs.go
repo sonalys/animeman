@@ -185,6 +185,7 @@ func GenerateBoilerplateConfig() {
 			RenameTorrent:    new(true),
 			Type:             TorrentClientTypeQBittorrent,
 		},
+		LogLevel: LogLevelInfo,
 	})
 	if err != nil {
 		log.Fatal().Msgf("failed to save config.yaml file: %s", err)

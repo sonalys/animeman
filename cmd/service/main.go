@@ -76,7 +76,9 @@ func initializeTorrentClient(ctx context.Context, c configs.TorrentConfig) disco
 func main() {
 	log.Info().Msgf("starting Animeman [%s]", version)
 
-	config, err := configs.ReadConfig(utils.Coalesce(os.Getenv("CONFIG_PATH"), "config.yaml"))
+	config, err := configs.ReadConfig(
+		utils.ValueOrDefault(os.Getenv("CONFIG_PATH"), "config.yaml"),
+	)
 	if err != nil {
 		log.Fatal().Msgf("config is not valid: %s", err)
 	}
@@ -107,7 +109,7 @@ func main() {
 			Sources:          config.Sources,
 			Qualitites:       config.Qualities,
 			Category:         config.Category,
-			RenameTorrent:    *utils.Coalesce(config.RenameTorrent, new(true)),
+			RenameTorrent:    utils.PointerOrDefault(config.RenameTorrent, true),
 			DownloadPath:     config.DownloadPath,
 			CreateShowFolder: config.CreateShowFolder,
 			PollFrequency:    config.PollFrequency,
