@@ -6,13 +6,6 @@ import (
 	"unicode/utf8"
 )
 
-func HasPrefixFold(s, prefix string) bool {
-	if len(s) < len(prefix) {
-		return false
-	}
-	return strings.EqualFold(s[:len(prefix)], prefix)
-}
-
 // MatchPrefixFlexible checks if 's' starts with 'prefix'.
 // It compares case-insensitively and skips characters present in 'ignoreChars'.
 func MatchPrefixFlexible(s, prefix, ignoreChars string) bool {

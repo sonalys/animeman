@@ -17,13 +17,6 @@ type Tag struct {
 
 var Zero Tag
 
-func SeasonEpisode(season int, episode float64) Tag {
-	return Tag{
-		Seasons:  []int{season},
-		Episodes: []float64{episode},
-	}
-}
-
 func (t Tag) FirstSeason() int {
 	if t.IsZero() {
 		return 0

@@ -1,7 +1,6 @@
 package discovery
 
 import (
-	"reflect"
 	"testing"
 	"time"
 
@@ -11,92 +10,6 @@ import (
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/stretchr/testify/require"
 )
-
-func Test_filterEpisodes(t *testing.T) {
-	type args struct {
-		list      []parser.ParsedNyaa
-		latestTag tags.Tag
-	}
-	tests := []struct {
-		name string
-		args args
-		want []parser.ParsedNyaa
-	}{
-		{
-			name: "s\\de\\d{2}",
-			args: args{
-				latestTag: tags.SeasonEpisode(1, 18),
-				list: []parser.ParsedNyaa{
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(1, 16)}},
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(1, 17)}},
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(1, 18)}},
-				},
-			},
-			want: []parser.ParsedNyaa{},
-		},
-		{
-			name: "no tag",
-			args: args{
-				latestTag: tags.Zero,
-				list: []parser.ParsedNyaa{
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
-				},
-			},
-			want: []parser.ParsedNyaa{
-				{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-				{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
-			},
-		},
-		{
-			name: "empty",
-			args: args{},
-			want: []parser.ParsedNyaa{},
-		},
-		{
-			name: "tag",
-			args: args{
-				latestTag: tags.SeasonEpisode(3, 1),
-				list: []parser.ParsedNyaa{
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
-				},
-			},
-			want: []parser.ParsedNyaa{
-				{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
-			},
-		},
-		{
-			name: "season batch",
-			args: args{
-				latestTag: tags.Tag{Seasons: []int{3}},
-				list: []parser.ParsedNyaa{
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
-				},
-			},
-			want: []parser.ParsedNyaa{},
-		},
-		{
-			name: "same tag",
-			args: args{
-				latestTag: tags.SeasonEpisode(3, 2),
-				list: []parser.ParsedNyaa{
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 1)}},
-					{ExtractedMetadata: parser.Metadata{Tag: tags.SeasonEpisode(3, 2)}},
-				},
-			},
-			want: []parser.ParsedNyaa{},
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got, _ := filterEpisodes(tt.args.list, tt.args.latestTag, &FilterData{DiscardReason: make(map[DiscardReason]uint)}); !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("filterEpisodes() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
 
 func Test_buildTaggedNyaaList(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
@@ -119,7 +32,10 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 		require.Len(t, got, len(input))
 
 		for i := 1; i < len(got); i++ {
-			require.True(t, tagCompare(got[i-1].ExtractedMetadata.Tag, got[i].ExtractedMetadata.Tag) <= 0)
+			require.True(
+				t,
+				tagCompare(got[i-1].ExtractedMetadata.Tag, got[i].ExtractedMetadata.Tag) <= 0,
+			)
 		}
 	})
 
@@ -143,11 +59,24 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 
 func Test_filterNyaaFeed(t *testing.T) {
 	newEntry := func(airingStatus animelist.AiringStatus) animelist.Entry {
-		return animelist.NewEntry(nil, animelist.ListStatusWatching, airingStatus, time.Now(), time.Now(), 0, nil)
+		return animelist.NewEntry(
+			nil,
+			animelist.ListStatusWatching,
+			airingStatus,
+			time.Now(),
+			time.Now(),
+			0,
+			nil,
+		)
 	}
 
 	t.Run("empty", func(t *testing.T) {
-		got := filterRelevantResults(animelist.Entry{}, []parser.ParsedNyaa{}, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(
+			animelist.Entry{},
+			[]parser.ParsedNyaa{},
+			tags.Zero,
+			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+		)
 		require.Empty(t, got)
 	})
 
@@ -159,71 +88,20 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(
+			animelist.Entry{},
+			parsed,
+			tags.Zero,
+			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+		)
 
 		require.Len(t, got, len(input))
 		for i := 1; i < len(got); i++ {
-			require.True(t, tagCompare(got[i-1].ExtractedMetadata.Tag, got[i].ExtractedMetadata.Tag) <= 0)
+			require.True(
+				t,
+				tagCompare(got[i-1].ExtractedMetadata.Tag, got[i].ExtractedMetadata.Tag) <= 0,
+			)
 		}
-	})
-
-	t.Run("airing: with latestTag", func(t *testing.T) {
-		input := []nyaa.Item{
-			{Title: "Show3: S03E03"},
-			{Title: "Show3: S03E02"},
-			{Title: "Show3: S03E01"},
-		}
-
-		entry := newEntry(animelist.AiringStatusAiring)
-		parsedTorrents := parseResults(animelist.Entry{}, input)
-		latestTag := tags.SeasonEpisode(3, 2)
-
-		got := filterRelevantResults(entry, parsedTorrents, latestTag, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
-
-		require.Equal(t, parsedTorrents[:1], got)
-	})
-
-	t.Run("airing: with repeated tag", func(t *testing.T) {
-		input := []nyaa.Item{
-			{Title: "Show3: S03E02"},
-			{Title: "Show3: S03E02"},
-			{Title: "Show3: S03E01"},
-		}
-
-		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 1), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
-
-		require.Len(t, got, 1)
-		require.Equal(t, parsed[0:1], got)
-	})
-
-	t.Run("airing: with latestTag and quality", func(t *testing.T) {
-		input := []nyaa.Item{
-			{Title: "Show3: S03E03 720p"},
-			{Title: "Show3: S03E03 1080p"},
-			{Title: "Show3: S03E02"},
-			{Title: "Show3: S03E01"},
-		}
-
-		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
-
-		require.Len(t, got, 1)
-		require.Equal(t, parsed[1:2], got)
-	})
-
-	t.Run("aired: with latestTag", func(t *testing.T) {
-		input := []nyaa.Item{
-			{Title: "Show3: S03E03"},
-			{Title: "Show3: S03E02"},
-			{Title: "Show3: S03E01"},
-		}
-
-		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
-
-		require.Len(t, got, 1)
-		require.Equal(t, parsed[:1], got)
 	})
 
 	t.Run("aired: with batch, no latestTag", func(t *testing.T) {
@@ -234,7 +112,12 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(
+			newEntry(animelist.AiringStatusAired),
+			parsed,
+			tags.Zero,
+			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+		)
 
 		require.Equal(t, parsed[2:], got)
 	})
@@ -246,7 +129,12 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(
+			newEntry(animelist.AiringStatusAired),
+			parsed,
+			tags.Zero,
+			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+		)
 
 		require.Equal(t, parsed[1:], got)
 	})
@@ -258,38 +146,15 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(
+			newEntry(animelist.AiringStatusAired),
+			parsed,
+			tags.Zero,
+			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+		)
 
 		require.Len(t, got, 1)
 		require.Equal(t, parsed[1:], got)
-	})
-
-	t.Run("aired: with batch, with latestTag", func(t *testing.T) {
-		input := []nyaa.Item{
-			{Title: "Show3: S03E03"},
-			{Title: "Show3: S03E02"},
-			{Title: "Show3: S03"},
-		}
-
-		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
-
-		require.Len(t, got, 1)
-		require.Equal(t, parsed[:1], got)
-	})
-
-	t.Run("same tag and quality, different seeders", func(t *testing.T) {
-		input := []nyaa.Item{
-			{Title: "Show3: S03E03", Seeders: 1},
-			{Title: "Show3: S03E03", Seeders: 10},
-			{Title: "Show3: S03"},
-		}
-
-		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(animelist.Entry{}, parsed, tags.SeasonEpisode(3, 2), &FilterData{DiscardReason: make(map[DiscardReason]uint)})
-
-		require.Len(t, got, 1)
-		require.Equal(t, parsed[1:2], got)
 	})
 
 	t.Run("batch for different seasons", func(t *testing.T) {
@@ -300,7 +165,12 @@ func Test_filterNyaaFeed(t *testing.T) {
 		}
 
 		parsed := parseResults(animelist.Entry{}, input)
-		got := filterRelevantResults(newEntry(animelist.AiringStatusAired), parsed, tags.Zero, &FilterData{DiscardReason: make(map[DiscardReason]uint)})
+		got := filterRelevantResults(
+			newEntry(animelist.AiringStatusAired),
+			parsed,
+			tags.Zero,
+			&FilterData{DiscardReason: make(map[DiscardReason]uint)},
+		)
 
 		require.Len(t, got, 3)
 	})

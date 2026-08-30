@@ -134,44 +134,6 @@ func Test_getLatestTag(t *testing.T) {
 	}
 }
 
-func Test_mergeBatchEpisodes(t *testing.T) {
-	type args struct {
-		tag string
-	}
-	tests := []struct {
-		name string
-		args args
-		want string
-	}{
-		{
-			name: "empty",
-			args: args{},
-			want: "",
-		},
-		{
-			name: "ok",
-			args: args{
-				tag: "S03E1~12",
-			},
-			want: "S03E12",
-		},
-		{
-			name: "no batch",
-			args: args{
-				tag: "S03E1",
-			},
-			want: "S03E1",
-		},
-	}
-	for _, tt := range tests {
-		t.Run(tt.name, func(t *testing.T) {
-			if got := tagMergeBatchEpisodes(tt.args.tag); got != tt.want {
-				t.Errorf("mergeBatchEpisodes() = %v, want %v", got, tt.want)
-			}
-		})
-	}
-}
-
 func Test_tagCompare(t *testing.T) {
 	t.Run("same tag", func(t *testing.T) {
 		tag := tags.Tag{
