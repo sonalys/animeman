@@ -44,24 +44,26 @@ animeList:
   username: YOUR_USERNAME # Replace with your username.
 rssConfig:
   type: nyaa
-  pollFrequency: 5m0s # min 1m0s.
-  sources: # specify which sources to use, and in which priority. Keep empty to accept all.
+  pollFrequency: 5m0s # Minimum 1m0s. Avoids denial-of-service on nyaa.
+  sources: # Specify which sources to use, and in which priority. Keep empty to accept all.
       - source1
       - source2
   qualities: # OR filter. Example 1080 HEVC or 720
       - 1080 HEVC
       - 720
-  searchSuffix: -"dub" # you can specify search suffixes like negative match on keywords.
-  customParameters:
-    c: 1_2 # you can configure custom query parameters for the rss list call. In this example it will set ?c=1_2.
+  searchSuffix: '-"dub"' # Specifies search suffixes like negative match on keywords.
+  customParameters: # Configures custom query parameters for the rss list call.
+    c: 1_2 # Defines english only anime sources.
+    s: seeders # Sorts by seeders, keep most seeded candidates on first page.
+    o: desc # Descending order.
 torrentConfig:
   type: qbittorrent
-  category: Animes
+  category: Animes # Animeman managed category, will be used to create tags / identify latest ep.
   downloadPath: /downloads/animes
-  createShowFolder: true # creates a folder to for the show inside downloadPath.
-  renameTorrent: true # will rename the torrent in qBittorrent avoiding conflict between multiple sources with different names for the show.
-  host: http://192.168.1.240:8088 # replace with your qBittorrent WebUI address.
-  username: admin # replace credentials with your own
+  createShowFolder: true # Creates a folder to for the show inside downloadPath.
+  renameTorrent: true # Rename the torrent in qBittorrent avoiding conflict between multiple sources with different names for the show.
+  host: http://ip:port # Replace with your qBittorrent WebUI address.
+  username: admin # Replace credentials with your own
   password: adminadmin
 ```
 
