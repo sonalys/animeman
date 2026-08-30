@@ -125,9 +125,9 @@ const (
 )
 
 type Config struct {
-	AnimeListConfig `yaml:"animeList"`
-	RSSConfig       `yaml:"rssConfig"`
-	TorrentConfig   `yaml:"torrentConfig"`
+	AnimeListConfig `         yaml:"animeList"`
+	RSSConfig       `         yaml:"rssConfig"`
+	TorrentConfig   `         yaml:"torrentConfig"`
 	LogLevel        LogLevel `yaml:"logLevel"`
 }
 
@@ -168,10 +168,13 @@ func GenerateBoilerplateConfig() {
 			Username: "YOUR_USERNAME",
 			CacheTTL: 30 * time.Minute,
 		},
-		SearchSuffix:  `-"dub"`,
-		Sources:       []string{},
-		Qualities:     []string{"1080 HEVC", "720"},
-		PollFrequency: 15 * time.Minute,
+		RSSConfig: RSSConfig{
+			Type:          RSSTypeNyaa,
+			SearchSuffix:  `-"dub"`,
+			Sources:       []string{},
+			Qualities:     []string{"1080 HEVC", "720"},
+			PollFrequency: 15 * time.Minute,
+		},
 		TorrentConfig: TorrentConfig{
 			Category:         "Animes",
 			DownloadPath:     "/downloads/animes",
@@ -192,7 +195,8 @@ func ReadConfig(path string) (Config, error) {
 	file, err := os.Open(path)
 	if err != nil {
 		GenerateBoilerplateConfig()
-		log.Fatal().Msg("file config.yaml not detected, please open the created file and configure it correctly")
+		log.Fatal().
+			Msg("file config.yaml not detected, please open the created file and configure it correctly")
 	}
 	var config Config
 	if err = yaml.NewDecoder(file).Decode(&config); err != nil {

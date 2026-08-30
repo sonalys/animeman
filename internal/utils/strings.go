@@ -152,10 +152,7 @@ func levenshtein(r1, r2 []rune) int {
 			del := currColumn[j] + 1
 			sub := prevColumn[j] + cost
 
-			minVal := min(del, ins)
-			if sub < minVal {
-				minVal = sub
-			}
+			minVal := min(sub, min(del, ins))
 
 			currColumn[j+1] = minVal
 		}
