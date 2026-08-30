@@ -14,7 +14,11 @@ type ParsedNyaa struct {
 	NyaaTorrent nyaa.Item
 }
 
-func NewParsedNyaa(animeListEntry animelist.Entry, entry nyaa.Item) ParsedNyaa {
+func NewParsedNyaa(
+	animeListEntry animelist.Entry,
+	entry nyaa.Item,
+	sources []string,
+) ParsedNyaa {
 	fallbackSeason := 1
 
 	for _, title := range animeListEntry.Titles {
@@ -24,7 +28,7 @@ func NewParsedNyaa(animeListEntry animelist.Entry, entry nyaa.Item) ParsedNyaa {
 		}
 	}
 
-	meta := Parse(entry.Title, fallbackSeason)
+	meta := Parse(entry.Title, fallbackSeason, sources)
 	return ParsedNyaa{
 		ExtractedMetadata: meta,
 		NyaaTorrent:       entry,

@@ -14,6 +14,7 @@ It automatically parses the torrent titles for tagging the show, season and epis
 * **Tags**: all torrent entries under the configured category with [`!Serie name`, `Serie name S01E01`] as an example
 * **Source and quality filter**: you can specify resolution and HEVC tag
 * **Smart episode detection**: you don't need to worry about downloading the same episode twice
+* **Custom torrent renaming logic**: you are able to write exactly how your torrents should be named using [expr-lang](https://expr-lang.org/docs/language-definition)
 
 ## How does it work?
 
@@ -62,10 +63,43 @@ torrentConfig:
   downloadPath: /downloads/animes
   createShowFolder: true # Creates a folder to for the show inside downloadPath.
   renameTorrent: true # Rename the torrent in qBittorrent avoiding conflict between multiple sources with different names for the show.
+  renameScript: "" # An expr-lang script that allows you to define how you want your torrents to be named.
   host: http://ip:port # Replace with your qBittorrent WebUI address.
   username: admin # Replace credentials with your own
   password: adminadmin
 ```
+
+### Docs for renameScript
+
+Language builtins are found under [expr-lang](https://expr-lang.org/docs/language-definition).  
+Available envs: `[title, releaseGroup, labels, tag, verticalResolution]`.  
+Available funcs:
+- `format("mask", value)`: Use format masks like `%s` or `%v`, to render a value. Returns empty string on zero value
+
+#### Example 1
+```
+// Joins parts with a single space.
+join(
+  // Filters only non-empty parts.
+  filter(
+    [
+      // Put release group inside square brackets if any.
+      format("[%s]", releaseGroup),
+      title,
+      // Format tag as a string. e.g. S1E4.
+      tag.String(), 
+      // Put vertical resolution inside square brackets + p, if any.
+      format("[%dp]", verticalResolution),
+      // Format array of labels as [v1,v2,v3...]. 
+      format("%v", labels),
+    ], 
+    # != "",
+  ), 
+  " ",
+)
+```
+
+This script formats torrents as: `[release-group] My Anime Title S1E1 [1080p] [HEVC 10BIT]`
 
 ## Installation
 

@@ -15,6 +15,25 @@ type AnimeListType string
 const (
 	AnimeListTypeMAL     AnimeListType = "myanimelist"
 	AnimeListTypeAnilist AnimeListType = "anilist"
+
+	DefaultRenamingScript = `
+		// Joins parts with a single space.
+		join(
+			// Filters only non-empty parts.
+			filter(
+				[
+					// Put release group inside square brackets if any.
+					format("[%s]", releaseGroup),
+					title,
+					// Format tag as a string. e.g. S1E4.
+					tag.String(), 
+					// Put vertical resolution inside square brackets + p, if any.
+					format("[%dp]", verticalResolution),
+				], 
+				# != "",
+			), 
+			" ",
+		)`
 )
 
 func (t AnimeListType) Validate() error {
@@ -103,14 +122,20 @@ type TorrentConfig struct {
 	DownloadPath     string            `yaml:"downloadPath"`
 	CreateShowFolder bool              `yaml:"createShowFolder"`
 	RenameTorrent    *bool             `yaml:"renameTorrent,omitempty"`
+	RenameScript     string            `yaml:"renameScript,omitempty"`
 }
 
-func (c TorrentConfig) Validate() error {
+func (c *TorrentConfig) Validate() error {
 	if err := c.Type.Validate(); err != nil {
 		return fmt.Errorf("type: %w", err)
 	}
 	if c.Host == "" {
 		return fmt.Errorf("host: is empty")
+	}
+	if c.RenameScript == "" {
+		// Default renaming logic to keep backwards compatibility.
+		// Example output: [ReleaseGroup] Show Title S01E02 [1080p]
+		c.RenameScript = DefaultRenamingScript
 	}
 	return nil
 }

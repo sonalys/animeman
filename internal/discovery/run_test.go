@@ -14,7 +14,7 @@ import (
 
 func Test_buildTaggedNyaaList(t *testing.T) {
 	t.Run("empty", func(t *testing.T) {
-		got := parseResults(animelist.Entry{}, []nyaa.Item{})
+		got := parseResults(animelist.Entry{}, []nyaa.Item{}, Config{})
 		got = sortResults(animelist.Entry{}, got, Config{})
 		require.Empty(t, got)
 	})
@@ -27,7 +27,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 			{Title: "Show3: S03"},
 		}
 
-		got := parseResults(animelist.Entry{}, input)
+		got := parseResults(animelist.Entry{}, input, Config{})
 		got = sortResults(animelist.Entry{}, got, Config{})
 
 		require.Len(t, got, len(input))
@@ -47,17 +47,19 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 			{Title: "Show3: S03E01 [sourceC]"},
 		}
 
-		got := parseResults(animelist.Entry{}, input)
-		got = sortResults(animelist.Entry{}, got, Config{
-			Sources: []string{"sourceB", "sourceA", "sourceC"},
-		})
+		cfg := Config{
+			ReleaseGroups: []string{"sourceB", "sourceA", "sourceC"},
+		}
+
+		got := parseResults(animelist.Entry{}, input, cfg)
+		got = sortResults(animelist.Entry{}, got, cfg)
 
 		require.Len(t, got, len(input))
 
 		assert.Equal(t, []string{"sourceB", "sourceA", "sourceC"}, []string{
-			got[0].ExtractedMetadata.Source,
-			got[1].ExtractedMetadata.Source,
-			got[2].ExtractedMetadata.Source,
+			got[0].ExtractedMetadata.ReleaseGroup,
+			got[1].ExtractedMetadata.ReleaseGroup,
+			got[2].ExtractedMetadata.ReleaseGroup,
 		})
 	})
 
@@ -68,7 +70,7 @@ func Test_buildTaggedNyaaList(t *testing.T) {
 			{Title: "Show3: S03E01", Seeders: 2},
 		}
 
-		got := parseResults(animelist.Entry{}, input)
+		got := parseResults(animelist.Entry{}, input, Config{})
 		got = sortResults(animelist.Entry{}, got, Config{})
 
 		require.Len(t, got, len(input))
@@ -110,7 +112,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03E01"},
 		}
 
-		parsed := parseResults(animelist.Entry{}, input)
+		parsed := parseResults(animelist.Entry{}, input, Config{})
 		got := filterRelevantResults(
 			animelist.Entry{},
 			parsed,
@@ -135,7 +137,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03"},
 		}
 
-		parsed := parseResults(animelist.Entry{}, input)
+		parsed := parseResults(animelist.Entry{}, input, Config{})
 		got := filterRelevantResults(
 			newEntry(animelist.AiringStatusAired),
 			parsed,
@@ -153,7 +155,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03"},
 		}
 
-		parsed := parseResults(animelist.Entry{}, input)
+		parsed := parseResults(animelist.Entry{}, input, Config{})
 		got := filterRelevantResults(
 			newEntry(animelist.AiringStatusAired),
 			parsed,
@@ -171,7 +173,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S03 1080p"},
 		}
 
-		parsed := parseResults(animelist.Entry{}, input)
+		parsed := parseResults(animelist.Entry{}, input, Config{})
 		got := filterRelevantResults(
 			newEntry(animelist.AiringStatusAired),
 			parsed,
@@ -191,7 +193,7 @@ func Test_filterNyaaFeed(t *testing.T) {
 			{Title: "Show3: S3"},
 		}
 
-		parsed := parseResults(animelist.Entry{}, input)
+		parsed := parseResults(animelist.Entry{}, input, Config{})
 		got := filterRelevantResults(
 			newEntry(animelist.AiringStatusAired),
 			parsed,

@@ -4,7 +4,7 @@ import "github.com/sonalys/animeman/internal/tags"
 
 // Metadata is a digested metadata struct parsed from titles.
 type Metadata struct {
-	Source             string
+	ReleaseGroup             string
 	Title              string
 	Tag                tags.Tag
 	Labels             []string
@@ -13,7 +13,7 @@ type Metadata struct {
 
 func (m Metadata) Clone() Metadata {
 	return Metadata{
-		Source:             m.Source,
+		ReleaseGroup:             m.ReleaseGroup,
 		Title:              m.Title,
 		Tag:                m.Tag,
 		Labels:             append([]string{}, m.Labels...),

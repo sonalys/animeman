@@ -23,8 +23,16 @@ func TestTitleParse(t *testing.T) {
 					Episodes: []float64{7},
 				},
 				VerticalResolution: 1080,
-				Source:             "Erai-raws",
-				Labels:             []string{"1080p", "CR", "WEB-DL", "AVC", "AAC", "MultiSub", "D834BF79"},
+				ReleaseGroup:             "Erai-raws",
+				Labels: []string{
+					"1080p",
+					"CR",
+					"WEB-DL",
+					"AVC",
+					"AAC",
+					"MultiSub",
+					"D834BF79",
+				},
 			},
 		},
 		{
@@ -37,7 +45,7 @@ func TestTitleParse(t *testing.T) {
 					Episodes: []float64{7},
 				},
 				VerticalResolution: 1080,
-				Source:             "Provider",
+				ReleaseGroup:             "Provider",
 				Labels:             []string{"file-hash"},
 			},
 		},
@@ -51,7 +59,7 @@ func TestTitleParse(t *testing.T) {
 					Episodes: []float64{7.5},
 				},
 				VerticalResolution: 1080,
-				Source:             "Provider",
+				ReleaseGroup:             "Provider",
 				Labels:             []string{"9F8A2A07"},
 			},
 		},
@@ -65,7 +73,7 @@ func TestTitleParse(t *testing.T) {
 					Episodes: []float64{7.5},
 				},
 				VerticalResolution: -1,
-				Source:             "Provider",
+				ReleaseGroup:             "Provider",
 				Labels:             []string{},
 			},
 		},
@@ -108,7 +116,7 @@ func TestTitleParse(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := Parse(tt.title, 1)
+			got := Parse(tt.title, 1, nil)
 			require.Equal(t, tt.want, got)
 		})
 	}

@@ -1,16 +1,10 @@
 package discovery
 
 import (
-	"regexp"
-
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
-
-// Regexp for detecting batch tag numbers.
-// Example: S02E01~13.
-var batchReplaceExpr = regexp.MustCompile(`(\d+)~(\d+)`)
 
 // tagCompare receives 2 series tags, Example: S02E01 and S02E02.
 // it will return the comparison of Tag1, Tag2.
@@ -79,7 +73,7 @@ func getLatestTag(torrents []torrentclient.Torrent) tags.Tag {
 	for _, torrent := range torrents {
 		tags := torrent.Tags
 		seasonEpisodeTag := tags[len(tags)-1]
-		meta := parser.Parse(seasonEpisodeTag, 1)
+		meta := parser.Parse(seasonEpisodeTag, 1, nil)
 		tag := meta.Tag
 
 		if latestTag.IsZero() || tagCompare(tag, latestTag) > 0 {

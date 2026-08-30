@@ -141,9 +141,9 @@ func filterEpisodes(
 	return out, latestDetectedTag
 }
 
-func parseResults(entry animelist.Entry, results []nyaa.Item) []parser.ParsedNyaa {
+func parseResults(entry animelist.Entry, results []nyaa.Item, config Config) []parser.ParsedNyaa {
 	return utils.Map(results, func(item nyaa.Item) parser.ParsedNyaa {
-		return parser.NewParsedNyaa(entry, item)
+		return parser.NewParsedNyaa(entry, item, config.ReleaseGroups)
 	})
 }
 
@@ -194,14 +194,14 @@ func sortResults(
 		}
 
 		// Then source.
-		if len(config.Sources) > 0 &&
-			first.ExtractedMetadata.Source != second.ExtractedMetadata.Source {
+		if len(config.ReleaseGroups) > 0 &&
+			first.ExtractedMetadata.ReleaseGroup != second.ExtractedMetadata.ReleaseGroup {
 			cmp = slices.Index(
-				config.Sources,
-				first.ExtractedMetadata.Source,
+				config.ReleaseGroups,
+				first.ExtractedMetadata.ReleaseGroup,
 			) - slices.Index(
-				config.Sources,
-				second.ExtractedMetadata.Source,
+				config.ReleaseGroups,
+				second.ExtractedMetadata.ReleaseGroup,
 			)
 			if cmp != 0 {
 				return cmp < 0
@@ -300,7 +300,7 @@ func (c *Controller) NyaaSearch(
 		SearchSuffix:        c.dep.Config.SearchSuffix,
 		Titles:              sanitizedTitles,
 		VerticalResolutions: c.dep.Config.Qualitites,
-		Sources:             c.dep.Config.Sources,
+		Sources:             c.dep.Config.ReleaseGroups,
 	})
 	if err != nil {
 		return nil, fmt.Errorf("getting nyaa list: %w", err)
@@ -368,7 +368,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 
 	filterData.LatestTag = latestTag
 
-	parsedTorrents := parseResults(entry, torrentResults)
+	parsedTorrents := parseResults(entry, torrentResults, c.dep.Config)
 	parsedTorrents = filterRelevantResults(
 		entry,
 		parsedTorrents,

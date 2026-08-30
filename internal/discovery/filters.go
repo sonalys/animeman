@@ -27,10 +27,9 @@ func filterMetadata(
 			return false
 		}
 
-		meta := parser.Parse(nyaaEntry.Title, 1)
-
 		// Check if nyaa entry episode is greater than the animelist episode count.
-		if entry.NumEpisodes > 0 && meta.Tag.LastEpisode() > float64(entry.NumEpisodes) {
+		if entry.NumEpisodes > 0 &&
+			parser.Parse(nyaaEntry.Title, 1, nil).Tag.LastEpisode() > float64(entry.NumEpisodes) {
 			filterData.DiscardReason[DiscardReasonEpisodeCountMismatch]++
 
 			return false
@@ -43,7 +42,11 @@ func filterMetadata(
 			originalTitleWithoutSeason := parser.StripSeason(originalTitle)
 			originalTitleWithoutSubtitle := parser.StripSubtitle(originalTitleWithoutSeason)
 
-			if utils.MatchPrefixFlexible(nyaaTitleWithoutTags, originalTitleWithoutSubtitle, ignoreCharset) {
+			if utils.MatchPrefixFlexible(
+				nyaaTitleWithoutTags,
+				originalTitleWithoutSubtitle,
+				ignoreCharset,
+			) {
 				return true
 			}
 		}

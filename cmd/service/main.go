@@ -8,6 +8,7 @@ import (
 	"syscall"
 	"time"
 
+	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/configs"
@@ -100,16 +101,22 @@ func main() {
 		ListParameters: config.CustomParameters,
 	}
 
+	renameScript, err := expr.Compile(config.RenameScript)
+	if err != nil {
+		log.Fatal().Msgf("failed to compile rename script: %s", err)
+	}
+
 	c := discovery.New(discovery.Dependencies{
 		NYAA:            nyaa.New(nyaaClient, nyaaConfig),
 		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
 		Config: discovery.Config{
 			SearchSuffix:     config.SearchSuffix,
-			Sources:          config.Sources,
+			ReleaseGroups:          config.Sources,
 			Qualitites:       config.Qualities,
 			Category:         config.Category,
 			RenameTorrent:    utils.PointerOrDefault(config.RenameTorrent, true),
+			RenameFormat:     renameScript,
 			DownloadPath:     config.DownloadPath,
 			CreateShowFolder: config.CreateShowFolder,
 			PollFrequency:    config.PollFrequency,

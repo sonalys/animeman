@@ -3,9 +3,11 @@ package parser
 import (
 	"fmt"
 	"regexp"
+	"slices"
 	"strings"
 
 	"github.com/sonalys/animeman/internal/tags"
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 // Regex for removing all annotations from a title, Examples: (Recoded), [1080p], .mkv.
@@ -65,17 +67,40 @@ func StripTags(title string) string {
 }
 
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
-func Parse(title string, fallbackSeason int) Metadata {
+func Parse(title string, fallbackSeason int, sources []string) Metadata {
+	normalizedTitle := strings.ToLower(title)
+	normalizedSources := utils.Transform(sources, func(source string) string {
+		return strings.ToLower(source)
+	})
+
 	resp := Metadata{
 		Title:              StripTitle(title),
 		VerticalResolution: parseVerticalResolution(title),
 		Tag:                tags.Tag{},
+		// Source is extracted from the title if it matches any of the provided sources.
+		// Better than guessing the source as the first tag match.
+		ReleaseGroup: func() string {
+			sourceIndex := slices.IndexFunc(
+				normalizedSources,
+				func(normalizedSource string) bool { return strings.Contains(normalizedTitle, normalizedSource) },
+			)
+			if sourceIndex != -1 {
+				return sources[sourceIndex]
+			}
+			return ""
+		}(),
 	}
 
 	if tags := tagsExpr.FindAllStringSubmatch(title, -1); len(tags) > 0 {
-		resp.Source = tags[0][1]
-		resp.Labels = make([]string, 0, len(tags[1:]))
-		for _, matches := range tags[1:] {
+		// If the title starts with a tag, we assume it's the source and set it as such.
+		// Example: [Source] Show - S03E02 [1080p].mkv
+		if title[0] == '[' {
+			resp.ReleaseGroup = tags[0][1]
+			tags = tags[1:]
+		}
+
+		resp.Labels = make([]string, 0, len(tags))
+		for _, matches := range tags {
 			resp.Labels = append(resp.Labels, strings.Split(matches[1], " ")...)
 		}
 	}
