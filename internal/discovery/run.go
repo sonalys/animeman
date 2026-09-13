@@ -30,13 +30,13 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 
 	ctx = log.Logger.WithContext(ctx)
 
-	if err := c.TorrentRegenerateTags(ctx); err != nil {
-		return fmt.Errorf("updating qBittorrent entries: %w", err)
-	}
-
 	entries, err := c.dep.AnimeListClient.GetCurrentlyWatching(ctx)
 	if err != nil {
 		return fmt.Errorf("fetching anime list: %w", err)
+	}
+
+	if err := c.TorrentRegenerateTags(ctx, entries); err != nil {
+		return fmt.Errorf("updating qBittorrent entries: %w", err)
 	}
 
 	scannedCount := 0

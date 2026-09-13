@@ -2,11 +2,13 @@ package discovery
 
 import (
 	"testing"
+	"time"
 
 	"github.com/expr-lang/expr"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/stretchr/testify/require"
 )
 
@@ -59,4 +61,45 @@ func TestController_buildTorrentName(t *testing.T) {
 			require.Equal(t, tt.want, got)
 		})
 	}
+}
+
+func Test_normalizeTitle(t *testing.T) {
+	t0 := time.Time{}
+
+	entries := []animelist.Entry{
+		animelist.NewEntry(
+			[]string{"Sousou no Frieren", "Frieren: Beyond Journey's End"},
+			animelist.ListStatusWatching,
+			animelist.AiringStatusAired,
+			t0,
+			t0,
+			28,
+			nil,
+		),
+		animelist.NewEntry(
+			[]string{"Ore dake Level Up na Ken"},
+			animelist.ListStatusWatching,
+			animelist.AiringStatusAiring,
+			t0,
+			t0,
+			12,
+			nil,
+		),
+	}
+
+	t.Run("alternative title gets normalized", func(t *testing.T) {
+		// Torrent named after an alternative title with hyphen and subtitle.
+		got := normalizeTitle("Ore dake Level-Up na Ken: Season 2", entries)
+		require.Equal(t, "Ore dake Level Up na Ken", got)
+	})
+
+	t.Run("no match returns original title", func(t *testing.T) {
+		got := normalizeTitle("Completely Unrelated Show", entries)
+		require.Equal(t, "Completely Unrelated Show", got)
+	})
+
+	t.Run("empty entries returns original title", func(t *testing.T) {
+		got := normalizeTitle("Some Show", nil)
+		require.Equal(t, "Some Show", got)
+	})
 }

@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/tags"
+	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/pkg/v1/animelist"
 	"github.com/sonalys/animeman/pkg/v1/torrentclient"
 )
@@ -178,7 +179,9 @@ func (c *Controller) AddTorrentEntry(
 // TorrentRegenerateTags will scan all torrents from the configured category and update their tags.
 // This function exists for when you already have a collection of Anime categorized torrents.
 // This function will tag all entries from the configured category for smart episode detection and filtering.
-func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
+// entries are the anime list entries, used to normalize torrent names which were added
+// under an alternative title back to the expected title tag.
+func (c *Controller) TorrentRegenerateTags(ctx context.Context, entries []animelist.Entry) error {
 	torrents, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
 		Category: &c.dep.Config.Category,
 		Tag:      new(""),
@@ -189,6 +192,9 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
 
 	for _, torrent := range torrents {
 		meta := parser.Parse(torrent.Name, 1, nil)
+		// The torrent name might be based on an alternative title (e.g. "Show Name: Second Season").
+		// Normalize it back to the anime list title so tag-based latest episode detection works.
+		meta.Title = normalizeTitle(meta.Title, entries)
 		tags := meta.BuildTorrentTags()
 
 		log.
@@ -207,4 +213,31 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context) error {
 	}
 
 	return nil
+}
+
+// normalizeTitle matches a torrent title against the anime list entries,
+// returning the expected title from the closest matching entry.
+// It handles alternative titles like "Show Name: Second Season" which would
+// otherwise produce a series tag that never matches the anime list titles.
+// If no entry matches with enough confidence, the original title is returned.
+func normalizeTitle(torrentTitle string, entries []animelist.Entry) string {
+	if len(entries) == 0 {
+		return torrentTitle
+	}
+
+	const minSimilarity = 0.7
+
+	for _, entry := range entries {
+		bestScore := 0.0
+		for _, title := range entry.Titles {
+			score := utils.CalculateTextSimilarity(title, torrentTitle, ignoreCharset)
+			bestScore = max(bestScore, score)
+		}
+
+		if bestScore >= minSimilarity {
+			return selectIdealTitle(entry.Titles)
+		}
+	}
+
+	return torrentTitle
 }
