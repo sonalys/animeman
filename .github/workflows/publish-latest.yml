@@ -29,4 +29,4 @@ jobs:
           docker tag ghcr.io/sonalys/animeman:${{ github.event.release.tag_name }} ghcr.io/sonalys/animeman:v${MAJOR_VERSION}
 
           docker push ghcr.io/sonalys/animeman:latest
-          docker push ghcr.io/sonalys/animeman:v${MAJOR_VERSION}
+          docker push ghcr.io/sonalys/animeman:${MAJOR_VERSION}
