@@ -21,5 +21,8 @@ func NewErrConnection(err error) error {
 }
 
 func (t Torrent) GetTags() []string {
-	return utils.Map[string, string](strings.Split(t.Tags, ","), func(s string) string { return strings.TrimSpace(s) })
+	return utils.Map(
+		strings.Split(t.Tags, ","),
+		func(s string) string { return strings.TrimSpace(s) },
+	)
 }

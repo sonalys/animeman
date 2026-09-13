@@ -294,6 +294,8 @@ func (c *Controller) NyaaSearch(
 		parser.StripSubtitle,
 		titleSanitization.Replace,
 	)
+
+	sort.Strings(sanitizedTitles)
 	sanitizedTitles = slices.Compact(sanitizedTitles)
 
 	entries, err := c.dep.NYAA.List(ctx, nyaa.ListOptions{

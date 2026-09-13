@@ -51,8 +51,8 @@ func NewEntry(
 	episodeSchedule []EpisodeSchedule,
 ) Entry {
 	titles = utils.Filter(titles, func(s string) bool { return len(s) > 0 })
-	titles = slices.Compact(titles)
 	slices.Sort(titles)
+	titles = slices.Compact(titles)
 
 	return Entry{
 		Titles:          titles,
