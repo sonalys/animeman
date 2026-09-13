@@ -48,7 +48,7 @@ func initializeAnimeList(c configs.AnimeListConfig) discovery.AnimeListSource {
 	httpClient := &http.Client{
 		Transport: roundtripper.NewRateLimitedTransport(
 			defaultTransport,
-			rate.NewLimiter(rate.Every(time.Second), 1),
+			rate.NewLimiter(rate.Every(time.Minute), 30),
 		),
 		Timeout: 15 * time.Second,
 	}
@@ -112,7 +112,7 @@ func main() {
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
 		Config: discovery.Config{
 			SearchSuffix:     config.SearchSuffix,
-			ReleaseGroups:          config.Sources,
+			ReleaseGroups:    config.Sources,
 			Qualitites:       config.Qualities,
 			Category:         config.Category,
 			RenameTorrent:    utils.PointerOrDefault(config.RenameTorrent, true),
