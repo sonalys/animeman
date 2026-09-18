@@ -39,6 +39,10 @@ type Entry struct {
 	EndDate         time.Time
 	NumEpisodes     int
 	EpisodeSchedule []EpisodeSchedule
+	// AnilistID is the AniList database id, 0 when unknown.
+	AnilistID int
+	// MALID is the MyAnimeList database id, 0 when unknown.
+	MALID int
 }
 
 func NewEntry(
@@ -63,4 +67,11 @@ func NewEntry(
 		NumEpisodes:     numEpisodes,
 		EpisodeSchedule: episodeSchedule,
 	}
+}
+
+// WithIDs returns a copy of the entry with the given tracker ids set.
+func (e Entry) WithIDs(anilistID, malID int) Entry {
+	e.AnilistID = anilistID
+	e.MALID = malID
+	return e
 }

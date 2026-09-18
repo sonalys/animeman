@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/sonalys/animeman/internal/tags"
-	"github.com/sonalys/animeman/pkg/v1/torrentclient"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/stretchr/testify/require"
 )
 

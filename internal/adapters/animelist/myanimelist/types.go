@@ -18,6 +18,7 @@ type (
 		AnimeStartDateString string       `json:"anime_start_date_string"`
 		AnimeEndDateString   string       `json:"anime_end_date_string"`
 		NumEpisodes          int          `json:"anime_num_episodes"`
+		ID                   int          `json:"anime_id"`
 	}
 )
 

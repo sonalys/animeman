@@ -68,12 +68,13 @@ func (c *AnimeListConfig) Validate() error {
 type RSSType string
 
 const (
-	RSSTypeNyaa RSSType = "nyaa"
+	RSSTypeNyaa   RSSType = "nyaa"
+	RSSTypeNekoBT RSSType = "nekobt"
 )
 
 func (t RSSType) Validate() error {
-	if t != RSSTypeNyaa {
-		return fmt.Errorf("'%s' is invalid. should be [nyaa]", t)
+	if t != RSSTypeNyaa && t != RSSTypeNekoBT {
+		return fmt.Errorf("'%s' is invalid. should be [nyaa,nekobt]", t)
 	}
 	return nil
 }
@@ -85,6 +86,8 @@ type RSSConfig struct {
 	Qualities        []string          `yaml:"qualities"`
 	PollFrequency    time.Duration     `yaml:"pollFrequency"`
 	CustomParameters map[string]string `yaml:"customParameters"`
+	// APIKey is the nekoBT api key, only used when type is nekobt.
+	APIKey string `yaml:"apiKey,omitempty"`
 }
 
 func (c *RSSConfig) Validate() error {

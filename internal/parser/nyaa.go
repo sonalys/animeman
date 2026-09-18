@@ -1,22 +1,22 @@
 package parser
 
 import (
-	"github.com/sonalys/animeman/internal/integrations/nyaa"
-	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/internal/ports/torrentsource"
+	"github.com/sonalys/animeman/internal/ports/animelist"
 )
 
-// ParsedNyaa holds a parsed entry from Nyaa.
+// ParsedNyaa holds a parsed entry from a torrent source.
 // Used for smart episode detection.
 type ParsedNyaa struct {
 	// Metadata parsed from title.
 	ExtractedMetadata Metadata
-	// Nyaa entry.
-	NyaaTorrent nyaa.Item
+	// Torrent entry.
+	NyaaTorrent torrentsource.Torrent
 }
 
 func NewParsedNyaa(
 	animeListEntry animelist.Entry,
-	entry nyaa.Item,
+	entry torrentsource.Torrent,
 	sources []string,
 ) ParsedNyaa {
 	fallbackSeason := 1

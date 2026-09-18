@@ -11,7 +11,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/utils"
-	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/internal/ports/animelist"
 )
 
 // Temporary solution for finding the correct time format for MAL entries.
@@ -54,7 +54,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			utils.Must(time.Parse(timeFormat, in[i].AnimeEndDateString)),
 			in[i].NumEpisodes,
 			nil,
-		))
+		).WithIDs(0, in[i].ID))
 	}
 	return out
 }

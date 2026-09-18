@@ -11,12 +11,14 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/adapters/animelist/anilist"
+	"github.com/sonalys/animeman/internal/adapters/animelist/myanimelist"
+	"github.com/sonalys/animeman/internal/adapters/torrentclient/qbittorrent"
+	"github.com/sonalys/animeman/internal/adapters/torrentsource/nekobt"
+	"github.com/sonalys/animeman/internal/adapters/torrentsource/nyaa"
 	"github.com/sonalys/animeman/internal/configs"
 	"github.com/sonalys/animeman/internal/discovery"
-	"github.com/sonalys/animeman/internal/integrations/anilist"
-	"github.com/sonalys/animeman/internal/integrations/myanimelist"
-	"github.com/sonalys/animeman/internal/integrations/nyaa"
-	"github.com/sonalys/animeman/internal/integrations/qbittorrent"
+	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/roundtripper"
 	"github.com/sonalys/animeman/internal/utils"
 	"golang.org/x/time/rate"
@@ -74,6 +76,30 @@ func initializeTorrentClient(ctx context.Context, c configs.TorrentConfig) disco
 	return nil
 }
 
+func initializeTorrentSource(c configs.RSSConfig) torrentsource.Source {
+	httpClient := &http.Client{
+		Transport: roundtripper.NewRateLimitedTransport(
+			defaultTransport,
+			rate.NewLimiter(rate.Every(time.Second), 1),
+		),
+		Timeout: 15 * time.Second,
+	}
+
+	switch c.Type {
+	case configs.RSSTypeNyaa:
+		return nyaa.New(httpClient, nyaa.Config{
+			ListParameters: c.CustomParameters,
+		})
+	case configs.RSSTypeNekoBT:
+		return nekobt.New(httpClient, nekobt.Config{
+			APIKey: c.APIKey,
+		})
+	default:
+		log.Panic().Msgf("rss type %s not implemented", c.Type)
+	}
+	return nil
+}
+
 func main() {
 	log.Info().Msgf("starting Animeman [%s]", version)
 
@@ -87,19 +113,7 @@ func main() {
 	zerolog.SetGlobalLevel(config.LogLevel.Convert())
 
 	ctx, done := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
-
-	nyaaClient := &http.Client{
-		Jar: http.DefaultClient.Jar,
-		Transport: roundtripper.NewRateLimitedTransport(
-			defaultTransport,
-			rate.NewLimiter(rate.Every(time.Second), 1),
-		),
-		Timeout: 15 * time.Second,
-	}
-
-	nyaaConfig := nyaa.Config{
-		ListParameters: config.CustomParameters,
-	}
+	defer done()
 
 	renameScript, err := expr.Compile(config.RenameScript)
 	if err != nil {
@@ -107,7 +121,7 @@ func main() {
 	}
 
 	c := discovery.New(discovery.Dependencies{
-		NYAA:            nyaa.New(nyaaClient, nyaaConfig),
+		Source:          initializeTorrentSource(config.RSSConfig),
 		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
 		Config: discovery.Config{
@@ -127,5 +141,4 @@ func main() {
 	} else {
 		log.Info().Msg("shutdown successful")
 	}
-	done()
 }

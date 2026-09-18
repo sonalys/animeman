@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/sonalys/animeman/internal/utils"
-	"github.com/sonalys/animeman/pkg/v1/torrentclient"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 )
 
 func digestArg(arg *torrentclient.AddTorrentConfig) (io.Reader, string) {

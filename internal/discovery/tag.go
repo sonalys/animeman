@@ -3,7 +3,7 @@ package discovery
 import (
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/tags"
-	"github.com/sonalys/animeman/pkg/v1/torrentclient"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 )
 
 // tagCompare receives 2 series tags, Example: S02E01 and S02E02.

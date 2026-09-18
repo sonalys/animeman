@@ -3,8 +3,8 @@ package discovery
 import (
 	"context"
 
-	"github.com/sonalys/animeman/pkg/v1/animelist"
-	"github.com/sonalys/animeman/pkg/v1/torrentclient"
+	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 )
 
 type (

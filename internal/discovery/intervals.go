@@ -4,7 +4,7 @@ import (
 	"sync"
 	"time"
 
-	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/internal/ports/animelist"
 )
 
 // ShowScanState tracks the scan history of a show to determine optimal polling intervals.

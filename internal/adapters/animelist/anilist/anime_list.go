@@ -11,7 +11,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/utils"
-	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/internal/ports/animelist"
 )
 
 type (
@@ -22,7 +22,9 @@ type (
 	AnimeListEntry struct {
 		Status ListStatus `json:"status"`
 		Media  struct {
-			Type         string
+			ID           int          `json:"id"`
+			IDMal        int          `json:"idMal"`
+			Type         string       `json:"type"`
 			AiringStatus AiringStatus `json:"status"`
 			Episodes     int          `json:"episodes"`
 			StartDate    struct {
@@ -87,6 +89,8 @@ const getCurrentlyWatchingQuery = `query($userName:String,$type:MediaType){
 			entries{
 				status
 				media{
+					id
+					idMal
 					startDate{
 						year
 						month
@@ -160,11 +164,29 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			[]string{titles.English, titles.Romaji, titles.Native},
 			convertStatus(in[i].Status),
 			convertAiringStatus(in[i].Media.AiringStatus),
-			time.Date(in[i].Media.StartDate.Year, time.Month(in[i].Media.StartDate.Month), in[i].Media.StartDate.Day, 0, 0, 0, 0, time.UTC),
-			time.Date(in[i].Media.EndDate.Year, time.Month(in[i].Media.EndDate.Month), in[i].Media.EndDate.Day, 0, 0, 0, 0, time.UTC),
+			time.Date(
+				in[i].Media.StartDate.Year,
+				time.Month(in[i].Media.StartDate.Month),
+				in[i].Media.StartDate.Day,
+				0,
+				0,
+				0,
+				0,
+				time.UTC,
+			),
+			time.Date(
+				in[i].Media.EndDate.Year,
+				time.Month(in[i].Media.EndDate.Month),
+				in[i].Media.EndDate.Day,
+				0,
+				0,
+				0,
+				0,
+				time.UTC,
+			),
 			in[i].Media.Episodes,
 			episodes,
-		))
+		).WithIDs(in[i].Media.ID, in[i].Media.IDMal))
 	}
 	return out
 }
@@ -183,7 +205,14 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 		},
 	}
 
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodPost, API_URL, bytes.NewReader(utils.Must(json.Marshal(reqBody)))))
+	req := utils.Must(
+		http.NewRequestWithContext(
+			ctx,
+			http.MethodPost,
+			API_URL,
+			bytes.NewReader(utils.Must(json.Marshal(reqBody))),
+		),
+	)
 	req.Header.Add("Content-Type", "application/json")
 	req.Header.Add("Accept", "application/json")
 

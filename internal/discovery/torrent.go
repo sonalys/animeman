@@ -13,8 +13,8 @@ import (
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
-	"github.com/sonalys/animeman/pkg/v1/animelist"
-	"github.com/sonalys/animeman/pkg/v1/torrentclient"
+	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 )
 
 // findLatestTag will receive an anime list entry and return all torrents listed from the anime.

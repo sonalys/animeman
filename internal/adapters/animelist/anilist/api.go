@@ -4,7 +4,7 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/sonalys/animeman/pkg/v1/animelist"
+	"github.com/sonalys/animeman/internal/ports/animelist"
 )
 
 const API_URL = "https://graphql.anilist.co"

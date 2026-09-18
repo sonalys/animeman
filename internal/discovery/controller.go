@@ -5,12 +5,12 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/integrations/nyaa"
+	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
 
 type (
 	Dependencies struct {
-		NYAA            *nyaa.API
+		Source          torrentsource.Source
 		AnimeListClient AnimeListSource
 		TorrentClient   TorrentClient
 		Config          Config
