@@ -69,14 +69,14 @@ func initializeAnimeList(c configs.AnimeListConfig) discovery.AnimeListSource {
 func initializeTorrentClient(ctx context.Context, c configs.TorrentConfig) discovery.TorrentClient {
 	switch c.Type {
 	case configs.TorrentClientTypeQBittorrent:
-		return qbittorrent.New(ctx, c.Host, c.Username, c.Password)
+		return qbittorrent.New(ctx, c.QBittorrent.Host, c.QBittorrent.Username, c.QBittorrent.Password)
 	default:
-		log.Panic().Msgf("animeListType %s not implemented", c.Type)
+		log.Panic().Msgf("torrentClient type %s not implemented", c.Type)
 	}
 	return nil
 }
 
-func initializeTorrentSource(c configs.RSSConfig) torrentsource.Source {
+func initializeTorrentSource(c configs.TorrentSourceConfig) torrentsource.Source {
 	httpClient := &http.Client{
 		Transport: roundtripper.NewRateLimitedTransport(
 			defaultTransport,
@@ -86,13 +86,13 @@ func initializeTorrentSource(c configs.RSSConfig) torrentsource.Source {
 	}
 
 	switch c.Type {
-	case configs.RSSTypeNyaa:
+	case configs.TorrentSourceTypeNyaa:
 		return nyaa.New(httpClient, nyaa.Config{
-			ListParameters: c.CustomParameters,
+			ListParameters: c.Nyaa.CustomParameters,
 		})
-	case configs.RSSTypeNekoBT:
+	case configs.TorrentSourceTypeNekoBT:
 		return nekobt.New(httpClient, nekobt.Config{
-			APIKey: c.APIKey,
+			APIKey: c.Nekobt.APIKey,
 		})
 	default:
 		log.Panic().Msgf("rss type %s not implemented", c.Type)
@@ -121,19 +121,19 @@ func main() {
 	}
 
 	c := discovery.New(discovery.Dependencies{
-		Source:          initializeTorrentSource(config.RSSConfig),
+		Source:          initializeTorrentSource(config.TorrentSourceConfig),
 		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
 		Config: discovery.Config{
-			SearchSuffix:     config.SearchSuffix,
-			ReleaseGroups:    config.Sources,
-			Qualitites:       config.Qualities,
-			Category:         config.Category,
-			RenameTorrent:    utils.PointerOrDefault(config.RenameTorrent, true),
+			SearchSuffix:     config.DiscoveryConfig.SearchSuffix,
+			ReleaseGroups:    config.DiscoveryConfig.Sources,
+			Qualitites:       config.DiscoveryConfig.Qualities,
+			Category:         config.DiscoveryConfig.Category,
+			RenameTorrent:    utils.PointerOrDefault(config.DiscoveryConfig.RenameTorrent, true),
 			RenameFormat:     renameScript,
-			DownloadPath:     config.DownloadPath,
-			CreateShowFolder: config.CreateShowFolder,
-			PollFrequency:    config.PollFrequency,
+			DownloadPath:     config.DiscoveryConfig.DownloadPath,
+			CreateShowFolder: config.DiscoveryConfig.CreateShowFolder,
+			PollFrequency:    config.DiscoveryConfig.PollFrequency,
 		},
 	})
 	if err := c.Start(ctx); err != nil {

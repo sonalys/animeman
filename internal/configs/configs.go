@@ -36,11 +36,16 @@ const (
 		)`
 )
 
-func (t AnimeListType) Validate() error {
-	if t != AnimeListTypeAnilist && t != AnimeListTypeMAL {
-		return fmt.Errorf("'%s' is invalid. should be [myanimelist,anilist]", t)
+// Validate is broadened to accept short aliases for each adapter type.
+func (t AnimeListType) Validate() (AnimeListType, error) {
+	switch t {
+	case "", AnimeListTypeMAL, "mal":
+		return AnimeListTypeMAL, nil
+	case AnimeListTypeAnilist:
+		return AnimeListTypeAnilist, nil
+	default:
+		return "", fmt.Errorf("'%s' is invalid. should be [myanimelist,anilist]", t)
 	}
-	return nil
 }
 
 type AnimeListConfig struct {
@@ -50,9 +55,11 @@ type AnimeListConfig struct {
 }
 
 func (c *AnimeListConfig) Validate() error {
-	if err := c.Type.Validate(); err != nil {
+	typ, err := c.Type.Validate()
+	if err != nil {
 		return fmt.Errorf("type: %w", err)
 	}
+	c.Type = typ
 	if c.Username == "" {
 		return fmt.Errorf("username: is empty")
 	}
@@ -65,40 +72,58 @@ func (c *AnimeListConfig) Validate() error {
 	return nil
 }
 
-type RSSType string
+type TorrentSourceType string
 
 const (
-	RSSTypeNyaa   RSSType = "nyaa"
-	RSSTypeNekoBT RSSType = "nekobt"
+	TorrentSourceTypeNyaa   TorrentSourceType = "nyaa"
+	TorrentSourceTypeNekoBT TorrentSourceType = "nekobt"
 )
 
-func (t RSSType) Validate() error {
-	if t != RSSTypeNyaa && t != RSSTypeNekoBT {
-		return fmt.Errorf("'%s' is invalid. should be [nyaa,nekobt]", t)
+func (t TorrentSourceType) Validate() (TorrentSourceType, error) {
+	switch t {
+	case "", TorrentSourceTypeNyaa:
+		return TorrentSourceTypeNyaa, nil
+	case TorrentSourceTypeNekoBT:
+		return TorrentSourceTypeNekoBT, nil
+	default:
+		return "", fmt.Errorf("'%s' is invalid. should be [nyaa,nekobt]", t)
 	}
-	return nil
 }
 
-type RSSConfig struct {
-	Type             RSSType           `yaml:"type"`
-	SearchSuffix     string            `yaml:"searchSuffix"`
-	Sources          []string          `yaml:"sources"`
-	Qualities        []string          `yaml:"qualities"`
-	PollFrequency    time.Duration     `yaml:"pollFrequency"`
+// NyaaConfig holds nyaa-specific settings.
+type NyaaConfig struct {
 	CustomParameters map[string]string `yaml:"customParameters"`
-	// APIKey is the nekoBT api key, only used when type is nekobt.
-	APIKey string `yaml:"apiKey,omitempty"`
 }
 
-func (c *RSSConfig) Validate() error {
-	if err := c.Type.Validate(); err != nil {
+// NekobtConfig holds nekoBT-specific settings.
+type NekobtConfig struct {
+	APIKey string `yaml:"apiKey"`
+}
+
+type TorrentSourceConfig struct {
+	Type   TorrentSourceType `yaml:"type"`
+	Nyaa   *NyaaConfig       `yaml:"nyaa,omitempty"`
+	Nekobt *NekobtConfig     `yaml:"nekobt,omitempty"`
+}
+
+func (c *TorrentSourceConfig) Validate() error {
+	typ, err := c.Type.Validate()
+	if err != nil {
 		return fmt.Errorf("type: %w", err)
 	}
-	if c.PollFrequency == 0 {
-		c.PollFrequency = 15 * time.Minute
-	}
-	if c.PollFrequency < time.Minute {
-		return fmt.Errorf("pollFrequency: should be at least 1 minute")
+	c.Type = typ
+	switch c.Type {
+	case TorrentSourceTypeNyaa:
+		if c.Nyaa == nil {
+			c.Nyaa = new(NyaaConfig)
+		}
+	case TorrentSourceTypeNekoBT:
+		if c.Nekobt == nil {
+			c.Nekobt = new(NekobtConfig)
+		}
+		if c.Nekobt.APIKey == "" {
+			return fmt.Errorf("nekobt.apiKey: is empty")
+		}
 	}
 	return nil
 }
@@ -109,31 +134,63 @@ const (
 	TorrentClientTypeQBittorrent TorrentClientType = "qbittorrent"
 )
 
-func (t TorrentClientType) Validate() error {
-	if t != TorrentClientTypeQBittorrent {
-		return fmt.Errorf("'%s' is invalid. should be [qbittorrent]", t)
+func (t TorrentClientType) Validate() (TorrentClientType, error) {
+	switch t {
+	case "", TorrentClientTypeQBittorrent, "qbit":
+		return TorrentClientTypeQBittorrent, nil
+	default:
+		return "", fmt.Errorf("'%s' is invalid. should be [qbittorrent]", t)
+	}
+}
+
+// QBittorrentConfig holds qbittorrent-specific settings.
+type QBittorrentConfig struct {
+	Host     string `yaml:"host"`
+	Username string `yaml:"username"`
+	Password string `yaml:"password"`
+}
+
+type TorrentConfig struct {
+	Type        TorrentClientType  `yaml:"type"`
+	QBittorrent *QBittorrentConfig `yaml:"qbittorrent,omitempty"`
+}
+
+func (c *TorrentConfig) Validate() error {
+	typ, err := c.Type.Validate()
+	if err != nil {
+		return fmt.Errorf("type: %w", err)
+	}
+	c.Type = typ
+	if c.Type == TorrentClientTypeQBittorrent {
+		if c.QBittorrent == nil {
+			c.QBittorrent = new(QBittorrentConfig)
+		}
+		if c.QBittorrent.Host == "" {
+			return fmt.Errorf("qbittorrent.host: is empty")
+		}
 	}
 	return nil
 }
 
-type TorrentConfig struct {
-	Type             TorrentClientType `yaml:"type"`
-	Host             string            `yaml:"host"`
-	Username         string            `yaml:"username"`
-	Password         string            `yaml:"password"`
-	Category         string            `yaml:"category"`
-	DownloadPath     string            `yaml:"downloadPath"`
-	CreateShowFolder bool              `yaml:"createShowFolder"`
-	RenameTorrent    *bool             `yaml:"renameTorrent,omitempty"`
-	RenameScript     string            `yaml:"renameScript,omitempty"`
+// DiscoveryConfig holds behavior settings shared by all adapters.
+type DiscoveryConfig struct {
+	SearchSuffix     string        `yaml:"searchSuffix"`
+	Sources          []string      `yaml:"sources"`
+	Qualities        []string      `yaml:"qualities"`
+	PollFrequency    time.Duration `yaml:"pollFrequency"`
+	Category         string        `yaml:"category"`
+	DownloadPath     string        `yaml:"downloadPath"`
+	CreateShowFolder bool          `yaml:"createShowFolder"`
+	RenameTorrent    *bool         `yaml:"renameTorrent,omitempty"`
+	RenameScript     string        `yaml:"renameScript,omitempty"`
 }
 
-func (c *TorrentConfig) Validate() error {
-	if err := c.Type.Validate(); err != nil {
-		return fmt.Errorf("type: %w", err)
+func (c *DiscoveryConfig) Validate() error {
+	if c.PollFrequency == 0 {
+		c.PollFrequency = 15 * time.Minute
 	}
-	if c.Host == "" {
-		return fmt.Errorf("host: is empty")
+	if c.PollFrequency < time.Minute {
+		return fmt.Errorf("pollFrequency: should be at least 1 minute")
 	}
 	if c.RenameScript == "" {
 		// Default renaming logic to keep backwards compatibility.
@@ -153,10 +210,11 @@ const (
 )
 
 type Config struct {
-	AnimeListConfig `         yaml:"animeList"`
-	RSSConfig       `         yaml:"rssConfig"`
-	TorrentConfig   `         yaml:"torrentConfig"`
-	LogLevel        LogLevel `yaml:"logLevel"`
+	AnimeListConfig     `         yaml:"animeList"`
+	TorrentSourceConfig `         yaml:"torrentSource"`
+	TorrentConfig       `         yaml:"torrentClient"`
+	DiscoveryConfig     `         yaml:"discovery"`
+	LogLevel            LogLevel `yaml:"logLevel"`
 }
 
 func (l LogLevel) Convert() zerolog.Level {
@@ -176,11 +234,14 @@ func (c *Config) Validate() error {
 	if err := c.AnimeListConfig.Validate(); err != nil {
 		return fmt.Errorf("animeList.%w", err)
 	}
-	if err := c.RSSConfig.Validate(); err != nil {
-		return fmt.Errorf("rssConfig.%w", err)
+	if err := c.TorrentSourceConfig.Validate(); err != nil {
+		return fmt.Errorf("torrentSource.%w", err)
 	}
 	if err := c.TorrentConfig.Validate(); err != nil {
-		return fmt.Errorf("torrentConfig.%w", err)
+		return fmt.Errorf("torrentClient.%w", err)
+	}
+	if err := c.DiscoveryConfig.Validate(); err != nil {
+		return fmt.Errorf("discovery.%w", err)
 	}
 	return nil
 }
@@ -196,24 +257,27 @@ func GenerateBoilerplateConfig() {
 			Username: "YOUR_USERNAME",
 			CacheTTL: 30 * time.Minute,
 		},
-		RSSConfig: RSSConfig{
-			Type:          RSSTypeNyaa,
-			SearchSuffix:  `-"dub"`,
-			Sources:       []string{},
-			Qualities:     []string{"1080 HEVC", "720"},
-			PollFrequency: 15 * time.Minute,
+		TorrentSourceConfig: TorrentSourceConfig{
+			Type: TorrentSourceTypeNyaa,
+			Nyaa: &NyaaConfig{},
 		},
 		TorrentConfig: TorrentConfig{
-			Category:         "Animes",
-			DownloadPath:     "/downloads/animes",
-			Host:             "http://192.168.1.240:8088",
-			Username:         "admin",
-			Password:         "adminadmin",
-			CreateShowFolder: true,
-			RenameTorrent:    new(true),
-			Type:             TorrentClientTypeQBittorrent,
+			Type: TorrentClientTypeQBittorrent,
+			QBittorrent: &QBittorrentConfig{
+				Host:     "http://192.168.1.240:8088",
+				Username: "admin",
+				Password: "adminadmin",
+			},
 		},
-		LogLevel: LogLevelInfo,
+		SearchSuffix:     `-"dub"`,
+		Sources:          []string{},
+		Qualities:        []string{"1080 HEVC", "720"},
+		PollFrequency:    15 * time.Minute,
+		Category:         "Animes",
+		DownloadPath:     "/downloads/animes",
+		CreateShowFolder: true,
+		RenameTorrent:    new(true),
+		LogLevel:         LogLevelInfo,
 	})
 	if err != nil {
 		log.Fatal().Msgf("failed to save config.yaml file: %s", err)
