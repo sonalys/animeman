@@ -51,6 +51,10 @@ func (c *Controller) getLatestDownloadedTag(
 			Debug().
 			Str("latestTag", latestTag.String()).
 			Msg("identified latest tag on torrent client")
+	} else {
+		logger.
+			Debug().
+			Msg("no latest tag found on torrent client")
 	}
 
 	return latestTag, nil
@@ -142,7 +146,7 @@ func (c *Controller) AddTorrentEntry(
 		Ctx(ctx).
 		Debug().
 		Str("title", selectedTitle).
-		Str("torrentName", *req.Name).
+		Str("torrentName", parsedNyaa.Torrent.Title).
 		Strs("tags", tags).
 		Msg("added torrent")
 

@@ -186,11 +186,32 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 	}
 
 	parsedTorrents := parseResults(entry, results, c.dep.Config)
+
+	for _, parsed := range parsedTorrents {
+		logger.
+			Debug().
+			Str("torrentTitle", parsed.Torrent.Title).
+			Str("parsedTitle", parsed.Metadata.Title).
+			Str("tag", parsed.Metadata.Tag.String()).
+			Str("seriesTag", parsed.Metadata.BuildSeriesTag()).
+			Str("releaseGroup", parsed.Metadata.ReleaseGroup).
+			Int("resolution", parsed.Metadata.VerticalResolution).
+			Msg("parsed torrent result")
+	}
+
 	parsedTorrents = filterRelevantResults(
 		entry,
 		parsedTorrents,
 		latestTag,
 	)
+
+	for _, parsed := range parsedTorrents {
+		logger.
+			Debug().
+			Str("torrentTitle", parsed.Torrent.Title).
+			Str("tag", parsed.Metadata.Tag.String()).
+			Msg("torrent result kept after filtering")
+	}
 
 	foundNewEpisodes := len(parsedTorrents) > 0
 
