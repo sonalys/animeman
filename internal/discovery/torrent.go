@@ -11,10 +11,10 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
-	"github.com/sonalys/animeman/internal/tags"
-	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
+	"github.com/sonalys/animeman/internal/tags"
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 // findLatestTag will receive an anime list entry and return all torrents listed from the anime.
@@ -65,7 +65,7 @@ func (c *Controller) TorrentGetDownloadPath(title string) (path string) {
 
 // buildTorrentName returns a torrent name based on the configured rename format and the parsed nyaa metadata.
 // renameFormat is an expr-lang script for building the torrent name.
-func (c *Controller) buildTorrentName(title string, parsedNyaa parser.ParsedNyaa) string {
+func (c *Controller) buildTorrentName(title string, parsedNyaa parser.TorrentMetadata) string {
 	var b strings.Builder
 
 	env := map[string]any{
@@ -91,15 +91,15 @@ func (c *Controller) buildTorrentName(title string, parsedNyaa parser.ParsedNyaa
 			return fmt.Sprintf(format, input)
 		},
 		"title":              title,
-		"releaseGroup":       parsedNyaa.ExtractedMetadata.ReleaseGroup,
-		"labels":             parsedNyaa.ExtractedMetadata.Labels,
-		"tag":                parsedNyaa.ExtractedMetadata.Tag,
-		"verticalResolution": parsedNyaa.ExtractedMetadata.VerticalResolution,
+		"releaseGroup":       parsedNyaa.Metadata.ReleaseGroup,
+		"labels":             parsedNyaa.Metadata.Labels,
+		"tag":                parsedNyaa.Metadata.Tag,
+		"verticalResolution": parsedNyaa.Metadata.VerticalResolution,
 	}
 
 	outputName, err := expr.Run(c.dep.Config.RenameFormat, env)
 	if err != nil {
-		return fmt.Sprintf("%s - %s", title, parsedNyaa.ExtractedMetadata.Tag.String())
+		return fmt.Sprintf("%s - %s", title, parsedNyaa.Metadata.Tag.String())
 	}
 
 	fmt.Fprintf(&b, "%v", outputName)
@@ -148,11 +148,11 @@ func isASCII(s string) bool {
 func (c *Controller) AddTorrentEntry(
 	ctx context.Context,
 	animeListEntry animelist.Entry,
-	parsedNyaa parser.ParsedNyaa,
+	parsedNyaa parser.TorrentMetadata,
 ) error {
 	selectedTitle := selectIdealTitle(animeListEntry.Titles)
 
-	meta := parsedNyaa.ExtractedMetadata.Clone()
+	meta := parsedNyaa.Metadata.Clone()
 	// Use nyaa metadata, but with anime list title.
 	// This behavior avoids different sources creating different tags and downloading the same episode twice.
 	meta.Title = selectedTitle
@@ -160,7 +160,7 @@ func (c *Controller) AddTorrentEntry(
 
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
-		URLs:     []string{parsedNyaa.NyaaTorrent.Link},
+		URLs:     []string{parsedNyaa.Torrent.Link},
 		Category: c.dep.Config.Category,
 		SavePath: c.TorrentGetDownloadPath(selectedTitle),
 	}

@@ -113,6 +113,62 @@ func (t *Tag) Before(other Tag) bool {
 	return true
 }
 
+// tagCompare receives 2 series tags, Example: S02E01 and S02E02.
+// it will return the comparison of Tag1, Tag2.
+// -1 = Tag1 < Tag2.
+// 0 = Tag1 == Tag2.
+// 1 = Tag1 > Tag2.
+func (t Tag) Compare(other Tag) int {
+	if t.LastSeason() < other.LastSeason() {
+		return -1
+	}
+
+	if t.LastSeason() > other.LastSeason() {
+		return 1
+	}
+
+	if t.FirstSeason() < other.FirstSeason() {
+		return 1
+	}
+
+	if t.FirstSeason() > other.FirstSeason() {
+		return -1
+	}
+
+	if t.IsMultiEpisode() && !other.IsMultiEpisode() {
+		return 1
+	}
+
+	if other.IsMultiEpisode() && !t.IsMultiEpisode() {
+		return -1
+	}
+
+	aLastEpisode := t.LastEpisode()
+	bLastEpisode := other.LastEpisode()
+
+	if aLastEpisode == bLastEpisode {
+		return 0
+	}
+
+	if aLastEpisode == 0 {
+		return 1
+	}
+
+	if bLastEpisode == 0 {
+		return -1
+	}
+
+	if t.LastEpisode() < other.LastEpisode() {
+		return -1
+	}
+
+	if t.LastEpisode() > other.LastEpisode() {
+		return 1
+	}
+
+	return 0
+}
+
 // String builds a tag for filtering in your torrent client. Example: Show S03E02.
 func (t Tag) String() string {
 	var b strings.Builder

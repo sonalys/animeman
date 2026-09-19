@@ -9,11 +9,11 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
+	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
-	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/ports/torrentclient"
 )
 
 const ignoreCharset = " \t!,.:`'\"/\\;-[](){}*【】"
@@ -96,15 +96,15 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
 func filterEpisodes(
-	results []parser.ParsedNyaa,
+	results []parser.TorrentMetadata,
 	initialTag tags.Tag,
-) ([]parser.ParsedNyaa, tags.Tag) {
-	out := make([]parser.ParsedNyaa, 0, len(results))
+) ([]parser.TorrentMetadata, tags.Tag) {
+	out := make([]parser.TorrentMetadata, 0, len(results))
 
 	var latestDetectedTag tags.Tag
 
 	for _, nyaaEntry := range results {
-		currentTag := nyaaEntry.ExtractedMetadata.Tag
+		currentTag := nyaaEntry.Metadata.Tag
 
 		if tagCompare(currentTag, initialTag) <= 0 ||
 			tagCompare(currentTag, latestDetectedTag) <= 0 {
@@ -120,8 +120,8 @@ func filterEpisodes(
 			// Example: S01E01-13, followed by S01.
 			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
 			if currentTag.IsMultiEpisode() && currentTag.Contains(latestDetectedTag) {
-				out = utils.Filter(out, func(previous parser.ParsedNyaa) bool {
-					return !currentTag.Contains(previous.ExtractedMetadata.Tag)
+				out = utils.Filter(out, func(previous parser.TorrentMetadata) bool {
+					return !currentTag.Contains(previous.Metadata.Tag)
 				})
 			}
 		}
@@ -136,22 +136,22 @@ func filterEpisodes(
 // filterRelevantResults is responsible for filtering and ordering the raw feed into valid downloadable torrents.
 func filterRelevantResults(
 	entry animelist.Entry,
-	results []parser.ParsedNyaa,
+	results []parser.TorrentMetadata,
 	latestTag tags.Tag,
-) []parser.ParsedNyaa {
+) []parser.TorrentMetadata {
 	results = slices.Clone(results)
 
 	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
-		batchResults := utils.Filter(results, func(entry parser.ParsedNyaa) bool {
-			return entry.ExtractedMetadata.Tag.IsMultiEpisode()
+		batchResults := utils.Filter(results, func(entry parser.TorrentMetadata) bool {
+			return entry.Metadata.Tag.IsMultiEpisode()
 		})
 		if len(batchResults) > 0 {
 			results = batchResults
 		}
 	} else {
 		// Remove batches when there are latest tags, avoid episode download duplication.
-		results = utils.Filter(results, func(entry parser.ParsedNyaa) bool {
-			return !entry.ExtractedMetadata.Tag.IsMultiEpisode()
+		results = utils.Filter(results, func(entry parser.TorrentMetadata) bool {
+			return !entry.Metadata.Tag.IsMultiEpisode()
 		})
 	}
 
@@ -173,11 +173,6 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 	if err != nil {
 		return false, fmt.Errorf("searching torrent for anime: %w", err)
 	}
-
-	// Remove results without seeders.
-	results = utils.Filter(results, func(e torrentsource.Torrent) bool {
-		return e.Seeders > 0
-	})
 
 	if len(results) == 0 {
 		logger.
@@ -216,8 +211,12 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 	return foundNewEpisodes, nil
 }
 
-func parseResults(entry animelist.Entry, results []torrentsource.Torrent, config Config) []parser.ParsedNyaa {
-	return utils.Map(results, func(item torrentsource.Torrent) parser.ParsedNyaa {
-		return parser.NewParsedNyaa(entry, item, config.ReleaseGroups)
+func parseResults(
+	entry animelist.Entry,
+	results []torrentsource.Torrent,
+	config Config,
+) []parser.TorrentMetadata {
+	return utils.Map(results, func(item torrentsource.Torrent) parser.TorrentMetadata {
+		return parser.ParseTorrentMetadata(entry, item, config.ReleaseGroups)
 	})
 }
