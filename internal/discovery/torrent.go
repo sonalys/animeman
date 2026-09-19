@@ -126,6 +126,11 @@ func (c *Controller) AddTorrentEntry(
 	// This behavior avoids different sources creating different tags and downloading the same episode twice.
 	meta.Title = selectedTitle
 	tags := meta.BuildTorrentTags()
+	// Mark the torrent as pending shoko processing, so the shoko integration
+	// can list it back on later runs and remove the tag once recognized.
+	if c.dep.Shoko != nil {
+		tags = append(tags, shokoPendingTag)
+	}
 
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,

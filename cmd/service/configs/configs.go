@@ -204,6 +204,22 @@ func (c *DiscoveryConfig) Validate() error {
 	return nil
 }
 
+// ShokoConfig holds shoko server settings.
+type ShokoConfig struct {
+	Host   string `yaml:"host"`
+	APIKey string `yaml:"apiKey"`
+}
+
+func (c *ShokoConfig) Validate() error {
+	if c.Host == "" {
+		return fmt.Errorf("host: is empty")
+	}
+	if c.APIKey == "" {
+		return fmt.Errorf("apiKey: is empty")
+	}
+	return nil
+}
+
 type LogLevel string
 
 const (
@@ -218,6 +234,7 @@ type Config struct {
 	TorrentSourceConfig `         yaml:"torrentSource"`
 	TorrentConfig       `         yaml:"torrentClient"`
 	DiscoveryConfig     `         yaml:"discovery"`
+	ShokoConfig         `         yaml:"shoko,omitempty"`
 	LogLevel            LogLevel `yaml:"logLevel"`
 }
 
@@ -246,6 +263,11 @@ func (c *Config) Validate() error {
 	}
 	if err := c.DiscoveryConfig.Validate(); err != nil {
 		return fmt.Errorf("discovery.%w", err)
+	}
+	if c.ShokoConfig.Host != "" {
+		if err := c.ShokoConfig.Validate(); err != nil {
+			return fmt.Errorf("shoko.%w", err)
+		}
 	}
 	return nil
 }
@@ -294,6 +316,8 @@ func GenerateBoilerplateConfig() {
 		DownloadPath:     "/downloads/animes",
 		CreateShowFolder: true,
 		RenameTorrent:    new(true),
+		Host:             "http://192.168.1.240:8111",
+		APIKey:           "YOUR_API_KEY",
 		LogLevel:         LogLevelInfo,
 	})
 	if err != nil {

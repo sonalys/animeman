@@ -37,6 +37,12 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		return fmt.Errorf("updating qBittorrent entries: %w", err)
 	}
 
+	if c.dep.Shoko != nil {
+		if err := c.RunShokoIntegration(ctx, entries); err != nil {
+			return fmt.Errorf("shoko integration: %w", err)
+		}
+	}
+
 	scannedCount := 0
 	skippedCount := 0
 
@@ -185,9 +191,9 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 		return false, fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 
-	parsedTorrents := parseResults(entry, results, c.dep.Config)
+	newTorrents := parseResults(entry, results, c.dep.Config)
 
-	for _, parsed := range parsedTorrents {
+	for _, parsed := range newTorrents {
 		logger.
 			Debug().
 			Str("torrentTitle", parsed.Torrent.Title).
@@ -199,13 +205,13 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 			Msg("parsed torrent result")
 	}
 
-	parsedTorrents = filterRelevantResults(
+	newTorrents = filterRelevantResults(
 		entry,
-		parsedTorrents,
+		newTorrents,
 		latestTag,
 	)
 
-	for _, parsed := range parsedTorrents {
+	for _, parsed := range newTorrents {
 		logger.
 			Debug().
 			Str("torrentTitle", parsed.Torrent.Title).
@@ -213,19 +219,25 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 			Msg("torrent result kept after filtering")
 	}
 
-	foundNewEpisodes := len(parsedTorrents) > 0
+	foundNewEpisodes := len(newTorrents) > 0
 
-	for _, episodeTorrent := range parsedTorrents {
-		if err := c.AddTorrentEntry(ctx, entry, episodeTorrent); err != nil {
+	for _, torrentMetadata := range newTorrents {
+		if err := c.AddTorrentEntry(ctx, entry, torrentMetadata); err != nil {
 			return false, fmt.Errorf("adding torrent to client: %w", err)
 		}
+
+		logger.
+			Debug().
+			Str("torrentTitle", torrentMetadata.Torrent.Title).
+			Str("tag", torrentMetadata.Metadata.Tag.String()).
+			Msg("added torrent to client")
 	}
 
 	logger.
-		Info().
-		Int("newCount", len(parsedTorrents)).
+		Debug().
+		Int("newCount", len(newTorrents)).
 		Stringer("latestTag", latestTag).
-		Msg("entry discovery finished")
+		Msg("finished entry discovery")
 
 	return foundNewEpisodes, nil
 }

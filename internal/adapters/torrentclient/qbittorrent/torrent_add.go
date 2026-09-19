@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"strings"
 
-	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 func digestArg(arg *torrentclient.AddTorrentConfig) (io.Reader, string) {

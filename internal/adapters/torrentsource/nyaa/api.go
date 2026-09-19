@@ -1,3 +1,4 @@
+// Docs: https://nyaa.si/help
 package nyaa
 
 import (

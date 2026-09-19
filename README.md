@@ -40,17 +40,19 @@ You can set your own config path with the env `CONFIG_PATH`.
 
 ```yaml
 # config.yaml
-logLevel: info # (debug,info,error).
+logLevel: info # Accetps: debug,info,error.
 animeList:
-  type: myanimelist # (myanimelist|anilist).
-  username: YOUR_USERNAME # Replace with your username.
+  type: myanimelist # Accepts: myanimelist,anilist.
+  username: YOUR_USERNAME
 torrentSource:
-  type: nyaa # (nyaa|nekobt).
+  type: nyaa # Accepts: nyaa,nekobt. Must also define the corresponding config.
+  # https://nyaa.si/help
   nyaa:
     customParameters: # Configures custom query parameters for the nyaa list call.
       c: 1_2 # Defines english only anime sources.
       s: seeders # Sorts by seeders, keep most seeded candidates on first page.
       o: desc # Descending order.
+  # https://wiki.nekobt.to/technical-details/torznab
   # nekobt:
   #   apiKey: YOUR_API_KEY # Required when type is nekobt.
   #   customParameters: # Configures extra torznab query parameters, they override the defaults.
@@ -62,24 +64,27 @@ torrentSource:
   #     batch: "false" # Excludes batch torrents.
 discovery:
   pollFrequency: 5m0s # Minimum 1m0s.
-  sources: # Specify which sources to use, and in which priority. Keep empty to accept all.
+  sources: # OR filter. Specifies which sources to use, and in which priority. Keep empty to accept all.
       - source1
       - source2
-  qualities: # OR filter. Example 1080 HEVC or 720
-      - 1080 HEVC
-      - 720
-  searchSuffix: '-"dub"' # Specifies search suffixes like negative match on keywords.
+  qualities: # OR filter. Example 1080 HEVC or 1080. It keeps priority.
+      - 1080 HEVC # Can be used to prioritize HEVC for example.
+      - 1080
+  searchSuffix: "" # Specifies search suffixes like negative match on keywords.
   category: Animes # Animeman managed category, will be used to create tags / identify latest ep.
   downloadPath: /downloads/animes
-  createShowFolder: true # Creates a folder to for the show inside downloadPath.
-  renameTorrent: true # Rename the torrent in qBittorrent avoiding conflict between multiple sources with different names for the show.
-  renameScript: "" # An expr-lang script that allows you to define how you want your torrents to be named.
+  createShowFolder: true # Default: false. Creates a folder to for the show inside downloadPath.
+  renameTorrent: true # Default: false. Renames the torrent entry on qbittorrent.
+  renameScript: "" # Optional. See example below.
 torrentClient:
   type: qbittorrent
   qbittorrent:
-    host: http://ip:port # Replace with your qBittorrent WebUI address.
-    username: admin # Replace credentials with your own
-    password: adminadmin
+    host: http://ip:port
+    username: username
+    password: password
+shoko: # Optional. Used for linking files when Shoko is unable to find suitable matches.
+  host: http://ip:port
+  apiKey: YOUR_API_KEY
 ```
 
 ### Docs for renameScript
@@ -133,7 +138,7 @@ Simply run `animeman.exe` on the `cmd`.
 
 Support for `linux/amd64` and `linux/arm64`.
 
-```docker run -it -e CONFIG_PATH=/config/config.yaml -v ./config:/config ghcr.io/sonalys/animeman:latest```
+```docker run -it -e CONFIG_PATH=/config/config.yaml -v ./config:/config ghcr.io/sonalys/animeman:v3```
 
 ### Docker Compose
 
@@ -142,7 +147,7 @@ Support for `linux/amd64` and `linux/arm64`.
 version: "2.1"
 services:
   animeman:
-    image: ghcr.io/sonalys/animeman:latest
+    image: ghcr.io/sonalys/animeman:v3
     container_name: animeman
     environment:
       - CONFIG_PATH=/config/config.yaml
@@ -161,17 +166,11 @@ For the image you will need docker.
 To build you can simply run `make build`  
 For the image you can run `make image`
 
-## Roadmap
-
-There are a couple things that will be iterated:
-
-* Improve interfaces for allowing other RSS feeds
-
 ## Contribution
 
-Feel free to fork and open pull requests  
-Tests or roadmap features are very welcome, thanks.
+Please open issues first. Let's discuss what you need and then go for development.
 
 ## Disclaimer
 
-This tool is intended as a proof-of-concept, and is not intended for any illegal activities.
+This tool is not intended for any illegal activities.  
+It's your responsibility to check your own jurisdiction.

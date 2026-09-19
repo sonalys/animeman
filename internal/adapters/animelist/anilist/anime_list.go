@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 type (

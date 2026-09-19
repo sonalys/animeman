@@ -1,3 +1,4 @@
+// Docs: https://docs.anilist.co/guide/graphql
 package anilist
 
 import (

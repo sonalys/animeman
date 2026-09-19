@@ -7,6 +7,7 @@ import (
 	"github.com/expr-lang/expr/vm"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
@@ -16,7 +17,9 @@ type (
 		Source          torrentsource.Source
 		AnimeListClient animelist.AnimeListSource
 		TorrentClient   torrentclient.TorrentClient
-		Config          Config
+		// Shoko is optional, nil disables the shoko integration.
+		Shoko  shoko.Shoko
+		Config Config
 	}
 
 	Config struct {

@@ -14,11 +14,13 @@ import (
 	"github.com/sonalys/animeman/cmd/service/configs"
 	"github.com/sonalys/animeman/internal/adapters/animelist/anilist"
 	"github.com/sonalys/animeman/internal/adapters/animelist/myanimelist"
+	shokoadapter "github.com/sonalys/animeman/internal/adapters/shoko"
 	"github.com/sonalys/animeman/internal/adapters/torrentclient/qbittorrent"
 	"github.com/sonalys/animeman/internal/adapters/torrentsource/nekobt"
 	"github.com/sonalys/animeman/internal/adapters/torrentsource/nyaa"
 	"github.com/sonalys/animeman/internal/discovery"
 	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/roundtripper"
@@ -113,6 +115,17 @@ func initializeTorrentSource(c configs.TorrentSourceConfig) torrentsource.Source
 	return nil
 }
 
+func initializeShoko(c configs.ShokoConfig) shoko.Shoko {
+	httpClient := &http.Client{
+		Transport: defaultTransport,
+		Timeout:   15 * time.Second,
+	}
+	return shokoadapter.New(httpClient, shoko.Config{
+		Host:   c.Host,
+		APIKey: c.APIKey,
+	})
+}
+
 func main() {
 	log.Info().Msgf("starting Animeman [%s]", version)
 
@@ -135,10 +148,16 @@ func main() {
 
 	discoveryConfig := config.DiscoveryConfig
 
+	var shokoClient shoko.Shoko
+	if config.ShokoConfig.Host != "" {
+		shokoClient = initializeShoko(config.ShokoConfig)
+	}
+
 	c := discovery.New(discovery.Dependencies{
 		Source:          initializeTorrentSource(config.TorrentSourceConfig),
 		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
+		Shoko:           shokoClient,
 		Config: discovery.Config{
 			SearchSuffix:     discoveryConfig.SearchSuffix,
 			ReleaseGroups:    discoveryConfig.Sources,

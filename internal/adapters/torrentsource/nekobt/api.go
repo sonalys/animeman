@@ -1,3 +1,4 @@
+// Docs: https://wiki.nekobt.to/technical-details/torznab
 package nekobt
 
 import (

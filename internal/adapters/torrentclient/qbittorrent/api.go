@@ -1,3 +1,4 @@
+// Docs: https://github.com/qbittorrent/qBittorrent/wiki/WebUI-API-(qBittorrent-5.0)
 package qbittorrent
 
 import (

@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
+	"github.com/sonalys/animeman/internal/utils"
 )
 
 func convertTorrent(in []Torrent) []torrentclient.Torrent {
@@ -32,6 +32,9 @@ func digestListTorrentArg(arg *torrentclient.ListTorrentConfig) url.Values {
 	}
 	if arg.Tag != nil {
 		v.Set("tag", *arg.Tag)
+	}
+	if arg.Completed != nil && *arg.Completed {
+		v.Set("filter", "completed")
 	}
 	return v
 }

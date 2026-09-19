@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"fmt"
 	"regexp"
 	"slices"
 	"strings"
@@ -112,11 +111,6 @@ func Parse(title string, fallbackSeason int, sources []string) Metadata {
 	return resp
 }
 
-// TagBuildTitleSeasonEpisode builds a tag for filtering in your torrent client. Example: Show S03E02.
-func (t Metadata) TagBuildTitleSeasonEpisode() string {
-	return fmt.Sprintf("%s %s", t.buildTitle(), t.Tag.String())
-}
-
 // BuildSeriesTag builds a !Serie Name tag for you to be able to search all it's episodes with a tag.
 func (t Metadata) BuildSeriesTag() string {
 	return BuildTitleTag(t.Title)
@@ -131,10 +125,6 @@ func (t Metadata) BuildTorrentTags() []string {
 // BuildTitleTag builds the torrent series tag. Example: !serie name.
 func BuildTitleTag(title string) string {
 	return "!" + strings.ToLower(filterAlphanumeric(title))
-}
-
-func (t Metadata) buildTitle() string {
-	return strings.ToLower(filterAlphanumeric(t.Title))
 }
 
 func removeDotSpacing(title string) string {
