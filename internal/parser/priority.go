@@ -3,6 +3,7 @@ package parser
 import (
 	"slices"
 	"sort"
+	"strings"
 
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
@@ -10,6 +11,26 @@ import (
 )
 
 const IgnoreCharset = " \t!,.:`'\"/\\;-[](){}*【】"
+
+// qualityScore returns the index of the first quality that matches the title, or len(qualities) if none matched.
+func qualityScore(title string, qualities []string) int {
+	normalizedTitle := strings.ToLower(title)
+
+	for index, quality := range qualities {
+		matched := 0
+		keywords := strings.Fields(quality)
+		for keyword := range strings.FieldsSeq(quality) {
+			if strings.Contains(normalizedTitle, strings.ToLower(keyword)) {
+				matched++
+			}
+		}
+		// Only count qualities where every keyword matched.
+		if matched == len(keywords) {
+			return index
+		}
+	}
+	return len(qualities)
+}
 
 // Prioritize sorts the parsed results by season/episode, title similarity, resolution, release group and seeders.
 // it's important it returns a crescent season/episode list, so you don't download a recent episode and
@@ -52,6 +73,16 @@ func Prioritize(
 
 		if titleSimilarityI != titleSimilarityJ {
 			return titleSimilarityI > titleSimilarityJ
+		}
+
+		// Then quality, e.g. "1080 HEVC" beats "1080" or "720".
+		// Lower index = higher priority, so a higher quality always wins.
+		if len(opts.Qualities) > 0 {
+			cmp = qualityScore(first.Torrent.Title, opts.Qualities) -
+				qualityScore(second.Torrent.Title, opts.Qualities)
+			if cmp != 0 {
+				return cmp < 0
+			}
 		}
 
 		// Then resolution.
