@@ -1,6 +1,8 @@
 package discovery
 
 import (
+	"strings"
+
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/tags"
@@ -15,10 +17,11 @@ func getLatestTag(torrents []torrentclient.Torrent) tags.Tag {
 	var latestTag tags.Tag
 
 	for _, torrent := range torrents {
-		tags := torrent.Tags
-		seasonEpisodeTag := tags[len(tags)-1]
-		meta := parser.Parse(seasonEpisodeTag, 1, nil)
-		tag := meta.Tag
+		seasonEpisodeTag, ok := findSeasonEpisodeTag(torrent.Tags)
+		if !ok {
+			continue
+		}
+		tag := parser.Parse(seasonEpisodeTag, 1, nil).Tag
 
 		if latestTag.IsZero() || tag.Compare(latestTag) > 0 {
 			latestTag = tag
@@ -26,4 +29,15 @@ func getLatestTag(torrents []torrentclient.Torrent) tags.Tag {
 	}
 
 	return latestTag
+}
+
+// findSeasonEpisodeTag returns the first tag starting with "S", which is
+// the season/episode tag convention used by this app.
+func findSeasonEpisodeTag(torrentTags []string) (string, bool) {
+	for _, torrentTag := range torrentTags {
+		if strings.HasPrefix(torrentTag, "S") {
+			return torrentTag, true
+		}
+	}
+	return "", false
 }

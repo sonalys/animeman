@@ -34,8 +34,8 @@ func Test_getLatestTag(t *testing.T) {
 			name: "same season half episode",
 			args: args{
 				torrents: []torrentclient.Torrent{
-					{Tags: []string{"ore dake level up na ken S1E7"}},
-					{Tags: []string{"solo leveling S1E7.5"}},
+					{Tags: []string{"ore dake level up na ken", "S1E7"}},
+					{Tags: []string{"solo leveling", "S1E7.5"}},
 				},
 			},
 			want: tags.Tag{

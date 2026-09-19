@@ -87,13 +87,14 @@ func (c *Controller) RunShokoIntegration(ctx context.Context, entries []animelis
 // tag is the shoko state tag (pending or linked).
 func parseTorrentTags(torrentTags []string) (title string, tag tags.Tag, ok bool) {
 	for _, torrentTag := range torrentTags {
-		switch {
-		case strings.HasPrefix(torrentTag, "!"):
-			title = strings.TrimPrefix(torrentTag, "!")
-		case strings.HasPrefix(torrentTag, "S"):
-			tag = parser.Parse(torrentTag, 1, nil).Tag
-		default:
+		if after, ok := strings.CutPrefix(torrentTag, "!"); ok {
+			title = after
 		}
+	}
+
+	seasonEpisodeTag, found := findSeasonEpisodeTag(torrentTags)
+	if found {
+		tag = parser.Parse(seasonEpisodeTag, 1, nil).Tag
 	}
 
 	if title == "" || tag.IsZero() {
