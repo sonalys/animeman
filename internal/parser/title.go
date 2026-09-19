@@ -12,8 +12,8 @@ import (
 
 // Regex for removing all annotations from a title, Examples: (Recoded), [1080p], .mkv.
 var titleCleanupExpr = []*regexp.Regexp{
-	// [anything inside brackets] or (parenthesis).
-	regexp.MustCompile(`(\[.*?\])|(\(.*?\))`),
+	// [anything inside brackets] or (parenthesis) or {curly braces}.
+	regexp.MustCompile(`(\[.*?\])|(\(.*?\))|(\{.*?\})`),
 }
 
 func StripSeason(title string) string {

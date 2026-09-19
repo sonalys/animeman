@@ -113,6 +113,20 @@ func TestTitleParse(t *testing.T) {
 				VerticalResolution: -1,
 			},
 		},
+		{
+			name:  "curly braces tags suffix",
+			title: "[Erai-raws] Honzuki no Gekokujou S4 - 21 [1080p CR WEB-DL AVC AAC][MultiSub][D12245DD] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru,id,ms,th,vi,zhhans,zhhant,pl;}",
+			want: Metadata{
+				Title: "Honzuki no Gekokujou",
+				Tag: tags.Tag{
+					Seasons:  []int{4},
+					Episodes: []float64{21},
+				},
+				VerticalResolution: 1080,
+				ReleaseGroup:       "Erai-raws",
+				Labels:             []string{"1080p", "CR", "WEB-DL", "AVC", "AAC", "MultiSub", "D12245DD"},
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
