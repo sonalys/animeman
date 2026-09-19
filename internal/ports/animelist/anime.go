@@ -3,6 +3,7 @@ package animelist
 import (
 	"context"
 	"slices"
+	"sort"
 	"time"
 
 	"github.com/sonalys/animeman/internal/utils"
@@ -80,4 +81,33 @@ func (e Entry) WithIDs(anilistID, malID int) Entry {
 	e.AnilistID = anilistID
 	e.MALID = malID
 	return e
+}
+
+// selectIdealTitle avoids kanji titles for example, preferring english ones.
+func (e Entry) GetBestTitle() string {
+	titles := e.Titles
+
+	if len(titles) == 0 {
+		return ""
+	}
+
+	viableCandidates := make([]string, 0, len(titles))
+
+	for _, t := range titles {
+		if utils.IsASCII(t) {
+			viableCandidates = append(viableCandidates, t)
+		}
+	}
+
+	// Prefer the shortest title for the tags.
+	sort.Slice(viableCandidates, func(i, j int) bool {
+		return len(viableCandidates[i]) < len(viableCandidates[j])
+	})
+
+	if len(viableCandidates) > 0 {
+		return viableCandidates[0]
+	}
+
+	// Fallback to first element if no ASCII title is found
+	return titles[0]
 }

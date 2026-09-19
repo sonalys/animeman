@@ -11,6 +11,7 @@ import (
 	"strings"
 	"time"
 
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
@@ -86,6 +87,12 @@ func (api *API) Search(
 	})
 
 	torrents = parser.Prioritize(entry, torrents, opts)
+
+	log.
+		Ctx(ctx).
+		Debug().
+		Int("results", len(torrents)).
+		Msg("search results")
 
 	return torrents, nil
 }

@@ -46,7 +46,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 			skippedCount++
 			log.
 				Trace().
-				Str("title", selectIdealTitle(entry.Titles)).
+				Str("title", entry.GetBestTitle()).
 				Time("nextScanAt", c.intervalTracker.getNextScanTime(entry)).
 				Msgf("skipping entry: not due for scan yet")
 			continue
@@ -54,7 +54,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 
 		logger := log.Logger.
 			With().
-			Str("title", selectIdealTitle(entry.Titles)).
+			Str("title", entry.GetBestTitle()).
 			Logger()
 
 		ctx := logger.WithContext(ctx)

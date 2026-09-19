@@ -4,9 +4,7 @@ import (
 	"context"
 	"fmt"
 	"reflect"
-	"sort"
 	"strings"
-	"unicode"
 
 	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog/log"
@@ -110,42 +108,6 @@ func (c *Controller) buildTorrentName(title string, parsedNyaa parser.TorrentMet
 	return b.String()
 }
 
-// selectIdealTitle avoids kanji titles for example, preferring english ones.
-func selectIdealTitle(titles []string) string {
-	if len(titles) == 0 {
-		return ""
-	}
-
-	viableCandidates := make([]string, 0, len(titles))
-
-	for _, t := range titles {
-		if isASCII(t) {
-			viableCandidates = append(viableCandidates, t)
-		}
-	}
-
-	// Prefer the shortest title for the tags.
-	sort.Slice(viableCandidates, func(i, j int) bool {
-		return len(viableCandidates[i]) < len(viableCandidates[j])
-	})
-
-	if len(viableCandidates) > 0 {
-		return viableCandidates[0]
-	}
-
-	// Fallback to first element if no ASCII title is found
-	return titles[0]
-}
-
-func isASCII(s string) bool {
-	for _, c := range s {
-		if c > unicode.MaxASCII {
-			return false
-		}
-	}
-	return true
-}
-
 // AddTorrentEntry receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 func (c *Controller) AddTorrentEntry(
@@ -153,7 +115,7 @@ func (c *Controller) AddTorrentEntry(
 	animeListEntry animelist.Entry,
 	parsedNyaa parser.TorrentMetadata,
 ) error {
-	selectedTitle := selectIdealTitle(animeListEntry.Titles)
+	selectedTitle := animeListEntry.GetBestTitle()
 
 	meta := parsedNyaa.Metadata.Clone()
 	// Use nyaa metadata, but with anime list title.
@@ -175,6 +137,14 @@ func (c *Controller) AddTorrentEntry(
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
 		return fmt.Errorf("adding torrents: %w", err)
 	}
+
+	log.
+		Ctx(ctx).
+		Debug().
+		Str("title", selectedTitle).
+		Str("torrentName", *req.Name).
+		Strs("tags", tags).
+		Msg("added torrent")
 
 	return nil
 }
@@ -200,12 +170,6 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context, entries []animel
 		meta.Title = normalizeTitle(meta.Title, entries)
 		tags := meta.BuildTorrentTags()
 
-		log.
-			Info().
-			Any("metadata", meta).
-			Strs("tags", tags).
-			Msgf("updating torrent tags")
-
 		if err := c.dep.TorrentClient.AddTorrentTags(
 			ctx,
 			[]string{torrent.Hash},
@@ -213,6 +177,13 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context, entries []animel
 		); err != nil {
 			return fmt.Errorf("updating tags: %w", err)
 		}
+
+		log.
+			Ctx(ctx).
+			Info().
+			Str("torrentName", torrent.Name).
+			Strs("tags", tags).
+			Msgf("generated torrent tags")
 	}
 
 	return nil
@@ -238,7 +209,7 @@ func normalizeTitle(torrentTitle string, entries []animelist.Entry) string {
 		}
 
 		if bestScore >= minSimilarity {
-			return selectIdealTitle(entry.Titles)
+			return entry.GetBestTitle()
 		}
 	}
 
