@@ -224,7 +224,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 	logger.
 		Info().
 		Int("newCount", len(parsedTorrents)).
-		Any("latestTag", latestTag).
+		Stringer("latestTag", latestTag).
 		Msg("entry discovery finished")
 
 	return foundNewEpisodes, nil
