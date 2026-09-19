@@ -82,9 +82,12 @@ func NewEntry(
 	}
 }
 
-// WithIDs returns a copy of the entry with the given tracker ids set.
-func (e Entry) WithIDs(anilistID, malID int) Entry {
+func (e *Entry) WithAnilistID(anilistID int) *Entry {
 	e.AnilistID = anilistID
+	return e
+}
+
+func (e *Entry) WithMALID(malID int) *Entry {
 	e.MALID = malID
 	return e
 }

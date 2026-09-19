@@ -160,7 +160,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			})
 		}
 
-		out = append(out, animelist.NewEntry(
+		entry := animelist.NewEntry(
 			[]string{titles.English, titles.Romaji, titles.Native},
 			convertStatus(in[i].Status),
 			convertAiringStatus(in[i].Media.AiringStatus),
@@ -186,7 +186,13 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			),
 			in[i].Media.Episodes,
 			episodes,
-		).WithIDs(in[i].Media.ID, in[i].Media.IDMal))
+		)
+
+		entry.
+			WithAnilistID(in[i].Media.ID).
+			WithMALID(in[i].Media.IDMal)
+
+		out = append(out, entry)
 	}
 	return out
 }

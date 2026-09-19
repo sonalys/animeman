@@ -46,7 +46,7 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 	out := make([]animelist.Entry, 0, len(in))
 	timeFormat := findCorrectTimeFormat(in)
 	for i := range in {
-		out = append(out, animelist.NewEntry(
+		entry := animelist.NewEntry(
 			convertTitles(fmt.Sprint(in[i].Title), in[i].TitleEng),
 			animelist.ListStatus(in[i].Status),
 			animelist.AiringStatus(in[i].AiringStatus),
@@ -54,7 +54,10 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			utils.Must(time.Parse(timeFormat, in[i].AnimeEndDateString)),
 			in[i].NumEpisodes,
 			nil,
-		).WithIDs(0, in[i].ID))
+		)
+		entry.WithMALID(in[i].ID)
+
+		out = append(out, entry)
 	}
 	return out
 }

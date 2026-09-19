@@ -35,20 +35,28 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 
 	// MAL-only entries get their AniList id backfilled, so shoko can be
 	// matched by exact id instead of fuzzy title search.
-	for i, entry := range entries {
-		if entry.MALID == 0 {
-			continue
+	if c.dep.Shoko != nil {
+		for i := range entries {
+			entry := &entries[i]
+
+			if entry.AnilistID != 0 || entry.MALID == 0 {
+				continue
+			}
+
+			anilistID, err := c.dep.AnilistIDResolver.GetAnilistIDByMALID(ctx, entry.MALID)
+			if err != nil {
+				log.Ctx(ctx).
+					Warn().
+					Err(err).
+					Int("malID", entry.MALID).
+					Msg("failed to resolve anilist id")
+				continue
+			}
+
+			entry.
+				WithAnilistID(anilistID).
+				WithMALID(entry.MALID)
 		}
-		anilistID, err := c.dep.AnilistIDResolver.GetAnilistIDByMALID(ctx, entry.MALID)
-		if err != nil {
-			log.Ctx(ctx).
-				Warn().
-				Err(err).
-				Int("malID", entry.MALID).
-				Msg("failed to resolve anilist id")
-			continue
-		}
-		entries[i] = entry.WithIDs(anilistID, entry.MALID)
 	}
 
 	if err := c.TorrentRegenerateTags(ctx, entries); err != nil {
