@@ -81,14 +81,9 @@ func (api *API) Search(
 	)
 
 	torrents := utils.Map(items, func(item item) torrentsource.Torrent {
-		pubDate, err := time.Parse(time.RFC1123Z, item.PubDate)
-		if err != nil {
-			pubDate = time.Time{}
-		}
 		return torrentsource.Torrent{
 			Title:   item.Title,
 			Link:    item.Link,
-			PubDate: pubDate,
 			Seeders: item.seeders(),
 		}
 	})
