@@ -28,9 +28,27 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 
 	ctx = log.Logger.WithContext(ctx)
 
-	entries, err := c.dep.AnimeListClient.GetCurrentlyWatching(ctx)
+	entries, err := c.dep.AnimeListSource.GetCurrentlyWatching(ctx)
 	if err != nil {
 		return fmt.Errorf("fetching anime list: %w", err)
+	}
+
+	// MAL-only entries get their AniList id backfilled, so shoko can be
+	// matched by exact id instead of fuzzy title search.
+	for i, entry := range entries {
+		if entry.MALID == 0 {
+			continue
+		}
+		anilistID, err := c.dep.AnilistIDResolver.GetAnilistIDByMALID(ctx, entry.MALID)
+		if err != nil {
+			log.Ctx(ctx).
+				Warn().
+				Err(err).
+				Int("malID", entry.MALID).
+				Msg("failed to resolve anilist id")
+			continue
+		}
+		entries[i] = entry.WithIDs(anilistID, entry.MALID)
 	}
 
 	if err := c.TorrentRegenerateTags(ctx, entries); err != nil {
@@ -169,7 +187,7 @@ func filterRelevantResults(
 func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (bool, error) {
 	logger := getLogger(ctx)
 
-	results, err := c.dep.Source.Search(ctx, entry, torrentsource.SearchOptions{
+	results, err := c.dep.TorrentSource.Search(ctx, entry, torrentsource.SearchOptions{
 		SearchSuffix: c.dep.Config.SearchSuffix,
 		Sources:      c.dep.Config.ReleaseGroups,
 		Qualities:    c.dep.Config.Qualitites,

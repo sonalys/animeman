@@ -50,22 +50,18 @@ func init() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 }
 
-func initializeAnimeList(c configs.AnimeListConfig) animelist.AnimeListSource {
-	httpClient := &http.Client{
-		Transport: roundtripper.NewRateLimitedTransport(
-			defaultTransport,
-			rate.NewLimiter(rate.Every(time.Minute), 30),
-		),
-		Timeout: 15 * time.Second,
-	}
-
-	switch c.Type {
+func initializeAnimeList(
+	httpClient *http.Client,
+	config configs.AnimeListConfig,
+	anilistAPI *anilist.API,
+) animelist.AnimeListSource {
+	switch config.Type {
 	case configs.AnimeListTypeMAL:
-		return myanimelist.New(httpClient, c.Username, c.CacheTTL)
+		return myanimelist.New(httpClient, config.Username, config.CacheTTL)
 	case configs.AnimeListTypeAnilist:
-		return anilist.New(httpClient, c.Username, c.CacheTTL)
+		return anilistAPI
 	default:
-		log.Panic().Msgf("animeListType %s not implemented", c.Type)
+		log.Panic().Msgf("animeListType %s not implemented", config.Type)
 	}
 	return nil
 }
@@ -153,11 +149,23 @@ func main() {
 		shokoClient = initializeShoko(config.ShokoConfig)
 	}
 
+	httpClient := &http.Client{
+		Transport: roundtripper.NewRateLimitedTransport(
+			defaultTransport,
+			rate.NewLimiter(rate.Every(time.Minute), 30),
+		),
+		Timeout: 15 * time.Second,
+	}
+
+	// Anilist API is used for MAL->AniList id resolution, so that shoko can be matched by exact id instead of fuzzy title search.
+	anilistAPI := anilist.New(httpClient, config.Username, config.CacheTTL)
+
 	c := discovery.New(discovery.Dependencies{
-		Source:          initializeTorrentSource(config.TorrentSourceConfig),
-		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
-		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
-		Shoko:           shokoClient,
+		AnimeListSource:   initializeAnimeList(httpClient, config.AnimeListConfig, anilistAPI),
+		TorrentSource:     initializeTorrentSource(config.TorrentSourceConfig),
+		TorrentClient:     initializeTorrentClient(ctx, config.TorrentConfig),
+		AnilistIDResolver: anilistAPI,
+		Shoko:             shokoClient,
 		Config: discovery.Config{
 			SearchSuffix:     discoveryConfig.SearchSuffix,
 			ReleaseGroups:    discoveryConfig.Sources,
@@ -166,7 +174,7 @@ func main() {
 			DownloadPath:     discoveryConfig.DownloadPath,
 			CreateShowFolder: discoveryConfig.CreateShowFolder,
 			PollFrequency:    discoveryConfig.PollFrequency,
-			RenameTorrent:    utils.PointerOrDefault(discoveryConfig.RenameTorrent, true),
+			RenameTorrent:    utils.Coalesce(discoveryConfig.RenameTorrent, true),
 			RenameFormat:     renameScript,
 		},
 	})

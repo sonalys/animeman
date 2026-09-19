@@ -1,7 +1,7 @@
 package utils
 
-// PointerOrDefault returns value if it is not nil, otherwise it returns fallback.
-func PointerOrDefault[T comparable](value *T, fallback T) T {
+// Coalesce returns value if it is not nil, otherwise it returns fallback.
+func Coalesce[T comparable](value *T, fallback T) T {
 	if value == nil {
 		return fallback
 	}

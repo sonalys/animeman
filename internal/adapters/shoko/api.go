@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	seriesSearch = "/api/v3/Series/AniDB/Search"
-	episodesPath = "/api/v3/Series/AniDB/%d/Episode"
-	pathEndsWith = "/api/v3/File/PathEndsWith/%s"
-	linkFilePath = "/api/v3/File/%d/Link"
-	rescanPath   = "/api/v3/File/%d/Rescan"
+	seriesSearch      = "/api/v3/Series/AniDB/Search"
+	seriesByAnilistID = "/api/v3/Anilist/Anime/%d/Shoko/Series"
+	episodesPath      = "/api/v3/Series/AniDB/%d/Episode"
+	pathEndsWith      = "/api/v3/File/PathEndsWith/%s"
+	linkFilePath      = "/api/v3/File/%d/Link"
+	rescanPath        = "/api/v3/File/%d/Rescan"
 )
 
 type (
@@ -67,6 +68,12 @@ type (
 		Total int `json:"total"`
 	}
 
+	shokoSeries struct {
+		IDs struct {
+			AniDB int `json:"aniDB"`
+		} `json:"ids"`
+	}
+
 	anidbEpisode struct {
 		ID            int    `json:"id"`
 		EpisodeNumber int    `json:"episodeNumber"`
@@ -103,6 +110,37 @@ type (
 		} `json:"seriesIDs"`
 	}
 )
+
+// FindSeriesByAnilistID implements shoko.Shoko.
+func (api *API) FindSeriesByAnilistID(ctx context.Context, anilistID int) (int, error) {
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodGet,
+		api.config.Host+fmt.Sprintf(seriesByAnilistID, anilistID),
+		nil,
+	)
+	if err != nil {
+		return 0, fmt.Errorf("creating request: %w", err)
+	}
+
+	resp, err := api.do(ctx, req)
+	if err != nil {
+		return 0, fmt.Errorf("request failed: %w", err)
+	}
+	if resp.StatusCode == http.StatusNotFound {
+		resp.Body.Close()
+		return 0, nil
+	}
+
+	var series []shokoSeries
+	if err := decodeJSON(resp, &series); err != nil {
+		return 0, fmt.Errorf("finding series by anilist id: %w", err)
+	}
+	if len(series) == 0 {
+		return 0, nil
+	}
+	return series[0].IDs.AniDB, nil
+}
 
 // FindSeriesByTitle implements shoko.Shoko.
 func (api *API) FindSeriesByTitle(ctx context.Context, title string) (int, error) {

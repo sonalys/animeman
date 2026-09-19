@@ -14,9 +14,10 @@ import (
 
 type (
 	Dependencies struct {
-		Source          torrentsource.Source
-		AnimeListClient animelist.AnimeListSource
-		TorrentClient   torrentclient.TorrentClient
+		TorrentSource     torrentsource.Source
+		AnimeListSource   animelist.AnimeListSource
+		TorrentClient     torrentclient.TorrentClient
+		AnilistIDResolver animelist.AnilistIDResolver
 		// Shoko is optional, nil disables the shoko integration.
 		Shoko  shoko.Shoko
 		Config Config

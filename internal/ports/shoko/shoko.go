@@ -6,6 +6,9 @@ import (
 
 // Shoko is the port implemented by the shoko server adapter.
 type Shoko interface {
+	// FindSeriesByAnilistID looks up the AniDB id of the shoko series linked to
+	// the given AniList id. It returns 0 when nothing matched.
+	FindSeriesByAnilistID(ctx context.Context, anilistID int) (anidbID int, err error)
 	// FindSeriesByTitle searches the shoko title dump for a series matching the title.
 	// It returns the AniDB id of the best match, 0 when nothing matched.
 	FindSeriesByTitle(ctx context.Context, title string) (anidbID int, err error)

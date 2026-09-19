@@ -175,7 +175,7 @@ func (c *Controller) linkFileManually(
 		return false, nil
 	}
 
-	anidbID, err := c.dep.Shoko.FindSeriesByTitle(ctx, entry.GetBestTitle())
+	anidbID, err := c.findAnidbID(ctx, entry)
 	if err != nil {
 		return false, fmt.Errorf("finding series: %w", err)
 	}
@@ -207,6 +207,22 @@ func (c *Controller) linkFileManually(
 		Msg("linked unrecognized file to episodes")
 
 	return true, nil
+}
+
+// findAnidbID resolves the AniDB id of an anime list entry, preferring the
+// exact AniList cross-reference known by shoko, and falling back to fuzzy
+// title matching when shoko has no such link (or the entry has no AniList id).
+func (c *Controller) findAnidbID(ctx context.Context, entry animelist.Entry) (int, error) {
+	if entry.AnilistID != 0 {
+		anidbID, err := c.dep.Shoko.FindSeriesByAnilistID(ctx, entry.AnilistID)
+		if err != nil {
+			return 0, fmt.Errorf("finding series by anilist id %d: %w", entry.AnilistID, err)
+		}
+		if anidbID != 0 {
+			return anidbID, nil
+		}
+	}
+	return c.dep.Shoko.FindSeriesByTitle(ctx, entry.GetBestTitle())
 }
 
 // matchEntry finds the anime list entry whose titles best match the parsed title.
