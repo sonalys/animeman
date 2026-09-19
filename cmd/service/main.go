@@ -13,7 +13,6 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/cmd/service/configs"
 	"github.com/sonalys/animeman/internal/adapters/animelist/anilist"
 	"github.com/sonalys/animeman/internal/adapters/animelist/myanimelist"
 	shokoadapter "github.com/sonalys/animeman/internal/adapters/shoko"
@@ -54,13 +53,13 @@ func init() {
 
 func initializeAnimeList(
 	httpClient *http.Client,
-	config configs.AnimeListConfig,
+	config AnimeListConfig,
 	anilistAPI *anilist.API,
 ) animelist.AnimeListSource {
 	switch config.Type {
-	case configs.AnimeListTypeMAL:
+	case AnimeListTypeMAL:
 		return myanimelist.New(httpClient, config.Username, config.CacheTTL)
-	case configs.AnimeListTypeAnilist:
+	case AnimeListTypeAnilist:
 		return anilistAPI
 	default:
 		log.Panic().Msgf("animeListType %s not implemented", config.Type)
@@ -70,10 +69,10 @@ func initializeAnimeList(
 
 func initializeTorrentClient(
 	ctx context.Context,
-	config configs.TorrentConfig,
+	config TorrentConfig,
 ) torrentclient.Client {
 	switch config.Type {
-	case configs.TorrentClientTypeQBittorrent:
+	case TorrentClientTypeQBittorrent:
 		config := config.QBittorrent
 
 		return qbittorrent.New(
@@ -88,7 +87,7 @@ func initializeTorrentClient(
 	return nil
 }
 
-func initializeTorrentSource(c configs.TorrentSourceConfig) torrentsource.Source {
+func initializeTorrentSource(c TorrentSourceConfig) torrentsource.Source {
 	httpClient := &http.Client{
 		Transport: roundtripper.NewRateLimitedTransport(
 			defaultTransport,
@@ -98,11 +97,11 @@ func initializeTorrentSource(c configs.TorrentSourceConfig) torrentsource.Source
 	}
 
 	switch c.Type {
-	case configs.TorrentSourceTypeNyaa:
+	case TorrentSourceTypeNyaa:
 		return nyaa.New(httpClient, nyaa.Config{
 			CustomParameters: c.Nyaa.CustomParameters,
 		})
-	case configs.TorrentSourceTypeNekoBT:
+	case TorrentSourceTypeNekoBT:
 		return nekobt.New(httpClient, nekobt.Config{
 			APIKey:           c.Nekobt.APIKey,
 			CustomParameters: c.Nekobt.CustomParameters,
@@ -113,7 +112,7 @@ func initializeTorrentSource(c configs.TorrentSourceConfig) torrentsource.Source
 	return nil
 }
 
-func initializeShoko(c configs.ShokoConfig) shoko.Shoko {
+func initializeShoko(c ShokoConfig) shoko.Shoko {
 	httpClient := &http.Client{
 		Transport: defaultTransport,
 		Timeout:   15 * time.Second,
@@ -127,7 +126,7 @@ func initializeShoko(c configs.ShokoConfig) shoko.Shoko {
 func main() {
 	log.Info().Msgf("starting Animeman [%s]", version)
 
-	config, err := configs.ReadConfig(
+	config, err := ReadConfig(
 		utils.ValueOrDefault(os.Getenv("CONFIG_PATH"), "config.yaml"),
 	)
 	if err != nil {
