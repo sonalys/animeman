@@ -43,8 +43,16 @@ logLevel: info # (debug,info,error).
 animeList:
   type: myanimelist # (myanimelist|anilist).
   username: YOUR_USERNAME # Replace with your username.
-rssConfig:
-  type: nyaa
+torrentSource:
+  type: nyaa # (nyaa|nekobt).
+  nyaa:
+    customParameters: # Configures custom query parameters for the nyaa list call.
+      c: 1_2 # Defines english only anime sources.
+      s: seeders # Sorts by seeders, keep most seeded candidates on first page.
+      o: desc # Descending order.
+  # nekobt:
+  #   apiKey: YOUR_API_KEY # Required when type is nekobt.
+discovery:
   pollFrequency: 5m0s # Minimum 1m0s. Avoids denial-of-service on nyaa.
   sources: # Specify which sources to use, and in which priority. Keep empty to accept all.
       - source1
@@ -53,20 +61,17 @@ rssConfig:
       - 1080 HEVC
       - 720
   searchSuffix: '-"dub"' # Specifies search suffixes like negative match on keywords.
-  customParameters: # Configures custom query parameters for the rss list call.
-    c: 1_2 # Defines english only anime sources.
-    s: seeders # Sorts by seeders, keep most seeded candidates on first page.
-    o: desc # Descending order.
-torrentConfig:
-  type: qbittorrent
   category: Animes # Animeman managed category, will be used to create tags / identify latest ep.
   downloadPath: /downloads/animes
   createShowFolder: true # Creates a folder to for the show inside downloadPath.
   renameTorrent: true # Rename the torrent in qBittorrent avoiding conflict between multiple sources with different names for the show.
   renameScript: "" # An expr-lang script that allows you to define how you want your torrents to be named.
-  host: http://ip:port # Replace with your qBittorrent WebUI address.
-  username: admin # Replace credentials with your own
-  password: adminadmin
+torrentClient:
+  type: qbittorrent
+  qbittorrent:
+    host: http://ip:port # Replace with your qBittorrent WebUI address.
+    username: admin # Replace credentials with your own
+    password: adminadmin
 ```
 
 ### Docs for renameScript
