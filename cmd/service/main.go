@@ -24,8 +24,8 @@ import (
 	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/roundtripper"
 	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/http/roundtripper"
 	"golang.org/x/time/rate"
 )
 
