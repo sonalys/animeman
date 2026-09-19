@@ -6,6 +6,8 @@ import (
 
 // Shoko is the port implemented by the shoko server adapter.
 type Shoko interface {
+	// Wait blocks until shoko is reachable or the context is cancelled.
+	Wait(ctx context.Context)
 	// FindSeriesByAnilistID looks up the AniDB id of the shoko series linked to
 	// the given AniList id. It returns 0 when nothing matched.
 	FindSeriesByAnilistID(ctx context.Context, anilistID int) (anidbID int, err error)

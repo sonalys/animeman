@@ -147,6 +147,7 @@ func main() {
 	var shokoClient shoko.Shoko
 	if config.ShokoConfig.Host != "" {
 		shokoClient = initializeShoko(config.ShokoConfig)
+		shokoClient.Wait(ctx)
 	}
 
 	httpClient := &http.Client{
