@@ -3,9 +3,10 @@
 [![Release](https://github.com/sonalys/animeman/actions/workflows/goreleaser.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/goreleaser.yml)
 [![Tests](https://github.com/sonalys/animeman/actions/workflows/tests.yml/badge.svg)](https://github.com/sonalys/animeman/actions/workflows/tests.yml)
 
-Animeman is a service for synchronizing your anime list currently watching with Nyaa and QBittorrent.  
+Animeman is a service for synchronizing your anime list currently watching with a torrent source and QBittorrent.  
 Currently it manages qBittorrent through it's WebUI, creating and managing a category of torrents.  
-It automatically parses the torrent titles for tagging the show, season and episodes, while also searching in Nyaa.si for new releases.
+It automatically parses the torrent titles for tagging the show, season and episodes, while also searching for new releases.  
+Torrent sources are pluggable; Animeman currently supports **Nyaa.si** and **NekoBT**, configured via `torrentSource.type`.
 
 ## Features
 
@@ -20,10 +21,10 @@ It automatically parses the torrent titles for tagging the show, season and epis
 
 0. Tag existing torrents in the configured category in **qBittorrent**
 1. Fetch your **Currently Watching** entries from **MAL** or **Anilist**
-2. Search **Nyaa.si** for episodes for each anime list entry
+2. Search the configured **torrent source** (Nyaa.si or NekoBT) for episodes for each anime list entry
 3. Scan through results searching for newer episodes than the existing ones in **qBittorrent**  
   It doesn't search for specific episodes, it uses all results from a single page to retrieve new episodes.  
-  This might not work well for shows with more episodes than nyaa.si page size.  
+  This might not work well for shows with more episodes than the source's page size.  
   Changing this approach is not viable at the moment, 
   as it would require Animeman more requests about each episode information.
 4. Add torrent to qBittorrent via the WebUI API
@@ -60,7 +61,7 @@ torrentSource:
   #     hardsub: "false" # Excludes hardcoded subtitles.
   #     batch: "false" # Excludes batch torrents.
 discovery:
-  pollFrequency: 5m0s # Minimum 1m0s. Avoids denial-of-service on nyaa.
+  pollFrequency: 5m0s # Minimum 1m0s.
   sources: # Specify which sources to use, and in which priority. Keep empty to accept all.
       - source1
       - source2
