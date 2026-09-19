@@ -108,8 +108,11 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 	}
 
 	q.Set("media_id", mediaID)
-	if opt.SearchSuffix != "" {
-		q.Set("q", opt.SearchSuffix)
+
+	// media_id already narrows to the entry, so `q` only carries the
+	// quality/source filters and the user suffix, same format as nyaa.
+	if query := buildQuery(opt); query != "" {
+		q.Set("q", query)
 	}
 
 	if api.config.APIKey != "" {
@@ -117,6 +120,26 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 	}
 
 	return q.Encode(), nil
+}
+
+// buildQuery builds the `q` search query from the search options,
+// mirroring the nyaa adapter: qualities, sources and the user suffix.
+func buildQuery(opt torrentsource.SearchOptions) string {
+	var parts []string
+
+	if len(opt.Qualities) > 0 {
+		parts = append(parts, "("+strings.Join(opt.Qualities, "|")+")")
+	}
+
+	if len(opt.Sources) > 0 {
+		parts = append(parts, "("+strings.Join(opt.Sources, "|")+")")
+	}
+
+	if opt.SearchSuffix != "" {
+		parts = append(parts, opt.SearchSuffix)
+	}
+
+	return strings.Join(parts, " ")
 }
 
 // resolveMediaID returns the nekoBT external id for the entry, e.g. `anilist-20594`.
