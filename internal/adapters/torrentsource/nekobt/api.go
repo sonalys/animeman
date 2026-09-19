@@ -9,6 +9,10 @@ const TORZNAB_URL = "https://nekobt.to/api/torznab/api"
 type Config struct {
 	// APIKey is the nekoBT api key, used as the `apikey` query parameter.
 	APIKey string
+	// CustomParameters are extra torznab query parameters, e.g.
+	// `sort: seeders`, `sub_lang: en`, `mtl: "false"`. They override
+	// the parameters built by the adapter.
+	CustomParameters map[string]string
 }
 
 type API struct {

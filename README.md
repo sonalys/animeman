@@ -52,6 +52,13 @@ torrentSource:
       o: desc # Descending order.
   # nekobt:
   #   apiKey: YOUR_API_KEY # Required when type is nekobt.
+  #   customParameters: # Configures extra torznab query parameters, they override the defaults.
+  #     sort: seeders # Sorts by seeders.
+  #     audio_lang: ja # Japanese audio only, filters out dubs.
+  #     sub_lang: en # English subtitles only.
+  #     mtl: "false" # Excludes machine translated subtitles.
+  #     hardsub: "false" # Excludes hardcoded subtitles.
+  #     batch: "false" # Excludes batch torrents.
 discovery:
   pollFrequency: 5m0s # Minimum 1m0s. Avoids denial-of-service on nyaa.
   sources: # Specify which sources to use, and in which priority. Keep empty to accept all.

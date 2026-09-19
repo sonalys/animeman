@@ -104,7 +104,8 @@ func initializeTorrentSource(c configs.TorrentSourceConfig) torrentsource.Source
 		})
 	case configs.TorrentSourceTypeNekoBT:
 		return nekobt.New(httpClient, nekobt.Config{
-			APIKey: c.Nekobt.APIKey,
+			APIKey:           c.Nekobt.APIKey,
+			CustomParameters: c.Nekobt.CustomParameters,
 		})
 	default:
 		log.Panic().Msgf("rss type %s not implemented", c.Type)

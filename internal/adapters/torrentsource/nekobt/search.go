@@ -119,6 +119,12 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 		q.Set("apikey", api.config.APIKey)
 	}
 
+	// Apply user-configured torznab parameters last, so they can
+	// override anything built above (sort, sub_lang, mtl, hardsub, ...).
+	for name, value := range api.config.CustomParameters {
+		q.Set(name, value)
+	}
+
 	return q.Encode(), nil
 }
 

@@ -98,6 +98,10 @@ type NyaaConfig struct {
 // NekobtConfig holds nekoBT-specific settings.
 type NekobtConfig struct {
 	APIKey string `yaml:"apiKey"`
+	// CustomParameters sets extra torznab query parameters, e.g.
+	// `sort: seeders`, `sub_lang: en`, `mtl: "false"`, `hardsub: "false"`.
+	// They override the defaults built by the adapter.
+	CustomParameters map[string]string `yaml:"customParameters"`
 }
 
 type TorrentSourceConfig struct {
@@ -259,7 +263,20 @@ func GenerateBoilerplateConfig() {
 		},
 		TorrentSourceConfig: TorrentSourceConfig{
 			Type: TorrentSourceTypeNyaa,
-			Nyaa: &NyaaConfig{},
+			Nyaa: &NyaaConfig{
+				CustomParameters: map[string]string{
+					"c": "1_2", // Anime - English-translated.
+				},
+			},
+			Nekobt: &NekobtConfig{
+				APIKey: "YOUR_API_KEY",
+				CustomParameters: map[string]string{
+					"sub_lang":   "en",    // Only English subtitles.
+					"audio_lang": "ja",    // Only Japanese audio.
+					"mtl":        "false", // No machine-translated subtitles.
+					"hardsub":    "false", // No hardsubbed releases.
+				},
+			},
 		},
 		TorrentConfig: TorrentConfig{
 			Type: TorrentClientTypeQBittorrent,
