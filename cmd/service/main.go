@@ -71,7 +71,7 @@ func initializeAnimeList(
 func initializeTorrentClient(
 	ctx context.Context,
 	config configs.TorrentConfig,
-) torrentclient.TorrentClient {
+) torrentclient.Client {
 	switch config.Type {
 	case configs.TorrentClientTypeQBittorrent:
 		config := config.QBittorrent
@@ -100,7 +100,7 @@ func initializeTorrentSource(c configs.TorrentSourceConfig) torrentsource.Source
 	switch c.Type {
 	case configs.TorrentSourceTypeNyaa:
 		return nyaa.New(httpClient, nyaa.Config{
-			ListParameters: c.Nyaa.CustomParameters,
+			CustomParameters: c.Nyaa.CustomParameters,
 		})
 	case configs.TorrentSourceTypeNekoBT:
 		return nekobt.New(httpClient, nekobt.Config{

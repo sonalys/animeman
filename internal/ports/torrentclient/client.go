@@ -7,16 +7,6 @@ import (
 
 var ErrUnauthorized = fmt.Errorf("unauthorized")
 
-// TorrentClient is the port implemented by every torrent client adapter (qbittorrent, ...).
-type TorrentClient interface {
-	List(ctx context.Context, arg *ListTorrentConfig) ([]Torrent, error)
-	// TorrentFiles lists the file paths contained in the given torrent hash.
-	TorrentFiles(ctx context.Context, hash string) ([]string, error)
-	AddTorrent(ctx context.Context, arg *AddTorrentConfig) error
-	AddTorrentTags(ctx context.Context, hashes []string, tags []string) error
-	RemoveTorrentTags(ctx context.Context, hashes []string, tags []string) error
-}
-
 type (
 	Torrent struct {
 		Name     string
@@ -42,3 +32,14 @@ type (
 		Completed *bool
 	}
 )
+
+// Client is the port implemented by every torrent client adapter (qbittorrent, ...).
+type Client interface {
+	List(ctx context.Context, arg *ListTorrentConfig) ([]Torrent, error)
+	// TorrentFiles returns the list of file paths for a torrent, given its hash.
+	// The paths are relative to the torrent's save path.
+	TorrentFiles(ctx context.Context, hash string) ([]string, error)
+	AddTorrent(ctx context.Context, arg *AddTorrentConfig) error
+	AddTorrentTags(ctx context.Context, hashes []string, tags []string) error
+	RemoveTorrentTags(ctx context.Context, hashes []string, tags []string) error
+}

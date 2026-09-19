@@ -43,7 +43,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 				continue
 			}
 
-			anilistID, err := c.dep.AnilistIDResolver.GetAnilistIDByMALID(ctx, entry.MALID)
+			anilistID, err := c.dep.AnilistIDResolver.ResolveMAL(ctx, entry.MALID)
 			if err != nil {
 				log.Ctx(ctx).
 					Warn().

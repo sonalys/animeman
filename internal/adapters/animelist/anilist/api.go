@@ -29,6 +29,11 @@ type (
 	}
 )
 
+var (
+	_ animelist.AnimeListSource   = (*API)(nil)
+	_ animelist.AnilistIDResolver = (*API)(nil)
+)
+
 func New(client *http.Client, username string, cacheTTL time.Duration) *API {
 	return &API{
 		client:      client,
@@ -39,7 +44,7 @@ func New(client *http.Client, username string, cacheTTL time.Duration) *API {
 }
 
 // GetAnilistIDByMALID implements animelist.AnilistIDResolver.
-func (api *API) GetAnilistIDByMALID(ctx context.Context, malID int) (int, error) {
+func (api *API) ResolveMAL(ctx context.Context, malID int) (int, error) {
 	api.lock.Lock()
 	defer api.lock.Unlock()
 

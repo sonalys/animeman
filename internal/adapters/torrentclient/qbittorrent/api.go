@@ -11,6 +11,7 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/utils"
 )
 
@@ -21,6 +22,8 @@ type (
 		client             *http.Client
 	}
 )
+
+var _ torrentclient.Client = (*API)(nil)
 
 func New(ctx context.Context, host, username, password string) *API {
 	client := &http.Client{

@@ -9,24 +9,38 @@ import (
 	"github.com/sonalys/animeman/internal/utils"
 )
 
-// AnimeListSource is the port implemented by every anime list adapter (anilist, myanimelist, ...).
-type AnimeListSource interface {
-	GetCurrentlyWatching(ctx context.Context) ([]Entry, error)
-}
+type (
+	// AnimeListSource is the port implemented by every anime list adapter (anilist, myanimelist, ...).
+	AnimeListSource interface {
+		GetCurrentlyWatching(ctx context.Context) ([]Entry, error)
+	}
 
-// AnilistIDResolver is an optional port for anime list adapters that can
-// resolve an AniList id from a MAL id, so entries always carry an AniList id.
-type AnilistIDResolver interface {
-	GetAnilistIDByMALID(ctx context.Context, malID int) (anilistID int, err error)
-}
+	// AnilistIDResolver is an optional port for anime list adapters that can
+	// resolve an AniList id from a MAL id, so entries always carry an AniList id.
+	AnilistIDResolver interface {
+		ResolveMAL(ctx context.Context, malID int) (anilistID int, err error)
+	}
 
-type ListStatus int
-type AiringStatus int
+	ListStatus   int
+	AiringStatus int
 
-type EpisodeSchedule struct {
-	Number  int
-	AirDate time.Time
-}
+	EpisodeSchedule struct {
+		Number  int
+		AirDate time.Time
+	}
+
+	Entry struct {
+		ListStatus      ListStatus
+		Titles          []string
+		AiringStatus    AiringStatus
+		StartDate       time.Time
+		EndDate         time.Time
+		NumEpisodes     int
+		EpisodeSchedule []EpisodeSchedule
+		AnilistID       int
+		MALID           int
+	}
+)
 
 const (
 	ListStatusUnknown ListStatus = iota
@@ -43,20 +57,6 @@ const (
 	AiringStatusAired
 	AiringStatusAiring
 )
-
-type Entry struct {
-	ListStatus      ListStatus
-	Titles          []string
-	AiringStatus    AiringStatus
-	StartDate       time.Time
-	EndDate         time.Time
-	NumEpisodes     int
-	EpisodeSchedule []EpisodeSchedule
-	// AnilistID is the AniList database id, 0 when unknown.
-	AnilistID int
-	// MALID is the MyAnimeList database id, 0 when unknown.
-	MALID int
-}
 
 func NewEntry(
 	titles []string,

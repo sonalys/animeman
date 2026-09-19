@@ -31,6 +31,8 @@ type (
 	}
 )
 
+var _ shoko.Shoko = (*API)(nil)
+
 func New(client *http.Client, config shoko.Config) *API {
 	return &API{
 		config: config,

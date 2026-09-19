@@ -146,7 +146,7 @@ func (api *API) list(
 	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
 
 	q := req.URL.Query()
-	for name, value := range api.config.ListParameters {
+	for name, value := range api.config.CustomParameters {
 		q.Set(name, value)
 	}
 

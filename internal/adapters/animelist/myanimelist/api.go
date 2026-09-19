@@ -19,6 +19,8 @@ type (
 	}
 )
 
+var _ animelist.AnimeListSource = (*API)(nil)
+
 func New(client *http.Client, username string, cacheTTL time.Duration) *API {
 	return &API{
 		client:   client,

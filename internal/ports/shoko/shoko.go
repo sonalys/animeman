@@ -4,6 +4,38 @@ import (
 	"context"
 )
 
+type (
+	// Episode is an AniDB episode known by shoko.
+	Episode struct {
+		// AniDBID is the AniDB episode id.
+		AniDBID int
+		// ShokoEpisodeID is the shoko internal episode id, used for linking files.
+		ShokoEpisodeID int
+		// Number is the AniDB episode number.
+		Number int
+	}
+
+	// File is a video file known by shoko.
+	File struct {
+		// ID is the shoko internal file id.
+		ID int
+		// RelativePath is the path of the file relative to its managed folder.
+		RelativePath string
+		// Scanned reports whether shoko already ran its AniDB hash scan on the file,
+		// i.e. it found a release info for it. Unlinked + scanned means the hash
+		// match failed and the file needs manual linking.
+		Scanned bool
+	}
+
+	// Config controls how the shoko adapter connects to the server.
+	Config struct {
+		// Host is the base url of the shoko server.
+		Host string
+		// APIKey is the shoko api key, sent as the `apikey` header.
+		APIKey string
+	}
+)
+
 // Shoko is the port implemented by the shoko server adapter.
 type Shoko interface {
 	// Wait blocks until shoko is reachable or the context is cancelled.
@@ -26,34 +58,4 @@ type Shoko interface {
 	AutoMatchFile(ctx context.Context, fileID int) (matched bool, err error)
 	// LinkFileToEpisodes links an unrecognized file to the given shoko episode ids.
 	LinkFileToEpisodes(ctx context.Context, fileID int, episodeIDs []int) error
-}
-
-// Episode is an AniDB episode known by shoko.
-type Episode struct {
-	// AniDBID is the AniDB episode id.
-	AniDBID int
-	// ShokoEpisodeID is the shoko internal episode id, used for linking files.
-	ShokoEpisodeID int
-	// Number is the AniDB episode number.
-	Number int
-}
-
-// File is a video file known by shoko.
-type File struct {
-	// ID is the shoko internal file id.
-	ID int
-	// RelativePath is the path of the file relative to its managed folder.
-	RelativePath string
-	// Scanned reports whether shoko already ran its AniDB hash scan on the file,
-	// i.e. it found a release info for it. Unlinked + scanned means the hash
-	// match failed and the file needs manual linking.
-	Scanned bool
-}
-
-// Config controls how the shoko adapter connects to the server.
-type Config struct {
-	// Host is the base url of the shoko server.
-	Host string
-	// APIKey is the shoko api key, sent as the `apikey` header.
-	APIKey string
 }
