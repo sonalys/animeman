@@ -2,65 +2,9 @@ package discovery
 
 import (
 	"github.com/sonalys/animeman/internal/parser"
-	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
+	"github.com/sonalys/animeman/internal/tags"
 )
-
-// tagCompare receives 2 series tags, Example: S02E01 and S02E02.
-// it will return the comparison of Tag1, Tag2.
-// -1 = Tag1 < Tag2.
-// 0 = Tag1 == Tag2.
-// 1 = Tag1 > Tag2.
-func tagCompare(a, b tags.Tag) int {
-	if a.LastSeason() < b.LastSeason() {
-		return -1
-	}
-
-	if a.LastSeason() > b.LastSeason() {
-		return 1
-	}
-
-	if a.FirstSeason() < b.FirstSeason() {
-		return 1
-	}
-
-	if a.FirstSeason() > b.FirstSeason() {
-		return -1
-	}
-
-	if a.IsMultiEpisode() && !b.IsMultiEpisode() {
-		return 1
-	}
-
-	if b.IsMultiEpisode() && !a.IsMultiEpisode() {
-		return -1
-	}
-
-	aLastEpisode := a.LastEpisode()
-	bLastEpisode := b.LastEpisode()
-
-	if aLastEpisode == bLastEpisode {
-		return 0
-	}
-
-	if aLastEpisode == 0 {
-		return 1
-	}
-
-	if bLastEpisode == 0 {
-		return -1
-	}
-
-	if a.LastEpisode() < b.LastEpisode() {
-		return -1
-	}
-
-	if a.LastEpisode() > b.LastEpisode() {
-		return 1
-	}
-
-	return 0
-}
 
 // getLatestTag is a pure function implementation for fetching the latest tag from a list of torrent entries.
 func getLatestTag(torrents []torrentclient.Torrent) tags.Tag {
@@ -76,7 +20,7 @@ func getLatestTag(torrents []torrentclient.Torrent) tags.Tag {
 		meta := parser.Parse(seasonEpisodeTag, 1, nil)
 		tag := meta.Tag
 
-		if latestTag.IsZero() || tagCompare(tag, latestTag) > 0 {
+		if latestTag.IsZero() || tag.Compare(latestTag) > 0 {
 			latestTag = tag
 		}
 	}

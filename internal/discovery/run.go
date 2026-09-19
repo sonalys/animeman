@@ -16,8 +16,6 @@ import (
 	"github.com/sonalys/animeman/internal/utils"
 )
 
-const ignoreCharset = " \t!,.:`'\"/\\;-[](){}*【】"
-
 // RunDiscovery controls the discovery routine,
 // fetching entries from your anime list and looking for updates in the torrent source.
 // After finding updates, it will verify episode collision and dispatch it to your torrent client.
@@ -44,12 +42,12 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 
 	for _, entry := range entries {
 		// Check if this show should be scanned based on adaptive intervals
-		if !c.intervalTracker.ShouldScanNow(entry) {
+		if !c.intervalTracker.shouldScanNow(entry) {
 			skippedCount++
 			log.
 				Trace().
 				Str("title", selectIdealTitle(entry.Titles)).
-				Time("nextScanAt", c.intervalTracker.GetNextScanTime(entry)).
+				Time("nextScanAt", c.intervalTracker.getNextScanTime(entry)).
 				Msgf("skipping entry: not due for scan yet")
 			continue
 		}
@@ -71,7 +69,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		}
 
 		// Update the interval tracker with the scan results
-		nextScanAt := c.intervalTracker.UpdateState(entry, foundNew)
+		nextScanAt := c.intervalTracker.updateState(entry, foundNew)
 
 		scannedCount++
 
@@ -106,8 +104,8 @@ func filterEpisodes(
 	for _, nyaaEntry := range results {
 		currentTag := nyaaEntry.Metadata.Tag
 
-		if tagCompare(currentTag, initialTag) <= 0 ||
-			tagCompare(currentTag, latestDetectedTag) <= 0 {
+		if currentTag.Compare(initialTag) <= 0 ||
+			currentTag.Compare(latestDetectedTag) <= 0 {
 			continue
 		}
 
@@ -182,7 +180,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 		return false, nil
 	}
 
-	latestTag, err := c.findLatestTag(ctx, entry)
+	latestTag, err := c.getLatestDownloadedTag(ctx, entry)
 	if err != nil {
 		return false, fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}

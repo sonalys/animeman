@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"strconv"
 	"strings"
 	"time"
@@ -49,23 +50,14 @@ func (api *API) Search(
 	entry animelist.Entry,
 	opts torrentsource.SearchOptions,
 ) ([]torrentsource.Torrent, error) {
-	mediaID, err := resolveMediaID(entry)
-	if err != nil {
-		return nil, err
-	}
-
 	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, TORZNAB_URL, nil))
 
-	q := req.URL.Query()
-	q.Set("t", "search")
-	q.Set("media_id", mediaID)
-	if api.config.APIKey != "" {
-		q.Set("apikey", api.config.APIKey)
+	q, err := api.buildQuery(entry, opts)
+	if err != nil {
+		return nil, fmt.Errorf("building query: %w", err)
 	}
-	if opts.SearchSuffix != "" {
-		q.Set("q", opts.SearchSuffix)
-	}
-	req.URL.RawQuery = q.Encode()
+
+	req.URL.RawQuery = q
 
 	resp, err := api.client.Do(req)
 	if err != nil {
@@ -105,6 +97,28 @@ func (api *API) Search(
 	return torrents, nil
 }
 
+func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) (string, error) {
+	q := url.Values{}
+
+	q.Set("t", "search")
+
+	mediaID, err := resolveMediaID(entry)
+	if err != nil {
+		return "", err
+	}
+
+	q.Set("media_id", mediaID)
+	if opt.SearchSuffix != "" {
+		q.Set("q", opt.SearchSuffix)
+	}
+
+	if api.config.APIKey != "" {
+		q.Set("apikey", api.config.APIKey)
+	}
+
+	return q.Encode(), nil
+}
+
 // resolveMediaID returns the nekoBT external id for the entry, e.g. `anilist-20594`.
 func resolveMediaID(entry animelist.Entry) (string, error) {
 	switch {
@@ -125,17 +139,14 @@ func filterSeeders(minSeeders int) func(item) bool {
 
 func filterMetadata(entry animelist.Entry) func(item) bool {
 	return func(item item) bool {
-		// Check if the entry has an AniList or MAL id.
-		if entry.AnilistID == 0 && entry.MALID == 0 {
-			return false
-		}
-
 		// Compare the published date of the torrent with the entry's start and end dates.
 		pubDate, err := time.Parse(time.RFC1123Z, item.PubDate)
 		if err != nil {
 			return false
 		}
-		if !entry.StartDate.IsZero() && pubDate.Before(entry.StartDate) {
+
+		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
+		if !entry.StartDate.IsZero() && pubDate.Before(entry.StartDate.AddDate(0, 0, -2)) {
 			return false
 		}
 

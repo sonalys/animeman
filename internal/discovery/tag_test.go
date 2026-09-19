@@ -3,9 +3,8 @@ package discovery
 import (
 	"testing"
 
-	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
-	"github.com/stretchr/testify/require"
+	"github.com/sonalys/animeman/internal/tags"
 )
 
 func Test_getLatestTag(t *testing.T) {
@@ -127,60 +126,9 @@ func Test_getLatestTag(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getLatestTag(tt.args.torrents); tagCompare(got, tt.want) != 0 {
+			if got := getLatestTag(tt.args.torrents); got.Compare(tt.want) != 0 {
 				t.Errorf("getLatestTag() = %v, want %v", got, tt.want)
 			}
 		})
 	}
-}
-
-func Test_tagCompare(t *testing.T) {
-	t.Run("same tag", func(t *testing.T) {
-		tag := tags.Tag{
-			Seasons:  []int{3},
-			Episodes: []float64{2},
-		}
-		require.Zero(t, tagCompare(tag, tag))
-	})
-
-	t.Run("first episode and zero tag", func(t *testing.T) {
-		tag := tags.Tag{
-			Seasons:  []int{1},
-			Episodes: []float64{1},
-		}
-		require.Greater(t, tagCompare(tag, tags.Tag{}), 0)
-	})
-
-	t.Run("batch different season", func(t *testing.T) {
-		tagA := tags.Tag{
-			Seasons: []int{2},
-		}
-
-		tagB := tags.Tag{
-			Seasons: []int{3},
-		}
-
-		require.Equal(t, tagCompare(tagA, tagB), -1)
-	})
-
-	t.Run("batch and single", func(t *testing.T) {
-		tagA := tags.Tag{
-			Seasons: []int{2},
-		}
-
-		tagB := tags.Tag{
-			Seasons:  []int{2},
-			Episodes: []float64{1},
-		}
-
-		require.Equal(t, tagCompare(tagA, tagB), 1)
-	})
-
-	t.Run("batch and zero", func(t *testing.T) {
-		tagA := tags.Tag{
-			Seasons: []int{1},
-		}
-
-		require.Equal(t, tagCompare(tagA, tags.Zero), 1)
-	})
 }

@@ -4,6 +4,7 @@ import (
 	"context"
 	"time"
 
+	"github.com/expr-lang/expr/vm"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
@@ -18,16 +19,28 @@ type (
 		Config          Config
 	}
 
+	Config struct {
+		SearchSuffix     string
+		ReleaseGroups    []string
+		Qualitites       []string
+		Category         string
+		RenameTorrent    bool
+		RenameFormat     *vm.Program
+		DownloadPath     string
+		CreateShowFolder bool
+		PollFrequency    time.Duration
+	}
+
 	Controller struct {
 		dep             Dependencies
-		intervalTracker *IntervalTracker
+		intervalTracker *intervalTracker
 	}
 )
 
 func New(dep Dependencies) *Controller {
 	return &Controller{
 		dep:             dep,
-		intervalTracker: NewIntervalTracker(dep.Config.PollFrequency),
+		intervalTracker: newIntervalTracker(dep.Config.PollFrequency),
 	}
 }
 

@@ -70,18 +70,20 @@ func initializeAnimeList(c configs.AnimeListConfig) animelist.AnimeListSource {
 
 func initializeTorrentClient(
 	ctx context.Context,
-	c configs.TorrentConfig,
+	config configs.TorrentConfig,
 ) torrentclient.TorrentClient {
-	switch c.Type {
+	switch config.Type {
 	case configs.TorrentClientTypeQBittorrent:
+		config := config.QBittorrent
+
 		return qbittorrent.New(
 			ctx,
-			c.QBittorrent.Host,
-			c.QBittorrent.Username,
-			c.QBittorrent.Password,
+			config.Host,
+			config.Username,
+			config.Password,
 		)
 	default:
-		log.Panic().Msgf("torrentClient type %s not implemented", c.Type)
+		log.Panic().Msgf("torrentClient type %s not implemented", config.Type)
 	}
 	return nil
 }
@@ -130,20 +132,22 @@ func main() {
 		log.Fatal().Msgf("failed to compile rename script: %s", err)
 	}
 
+	discoveryConfig := config.DiscoveryConfig
+
 	c := discovery.New(discovery.Dependencies{
 		Source:          initializeTorrentSource(config.TorrentSourceConfig),
 		AnimeListClient: initializeAnimeList(config.AnimeListConfig),
 		TorrentClient:   initializeTorrentClient(ctx, config.TorrentConfig),
 		Config: discovery.Config{
-			SearchSuffix:     config.DiscoveryConfig.SearchSuffix,
-			ReleaseGroups:    config.DiscoveryConfig.Sources,
-			Qualitites:       config.DiscoveryConfig.Qualities,
-			Category:         config.DiscoveryConfig.Category,
-			RenameTorrent:    utils.PointerOrDefault(config.DiscoveryConfig.RenameTorrent, true),
+			SearchSuffix:     discoveryConfig.SearchSuffix,
+			ReleaseGroups:    discoveryConfig.Sources,
+			Qualitites:       discoveryConfig.Qualities,
+			Category:         discoveryConfig.Category,
+			DownloadPath:     discoveryConfig.DownloadPath,
+			CreateShowFolder: discoveryConfig.CreateShowFolder,
+			PollFrequency:    discoveryConfig.PollFrequency,
+			RenameTorrent:    utils.PointerOrDefault(discoveryConfig.RenameTorrent, true),
 			RenameFormat:     renameScript,
-			DownloadPath:     config.DiscoveryConfig.DownloadPath,
-			CreateShowFolder: config.DiscoveryConfig.CreateShowFolder,
-			PollFrequency:    config.DiscoveryConfig.PollFrequency,
 		},
 	})
 	if err := c.Start(ctx); err != nil {

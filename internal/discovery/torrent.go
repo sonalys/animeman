@@ -17,8 +17,11 @@ import (
 	"github.com/sonalys/animeman/internal/utils"
 )
 
-// findLatestTag will receive an anime list entry and return all torrents listed from the anime.
-func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (tags.Tag, error) {
+// getLatestDownloadedTag returns the latest downloaded tag for a given anime in the torrent client.
+func (c *Controller) getLatestDownloadedTag(
+	ctx context.Context,
+	entry animelist.Entry,
+) (tags.Tag, error) {
 	logger := getLogger(ctx)
 	torrents := make([]torrentclient.Torrent, 0, 100)
 
@@ -55,8 +58,8 @@ func (c *Controller) findLatestTag(ctx context.Context, entry animelist.Entry) (
 	return latestTag, nil
 }
 
-// TorrentGetDownloadPath returns a torrent path, creating a show folder if configured.
-func (c *Controller) TorrentGetDownloadPath(title string) (path string) {
+// buildTorrentDownloadPath returns a torrent path, creating a show folder if configured.
+func (c *Controller) buildTorrentDownloadPath(title string) (path string) {
 	if c.dep.Config.CreateShowFolder {
 		return fmt.Sprintf("%s/%s", c.dep.Config.DownloadPath, title)
 	}
@@ -162,7 +165,7 @@ func (c *Controller) AddTorrentEntry(
 		Tags:     tags,
 		URLs:     []string{parsedNyaa.Torrent.Link},
 		Category: c.dep.Config.Category,
-		SavePath: c.TorrentGetDownloadPath(selectedTitle),
+		SavePath: c.buildTorrentDownloadPath(selectedTitle),
 	}
 
 	if c.dep.Config.RenameTorrent {
@@ -230,7 +233,7 @@ func normalizeTitle(torrentTitle string, entries []animelist.Entry) string {
 	for _, entry := range entries {
 		bestScore := 0.0
 		for _, title := range entry.Titles {
-			score := utils.CalculateTextSimilarity(title, torrentTitle, ignoreCharset)
+			score := utils.CalculateTextSimilarity(title, torrentTitle, parser.IgnoreCharset)
 			bestScore = max(bestScore, score)
 		}
 
