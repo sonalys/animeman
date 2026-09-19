@@ -1,11 +1,17 @@
 package animelist
 
 import (
+	"context"
 	"slices"
 	"time"
 
 	"github.com/sonalys/animeman/internal/utils"
 )
+
+// AnimeListSource is the port implemented by every anime list adapter (anilist, myanimelist, ...).
+type AnimeListSource interface {
+	GetCurrentlyWatching(ctx context.Context) ([]Entry, error)
+}
 
 type ListStatus int
 type AiringStatus int

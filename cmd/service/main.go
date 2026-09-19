@@ -18,6 +18,8 @@ import (
 	"github.com/sonalys/animeman/internal/adapters/torrentsource/nyaa"
 	"github.com/sonalys/animeman/internal/configs"
 	"github.com/sonalys/animeman/internal/discovery"
+	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/roundtripper"
 	"github.com/sonalys/animeman/internal/utils"
@@ -46,7 +48,7 @@ func init() {
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)
 }
 
-func initializeAnimeList(c configs.AnimeListConfig) discovery.AnimeListSource {
+func initializeAnimeList(c configs.AnimeListConfig) animelist.AnimeListSource {
 	httpClient := &http.Client{
 		Transport: roundtripper.NewRateLimitedTransport(
 			defaultTransport,
@@ -66,10 +68,18 @@ func initializeAnimeList(c configs.AnimeListConfig) discovery.AnimeListSource {
 	return nil
 }
 
-func initializeTorrentClient(ctx context.Context, c configs.TorrentConfig) discovery.TorrentClient {
+func initializeTorrentClient(
+	ctx context.Context,
+	c configs.TorrentConfig,
+) torrentclient.TorrentClient {
 	switch c.Type {
 	case configs.TorrentClientTypeQBittorrent:
-		return qbittorrent.New(ctx, c.QBittorrent.Host, c.QBittorrent.Username, c.QBittorrent.Password)
+		return qbittorrent.New(
+			ctx,
+			c.QBittorrent.Host,
+			c.QBittorrent.Username,
+			c.QBittorrent.Password,
+		)
 	default:
 		log.Panic().Msgf("torrentClient type %s not implemented", c.Type)
 	}

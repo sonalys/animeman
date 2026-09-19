@@ -12,3 +12,6 @@ image:
 
 push:
 	docker push ${IMG}
+
+test:
+	go test -v ./...

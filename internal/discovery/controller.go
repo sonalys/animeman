@@ -5,14 +5,16 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
 
 type (
 	Dependencies struct {
 		Source          torrentsource.Source
-		AnimeListClient AnimeListSource
-		TorrentClient   TorrentClient
+		AnimeListClient animelist.AnimeListSource
+		TorrentClient   torrentclient.TorrentClient
 		Config          Config
 	}
 
