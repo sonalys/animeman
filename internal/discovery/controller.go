@@ -2,6 +2,7 @@ package discovery
 
 import (
 	"context"
+	"sync/atomic"
 	"time"
 
 	"github.com/expr-lang/expr/vm"
@@ -38,6 +39,7 @@ type (
 	Controller struct {
 		dep             Dependencies
 		intervalTracker *intervalTracker
+		lastRunErr      atomic.Pointer[error]
 	}
 )
 
@@ -48,6 +50,20 @@ func New(dep Dependencies) *Controller {
 	}
 }
 
+// LastRunErr returns the error from the last discovery scan, nil when the last scan succeeded or no scan has run yet.
+func (c *Controller) LastRunErr() error {
+	p := c.lastRunErr.Load()
+	if p == nil {
+		return nil
+	}
+	return *p
+}
+
+// Deps exposes the controller dependencies for health checks.
+func (c *Controller) Deps() Dependencies {
+	return c.dep
+}
+
 func (c *Controller) Start(ctx context.Context) error {
 	log.Info().Msgf("starting polling with frequency %s", c.dep.Config.PollFrequency.String())
 
@@ -55,7 +71,9 @@ func (c *Controller) Start(ctx context.Context) error {
 	defer ticker.Stop()
 
 	for {
-		if err := c.RunDiscovery(ctx); err != nil {
+		err := c.RunDiscovery(ctx)
+		c.lastRunErr.Store(&err)
+		if err != nil {
 			log.Error().Msgf("discovery scan failed: %s", err)
 		}
 

@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -158,7 +160,8 @@ func main() {
 		Timeout: 15 * time.Second,
 	}
 
-	// Anilist API is used for MAL->AniList id resolution, so that shoko can be matched by exact id instead of fuzzy title search.
+	// Anilist API is used for MAL->AniList id resolution,
+	// so that shoko can be matched by exact id instead of fuzzy title search.
 	anilistAPI := anilist.New(httpClient, config.Username, config.CacheTTL)
 
 	c := discovery.New(discovery.Dependencies{
@@ -179,6 +182,64 @@ func main() {
 			RenameFormat:     renameScript,
 		},
 	})
+
+	healthMux := http.NewServeMux()
+	healthMux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
+		checkCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		var failed []string
+		if shokoClient != nil {
+			if _, err := shokoClient.FindSeriesByTitle(checkCtx, "test"); err != nil {
+				failed = append(failed, "shoko")
+			}
+		}
+		deps := c.Deps()
+		if _, err := deps.TorrentClient.List(checkCtx, nil); err != nil {
+			failed = append(failed, "torrentClient")
+		}
+		if _, err := deps.AnimeListSource.GetCurrentlyWatching(checkCtx); err != nil {
+			failed = append(failed, "animeList")
+		}
+		if _, err := deps.TorrentSource.Search(
+			checkCtx,
+			animelist.Entry{},
+			torrentsource.SearchOptions{},
+		); err != nil {
+			failed = append(failed, "torrentSource")
+		}
+
+		if len(failed) > 0 {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			fmt.Fprintf(w, "unhealthy: %s", strings.Join(failed, ", "))
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+	healthMux.HandleFunc("/readyz", func(w http.ResponseWriter, _ *http.Request) {
+		if err := c.LastRunErr(); err != nil {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			fmt.Fprintf(w, "last scan failed: %s", err)
+			return
+		}
+		w.WriteHeader(http.StatusOK)
+	})
+	healthServer := &http.Server{
+		Addr:    utils.ValueOrDefault(os.Getenv("HEALTH_ADDR"), ":8080"),
+		Handler: healthMux,
+	}
+	go func() {
+		log.Info().Msgf("health server listening on %s", healthServer.Addr)
+		if err := healthServer.ListenAndServe(); err != http.ErrServerClosed {
+			log.Error().Msgf("health server: %s", err)
+		}
+	}()
+	defer func() {
+		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+		healthServer.Shutdown(shutdownCtx)
+	}()
+
 	if err := c.Start(ctx); err != nil {
 		log.Error().Msgf("failed to shutdown: %s", err)
 	} else {
