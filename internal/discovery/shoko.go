@@ -144,8 +144,20 @@ func (c *Controller) linkShokoFile(
 		return false, nil
 	}
 
-	// Shoko scanned the file but couldn't match it, link it ourselves
-	// from the torrent's series/episode tags.
+	// Shoko scanned the file but couldn't match it by hash. First ask shoko
+	// to retry with its local filename-based search, and only fall back to
+	// our own linking when that fails too.
+	matched, err := c.dep.Shoko.AutoMatchFile(ctx, file.ID)
+	if err != nil {
+		return false, fmt.Errorf("auto matching file: %w", err)
+	}
+	if matched {
+		logger.Debug().Msg("file matched by shoko local search")
+		return true, nil
+	}
+
+	// Shoko's local search failed too, link it ourselves from the torrent's
+	// series/episode tags.
 	linked, err = c.linkFileManually(ctx, entries, file.ID, title, tag)
 	if err != nil {
 		return false, fmt.Errorf("linking file manually: %w", err)

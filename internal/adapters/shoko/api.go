@@ -21,6 +21,7 @@ const (
 	pathEndsWith      = "/api/v3/File/PathEndsWith/%s"
 	linkFilePath      = "/api/v3/File/%d/Link"
 	rescanPath        = "/api/v3/File/%d/Rescan"
+	autoMatchFilePath = "/api/v3/ReleaseInfo/File/%d/AutoPreview"
 )
 
 type (
@@ -289,6 +290,43 @@ func (api *API) RescanFile(ctx context.Context, fileID int) error {
 		)
 	}
 	return nil
+}
+
+// AutoMatchFile implements shoko.Shoko.
+// It asks shoko to run its local filename-based release search on the file.
+// A 200 response means shoko found a release, 204 means no match.
+func (api *API) AutoMatchFile(ctx context.Context, fileID int) (bool, error) {
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodPost,
+		api.config.Host+fmt.Sprintf(autoMatchFilePath, fileID),
+		nil,
+	)
+	if err != nil {
+		return false, fmt.Errorf("creating request: %w", err)
+	}
+	q := req.URL.Query()
+	q.Set("isAutomatic", "true")
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := api.do(ctx, req)
+	if err != nil {
+		return false, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	switch resp.StatusCode {
+	case http.StatusOK:
+		return true, nil
+	case http.StatusNoContent:
+		return false, nil
+	default:
+		return false, fmt.Errorf(
+			"auto matching file failed: %s: %s",
+			resp.Status,
+			string(utils.Must(io.ReadAll(resp.Body))),
+		)
+	}
 }
 
 // LinkFileToEpisodes implements shoko.Shoko.

@@ -19,6 +19,9 @@ type Shoko interface {
 	FindFileByPath(ctx context.Context, pathSuffix string) (file *File, linked bool, err error)
 	// RescanFile asks shoko to rescan a file, retrying its hash-based AniDB match.
 	RescanFile(ctx context.Context, fileID int) error
+	// AutoMatchFile asks shoko to run its local filename-based release search
+	// on an unrecognized file. It reports whether shoko found a match.
+	AutoMatchFile(ctx context.Context, fileID int) (matched bool, err error)
 	// LinkFileToEpisodes links an unrecognized file to the given shoko episode ids.
 	LinkFileToEpisodes(ctx context.Context, fileID int, episodeIDs []int) error
 }
