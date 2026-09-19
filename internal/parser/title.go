@@ -52,12 +52,6 @@ func StripSubtitle(title string) string {
 	return title[:indexOf]
 }
 
-func removeDotSpacing(title string) string {
-	dotReplaceRegexp := regexp.MustCompile(`([^ ])\.([^ ])`)
-	title = dotReplaceRegexp.ReplaceAllString(title, "$1 $2")
-	return title
-}
-
 func StripTags(title string) string {
 	for _, expr := range titleCleanupExpr {
 		title = expr.ReplaceAllString(title, "")
@@ -107,9 +101,9 @@ func Parse(title string, fallbackSeason int, sources []string) Metadata {
 
 	title = StripTags(title)
 
-	resp.Tag.Episodes = ParseEpisode(title)
+	resp.Tag.Episodes = parseEpisode(title)
 
-	if detectedSeason := ParseSeason(title); detectedSeason > 0 {
+	if detectedSeason := parseSeason(title); detectedSeason > 0 {
 		resp.Tag.Seasons = []int{detectedSeason}
 	} else {
 		resp.Tag.Seasons = []int{fallbackSeason}
@@ -121,22 +115,6 @@ func Parse(title string, fallbackSeason int, sources []string) Metadata {
 // TagBuildTitleSeasonEpisode builds a tag for filtering in your torrent client. Example: Show S03E02.
 func (t Metadata) TagBuildTitleSeasonEpisode() string {
 	return fmt.Sprintf("%s %s", t.buildTitle(), t.Tag.String())
-}
-
-func filterAlphanumeric(s string) string {
-	var result strings.Builder
-	result.Grow(len(s))
-	for i := 0; i < len(s); i++ {
-		b := s[i]
-		if ('a' <= b && b <= 'z') || ('A' <= b && b <= 'Z') || ('0' <= b && b <= '9') || b == ' ' {
-			result.WriteByte(b)
-		}
-	}
-	return result.String()
-}
-
-func (t Metadata) buildTitle() string {
-	return strings.ToLower(filterAlphanumeric(t.Title))
 }
 
 // BuildSeriesTag builds a !Serie Name tag for you to be able to search all it's episodes with a tag.
@@ -153,4 +131,26 @@ func (t Metadata) BuildTorrentTags() []string {
 // BuildTitleTag builds the torrent series tag. Example: !serie name.
 func BuildTitleTag(title string) string {
 	return "!" + strings.ToLower(filterAlphanumeric(title))
+}
+
+func (t Metadata) buildTitle() string {
+	return strings.ToLower(filterAlphanumeric(t.Title))
+}
+
+func removeDotSpacing(title string) string {
+	dotReplaceRegexp := regexp.MustCompile(`([^ ])\.([^ ])`)
+	title = dotReplaceRegexp.ReplaceAllString(title, "$1 $2")
+	return title
+}
+
+func filterAlphanumeric(s string) string {
+	var result strings.Builder
+	result.Grow(len(s))
+	for i := 0; i < len(s); i++ {
+		b := s[i]
+		if ('a' <= b && b <= 'z') || ('A' <= b && b <= 'Z') || ('0' <= b && b <= '9') || b == ' ' {
+			result.WriteByte(b)
+		}
+	}
+	return result.String()
 }

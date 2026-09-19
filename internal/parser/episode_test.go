@@ -43,7 +43,7 @@ func Test_matchEpisode(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			gotEpisode := ParseEpisode(tt.title)
+			gotEpisode := parseEpisode(tt.title)
 			assert.Equal(t, tt.episode, gotEpisode)
 		})
 	}

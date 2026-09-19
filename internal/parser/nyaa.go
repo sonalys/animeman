@@ -22,7 +22,7 @@ func ParseTorrentMetadata(
 	fallbackSeason := 1
 
 	for _, title := range animeListEntry.Titles {
-		if season := ParseSeason(title); season > 0 {
+		if season := parseSeason(title); season > 0 {
 			fallbackSeason = season
 			break
 		}

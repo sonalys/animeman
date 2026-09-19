@@ -2,6 +2,7 @@ package parser
 
 import (
 	"regexp"
+	"strconv"
 )
 
 var qualityExpr = []*regexp.Regexp{
@@ -18,7 +19,10 @@ func parseVerticalResolution(title string) int {
 		if len(matches) == 0 || len(matches[0]) < 2 {
 			continue
 		}
-		return parseInt(matches[0][1])
+
+		value, _ := strconv.ParseInt(matches[0][1], 10, 64)
+
+		return int(value)
 	}
 	return -1
 }
