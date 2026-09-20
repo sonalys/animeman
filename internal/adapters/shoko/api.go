@@ -234,7 +234,9 @@ func (api *API) FindFileByPath(ctx context.Context, pathSuffix string) (*shoko.F
 		return nil, false, fmt.Errorf("request failed: %w", err)
 	}
 
-	if resp.StatusCode == http.StatusNotFound {
+	// Shoko returns 403 when the file is linked to a series the API user is
+	// not allowed to see. Treat it like 404: the file is inaccessible to us.
+	if resp.StatusCode == http.StatusNotFound || resp.StatusCode == http.StatusForbidden {
 		resp.Body.Close()
 		return nil, false, nil
 	}

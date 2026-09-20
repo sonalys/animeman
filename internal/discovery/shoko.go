@@ -55,18 +55,16 @@ func (c *Controller) RunShokoIntegration(ctx context.Context, entries []animelis
 			continue
 		}
 
-		recognized := true
 		for _, filePath := range paths {
-			ok, err := c.linkShokoFile(torrentCtx, entries, title, tag, filePath)
+			_, err := c.linkShokoFile(torrentCtx, entries, title, tag, filePath)
 			if err != nil {
-				return fmt.Errorf("linking file %q: %w", filePath, err)
+				// ponytail: manual linking failures shouldn't kill the whole
+				// discovery run, log and move on by dropping the pending tag.
+				logger.Warn().
+					Err(err).
+					Str("file", filePath).
+					Msg("failed to link file in shoko, removing pending tag")
 			}
-			recognized = recognized && ok
-		}
-
-		if !recognized {
-			logger.Debug().Msg("torrent still has unrecognized files, keeping pending tag")
-			continue
 		}
 
 		if err := c.dep.TorrentClient.RemoveTorrentTags(
