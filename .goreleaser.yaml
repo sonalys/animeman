@@ -14,7 +14,7 @@ builds:
     main: ./cmd/service
     binary: animeman
     ldflags:
-      - -s -w -X main.version={{.Version}}
+      - -s -w -X main.version=v{{.Version}}
     goos:
       - linux
       - windows
