@@ -131,21 +131,48 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 	return q.Encode(), nil
 }
 
+var querySanitization = strings.NewReplacer(
+	"\"", " ",
+	"-", " ",
+	"\"", " ",
+	"'", " ",
+	"(", " ",
+	")", " ",
+)
+
 // buildQuery builds the `q` search query from the search options,
 // mirroring the nyaa adapter: qualities, sources and the user suffix.
 func buildQuery(opt torrentsource.SearchOptions) string {
 	var parts []string
 
 	if len(opt.Qualities) > 0 {
-		parts = append(parts, "("+strings.Join(opt.Qualities, "|")+")")
+		var b strings.Builder
+		b.WriteString("(")
+		for i, quality := range opt.Qualities {
+			if i > 0 {
+				b.WriteString("|")
+			}
+			b.WriteString(strconv.Quote(querySanitization.Replace(quality)))
+		}
+		b.WriteString(")")
+		parts = append(parts, b.String())
 	}
 
 	if len(opt.Sources) > 0 {
-		parts = append(parts, "("+strings.Join(opt.Sources, "|")+")")
+		var b strings.Builder
+		b.WriteString("(")
+		for i, source := range opt.Sources {
+			if i > 0 {
+				b.WriteString("|")
+			}
+			b.WriteString(strconv.Quote(querySanitization.Replace(source)))
+		}
+		b.WriteString(")")
+		parts = append(parts, b.String())
 	}
 
 	if opt.SearchSuffix != "" {
-		parts = append(parts, opt.SearchSuffix)
+		parts = append(parts, querySanitization.Replace(opt.SearchSuffix))
 	}
 
 	return strings.Join(parts, " ")

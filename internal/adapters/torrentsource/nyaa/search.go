@@ -8,6 +8,7 @@ import (
 	"net/http"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -96,16 +97,19 @@ func (api *API) Search(
 	return torrents, nil
 }
 
-func buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) string {
-	var b strings.Builder
+var querySanitization = strings.NewReplacer(
+	"\"", " ",
+	"-", " ",
+	"\"", " ",
+	"'", " ",
+	"(", " ",
+	")", " ",
+)
 
-	titleSanitization := strings.NewReplacer(
-		"-", " ",
-		"\"", " ",
-		"'", " ",
-		"(", " ",
-		")", " ",
-	)
+// buildQuery builds the `q` search query from the search options,
+// mirroring the nyaa adapter: qualities, sources and the user suffix.
+func buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) string {
+	var parts []string
 
 	// Build search query for Nyaa.
 	// For title we filter for english and original titles.
@@ -113,28 +117,46 @@ func buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) string {
 		strings.ToLower,
 		parser.StripTitle,
 		parser.StripSubtitle,
-		titleSanitization.Replace,
+		querySanitization.Replace,
+		strconv.Quote,
 	)
 
 	sort.Strings(sanitizedTitles)
 	sanitizedTitles = slices.Compact(sanitizedTitles)
 
-	titles := utils.Map(sanitizedTitles, func(from string) string { return "(" + from + ")" })
-	fmt.Fprintf(&b, "%s", strings.Join(titles, "|"))
+	parts = append(parts, strings.Join(sanitizedTitles, "|"))
 
-	if resolutions := opt.Qualities; len(resolutions) > 0 {
-		fmt.Fprintf(&b, " (%s)", strings.Join(resolutions, "|"))
+	if len(opt.Qualities) > 0 {
+		var b strings.Builder
+		b.WriteString("(")
+		for i, quality := range opt.Qualities {
+			if i > 0 {
+				b.WriteString("|")
+			}
+			b.WriteString(strconv.Quote(querySanitization.Replace(quality)))
+		}
+		b.WriteString(")")
+		parts = append(parts, b.String())
 	}
 
-	if sources := opt.Sources; len(sources) > 0 {
-		fmt.Fprintf(&b, " (%s)", strings.Join(sources, "|"))
+	if len(opt.Sources) > 0 {
+		var b strings.Builder
+		b.WriteString("(")
+		for i, source := range opt.Sources {
+			if i > 0 {
+				b.WriteString("|")
+			}
+			b.WriteString(strconv.Quote(querySanitization.Replace(source)))
+		}
+		b.WriteString(")")
+		parts = append(parts, b.String())
 	}
 
 	if opt.SearchSuffix != "" {
-		fmt.Fprintf(&b, " %s", opt.SearchSuffix)
+		parts = append(parts, querySanitization.Replace(opt.SearchSuffix))
 	}
 
-	return b.String()
+	return strings.Join(parts, " ")
 }
 
 func (api *API) list(
