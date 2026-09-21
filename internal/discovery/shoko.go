@@ -10,7 +10,6 @@ import (
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/shoko"
-	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 )
@@ -22,21 +21,13 @@ import (
 func (c *Controller) RunShokoIntegration(
 	ctx context.Context,
 	entries []animelist.Entry,
-	torrents []torrentclient.Torrent,
+	torrentsMetadata []parser.TorrentMetadata,
 ) error {
-	for _, torrent := range torrents {
-		logger := log.Ctx(ctx).With().Str("torrent", torrent.Name).Logger()
+	for _, torrentMetadata := range torrentsMetadata {
+		logger := log.Ctx(ctx).With().Str("torrent", torrentMetadata.Torrent.Title).Logger()
 		torrentCtx := logger.WithContext(ctx)
 
-		title, tag, ok := parseTorrentTags(torrent.Tags)
-		if !ok {
-			logger.Warn().
-				Strs("tags", torrent.Tags).
-				Msg("skipping torrent: could not parse series/episode tags")
-			continue
-		}
-
-		paths, err := c.dep.TorrentClient.TorrentFiles(torrentCtx, torrent.Hash)
+		paths, err := c.dep.TorrentClient.TorrentFiles(torrentCtx, torrentMetadata.Torrent.Hash)
 		if err != nil {
 			return fmt.Errorf("listing torrent files: %w", err)
 		}
@@ -47,7 +38,13 @@ func (c *Controller) RunShokoIntegration(
 		}
 
 		for _, filePath := range paths {
-			_, err := c.linkShokoFile(torrentCtx, entries, title, tag, filePath)
+			_, err := c.linkShokoFile(
+				torrentCtx,
+				entries,
+				torrentMetadata.Metadata.Title,
+				torrentMetadata.Metadata.Tag,
+				filePath,
+			)
 			if err != nil {
 				// ponytail: manual linking failures shouldn't kill the whole
 				// discovery run, log and move on by dropping the pending tag.

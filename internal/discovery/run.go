@@ -20,6 +20,9 @@ import (
 // fetching entries from your anime list and looking for updates in the torrent source.
 // After finding updates, it will verify episode collision and dispatch it to your torrent client.
 func (c *Controller) RunDiscovery(ctx context.Context) error {
+	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
+	defer cancel()
+
 	t1 := time.Now()
 
 	log.
@@ -63,7 +66,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		return fmt.Errorf("updating qBittorrent entries: %w", err)
 	}
 
-	var addedTorrents []torrentclient.Torrent
+	var addedTorrents []parser.TorrentMetadata
 
 	scannedCount := 0
 	skippedCount := 0
@@ -203,7 +206,7 @@ func filterRelevantResults(
 func (c *Controller) DiscoverEntry(
 	ctx context.Context,
 	entry animelist.Entry,
-) (bool, []torrentclient.Torrent, error) {
+) (bool, []parser.TorrentMetadata, error) {
 	logger := getLogger(ctx)
 
 	results, err := c.dep.TorrentSource.Search(ctx, entry, torrentsource.SearchOptions{
@@ -260,12 +263,16 @@ func (c *Controller) DiscoverEntry(
 
 	// Hand the added torrents to the shoko integration directly, using the
 	// info hashes provided by the torrent source, no listing needed.
-	var added []torrentclient.Torrent
-	for _, torrentMetadata := range newTorrents {
-		hash, err := c.AddTorrentEntry(ctx, entry, torrentMetadata)
+	var added []parser.TorrentMetadata
+	for i := range newTorrents {
+		torrentMetadata := &newTorrents[i]
+
+		hash, err := c.AddTorrentEntry(ctx, entry, *torrentMetadata)
 		if err != nil {
 			return false, nil, fmt.Errorf("adding torrent to client: %w", err)
 		}
+
+		torrentMetadata.Torrent.Hash = hash
 
 		logger.
 			Info().
@@ -274,11 +281,7 @@ func (c *Controller) DiscoverEntry(
 			Msg("added torrent to client")
 
 		if c.dep.Shoko != nil && hash != "" {
-			added = append(added, torrentclient.Torrent{
-				Name:     torrentMetadata.Torrent.Title,
-				Hash:     hash,
-				Category: c.dep.Config.Category,
-			})
+			added = append(added, *torrentMetadata)
 		}
 	}
 

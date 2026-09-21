@@ -8,10 +8,8 @@ import (
 // TorrentMetadata holds a parsed entry from a torrent source.
 // Used for smart episode detection.
 type TorrentMetadata struct {
-	// Metadata parsed from title.
 	Metadata Metadata
-	// Torrent entry.
-	Torrent torrentsource.Torrent
+	Torrent  torrentsource.Torrent
 }
 
 func ParseTorrentMetadata(
