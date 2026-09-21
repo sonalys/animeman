@@ -253,7 +253,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 		}
 
 		logger.
-			Debug().
+			Info().
 			Str("torrentTitle", torrentMetadata.Torrent.Title).
 			Str("tag", torrentMetadata.Metadata.Tag.String()).
 			Msg("added torrent to client")
