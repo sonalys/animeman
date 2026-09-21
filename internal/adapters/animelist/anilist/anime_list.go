@@ -12,6 +12,7 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/http/roundtripper"
 )
 
 type (
@@ -235,6 +236,11 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 				Err(err).
 				Msg("anilist.co api errored, using cached response")
 			return api.cachedAnimeList, nil
+		}
+
+		if resp.StatusCode == http.StatusTooManyRequests {
+			retryAfter, _ := roundtripper.GetRetryDelay(resp, time.Now())
+			return nil, fmt.Errorf("anilist.co api rate limit exceeded: retry at %s", retryAfter)
 		}
 
 		return nil, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))

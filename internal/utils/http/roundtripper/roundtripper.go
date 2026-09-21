@@ -45,7 +45,7 @@ func (t *throttledTransport) RoundTrip(r *http.Request) (*http.Response, error) 
 
 // updateDelay records the cooldown announced by the server's rate limit headers.
 func (t *throttledTransport) updateDelay(resp *http.Response) {
-	delay, ok := retryDelay(resp, time.Now())
+	delay, ok := GetRetryDelay(resp, time.Now())
 	if !ok || delay <= 0 {
 		return
 	}
@@ -56,8 +56,8 @@ func (t *throttledTransport) updateDelay(resp *http.Response) {
 	t.mu.Unlock()
 }
 
-// retryDelay extracts a server-imposed cooldown from common rate limit headers.
-func retryDelay(resp *http.Response, now time.Time) (time.Duration, bool) {
+// GetRetryDelay extracts a server-imposed cooldown from common rate limit headers.
+func GetRetryDelay(resp *http.Response, now time.Time) (time.Duration, bool) {
 	if v := resp.Header.Get("Retry-After"); v != "" {
 		if secs, err := strconv.Atoi(v); err == nil {
 			return time.Duration(secs) * time.Second, true
