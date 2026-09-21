@@ -114,11 +114,12 @@ func (c *Controller) buildTorrentName(title string, parsedNyaa parser.TorrentMet
 
 // AddTorrentEntry receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
+// It returns the torrent's info hash, empty when the source didn't provide one.
 func (c *Controller) AddTorrentEntry(
 	ctx context.Context,
 	animeListEntry animelist.Entry,
 	parsedNyaa parser.TorrentMetadata,
-) error {
+) (string, error) {
 	selectedTitle := animeListEntry.GetBestTitle()
 
 	meta := parsedNyaa.Metadata.Clone()
@@ -126,11 +127,6 @@ func (c *Controller) AddTorrentEntry(
 	// This behavior avoids different sources creating different tags and downloading the same episode twice.
 	meta.Title = selectedTitle
 	tags := meta.BuildTorrentTags()
-	// Mark the torrent as pending shoko processing, so the shoko integration
-	// can list it back on later runs and remove the tag once recognized.
-	if c.dep.Shoko != nil {
-		tags = append(tags, shokoPendingTag)
-	}
 
 	req := &torrentclient.AddTorrentConfig{
 		Tags:     tags,
@@ -144,7 +140,7 @@ func (c *Controller) AddTorrentEntry(
 	}
 
 	if err := c.dep.TorrentClient.AddTorrent(ctx, req); err != nil {
-		return fmt.Errorf("adding torrents: %w", err)
+		return "", fmt.Errorf("adding torrents: %w", err)
 	}
 
 	log.
@@ -155,7 +151,7 @@ func (c *Controller) AddTorrentEntry(
 		Strs("tags", tags).
 		Msg("added torrent")
 
-	return nil
+	return parsedNyaa.Torrent.Hash, nil
 }
 
 // TorrentRegenerateTags will scan all torrents from the configured category and update their tags.

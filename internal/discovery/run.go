@@ -63,11 +63,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		return fmt.Errorf("updating qBittorrent entries: %w", err)
 	}
 
-	if c.dep.Shoko != nil {
-		if err := c.RunShokoIntegration(ctx, entries); err != nil {
-			return fmt.Errorf("shoko integration: %w", err)
-		}
-	}
+	var addedTorrents []torrentclient.Torrent
 
 	scannedCount := 0
 	skippedCount := 0
@@ -95,10 +91,11 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 			Trace().
 			Msgf("starting discovery for entry")
 
-		foundNew, err := c.DiscoverEntry(ctx, entry)
+		foundNew, added, err := c.DiscoverEntry(ctx, entry)
 		if errors.Is(err, torrentclient.ErrUnauthorized) || errors.Is(err, context.Canceled) {
 			return fmt.Errorf("failed to digest entry: %w", err)
 		}
+		addedTorrents = append(addedTorrents, added...)
 
 		// Update the interval tracker with the scan results
 		nextScanAt := c.intervalTracker.updateState(entry, foundNew)
@@ -118,6 +115,16 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		Int("skipped", skippedCount).
 		Dur("duration", time.Since(t1)).
 		Msg("discovery finished")
+
+	if scannedCount == 0 {
+		return nil
+	}
+
+	if c.dep.Shoko != nil && len(addedTorrents) > 0 {
+		if err := c.RunShokoIntegration(ctx, entries, addedTorrents); err != nil {
+			return fmt.Errorf("shoko integration: %w", err)
+		}
+	}
 
 	return nil
 }
@@ -191,8 +198,12 @@ func filterRelevantResults(
 }
 
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.
-// It returns the latest discovered tag, whether new episodes were found, and any error.
-func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (bool, error) {
+// It returns the latest discovered tag, whether new episodes were found, the torrents added
+// to the client (used by the shoko integration), and any error.
+func (c *Controller) DiscoverEntry(
+	ctx context.Context,
+	entry animelist.Entry,
+) (bool, []torrentclient.Torrent, error) {
 	logger := getLogger(ctx)
 
 	results, err := c.dep.TorrentSource.Search(ctx, entry, torrentsource.SearchOptions{
@@ -201,7 +212,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 		Qualities:    c.dep.Config.Qualitites,
 	})
 	if err != nil {
-		return false, fmt.Errorf("searching torrent for anime: %w", err)
+		return false, nil, fmt.Errorf("searching torrent for anime: %w", err)
 	}
 
 	if len(results) == 0 {
@@ -209,12 +220,12 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 			Debug().
 			Msg("entry discovery stopped: no valid torrent results found")
 
-		return false, nil
+		return false, nil, nil
 	}
 
 	latestTag, err := c.getLatestDownloadedTag(ctx, entry)
 	if err != nil {
-		return false, fmt.Errorf("finding latest anime season episode tag: %w", err)
+		return false, nil, fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 
 	newTorrents := parseResults(entry, results, c.dep.Config)
@@ -247,9 +258,13 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 
 	foundNewEpisodes := len(newTorrents) > 0
 
+	// Hand the added torrents to the shoko integration directly, using the
+	// info hashes provided by the torrent source, no listing needed.
+	var added []torrentclient.Torrent
 	for _, torrentMetadata := range newTorrents {
-		if err := c.AddTorrentEntry(ctx, entry, torrentMetadata); err != nil {
-			return false, fmt.Errorf("adding torrent to client: %w", err)
+		hash, err := c.AddTorrentEntry(ctx, entry, torrentMetadata)
+		if err != nil {
+			return false, nil, fmt.Errorf("adding torrent to client: %w", err)
 		}
 
 		logger.
@@ -257,6 +272,14 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 			Str("torrentTitle", torrentMetadata.Torrent.Title).
 			Str("tag", torrentMetadata.Metadata.Tag.String()).
 			Msg("added torrent to client")
+
+		if c.dep.Shoko != nil && hash != "" {
+			added = append(added, torrentclient.Torrent{
+				Name:     torrentMetadata.Torrent.Title,
+				Hash:     hash,
+				Category: c.dep.Config.Category,
+			})
+		}
 	}
 
 	logger.
@@ -265,7 +288,7 @@ func (c *Controller) DiscoverEntry(ctx context.Context, entry animelist.Entry) (
 		Stringer("latestTag", latestTag).
 		Msg("finished entry discovery")
 
-	return foundNewEpisodes, nil
+	return foundNewEpisodes, added, nil
 }
 
 func parseResults(

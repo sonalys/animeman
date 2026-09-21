@@ -11,6 +11,7 @@ type Torrent struct {
 	Title   string
 	Link    string
 	Seeders int
+	Hash    string
 }
 
 // SearchOptions controls how a source searches for torrents of an entry.

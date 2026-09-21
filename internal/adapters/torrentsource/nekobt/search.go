@@ -85,6 +85,7 @@ func (api *API) Search(
 			Title:   item.Title,
 			Link:    item.Link,
 			Seeders: item.seeders(),
+			Hash:    item.attr("infohash"),
 		}
 	})
 

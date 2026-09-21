@@ -15,25 +15,15 @@ import (
 	"github.com/sonalys/animeman/internal/utils"
 )
 
-// shokoPendingTag marks torrents still awaiting shoko processing.
-// It is added when the torrent is downloaded and
-// once all its files are recognized (either linked by shoko's hash scan or linked manually).
-const shokoPendingTag = "shoko-pending"
-
 // RunShokoIntegration links shoko's unrecognized files to episodes,
 // matching them against the anime list entries and their AniDB ids.
-// It walks torrents tagged with shokoPendingTag, looks each file up in
-// shoko, and removes the tag once every file is recognized.
-func (c *Controller) RunShokoIntegration(ctx context.Context, entries []animelist.Entry) error {
-	torrents, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
-		Category:  &c.dep.Config.Category,
-		Tag:       new(shokoPendingTag),
-		Completed: new(true),
-	})
-	if err != nil {
-		return fmt.Errorf("listing torrents: %w", err)
-	}
-
+// It walks the torrents added by the discovery run, looks each file up in
+// shoko, and clears the shokoPendingTag once every file is recognized.
+func (c *Controller) RunShokoIntegration(
+	ctx context.Context,
+	entries []animelist.Entry,
+	torrents []torrentclient.Torrent,
+) error {
 	for _, torrent := range torrents {
 		logger := log.Ctx(ctx).With().Str("torrent", torrent.Name).Logger()
 		torrentCtx := logger.WithContext(ctx)
@@ -51,7 +41,8 @@ func (c *Controller) RunShokoIntegration(ctx context.Context, entries []animelis
 			return fmt.Errorf("listing torrent files: %w", err)
 		}
 		if len(paths) == 0 {
-			// No completed files yet, keep the pending tag for a later run.
+			logger.Debug().
+				Msg("skipping torrent: no files found")
 			continue
 		}
 
@@ -65,14 +56,6 @@ func (c *Controller) RunShokoIntegration(ctx context.Context, entries []animelis
 					Str("file", filePath).
 					Msg("failed to link file in shoko, removing pending tag")
 			}
-		}
-
-		if err := c.dep.TorrentClient.RemoveTorrentTags(
-			torrentCtx,
-			[]string{torrent.Hash},
-			[]string{shokoPendingTag},
-		); err != nil {
-			return fmt.Errorf("removing pending tag: %w", err)
 		}
 	}
 
