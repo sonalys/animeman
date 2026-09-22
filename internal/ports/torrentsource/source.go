@@ -5,6 +5,7 @@ import (
 	"slices"
 	"sort"
 	"strings"
+	"time"
 
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
@@ -14,10 +15,11 @@ import (
 
 // Torrent is a normalized torrent entry returned by any torrent source.
 type Torrent struct {
-	Title   string
-	Link    string
-	Seeders int
-	Hash    string
+	Title       string
+	Link        string
+	Seeders     int
+	Hash        string
+	PublishedAt time.Time
 
 	Metadata parser.Metadata
 }

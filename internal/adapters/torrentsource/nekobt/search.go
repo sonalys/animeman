@@ -19,7 +19,6 @@ import (
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
 	"github.com/sonalys/animeman/internal/utils/pager"
@@ -73,31 +72,27 @@ func (api *API) Search(
 		return nil, fmt.Errorf("building query: %w", err)
 	}
 
-	torrents, err := pager.Search(ctx, pager.Page[item]{
+	pager := pager.Page[item]{
 		PageSize: pageSize,
 		Fetch: func(ctx context.Context, offset int) ([]item, error) {
 			return api.fetchPage(ctx, *values, offset)
 		},
-		Filter: func(item item) bool {
-			return filterSeeders(1)(item) &&
-				filterMetadata(entry, opts.Sources)(item) &&
-				filterSources(opts.Sources)(item)
-		},
 		Map: func(item item) torrentsource.Torrent {
 			metadata := parser.Parse(item.Title, 1, opts.Sources)
+			publishedAt := utils.Must(time.Parse(time.RFC1123Z, item.PubDate))
 
 			return torrentsource.Torrent{
-				Title:    item.Title,
-				Link:     item.Link,
-				Seeders:  item.seeders(),
-				Hash:     item.attr("infohash"),
-				Metadata: metadata,
+				Title:       item.Title,
+				Link:        item.Link,
+				Seeders:     item.seeders(),
+				PublishedAt: publishedAt,
+				Hash:        item.attr("infohash"),
+				Metadata:    metadata,
 			}
 		},
-		ShouldPaginate: func(filtered []item) bool {
-			return shouldPaginate(filtered, opts.LatestTag)
-		},
-	})
+	}
+
+	torrents, err := pager.Search(ctx, entry, opts)
 	if err != nil {
 		return nil, err
 	}
@@ -111,31 +106,6 @@ func (api *API) Search(
 		Msg("search results")
 
 	return torrents, nil
-}
-
-// shouldPaginate reports whether the source may have more results after this
-// page. nekoBT returns newest results first, so paginate while even the
-// smallest tag found remains newer than the latest downloaded tag.
-func shouldPaginate(items []item, latestTag tags.Tag) bool {
-	if latestTag.IsZero() {
-		// Nothing downloaded yet: the first page already has everything.
-		return false
-	}
-
-	if len(items) == 0 {
-		return false
-	}
-
-	var smallest tags.Tag
-
-	for _, it := range items {
-		tag := parser.Parse(it.Title, 1, nil).Tag
-		if smallest.IsZero() || tag.Compare(smallest) < 0 {
-			smallest = tag
-		}
-	}
-
-	return smallest.Compare(latestTag) > 0
 }
 
 // fetchPage fetches one torznab result page at the given offset.
@@ -516,52 +486,6 @@ func (api *API) fetchMediaID(ctx context.Context, externalID string) (string, er
 	}
 
 	return resolved.Data.MediaID, nil
-}
-
-// filterSources keeps only torrents whose title contains one of the
-// configured sources (release groups), mirroring how the parser extracts
-// the release group.
-func filterSources(sources []string) func(item) bool {
-	return func(item item) bool {
-		if len(sources) == 0 {
-			return true
-		}
-		entry := parser.Parse(item.Title, 1, sources)
-		return entry.ReleaseGroup != "" && slices.Contains(sources, entry.ReleaseGroup)
-	}
-}
-
-func filterSeeders(minSeeders int) func(item) bool {
-	return func(item item) bool {
-		return item.seeders() >= minSeeders
-	}
-}
-
-func filterMetadata(entry animelist.Entry, sources []string) func(item) bool {
-	return func(item item) bool {
-		// Compare the published date of the torrent with the entry's start and end dates.
-		pubDate, err := time.Parse(time.RFC1123Z, item.PubDate)
-		if err != nil {
-			return false
-		}
-
-		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
-		if !entry.StartDate.IsZero() && pubDate.Before(entry.StartDate.AddDate(0, 0, -2)) {
-			return false
-		}
-
-		// If ep number is greater than season ep count, should be removed.
-		// This can happen when certain sources mark S2 but use absolute ep number, so they start like S2E13 instead of S2E01.
-		// If there's only a single source, then this won't be a problem.
-		if len(sources) > 1 && entry.NumEpisodes != 0 {
-			metadata := parser.Parse(item.Title, 1, sources)
-			if metadata.Tag.FirstEpisode() > float64(entry.NumEpisodes) {
-				return false
-			}
-		}
-
-		return true
-	}
 }
 
 func (i item) attr(name string) string {
