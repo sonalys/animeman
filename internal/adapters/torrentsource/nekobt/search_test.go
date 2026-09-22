@@ -24,9 +24,9 @@ func Test_buildQuery(t *testing.T) {
 			want: "1080",
 		},
 		{
-			name: "common tokens hoisted, differing tokens ORed",
+			name: "codec tokens are extracted into params",
 			opt:  torrentsource.SearchOptions{Qualities: []string{"1080 AV1", "1080 HEVC", "1080"}},
-			want: "1080 AV1|HEVC",
+			want: "1080",
 		},
 		{
 			name: "no common tokens",
@@ -36,12 +36,12 @@ func Test_buildQuery(t *testing.T) {
 		{
 			name: "all tokens common",
 			opt:  torrentsource.SearchOptions{Qualities: []string{"1080 HEVC", "1080 HEVC"}},
-			want: "1080 HEVC",
+			want: "1080",
 		},
 		{
 			name: "multi-word quality",
 			opt:  torrentsource.SearchOptions{Qualities: []string{"1080 H.265"}},
-			want: "1080 H.265",
+			want: "1080",
 		},
 		{
 			name: "sources ORed",
@@ -60,49 +60,116 @@ func Test_buildQuery(t *testing.T) {
 				Sources:      []string{"Erai-raws", "SubsPlease"},
 				SearchSuffix: `-"dub"`,
 			},
-			want: `1080 AV1|HEVC Erai-raws|SubsPlease -"dub"`,
+			want: `1080 Erai-raws|SubsPlease -"dub"`,
 		},
 		{
-			// 1080 and 720 never co-occur, same for AV1 and HEVC, so the four
-			// qualities collapse into two OR dimensions.
+			// 1080 and 720 never co-occur, so the four qualities collapse
+			// into one OR dimension; codecs go to params.
 			name: "1080 and 720, either AV1 or HEVC",
 			opt: torrentsource.SearchOptions{
 				Qualities: []string{"1080 AV1", "1080 HEVC", "720 AV1", "720 HEVC"},
 			},
-			want: "1080|720 AV1|HEVC",
+			want: "1080|720",
 		},
 		{
-			// "1080" alone is a subset of the others, so 1080 is common and
-			// only HEVC/AV1 differ.
+			// "1080" alone is a subset of the others, so 1080 is common.
 			name: "bare quality collapses into common tokens",
 			opt: torrentsource.SearchOptions{
 				Qualities: []string{"1080 AV1", "1080 HEVC", "1080"},
 			},
-			want: "1080 AV1|HEVC",
+			want: "1080",
 		},
 		{
-			// "1080" alone is a subset of "1080 HEVC", so 1080 is common and
-			// HEVC is a single-token dimension.
+			// "1080" alone is a subset of "1080 HEVC", so 1080 is common.
 			name: "bare quality plus one codec",
 			opt: torrentsource.SearchOptions{
 				Qualities: []string{"1080 HEVC", "1080"},
 			},
-			want: "1080 HEVC",
+			want: "1080",
 		},
 		{
-			// 720 never co-occurs with 1080, but HEVC co-occurs with both, so
-			// HEVC is common and resolutions form one dimension.
+			// 720 never co-occurs with 1080, so resolutions form one dimension.
 			name: "mixed bare and combined qualities",
 			opt: torrentsource.SearchOptions{
 				Qualities: []string{"1080 HEVC", "720 HEVC", "1080"},
 			},
-			want: "1080|720 HEVC",
+			want: "1080|720",
+		},
+		{
+			// Video type tokens are extracted too, leaving only the resolution.
+			name: "video type tokens",
+			opt: torrentsource.SearchOptions{
+				Qualities: []string{"1080 WEB-DL", "1080 BD"},
+			},
+			want: "1080",
 		},
 	}
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			require.Equal(t, tt.want, buildQuery(tt.opt))
+		})
+	}
+}
+
+func Test_splitQualityFilters(t *testing.T) {
+	tests := []struct {
+		name           string
+		qualities      []string
+		wantText       []string
+		wantVideoType  string
+		wantVideoCodec string
+	}{
+		{
+			name:           "empty",
+			qualities:      nil,
+			wantText:       nil,
+			wantVideoType:  "",
+			wantVideoCodec: "",
+		},
+		{
+			name:           "resolution only",
+			qualities:      []string{"1080"},
+			wantText:       []string{"1080"},
+			wantVideoType:  "",
+			wantVideoCodec: "",
+		},
+		{
+			name:           "codec aliases deduplicate",
+			qualities:      []string{"1080 HEVC", "1080 x265", "1080 H.265"},
+			wantText:       []string{"1080", "1080", "1080"},
+			wantVideoType:  "",
+			wantVideoCodec: "H265",
+		},
+		{
+			name:           "multiple codecs",
+			qualities:      []string{"1080 HEVC", "1080 AV1"},
+			wantText:       []string{"1080", "1080"},
+			wantVideoType:  "",
+			wantVideoCodec: "AV1,H265",
+		},
+		{
+			name:           "video types",
+			qualities:      []string{"1080 WEB-DL", "1080 BD"},
+			wantText:       []string{"1080", "1080"},
+			wantVideoType:  "BD - Disc,WEB-DL",
+			wantVideoCodec: "",
+		},
+		{
+			name:           "mixed codecs and types",
+			qualities:      []string{"1080 WEB-DL HEVC", "1080 BD AVC"},
+			wantText:       []string{"1080", "1080"},
+			wantVideoType:  "BD - Disc,WEB-DL",
+			wantVideoCodec: "H264,H265",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			text, params := splitQualityFilters(tt.qualities)
+			require.Equal(t, tt.wantText, text)
+			require.Equal(t, tt.wantVideoType, params.Get("video_type"))
+			require.Equal(t, tt.wantVideoCodec, params.Get("video_codec"))
 		})
 	}
 }

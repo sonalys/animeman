@@ -11,6 +11,7 @@ import (
 	"strconv"
 	"strings"
 	"time"
+	"unicode"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
@@ -114,8 +115,15 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 
 	q.Set("media_id", mediaID)
 
+	// Quality tokens that are video types or codecs are sent as dedicated
+	// torznab params (video_type, video_codec) instead of `q` tokens.
+	_, params := splitQualityFilters(opt.Qualities)
+	for name, values := range params {
+		q[name] = values
+	}
+
 	// media_id already narrows to the entry, so `q` only carries the
-	// quality/source filters and the user suffix, same format as nyaa.
+	// remaining quality/source filters and the user suffix, same format as nyaa.
 	if query := buildQuery(opt); query != "" {
 		q.Set("q", query)
 	}
@@ -134,19 +142,23 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 }
 
 // buildQuery builds the `q` search query from the search options.
+// Quality tokens that are video types or codecs are extracted into torznab
+// params by splitQualityFilters, so `q` only ever carries resolutions and
+// unknown tokens.
+//
 // nekoBT's `|` OR operator is unreliable: any OR expression containing an
 // alternative that matches nothing returns zero results (verified against
 // the live endpoint). To keep OR groups safe, quality tokens present in
 // EVERY configured quality are hoisted into a plain AND (e.g. `1080` from
-// ["1080 AV1", "1080 HEVC", "1080"]), and the remaining tokens are
+// ["1080", "1080", "1080"]), and the remaining tokens are
 // clustered into OR dimensions of tokens that never co-occur (e.g.
-// ["1080 AV1", "1080 HEVC", "720 AV1", "720 HEVC"] becomes
-// `(1080|720) (AV1|HEVC)`). Sources stay an OR: they are release-group
-// names that nekoBT indexes, and at least one always matches.
+// ["1080", "720"] becomes `(1080|720)`). Sources stay an OR: they are
+// release-group names that nekoBT indexes, and at least one always matches.
 func buildQuery(opt torrentsource.SearchOptions) string {
 	var parts []nyaaquerier.Node
 
-	if common, dimensions := splitQualities(opt.Qualities); len(common) > 0 || len(dimensions) > 0 {
+	text, _ := splitQualityFilters(opt.Qualities)
+	if common, dimensions := splitQualities(text); len(common) > 0 || len(dimensions) > 0 {
 		for _, token := range common {
 			parts = append(parts, nyaaquerier.PhraseOf(token))
 		}
@@ -169,12 +181,105 @@ func buildQuery(opt torrentsource.SearchOptions) string {
 	return nyaaquerier.And(parts).String()
 }
 
+// splitQualityFilters extracts nekoBT torznab filters from the configured
+// qualities. Tokens matching a video type or codec (see
+// https://wiki.nekobt.to/info/metadata/) become video_type/video_codec
+// params; the remaining tokens (resolutions, unknown words) are returned
+// as text qualities for the `q` query. A quality whose tokens are all
+// consumed contributes no text.
+func splitQualityFilters(qualities []string) (text []string, params url.Values) {
+	params = url.Values{}
+	var codecs, types []string
+
+	for _, quality := range qualities {
+		var leftover []string
+		for _, token := range strings.Fields(quality) {
+			if codec, ok := videoCodecAliases[normalizeToken(token)]; ok {
+				codecs = append(codecs, codec)
+				continue
+			}
+			if videoType, ok := videoTypeAliases[normalizeToken(token)]; ok {
+				types = append(types, videoType)
+				continue
+			}
+			leftover = append(leftover, token)
+		}
+		if len(leftover) > 0 {
+			text = append(text, strings.Join(leftover, " "))
+		}
+	}
+
+	if len(codecs) > 0 {
+		slices.Sort(codecs)
+		params.Set("video_codec", strings.Join(slices.Compact(codecs), ","))
+	}
+	if len(types) > 0 {
+		slices.Sort(types)
+		params.Set("video_type", strings.Join(slices.Compact(types), ","))
+	}
+
+	return text, params
+}
+
+// normalizeToken lowercases a token and strips dots/dashes/spaces so
+// aliases like `H.265`, `h265` and `H-265` all match.
+func normalizeToken(token string) string {
+	return strings.Map(func(r rune) rune {
+		switch r {
+		case '.', '-', ' ':
+			return -1
+		default:
+			return unicode.ToLower(r)
+		}
+	}, token)
+}
+
+// videoCodecAliases maps normalized quality tokens to nekoBT video_codec
+// filter values. https://wiki.nekobt.to/info/metadata/
+var videoCodecAliases = map[string]string{
+	"h264":  "H264",
+	"avc":   "H264",
+	"x264":  "H264",
+	"h265":  "H265",
+	"hevc":  "H265",
+	"x265":  "H265",
+	"av1":   "AV1",
+	"vp9":   "VP9",
+	"mpeg2": "MPEG-2",
+	"mpeg4": "MPEG-4",
+	"wmv":   "WMV",
+	"vc1":   "VC1",
+}
+
+// videoTypeAliases maps normalized quality tokens to nekoBT video_type
+// filter values. https://wiki.nekobt.to/info/metadata/
+var videoTypeAliases = map[string]string{
+	"hybrid":    "Hybrid",
+	"remux":     "BD - Remux",
+	"bdremux":   "BD - Remux",
+	"bdencode":  "BD - Encode",
+	"bdmini":    "BD - Mini",
+	"bd":        "BD - Disc",
+	"bluray":    "BD - Disc",
+	"web":       "WEB-DL",
+	"webdl":     "WEB-DL",
+	"webencode": "WEB - Encode",
+	"webmini":   "WEB - Mini",
+	"dvdremux":  "DVD - Remux",
+	"dvdencode": "DVD - Encode",
+	"dvd":       "DVD - Disc",
+	"tvraw":     "TV - Raw",
+	"tvencode":  "TV - Encode",
+	"laserdisc": "LaserDisc",
+	"vhs":       "VHS",
+}
+
 // splitQualities splits the configured qualities into tokens shared by all
 // of them (common) and OR dimensions for the rest. A dimension is a set of
 // tokens that never co-occur in any quality, so exactly one of them matches
 // a title and the OR group never contains an alternative that matches
-// nothing. Example: ["1080 AV1", "1080 HEVC", "720 AV1", "720 HEVC"]
-// yields common=nil and dimensions=[[1080 720] [AV1 HEVC]].
+// nothing. Example: ["1080", "720"]
+// yields common=nil and dimensions=[[1080 720]].
 func splitQualities(qualities []string) (common []string, dimensions [][]string) {
 	if len(qualities) == 0 {
 		return nil, nil
@@ -183,7 +288,7 @@ func splitQualities(qualities []string) (common []string, dimensions [][]string)
 	counts := make(map[string]int)
 	for _, quality := range qualities {
 		seen := make(map[string]struct{})
-		for _, token := range strings.Fields(quality) {
+		for token := range strings.FieldsSeq(quality) {
 			if _, ok := seen[token]; ok {
 				continue
 			}
