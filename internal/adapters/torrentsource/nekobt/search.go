@@ -250,33 +250,46 @@ func buildQuery(opt torrentsource.SearchOptions) string {
 // params; the remaining tokens (resolutions, unknown words) are returned
 // as text qualities for the `q` query. A quality whose tokens are all
 // consumed contributes no text.
+//
+// A param is only emitted when EVERY quality specifies a codec/type:
+// otherwise the filter would also drop releases that simply don't
+// declare that metadata.
 func splitQualityFilters(qualities []string) (text []string, params url.Values) {
 	params = url.Values{}
 	var codecs, types []string
+	var codecsMissing, typesMissing bool
 
 	for _, quality := range qualities {
-		var leftover []string
+		var leftover, qualityCodecs, qualityTypes []string
 		for token := range strings.FieldsSeq(quality) {
 			if codec, ok := videoCodecAliases[normalizeToken(token)]; ok {
-				codecs = append(codecs, codec)
+				qualityCodecs = append(qualityCodecs, codec)
 				continue
 			}
 			if videoType, ok := videoTypeAliases[normalizeToken(token)]; ok {
-				types = append(types, videoType)
+				qualityTypes = append(qualityTypes, videoType)
 				continue
 			}
 			leftover = append(leftover, token)
 		}
+		if len(qualityCodecs) == 0 {
+			codecsMissing = true
+		}
+		if len(qualityTypes) == 0 {
+			typesMissing = true
+		}
+		codecs = append(codecs, qualityCodecs...)
+		types = append(types, qualityTypes...)
 		if len(leftover) > 0 {
 			text = append(text, strings.Join(leftover, " "))
 		}
 	}
 
-	if len(codecs) > 0 {
+	if len(codecs) > 0 && !codecsMissing {
 		slices.Sort(codecs)
 		params.Set("video_codec", strings.Join(slices.Compact(codecs), ","))
 	}
-	if len(types) > 0 {
+	if len(types) > 0 && !typesMissing {
 		slices.Sort(types)
 		params.Set("video_type", strings.Join(slices.Compact(types), ","))
 	}
