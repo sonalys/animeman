@@ -7,7 +7,7 @@ import (
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
 
-const TORZNAB_URL = "https://nekobt.to/api/torznab/api"
+var TORZNAB_URL = "https://nekobt.to/api/torznab/api"
 
 type (
 	Config struct {

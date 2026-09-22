@@ -4,7 +4,6 @@ import (
 	"context"
 	"fmt"
 	"path"
-	"strings"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
@@ -57,28 +56,6 @@ func (c *Controller) RunShokoIntegration(
 	}
 
 	return nil
-}
-
-// parseTorrentTags extracts the show title, season/episode tag and shoko
-// state tag from the torrent tags. Tags starting with "!" are the series
-// title, tags starting with "S" are the season/episode tag, and any other
-// tag is the shoko state tag (pending or linked).
-func parseTorrentTags(torrentTags []string) (title string, tag tags.Tag, ok bool) {
-	for _, torrentTag := range torrentTags {
-		if after, ok := strings.CutPrefix(torrentTag, "!"); ok {
-			title = after
-		}
-	}
-
-	seasonEpisodeTag, found := findSeasonEpisodeTag(torrentTags)
-	if found {
-		tag = parser.Parse(seasonEpisodeTag, 1, nil).Tag
-	}
-
-	if title == "" || tag.IsZero() {
-		return "", tags.Tag{}, false
-	}
-	return title, tag, true
 }
 
 // linkShokoFile looks a single downloaded file up in shoko. If shoko has not

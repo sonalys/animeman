@@ -18,8 +18,16 @@ import (
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
+	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
+)
+
+const (
+	// pageSize is the torznab `limit` per page.
+	pageSize = 100
+	// maxPages caps pagination so a pathological feed can't loop forever.
+	maxPages = 5
 )
 
 type (
@@ -50,19 +58,100 @@ type (
 
 // Search implements torrentsource.Source.
 // nekoBT matches the entry by AniList/MAL id directly, so no title filtering is needed.
+// Results are sorted oldest-first by the source, so when the newest tag already
+// downloaded in the torrent client is older than everything on the first page,
+// we keep paginating until we find something newer (or run out of pages).
 func (api *API) Search(
 	ctx context.Context,
 	entry animelist.Entry,
 	opts torrentsource.SearchOptions,
 ) ([]torrentsource.Torrent, error) {
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, TORZNAB_URL, nil))
-
-	q, err := api.buildQuery(entry, opts)
+	base, err := api.buildQuery(entry, opts)
 	if err != nil {
 		return nil, fmt.Errorf("building query: %w", err)
 	}
 
-	req.URL.RawQuery = q
+	var torrents []torrentsource.Torrent
+
+	for offset := 0; offset < maxPages*pageSize; offset += pageSize {
+		items, err := api.fetchPage(ctx, base, offset)
+		if err != nil {
+			return nil, err
+		}
+
+		if len(items) == 0 {
+			break
+		}
+
+		filtered := utils.Filter(items,
+			filterSeeders(1),
+			filterMetadata(entry),
+			filterSources(opts.Sources),
+		)
+
+		torrents = append(torrents, utils.Map(filtered, func(item item) torrentsource.Torrent {
+			return torrentsource.Torrent{
+				Title:   item.Title,
+				Link:    item.Link,
+				Seeders: item.seeders(),
+				Hash:    item.attr("infohash"),
+			}
+		})...)
+
+		// Pages are sorted oldest-first: if the smallest tag on this page is
+		// still older than (or equal to) the latest downloaded tag, everything
+		// on later pages can only be newer, so keep going.
+		if !shouldPaginate(items, opts.LatestTag) {
+			break
+		}
+	}
+
+	torrents = parser.Prioritize(entry, torrents, opts)
+
+	log.
+		Ctx(ctx).
+		Debug().
+		Int("results", len(torrents)).
+		Msg("search results")
+
+	return torrents, nil
+}
+
+// shouldPaginate reports whether the source may have more results after this
+// page. nekoBT returns newest results first, so paginate while even the
+// smallest tag found remains newer than the latest downloaded tag.
+func shouldPaginate(items []item, latestTag tags.Tag) bool {
+	if latestTag.IsZero() {
+		// Nothing downloaded yet: the first page already has everything.
+		return false
+	}
+
+	if len(items) == 0 {
+		return false
+	}
+
+	smallest := tags.Tag{}
+	for _, it := range items {
+		tag := parser.Parse(it.Title, 1, nil).Tag
+		if smallest.IsZero() || tag.Compare(smallest) < 0 {
+			smallest = tag
+		}
+	}
+
+	return smallest.Compare(latestTag) > 0
+}
+
+// fetchPage fetches one torznab result page at the given offset.
+func (api *API) fetchPage(ctx context.Context, baseQuery string, offset int) ([]item, error) {
+	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, TORZNAB_URL, nil))
+
+	values, err := url.ParseQuery(baseQuery)
+	if err != nil {
+		return nil, fmt.Errorf("parsing query: %w", err)
+	}
+	values.Set("offset", strconv.Itoa(offset))
+	values.Set("limit", strconv.Itoa(pageSize))
+	req.URL.RawQuery = values.Encode()
 
 	resp, err := api.client.Do(req)
 	if err != nil {
@@ -79,30 +168,7 @@ func (api *API) Search(
 		return nil, fmt.Errorf("reading response: %w", err)
 	}
 
-	items := utils.Filter(feed.Channel.Items,
-		filterSeeders(1),
-		filterMetadata(entry),
-		filterSources(opts.Sources),
-	)
-
-	torrents := utils.Map(items, func(item item) torrentsource.Torrent {
-		return torrentsource.Torrent{
-			Title:   item.Title,
-			Link:    item.Link,
-			Seeders: item.seeders(),
-			Hash:    item.attr("infohash"),
-		}
-	})
-
-	torrents = parser.Prioritize(entry, torrents, opts)
-
-	log.
-		Ctx(ctx).
-		Debug().
-		Int("results", len(torrents)).
-		Msg("search results")
-
-	return torrents, nil
+	return feed.Channel.Items, nil
 }
 
 func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) (string, error) {

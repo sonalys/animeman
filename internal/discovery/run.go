@@ -209,10 +209,16 @@ func (c *Controller) DiscoverEntry(
 ) (bool, []parser.TorrentMetadata, error) {
 	logger := getLogger(ctx)
 
+	latestTag, err := c.getLatestDownloadedTag(ctx, entry)
+	if err != nil {
+		return false, nil, fmt.Errorf("finding latest anime season episode tag: %w", err)
+	}
+
 	results, err := c.dep.TorrentSource.Search(ctx, entry, torrentsource.SearchOptions{
 		SearchSuffix: c.dep.Config.SearchSuffix,
 		Sources:      c.dep.Config.ReleaseGroups,
 		Qualities:    c.dep.Config.Qualitites,
+		LatestTag:    latestTag,
 	})
 	if err != nil {
 		return false, nil, fmt.Errorf("searching torrent for anime: %w", err)
@@ -224,11 +230,6 @@ func (c *Controller) DiscoverEntry(
 			Msg("entry discovery stopped: no valid torrent results found")
 
 		return false, nil, nil
-	}
-
-	latestTag, err := c.getLatestDownloadedTag(ctx, entry)
-	if err != nil {
-		return false, nil, fmt.Errorf("finding latest anime season episode tag: %w", err)
 	}
 
 	newTorrents := parseResults(entry, results, c.dep.Config)
