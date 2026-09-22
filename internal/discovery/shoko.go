@@ -6,10 +6,10 @@ import (
 	"path"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
+	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 )
@@ -25,7 +25,7 @@ func (c *Controller) RunShokoIntegration(
 	entries []animelist.Entry,
 ) error {
 	// Drain the queue first so requeues below don't loop forever.
-	pending := make([]parser.TorrentMetadata, 0, len(c.shokoQueue))
+	pending := make([]torrentsource.Torrent, 0, len(c.shokoQueue))
 drain:
 	for {
 		select {
@@ -54,20 +54,20 @@ drain:
 
 	processed := make([]string, 0, len(pending))
 	for _, torrentMetadata := range pending {
-		if !isCompleted[torrentMetadata.Torrent.Hash] {
+		if !isCompleted[torrentMetadata.Hash] {
 			log.Ctx(ctx).
 				Debug().
-				Str("torrent", torrentMetadata.Torrent.Title).
+				Str("torrent", torrentMetadata.Title).
 				Msg("skipping torrent: still downloading")
 			// Not done yet, retry on the next tick.
 			c.enqueueShoko(torrentMetadata)
 			continue
 		}
 
-		logger := log.Ctx(ctx).With().Str("torrent", torrentMetadata.Torrent.Title).Logger()
+		logger := log.Ctx(ctx).With().Str("torrent", torrentMetadata.Title).Logger()
 		torrentCtx := logger.WithContext(ctx)
 
-		paths, err := c.dep.TorrentClient.TorrentFiles(torrentCtx, torrentMetadata.Torrent.Hash)
+		paths, err := c.dep.TorrentClient.TorrentFiles(torrentCtx, torrentMetadata.Hash)
 		if err != nil {
 			return fmt.Errorf("listing torrent files: %w", err)
 		}
@@ -95,7 +95,7 @@ drain:
 			}
 		}
 
-		processed = append(processed, torrentMetadata.Torrent.Hash)
+		processed = append(processed, torrentMetadata.Hash)
 	}
 
 	return nil
@@ -243,7 +243,7 @@ func matchEntry(title string, entries []animelist.Entry) (animelist.Entry, bool)
 	bestScore := 0.0
 	for i, entry := range entries {
 		for _, entryTitle := range entry.Titles {
-			score := utils.CalculateTextSimilarity(entryTitle, title, parser.IgnoreCharset)
+			score := utils.CalculateTextSimilarity(entryTitle, title, torrentsource.IgnoreCharset)
 			if score > bestScore {
 				bestScore = score
 				best = i

@@ -8,7 +8,6 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
@@ -67,7 +66,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		return fmt.Errorf("updating qBittorrent entries: %w", err)
 	}
 
-	var addedTorrents []parser.TorrentMetadata
+	var addedTorrents []torrentsource.Torrent
 
 	scannedCount := 0
 	skippedCount := 0
@@ -136,10 +135,10 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 // excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
 // excludeBatch avoids downloading a batch for episodes which you already have.
 func filterEpisodes(
-	results []parser.TorrentMetadata,
+	results []torrentsource.Torrent,
 	initialTag tags.Tag,
-) ([]parser.TorrentMetadata, tags.Tag) {
-	out := make([]parser.TorrentMetadata, 0, len(results))
+) ([]torrentsource.Torrent, tags.Tag) {
+	out := make([]torrentsource.Torrent, 0, len(results))
 
 	var latestDetectedTag tags.Tag
 
@@ -160,7 +159,7 @@ func filterEpisodes(
 			// Example: S01E01-13, followed by S01.
 			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
 			if currentTag.IsMultiEpisode() && currentTag.Contains(latestDetectedTag) {
-				out = utils.Filter(out, func(previous parser.TorrentMetadata) bool {
+				out = utils.Filter(out, func(previous torrentsource.Torrent) bool {
 					return !currentTag.Contains(previous.Metadata.Tag)
 				})
 			}
@@ -176,13 +175,13 @@ func filterEpisodes(
 // filterRelevantResults is responsible for filtering and ordering the raw feed into valid downloadable torrents.
 func filterRelevantResults(
 	entry animelist.Entry,
-	results []parser.TorrentMetadata,
+	results []torrentsource.Torrent,
 	latestTag tags.Tag,
-) []parser.TorrentMetadata {
+) []torrentsource.Torrent {
 	results = slices.Clone(results)
 
 	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
-		batchResults := utils.Filter(results, func(entry parser.TorrentMetadata) bool {
+		batchResults := utils.Filter(results, func(entry torrentsource.Torrent) bool {
 			return entry.Metadata.Tag.IsMultiEpisode()
 		})
 		if len(batchResults) > 0 {
@@ -190,7 +189,7 @@ func filterRelevantResults(
 		}
 	} else {
 		// Remove batches when there are latest tags, avoid episode download duplication.
-		results = utils.Filter(results, func(entry parser.TorrentMetadata) bool {
+		results = utils.Filter(results, func(entry torrentsource.Torrent) bool {
 			return !entry.Metadata.Tag.IsMultiEpisode()
 		})
 	}
@@ -206,7 +205,7 @@ func filterRelevantResults(
 func (c *Controller) DiscoverEntry(
 	ctx context.Context,
 	entry animelist.Entry,
-) (bool, []parser.TorrentMetadata, error) {
+) (bool, []torrentsource.Torrent, error) {
 	logger := getLogger(ctx)
 
 	latestTag, err := c.getLatestDownloadedTag(ctx, entry)
@@ -232,12 +231,10 @@ func (c *Controller) DiscoverEntry(
 		return false, nil, nil
 	}
 
-	newTorrents := parseResults(entry, results, c.dep.Config)
-
-	for _, parsed := range newTorrents {
+	for _, parsed := range results {
 		logger.
 			Debug().
-			Str("torrentTitle", parsed.Torrent.Title).
+			Str("torrentTitle", parsed.Title).
 			Str("parsedTitle", parsed.Metadata.Title).
 			Str("tag", parsed.Metadata.Tag.String()).
 			Str("seriesTag", parsed.Metadata.BuildSeriesTag()).
@@ -246,38 +243,38 @@ func (c *Controller) DiscoverEntry(
 			Msg("parsed torrent result")
 	}
 
-	newTorrents = filterRelevantResults(
+	results = filterRelevantResults(
 		entry,
-		newTorrents,
+		results,
 		latestTag,
 	)
 
-	for _, parsed := range newTorrents {
+	for _, parsed := range results {
 		logger.
 			Debug().
-			Str("torrentTitle", parsed.Torrent.Title).
+			Str("torrentTitle", parsed.Title).
 			Str("tag", parsed.Metadata.Tag.String()).
 			Msg("torrent result kept after filtering")
 	}
 
-	foundNewEpisodes := len(newTorrents) > 0
+	foundNewEpisodes := len(results) > 0
 
 	// Hand the added torrents to the shoko integration directly, using the
 	// info hashes provided by the torrent source, no listing needed.
-	var added []parser.TorrentMetadata
-	for i := range newTorrents {
-		torrentMetadata := &newTorrents[i]
+	var added []torrentsource.Torrent
+	for i := range results {
+		torrentMetadata := &results[i]
 
 		hash, err := c.AddTorrentEntry(ctx, entry, *torrentMetadata)
 		if err != nil {
 			return false, nil, fmt.Errorf("adding torrent to client: %w", err)
 		}
 
-		torrentMetadata.Torrent.Hash = hash
+		torrentMetadata.Hash = hash
 
 		logger.
 			Info().
-			Str("torrentTitle", torrentMetadata.Torrent.Title).
+			Str("torrentTitle", torrentMetadata.Title).
 			Str("tag", torrentMetadata.Metadata.Tag.String()).
 			Msg("added torrent to client")
 
@@ -288,19 +285,9 @@ func (c *Controller) DiscoverEntry(
 
 	logger.
 		Debug().
-		Int("newCount", len(newTorrents)).
+		Int("newCount", len(results)).
 		Stringer("latestTag", latestTag).
 		Msg("finished entry discovery")
 
 	return foundNewEpisodes, added, nil
-}
-
-func parseResults(
-	entry animelist.Entry,
-	results []torrentsource.Torrent,
-	config Config,
-) []parser.TorrentMetadata {
-	return utils.Map(results, func(item torrentsource.Torrent) parser.TorrentMetadata {
-		return parser.ParseTorrentMetadata(entry, item, config.ReleaseGroups)
-	})
 }

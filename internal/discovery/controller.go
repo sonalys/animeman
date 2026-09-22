@@ -7,7 +7,6 @@ import (
 
 	"github.com/expr-lang/expr/vm"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
@@ -44,7 +43,7 @@ type (
 
 		// shokoQueue carries torrents added but not yet completed, consumed
 		// by the shoko loop every minute until they are done.
-		shokoQueue  chan parser.TorrentMetadata
+		shokoQueue  chan torrentsource.Torrent
 		lastEntries []animelist.Entry
 	}
 )
@@ -54,7 +53,7 @@ func New(dep Dependencies) *Controller {
 		dep:             dep,
 		intervalTracker: newIntervalTracker(dep.Config.PollFrequency),
 		// Buffered so the discovery run never blocks on enqueue.
-		shokoQueue: make(chan parser.TorrentMetadata, 1024),
+		shokoQueue: make(chan torrentsource.Torrent, 1024),
 	}
 }
 
@@ -121,12 +120,12 @@ func (c *Controller) runShokoLoop(ctx context.Context) {
 
 // enqueueShoko adds a torrent to the shoko queue, dropping it when the
 // queue is full to avoid blocking the discovery run.
-func (c *Controller) enqueueShoko(torrentMetadata parser.TorrentMetadata) {
+func (c *Controller) enqueueShoko(torrentMetadata torrentsource.Torrent) {
 	select {
 	case c.shokoQueue <- torrentMetadata:
 	default:
 		log.Warn().
-			Str("torrent", torrentMetadata.Torrent.Title).
+			Str("torrent", torrentMetadata.Title).
 			Msg("shoko queue full, dropping torrent")
 	}
 }

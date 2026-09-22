@@ -20,6 +20,7 @@ import (
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
+	"github.com/sonalys/animeman/internal/utils/pager"
 )
 
 const (
@@ -82,46 +83,36 @@ func (api *API) Search(
 	query := buildQuery(entry, opts)
 	values.Add("q", query.String())
 
-	torrents := make([]torrentsource.Torrent, 0, pageSize)
+	torrents, err := pager.Search(ctx, pager.Page[item]{
+		PageSize: pageSize,
+		Fetch: func(ctx context.Context, offset int) ([]item, error) {
+			return api.fetchPage(ctx, values, offset)
+		},
+		Filter: func(item item) bool {
+			return filterSeeders(1)(item) &&
+				filterMetadata(entry, opts.Sources)(item) &&
+				filterSources(opts.Sources)(item)
+		},
+		Map: func(item item) torrentsource.Torrent {
+			metadata := parser.Parse(item.Title, 1, opts.Sources)
 
-	offset := 0
-
-	for {
-		items, err := api.fetchPage(ctx, values, offset)
-		if err != nil {
-			return nil, err
-		}
-
-		if len(items) == 0 {
-			break
-		}
-
-		offset += len(items)
-
-		filtered := utils.Filter(items,
-			filterSeeders(1),
-			filterMetadata(entry, opts.Sources),
-			filterSources(opts.Sources),
-		)
-
-		torrents = append(torrents, utils.Map(filtered, func(item item) torrentsource.Torrent {
 			return torrentsource.Torrent{
-				Title:   item.Title,
-				Link:    item.Link,
-				Seeders: item.Seeders,
-				Hash:    item.InfoHash,
+				Title:    item.Title,
+				Link:     item.Link,
+				Seeders:  item.Seeders,
+				Hash:     item.InfoHash,
+				Metadata: metadata,
 			}
-		})...)
-
-		// Pages are sorted oldest-first: if the smallest tag on this page is
-		// still older than (or equal to) the latest downloaded tag, everything
-		// on later pages can only be newer, so keep going.
-		if offset < pageSize || !shouldPaginate(filtered, opts.LatestTag) {
-			break
-		}
+		},
+		ShouldPaginate: func(filtered []item) bool {
+			return shouldPaginate(filtered, opts.LatestTag)
+		},
+	})
+	if err != nil {
+		return nil, err
 	}
 
-	torrents = parser.Prioritize(entry, torrents, opts)
+	torrents = torrentsource.Prioritize(entry, torrents, opts)
 
 	log.
 		Ctx(ctx).
@@ -240,7 +231,7 @@ func filterMetadata(
 			if utils.MatchPrefixFlexible(
 				nyaaTitleWithoutTags,
 				originalTitleWithoutSubtitle,
-				parser.IgnoreCharset,
+				torrentsource.IgnoreCharset,
 			) {
 				return true
 			}

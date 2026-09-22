@@ -105,7 +105,7 @@ func Test_Search_paginates(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	api := New(srv.Client(), Config{})
+	api := New(srv.Client(), Config{CustomParameters: map[string]string{}})
 	// Point the adapter at the test server.
 	previousURL := TORZNAB_URL
 	previousJSON := JSON_URL
@@ -142,7 +142,7 @@ func Test_Search_stopsWhenPageHasNewer(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	api := New(srv.Client(), Config{})
+	api := New(srv.Client(), Config{CustomParameters: map[string]string{}})
 	previousURL := TORZNAB_URL
 	previousJSON := JSON_URL
 	t.Cleanup(func() { TORZNAB_URL = previousURL; JSON_URL = previousJSON })
@@ -167,7 +167,7 @@ func Test_Search_emptyPageStops(t *testing.T) {
 	}))
 	defer srv.Close()
 
-	api := New(srv.Client(), Config{})
+	api := New(srv.Client(), Config{CustomParameters: map[string]string{}})
 	previousURL := TORZNAB_URL
 	previousJSON := JSON_URL
 	t.Cleanup(func() { TORZNAB_URL = previousURL; JSON_URL = previousJSON })

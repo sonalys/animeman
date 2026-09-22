@@ -7,6 +7,7 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
+	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/stretchr/testify/require"
@@ -17,7 +18,7 @@ func TestController_buildTorrentName(t *testing.T) {
 		name       string
 		dep        Dependencies
 		title      string
-		parsedNyaa parser.TorrentMetadata
+		parsedNyaa torrentsource.Torrent
 		want       string
 	}{
 		{
@@ -42,7 +43,7 @@ func TestController_buildTorrentName(t *testing.T) {
 				},
 			},
 			title: "My Anime Title",
-			parsedNyaa: parser.TorrentMetadata{
+			parsedNyaa: torrentsource.Torrent{
 				Metadata: parser.Metadata{
 					ReleaseGroup:       "release-group",
 					Labels:             []string{"HEVC", "10bit"},
