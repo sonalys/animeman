@@ -82,6 +82,7 @@ func (api *API) Search(
 	items := utils.Filter(feed.Channel.Items,
 		filterSeeders(1),
 		filterMetadata(entry),
+		filterSources(opts.Sources),
 	)
 
 	torrents := utils.Map(items, func(item item) torrentsource.Torrent {
@@ -122,7 +123,10 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 	maps.Copy(q, params)
 
 	// media_id already narrows to the entry, so `q` only carries the
-	// remaining quality/source filters and the user suffix, same format as nyaa.
+	// remaining quality filters and the user suffix, same format as nyaa.
+	// Sources are NOT sent in `q`: they are release-group names, and nekoBT's
+	// `|` OR operator is unreliable (any OR alternative matching nothing
+	// returns zero results). They are filtered from the results instead.
 	if query := buildQuery(opt); query != "" {
 		q.Set("q", query)
 	}
@@ -151,8 +155,7 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 // EVERY configured quality are hoisted into a plain AND (e.g. `1080` from
 // ["1080", "1080", "1080"]), and the remaining tokens are
 // clustered into OR dimensions of tokens that never co-occur (e.g.
-// ["1080", "720"] becomes `(1080|720)`). Sources stay an OR: they are
-// release-group names that nekoBT indexes, and at least one always matches.
+// ["1080", "720"] becomes `(1080|720)`).
 func buildQuery(opt torrentsource.SearchOptions) string {
 	var parts []nyaaquerier.Node
 
@@ -164,11 +167,6 @@ func buildQuery(opt torrentsource.SearchOptions) string {
 		for _, dimension := range dimensions {
 			parts = append(parts, nyaaquerier.Or(utils.Map(dimension, nyaaquerier.PhraseOf)))
 		}
-	}
-
-	if len(opt.Sources) > 0 {
-		sourceNodes := utils.Map(opt.Sources, nyaaquerier.PhraseOf)
-		parts = append(parts, nyaaquerier.Or(sourceNodes))
 	}
 
 	if opt.SearchSuffix != "" {
@@ -364,6 +362,18 @@ func resolveMediaID(entry animelist.Entry) (string, error) {
 		return fmt.Sprintf("mal-%d", entry.MALID), nil
 	default:
 		return "", fmt.Errorf("entry %q has no anilist or mal id", strings.Join(entry.Titles, ", "))
+	}
+}
+
+// filterSources keeps only torrents whose title contains one of the
+// configured sources (release groups), mirroring how the parser extracts
+// the release group.
+func filterSources(sources []string) func(item) bool {
+	return func(item item) bool {
+		if len(sources) == 0 {
+			return true
+		}
+		return parser.Parse(item.Title, 1, sources).ReleaseGroup != ""
 	}
 }
 

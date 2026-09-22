@@ -44,23 +44,19 @@ func Test_buildQuery(t *testing.T) {
 			want: "1080",
 		},
 		{
-			name: "sources ORed",
-			opt:  torrentsource.SearchOptions{Sources: []string{"Erai-raws", "SubsPlease"}},
-			want: "Erai-raws|SubsPlease",
-		},
-		{
 			name: "suffix",
 			opt:  torrentsource.SearchOptions{SearchSuffix: `-"dub"`},
 			want: `-"dub"`,
 		},
 		{
-			name: "qualities, sources and suffix",
+			// Sources are not part of `q` anymore, they are filtered from results.
+			name: "qualities and suffix, sources ignored",
 			opt: torrentsource.SearchOptions{
 				Qualities:    []string{"1080 AV1", "1080 HEVC"},
 				Sources:      []string{"Erai-raws", "SubsPlease"},
 				SearchSuffix: `-"dub"`,
 			},
-			want: `1080 Erai-raws|SubsPlease -"dub"`,
+			want: `1080 -"dub"`,
 		},
 		{
 			// 1080 and 720 never co-occur, so the four qualities collapse
