@@ -86,7 +86,7 @@ func (api *API) Search(
 
 		filtered := utils.Filter(items,
 			filterSeeders(1),
-			filterMetadata(entry),
+			filterMetadata(entry, opts.Sources),
 			filterSources(opts.Sources),
 		)
 
@@ -102,7 +102,7 @@ func (api *API) Search(
 		// Pages are sorted oldest-first: if the smallest tag on this page is
 		// still older than (or equal to) the latest downloaded tag, everything
 		// on later pages can only be newer, so keep going.
-		if !shouldPaginate(items, opts.LatestTag) {
+		if !shouldPaginate(filtered, opts.LatestTag) {
 			break
 		}
 	}
@@ -545,7 +545,7 @@ func filterSeeders(minSeeders int) func(item) bool {
 	}
 }
 
-func filterMetadata(entry animelist.Entry) func(item) bool {
+func filterMetadata(entry animelist.Entry, sources []string) func(item) bool {
 	return func(item item) bool {
 		// Compare the published date of the torrent with the entry's start and end dates.
 		pubDate, err := time.Parse(time.RFC1123Z, item.PubDate)
@@ -556,6 +556,16 @@ func filterMetadata(entry animelist.Entry) func(item) bool {
 		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
 		if !entry.StartDate.IsZero() && pubDate.Before(entry.StartDate.AddDate(0, 0, -2)) {
 			return false
+		}
+
+		// If ep number is greater than season ep count, should be removed.
+		// This can happen when certain sources mark S2 but use absolute ep number, so they start like S2E13 instead of S2E01.
+		// If there's only a single source, then this won't be a problem.
+		if len(sources) > 1 && entry.NumEpisodes != 0 {
+			metadata := parser.Parse(item.Title, 1, sources)
+			if metadata.Tag.FirstEpisode() > float64(entry.NumEpisodes) {
+				return false
+			}
 		}
 
 		return true
