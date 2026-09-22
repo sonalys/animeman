@@ -6,8 +6,10 @@ import (
 	"fmt"
 	"io"
 	"net/http"
+	"net/url"
 	"slices"
 	"sort"
+	"strconv"
 	"strings"
 	"time"
 
@@ -15,12 +17,16 @@ import (
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
+	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
 )
 
-type (
+const (
+	pageSize = 100
+)
 
+type (
 	// item represents a single torrent entry in the RSS feed
 	item struct {
 		Title       string `xml:"title"`
@@ -67,24 +73,53 @@ func (api *API) Search(
 	entry animelist.Entry,
 	opts torrentsource.SearchOptions,
 ) ([]torrentsource.Torrent, error) {
-	items, err := api.list(ctx, entry, opts)
-	if err != nil {
-		return nil, fmt.Errorf("listing nyaa: %w", err)
+	var values url.Values
+
+	for name, value := range api.config.CustomParameters {
+		values.Set(name, value)
 	}
 
-	items = utils.Filter(items,
-		filterSeeders(1),
-		filterMetadata(entry),
-	)
+	query := buildQuery(entry, opts)
+	values.Add("q", query.String())
 
-	torrents := utils.Map(items, func(item item) torrentsource.Torrent {
-		return torrentsource.Torrent{
-			Title:   item.Title,
-			Link:    item.Link,
-			Seeders: item.Seeders,
-			Hash:    item.InfoHash,
+	torrents := make([]torrentsource.Torrent, 0, pageSize)
+
+	offset := 0
+
+	for {
+		items, err := api.fetchPage(ctx, values, offset)
+		if err != nil {
+			return nil, err
 		}
-	})
+
+		if len(items) == 0 {
+			break
+		}
+
+		offset += len(items)
+
+		filtered := utils.Filter(items,
+			filterSeeders(1),
+			filterMetadata(entry, opts.Sources),
+			filterSources(opts.Sources),
+		)
+
+		torrents = append(torrents, utils.Map(filtered, func(item item) torrentsource.Torrent {
+			return torrentsource.Torrent{
+				Title:   item.Title,
+				Link:    item.Link,
+				Seeders: item.Seeders,
+				Hash:    item.InfoHash,
+			}
+		})...)
+
+		// Pages are sorted oldest-first: if the smallest tag on this page is
+		// still older than (or equal to) the latest downloaded tag, everything
+		// on later pages can only be newer, so keep going.
+		if offset < pageSize || !shouldPaginate(filtered, opts.LatestTag) {
+			break
+		}
+	}
 
 	torrents = parser.Prioritize(entry, torrents, opts)
 
@@ -136,23 +171,16 @@ func buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) nyaaquer
 	return parts
 }
 
-func (api *API) list(
+func (api *API) fetchPage(
 	ctx context.Context,
-	entry animelist.Entry,
-	options torrentsource.SearchOptions,
+	values url.Values,
+	offset int,
 ) ([]item, error) {
-	var path = API_URL
+	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, API_URL, nil))
 
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
-
-	q := req.URL.Query()
-	for name, value := range api.config.CustomParameters {
-		q.Set(name, value)
-	}
-
-	q.Add("q", buildQuery(entry, options).String())
-
-	req.URL.RawQuery = q.Encode()
+	values.Set("offset", strconv.Itoa(offset))
+	values.Set("limit", strconv.Itoa(pageSize))
+	req.URL.RawQuery = values.Encode()
 
 	resp, err := api.client.Do(req)
 	if err != nil {
@@ -182,22 +210,27 @@ func filterSeeders(minSeeders int) func(item) bool {
 // This function avoids downloading unrelated torrents.
 func filterMetadata(
 	entry animelist.Entry,
+	sources []string,
 ) func(e item) bool {
-	return func(nyaaEntry item) bool {
-		publishedDate := utils.Must(time.Parse(time.RFC1123Z, nyaaEntry.PubDate))
+	return func(item item) bool {
+		publishedDate := utils.Must(time.Parse(time.RFC1123Z, item.PubDate))
 
 		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
 		if !publishedDate.IsZero() && publishedDate.Before(entry.StartDate.AddDate(0, 0, -2)) {
 			return false
 		}
 
-		// Check if nyaa entry episode is greater than the animelist episode count.
-		if entry.NumEpisodes > 0 &&
-			parser.Parse(nyaaEntry.Title, 1, nil).Tag.LastEpisode() > float64(entry.NumEpisodes) {
-			return false
+		// If ep number is greater than season ep count, should be removed.
+		// This can happen when certain sources mark S2 but use absolute ep number, so they start like S2E13 instead of S2E01.
+		// If there's only a single source, then this won't be a problem.
+		if len(sources) > 1 && entry.NumEpisodes != 0 {
+			metadata := parser.Parse(item.Title, 1, sources)
+			if metadata.Tag.FirstEpisode() > float64(entry.NumEpisodes) {
+				return false
+			}
 		}
 
-		nyaaTitleWithoutTags := parser.StripTags(nyaaEntry.Title)
+		nyaaTitleWithoutTags := parser.StripTags(item.Title)
 
 		for _, originalTitle := range entry.Titles {
 			// Remove season information from the original title, as it is not always present in the nyaa entry.
@@ -215,4 +248,42 @@ func filterMetadata(
 
 		return false
 	}
+}
+
+// filterSources keeps only torrents whose title contains one of the
+// configured sources (release groups), mirroring how the parser extracts
+// the release group.
+func filterSources(sources []string) func(item) bool {
+	return func(item item) bool {
+		if len(sources) == 0 {
+			return true
+		}
+		entry := parser.Parse(item.Title, 1, sources)
+		return entry.ReleaseGroup != "" && slices.Contains(sources, entry.ReleaseGroup)
+	}
+}
+
+// shouldPaginate reports whether the source may have more results after this
+// page. nekoBT returns newest results first, so paginate while even the
+// smallest tag found remains newer than the latest downloaded tag.
+func shouldPaginate(items []item, latestTag tags.Tag) bool {
+	if latestTag.IsZero() {
+		// Nothing downloaded yet: the first page already has everything.
+		return false
+	}
+
+	if len(items) == 0 {
+		return false
+	}
+
+	var smallest tags.Tag
+
+	for _, it := range items {
+		tag := parser.Parse(it.Title, 1, nil).Tag
+		if smallest.IsZero() || tag.Compare(smallest) < 0 {
+			smallest = tag
+		}
+	}
+
+	return smallest.Compare(latestTag) > 0
 }

@@ -50,13 +50,10 @@ torrentSource:
   nyaa:
     customParameters: # Configures custom query parameters for the nyaa list call.
       c: 1_2 # Defines english only anime sources.
-      s: seeders # Sorts by seeders, keep most seeded candidates on first page.
-      o: desc # Descending order.
   # https://wiki.nekobt.to/technical-details/torznab
   # nekobt:
   #   apiKey: YOUR_API_KEY # Required when type is nekobt.
   #   customParameters: # Configures extra torznab query parameters, they override the defaults.
-  #     sort: seeders # Sorts by seeders.
   #     audio_lang: ja # Japanese audio only, filters out dubs.
   #     sub_lang: en # English subtitles only.
   #     mtl: "false" # Excludes machine translated subtitles.

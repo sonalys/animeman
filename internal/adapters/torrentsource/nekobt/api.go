@@ -39,6 +39,9 @@ type (
 var _ torrentsource.Source = (*API)(nil)
 
 func New(client *http.Client, c Config) *API {
+	// Latest is required to be able to paginate to newer episode tags.
+	c.CustomParameters["sort"] = "latest"
+
 	return &API{
 		config:   c,
 		client:   client,

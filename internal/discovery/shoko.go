@@ -26,7 +26,7 @@ func (c *Controller) RunShokoIntegration(
 ) error {
 	// Drain the queue first so requeues below don't loop forever.
 	pending := make([]parser.TorrentMetadata, 0, len(c.shokoQueue))
-	drain:
+drain:
 	for {
 		select {
 		case torrentMetadata := <-c.shokoQueue:

@@ -67,15 +67,16 @@ func (api *API) Search(
 	entry animelist.Entry,
 	opts torrentsource.SearchOptions,
 ) ([]torrentsource.Torrent, error) {
-	base, err := api.buildQuery(ctx, entry, opts)
+	values, err := api.buildQuery(ctx, entry, opts)
 	if err != nil {
 		return nil, fmt.Errorf("building query: %w", err)
 	}
 
-	var torrents []torrentsource.Torrent
+	torrents := make([]torrentsource.Torrent, 0, pageSize)
+	offset := 0
 
-	for offset := 0; offset < maxPages*pageSize; offset += pageSize {
-		items, err := api.fetchPage(ctx, base, offset)
+	for {
+		items, err := api.fetchPage(ctx, *values, offset)
 		if err != nil {
 			return nil, err
 		}
@@ -83,6 +84,8 @@ func (api *API) Search(
 		if len(items) == 0 {
 			break
 		}
+
+		offset += len(items)
 
 		filtered := utils.Filter(items,
 			filterSeeders(1),
@@ -102,7 +105,7 @@ func (api *API) Search(
 		// Pages are sorted oldest-first: if the smallest tag on this page is
 		// still older than (or equal to) the latest downloaded tag, everything
 		// on later pages can only be newer, so keep going.
-		if !shouldPaginate(filtered, opts.LatestTag) {
+		if offset < pageSize || !shouldPaginate(filtered, opts.LatestTag) {
 			break
 		}
 	}
@@ -131,7 +134,8 @@ func shouldPaginate(items []item, latestTag tags.Tag) bool {
 		return false
 	}
 
-	smallest := tags.Tag{}
+	var smallest tags.Tag
+
 	for _, it := range items {
 		tag := parser.Parse(it.Title, 1, nil).Tag
 		if smallest.IsZero() || tag.Compare(smallest) < 0 {
@@ -143,13 +147,9 @@ func shouldPaginate(items []item, latestTag tags.Tag) bool {
 }
 
 // fetchPage fetches one torznab result page at the given offset.
-func (api *API) fetchPage(ctx context.Context, baseQuery string, offset int) ([]item, error) {
+func (api *API) fetchPage(ctx context.Context, values url.Values, offset int) ([]item, error) {
 	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, TORZNAB_URL, nil))
 
-	values, err := url.ParseQuery(baseQuery)
-	if err != nil {
-		return nil, fmt.Errorf("parsing query: %w", err)
-	}
 	values.Set("offset", strconv.Itoa(offset))
 	values.Set("limit", strconv.Itoa(pageSize))
 	req.URL.RawQuery = values.Encode()
@@ -176,14 +176,14 @@ func (api *API) buildQuery(
 	ctx context.Context,
 	entry animelist.Entry,
 	opt torrentsource.SearchOptions,
-) (string, error) {
+) (*url.Values, error) {
 	q := url.Values{}
 
 	q.Set("t", "search")
 
 	mediaID, err := api.resolveMediaID(ctx, entry)
 	if err != nil {
-		return "", err
+		return nil, err
 	}
 
 	q.Set("media_id", mediaID)
@@ -212,7 +212,7 @@ func (api *API) buildQuery(
 		q.Set(name, value)
 	}
 
-	return q.Encode(), nil
+	return &q, nil
 }
 
 // buildQuery builds the `q` search query from the search options.
