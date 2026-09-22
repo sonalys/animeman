@@ -78,6 +78,19 @@ func feed(eps ...int) string {
 	return fmt.Sprintf(`<rss><channel><title>test</title>%s</channel></rss>`, items)
 }
 
+// resolveHandler serves the JSON API /media/resolve endpoint.
+func resolveHandler(t *testing.T, requested *[]string) http.HandlerFunc {
+	return func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/media/resolve" {
+			id := r.URL.Query().Get("id")
+			*requested = append(*requested, id)
+			w.Write([]byte(`{"id":"s1"}`))
+			return
+		}
+		t.Errorf("unexpected request: %s", r.URL)
+	}
+}
+
 func Test_Search_paginates(t *testing.T) {
 	// Page 0 only has results newer than the latest torrent, so the next page
 	// is requested before stopping at its empty feed.
@@ -87,7 +100,13 @@ func Test_Search_paginates(t *testing.T) {
 	}
 
 	var requested []int
+	var resolved []string
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/media/resolve" {
+			resolved = append(resolved, r.URL.Query().Get("id"))
+			w.Write([]byte(`{"id":"s1"}`))
+			return
+		}
 		offset := r.URL.Query().Get("offset")
 		limit := r.URL.Query().Get("limit")
 		require.Equal(t, "100", limit)
@@ -102,14 +121,18 @@ func Test_Search_paginates(t *testing.T) {
 	api := New(srv.Client(), Config{})
 	// Point the adapter at the test server.
 	previousURL := TORZNAB_URL
-	t.Cleanup(func() { TORZNAB_URL = previousURL })
+	previousJSON := JSON_URL
+	t.Cleanup(func() { TORZNAB_URL = previousURL; JSON_URL = previousJSON })
 	TORZNAB_URL = srv.URL
+	JSON_URL = srv.URL
 
 	torrents, err := api.Search(context.Background(), entryWithID(), torrentsource.SearchOptions{
 		LatestTag: tags.Tag{Seasons: []int{1}, Episodes: []float64{2}},
 	})
 	require.NoError(t, err)
 	require.Equal(t, []int{0, pageSize}, requested)
+	// The anilist id was resolved exactly once, then cached.
+	require.Equal(t, []string{"anilist-123"}, resolved)
 	// Episodes 3 and 4 are newer than latest S1E2.
 	require.Len(t, torrents, 2)
 }
@@ -121,6 +144,10 @@ func Test_Search_stopsWhenPageHasNewer(t *testing.T) {
 
 	var requested []int
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/media/resolve" {
+			w.Write([]byte(`{"id":"s1"}`))
+			return
+		}
 		var page int
 		fmt.Sscanf(r.URL.Query().Get("offset"), "%d", &page)
 		requested = append(requested, page)
@@ -130,8 +157,10 @@ func Test_Search_stopsWhenPageHasNewer(t *testing.T) {
 
 	api := New(srv.Client(), Config{})
 	previousURL := TORZNAB_URL
-	t.Cleanup(func() { TORZNAB_URL = previousURL })
+	previousJSON := JSON_URL
+	t.Cleanup(func() { TORZNAB_URL = previousURL; JSON_URL = previousJSON })
 	TORZNAB_URL = srv.URL
+	JSON_URL = srv.URL
 
 	_, err := api.Search(context.Background(), entryWithID(), torrentsource.SearchOptions{
 		LatestTag: tags.Tag{Seasons: []int{1}, Episodes: []float64{2}},
@@ -143,14 +172,20 @@ func Test_Search_stopsWhenPageHasNewer(t *testing.T) {
 
 func Test_Search_emptyPageStops(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		if r.URL.Path == "/media/resolve" {
+			w.Write([]byte(`{"id":"s1"}`))
+			return
+		}
 		w.Write([]byte(feed()))
 	}))
 	defer srv.Close()
 
 	api := New(srv.Client(), Config{})
 	previousURL := TORZNAB_URL
-	t.Cleanup(func() { TORZNAB_URL = previousURL })
+	previousJSON := JSON_URL
+	t.Cleanup(func() { TORZNAB_URL = previousURL; JSON_URL = previousJSON })
 	TORZNAB_URL = srv.URL
+	JSON_URL = srv.URL
 
 	torrents, err := api.Search(context.Background(), entryWithID(), torrentsource.SearchOptions{
 		LatestTag: tags.Tag{Seasons: []int{1}, Episodes: []float64{2}},

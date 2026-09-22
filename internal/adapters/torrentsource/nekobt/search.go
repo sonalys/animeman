@@ -2,6 +2,7 @@ package nekobt
 
 import (
 	"context"
+	"encoding/json"
 	"encoding/xml"
 	"fmt"
 	"io"
@@ -66,7 +67,7 @@ func (api *API) Search(
 	entry animelist.Entry,
 	opts torrentsource.SearchOptions,
 ) ([]torrentsource.Torrent, error) {
-	base, err := api.buildQuery(entry, opts)
+	base, err := api.buildQuery(ctx, entry, opts)
 	if err != nil {
 		return nil, fmt.Errorf("building query: %w", err)
 	}
@@ -171,12 +172,16 @@ func (api *API) fetchPage(ctx context.Context, baseQuery string, offset int) ([]
 	return feed.Channel.Items, nil
 }
 
-func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) (string, error) {
+func (api *API) buildQuery(
+	ctx context.Context,
+	entry animelist.Entry,
+	opt torrentsource.SearchOptions,
+) (string, error) {
 	q := url.Values{}
 
 	q.Set("t", "search")
 
-	mediaID, err := resolveMediaID(entry)
+	mediaID, err := api.resolveMediaID(ctx, entry)
 	if err != nil {
 		return "", err
 	}
@@ -432,8 +437,38 @@ func coOccurs(a, b string, qualities []string) bool {
 	return false
 }
 
-// resolveMediaID returns the nekoBT external id for the entry, e.g. `anilist-20594`.
-func resolveMediaID(entry animelist.Entry) (string, error) {
+// resolveMediaID returns the nekoBT internal media id for the entry, e.g.
+// `s123` or `m456`. It resolves the entry's external id (anilist/mal) through
+// the JSON API `/media/resolve` endpoint, caching results per external id.
+// https://wiki.nekobt.to/technical-details/json/#resolve-external-media-id
+func (api *API) resolveMediaID(ctx context.Context, entry animelist.Entry) (string, error) {
+	externalID, err := externalMediaID(entry)
+	if err != nil {
+		return "", err
+	}
+
+	api.mediaIDsMu.Lock()
+	mediaID, ok := api.mediaIDs[externalID]
+	api.mediaIDsMu.Unlock()
+	if ok {
+		return mediaID, nil
+	}
+
+	mediaID, err = api.fetchMediaID(ctx, externalID)
+	if err != nil {
+		return "", err
+	}
+
+	api.mediaIDsMu.Lock()
+	api.mediaIDs[externalID] = mediaID
+	api.mediaIDsMu.Unlock()
+
+	return mediaID, nil
+}
+
+// externalMediaID returns the nekoBT external identifier for the entry,
+// e.g. `anilist-20594`.
+func externalMediaID(entry animelist.Entry) (string, error) {
 	switch {
 	case entry.AnilistID != 0:
 		return fmt.Sprintf("anilist-%d", entry.AnilistID), nil
@@ -442,6 +477,41 @@ func resolveMediaID(entry animelist.Entry) (string, error) {
 	default:
 		return "", fmt.Errorf("entry %q has no anilist or mal id", strings.Join(entry.Titles, ", "))
 	}
+}
+
+// fetchMediaID resolves an external identifier to the nekoBT internal media
+// id via the JSON API. The response is either a plain string id or an object
+// with an `id` field, depending on the resolved media type.
+func (api *API) fetchMediaID(ctx context.Context, externalID string) (string, error) {
+	req := utils.Must(
+		http.NewRequestWithContext(ctx, http.MethodGet, JSON_URL+"/media/resolve", nil),
+	)
+	q := req.URL.Query()
+	q.Set("id", externalID)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := api.client.Do(req)
+	if err != nil {
+		return "", fmt.Errorf("fetching response: %w", err)
+	}
+	defer resp.Body.Close()
+
+	body := utils.Must(io.ReadAll(resp.Body))
+	if resp.StatusCode != 200 {
+		return "", fmt.Errorf("request failed: %s", string(body))
+	}
+
+	var resolved struct {
+		ID string `json:"id"`
+	}
+	if err := json.Unmarshal(body, &resolved); err != nil {
+		return "", fmt.Errorf("reading response: %w", err)
+	}
+	if resolved.ID == "" {
+		return "", fmt.Errorf("no media id resolved for %q", externalID)
+	}
+
+	return resolved.ID, nil
 }
 
 // filterSources keeps only torrents whose title contains one of the
