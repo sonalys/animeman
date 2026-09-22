@@ -534,7 +534,8 @@ func filterSources(sources []string) func(item) bool {
 		if len(sources) == 0 {
 			return true
 		}
-		return parser.Parse(item.Title, 1, sources).ReleaseGroup != ""
+		entry := parser.Parse(item.Title, 1, sources)
+		return entry.ReleaseGroup != "" && slices.Contains(sources, entry.ReleaseGroup)
 	}
 }
 

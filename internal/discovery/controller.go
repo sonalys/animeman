@@ -54,7 +54,7 @@ func New(dep Dependencies) *Controller {
 		dep:             dep,
 		intervalTracker: newIntervalTracker(dep.Config.PollFrequency),
 		// Buffered so the discovery run never blocks on enqueue.
-		shokoQueue: make(chan parser.TorrentMetadata, 100),
+		shokoQueue: make(chan parser.TorrentMetadata, 1024),
 	}
 }
 
