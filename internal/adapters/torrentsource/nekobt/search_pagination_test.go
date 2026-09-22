@@ -104,7 +104,7 @@ func Test_Search_paginates(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/media/resolve" {
 			resolved = append(resolved, r.URL.Query().Get("id"))
-			w.Write([]byte(`{"id":"s1"}`))
+			w.Write([]byte(`{"error":false,"data":{"media_id":"s1","anilist_id":123}}`))
 			return
 		}
 		offset := r.URL.Query().Get("offset")
@@ -145,7 +145,7 @@ func Test_Search_stopsWhenPageHasNewer(t *testing.T) {
 	var requested []int
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/media/resolve" {
-			w.Write([]byte(`{"id":"s1"}`))
+			w.Write([]byte(`{"error":false,"data":{"media_id":"s1","anilist_id":123}}`))
 			return
 		}
 		var page int
@@ -173,7 +173,7 @@ func Test_Search_stopsWhenPageHasNewer(t *testing.T) {
 func Test_Search_emptyPageStops(t *testing.T) {
 	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
 		if r.URL.Path == "/media/resolve" {
-			w.Write([]byte(`{"id":"s1"}`))
+			w.Write([]byte(`{"error":false,"data":{"media_id":"s1","anilist_id":123}}`))
 			return
 		}
 		w.Write([]byte(feed()))

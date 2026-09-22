@@ -463,6 +463,11 @@ func (api *API) resolveMediaID(ctx context.Context, entry animelist.Entry) (stri
 	api.mediaIDs[externalID] = mediaID
 	api.mediaIDsMu.Unlock()
 
+	if mediaID == "" {
+		// Unmapped on nekoBT: search by the external id instead.
+		return externalID, nil
+	}
+
 	return mediaID, nil
 }
 
@@ -497,21 +502,28 @@ func (api *API) fetchMediaID(ctx context.Context, externalID string) (string, er
 	defer resp.Body.Close()
 
 	body := utils.Must(io.ReadAll(resp.Body))
+	if resp.StatusCode == 404 {
+		// Not mapped on nekoBT: cache the miss so we don't re-query every
+		// scan, and fall back to the external id for the torznab search.
+		return "", nil
+	}
 	if resp.StatusCode != 200 {
 		return "", fmt.Errorf("request failed: %s", string(body))
 	}
 
 	var resolved struct {
-		ID string `json:"id"`
+		Data struct {
+			MediaID string `json:"media_id"`
+		} `json:"data"`
 	}
 	if err := json.Unmarshal(body, &resolved); err != nil {
 		return "", fmt.Errorf("reading response: %w", err)
 	}
-	if resolved.ID == "" {
+	if resolved.Data.MediaID == "" {
 		return "", fmt.Errorf("no media id resolved for %q", externalID)
 	}
 
-	return resolved.ID, nil
+	return resolved.Data.MediaID, nil
 }
 
 // filterSources keeps only torrents whose title contains one of the
