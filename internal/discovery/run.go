@@ -35,6 +35,7 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	if err != nil {
 		return fmt.Errorf("fetching anime list: %w", err)
 	}
+	c.lastEntries = entries
 
 	// MAL-only entries get their AniList id backfilled, so shoko can be
 	// matched by exact id instead of fuzzy title search.
@@ -123,10 +124,9 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 		return nil
 	}
 
-	if c.dep.Shoko != nil && len(addedTorrents) > 0 {
-		if err := c.RunShokoIntegration(ctx, entries, addedTorrents); err != nil {
-			return fmt.Errorf("shoko integration: %w", err)
-		}
+	// Hand the added torrents to the shoko loop via its queue.
+	for _, torrentMetadata := range addedTorrents {
+		c.enqueueShoko(torrentMetadata)
 	}
 
 	return nil

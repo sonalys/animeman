@@ -9,20 +9,61 @@ import (
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/shoko"
+	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 )
 
 // RunShokoIntegration links shoko's unrecognized files to episodes,
 // matching them against the anime list entries and their AniDB ids.
-// It walks the torrents added by the discovery run, looks each file up in
-// shoko, and clears the shokoPendingTag once every file is recognized.
+// It drains the shoko queue; only torrents that have fully completed in the
+// torrent client are processed, since shoko can only see finished files.
+// Torrents still downloading are requeued and retried on the next run.
+// It runs on its own one-minute schedule (see runShokoLoop).
 func (c *Controller) RunShokoIntegration(
 	ctx context.Context,
 	entries []animelist.Entry,
-	torrentsMetadata []parser.TorrentMetadata,
 ) error {
-	for _, torrentMetadata := range torrentsMetadata {
+	// Drain the queue first so requeues below don't loop forever.
+	pending := make([]parser.TorrentMetadata, 0, len(c.shokoQueue))
+	drain:
+	for {
+		select {
+		case torrentMetadata := <-c.shokoQueue:
+			pending = append(pending, torrentMetadata)
+		default:
+			break drain
+		}
+	}
+
+	if len(pending) == 0 {
+		return nil
+	}
+
+	completed, err := c.dep.TorrentClient.List(ctx, &torrentclient.ListTorrentConfig{
+		Category:  &c.dep.Config.Category,
+		Completed: new(true),
+	})
+	if err != nil {
+		return fmt.Errorf("listing completed torrents: %w", err)
+	}
+	isCompleted := make(map[string]bool, len(completed))
+	for _, torrent := range completed {
+		isCompleted[torrent.Hash] = true
+	}
+
+	processed := make([]string, 0, len(pending))
+	for _, torrentMetadata := range pending {
+		if !isCompleted[torrentMetadata.Torrent.Hash] {
+			log.Ctx(ctx).
+				Debug().
+				Str("torrent", torrentMetadata.Torrent.Title).
+				Msg("skipping torrent: still downloading")
+			// Not done yet, retry on the next tick.
+			c.enqueueShoko(torrentMetadata)
+			continue
+		}
+
 		logger := log.Ctx(ctx).With().Str("torrent", torrentMetadata.Torrent.Title).Logger()
 		torrentCtx := logger.WithContext(ctx)
 
@@ -53,6 +94,8 @@ func (c *Controller) RunShokoIntegration(
 					Msg("failed to link file in shoko, removing pending tag")
 			}
 		}
+
+		processed = append(processed, torrentMetadata.Torrent.Hash)
 	}
 
 	return nil

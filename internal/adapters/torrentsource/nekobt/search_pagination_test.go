@@ -78,19 +78,6 @@ func feed(eps ...int) string {
 	return fmt.Sprintf(`<rss><channel><title>test</title>%s</channel></rss>`, items)
 }
 
-// resolveHandler serves the JSON API /media/resolve endpoint.
-func resolveHandler(t *testing.T, requested *[]string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.URL.Path == "/media/resolve" {
-			id := r.URL.Query().Get("id")
-			*requested = append(*requested, id)
-			w.Write([]byte(`{"id":"s1"}`))
-			return
-		}
-		t.Errorf("unexpected request: %s", r.URL)
-	}
-}
-
 func Test_Search_paginates(t *testing.T) {
 	// Page 0 only has results newer than the latest torrent, so the next page
 	// is requested before stopping at its empty feed.
