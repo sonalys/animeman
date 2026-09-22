@@ -139,28 +139,28 @@ func Test_splitQualityFilters(t *testing.T) {
 			qualities:      []string{"1080 HEVC", "1080 x265", "1080 H.265"},
 			wantText:       []string{"1080", "1080", "1080"},
 			wantVideoType:  "",
-			wantVideoCodec: "H265",
+			wantVideoCodec: "2",
 		},
 		{
 			name:           "multiple codecs",
 			qualities:      []string{"1080 HEVC", "1080 AV1"},
 			wantText:       []string{"1080", "1080"},
 			wantVideoType:  "",
-			wantVideoCodec: "AV1,H265",
+			wantVideoCodec: "2,3",
 		},
 		{
 			name:           "video types",
 			qualities:      []string{"1080 WEB-DL", "1080 BD"},
 			wantText:       []string{"1080", "1080"},
-			wantVideoType:  "BD - Disc,WEB-DL",
+			wantVideoType:  "11,9",
 			wantVideoCodec: "",
 		},
 		{
 			name:           "mixed codecs and types",
 			qualities:      []string{"1080 WEB-DL HEVC", "1080 BD AVC"},
 			wantText:       []string{"1080", "1080"},
-			wantVideoType:  "BD - Disc,WEB-DL",
-			wantVideoCodec: "H264,H265",
+			wantVideoType:  "11,9",
+			wantVideoCodec: "1,2",
 		},
 	}
 

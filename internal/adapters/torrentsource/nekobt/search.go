@@ -5,6 +5,7 @@ import (
 	"encoding/xml"
 	"fmt"
 	"io"
+	"maps"
 	"net/http"
 	"net/url"
 	"slices"
@@ -118,9 +119,7 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 	// Quality tokens that are video types or codecs are sent as dedicated
 	// torznab params (video_type, video_codec) instead of `q` tokens.
 	_, params := splitQualityFilters(opt.Qualities)
-	for name, values := range params {
-		q[name] = values
-	}
+	maps.Copy(q, params)
 
 	// media_id already narrows to the entry, so `q` only carries the
 	// remaining quality/source filters and the user suffix, same format as nyaa.
@@ -193,7 +192,7 @@ func splitQualityFilters(qualities []string) (text []string, params url.Values) 
 
 	for _, quality := range qualities {
 		var leftover []string
-		for _, token := range strings.Fields(quality) {
+		for token := range strings.FieldsSeq(quality) {
 			if codec, ok := videoCodecAliases[normalizeToken(token)]; ok {
 				codecs = append(codecs, codec)
 				continue
@@ -235,43 +234,45 @@ func normalizeToken(token string) string {
 }
 
 // videoCodecAliases maps normalized quality tokens to nekoBT video_codec
-// filter values. https://wiki.nekobt.to/info/metadata/
+// filter values (numeric IDs from the metadata lookup table).
+// https://wiki.nekobt.to/info/metadata/
 var videoCodecAliases = map[string]string{
-	"h264":  "H264",
-	"avc":   "H264",
-	"x264":  "H264",
-	"h265":  "H265",
-	"hevc":  "H265",
-	"x265":  "H265",
-	"av1":   "AV1",
-	"vp9":   "VP9",
-	"mpeg2": "MPEG-2",
-	"mpeg4": "MPEG-4",
-	"wmv":   "WMV",
-	"vc1":   "VC1",
+	"h264":  "1", // H264 (AVC, x264)
+	"avc":   "1",
+	"x264":  "1",
+	"h265":  "2", // H265 (HEVC, x265)
+	"hevc":  "2",
+	"x265":  "2",
+	"av1":   "3", // AV1
+	"vp9":   "4", // VP9
+	"mpeg2": "5", // MPEG-2
+	"mpeg4": "6", // MPEG-4
+	"wmv":   "7", // WMV
+	"vc1":   "8", // VC1
 }
 
 // videoTypeAliases maps normalized quality tokens to nekoBT video_type
-// filter values. https://wiki.nekobt.to/info/metadata/
+// filter values (numeric IDs from the metadata lookup table).
+// https://wiki.nekobt.to/info/metadata/
 var videoTypeAliases = map[string]string{
-	"hybrid":    "Hybrid",
-	"remux":     "BD - Remux",
-	"bdremux":   "BD - Remux",
-	"bdencode":  "BD - Encode",
-	"bdmini":    "BD - Mini",
-	"bd":        "BD - Disc",
-	"bluray":    "BD - Disc",
-	"web":       "WEB-DL",
-	"webdl":     "WEB-DL",
-	"webencode": "WEB - Encode",
-	"webmini":   "WEB - Mini",
-	"dvdremux":  "DVD - Remux",
-	"dvdencode": "DVD - Encode",
-	"dvd":       "DVD - Disc",
-	"tvraw":     "TV - Raw",
-	"tvencode":  "TV - Encode",
-	"laserdisc": "LaserDisc",
-	"vhs":       "VHS",
+	"hybrid":    "15", // Hybrid
+	"remux":     "14", // BD - Remux
+	"bdremux":   "14",
+	"bdencode":  "13", // BD - Encode
+	"bdmini":    "12", // BD - Mini
+	"bd":        "11", // BD - Disc
+	"bluray":    "11",
+	"web":       "9", // WEB-DL
+	"webdl":     "9",
+	"webencode": "8",  // WEB - Encode
+	"webmini":   "7",  // WEB - Mini
+	"dvdremux":  "5",  // DVD - Remux
+	"dvdencode": "6",  // DVD - Encode
+	"dvd":       "16", // DVD - Disc
+	"tvraw":     "4",  // TV - Raw
+	"tvencode":  "3",  // TV - Encode
+	"laserdisc": "2",  // LaserDisc
+	"vhs":       "1",  // VHS
 }
 
 // splitQualities splits the configured qualities into tokens shared by all
