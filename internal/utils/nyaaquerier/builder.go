@@ -103,3 +103,9 @@ func PhraseOf(value string) Node {
 	}
 	return Term(value)
 }
+
+// Raw passes a value through verbatim, without sanitization.
+// Use it for user-provided query syntax like the search suffix `-"dub"`.
+type Raw string
+
+func (r Raw) String() string { return string(r) }

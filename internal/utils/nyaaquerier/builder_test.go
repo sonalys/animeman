@@ -47,7 +47,9 @@ func TestBuilder(t *testing.T) {
 	t.Run("phraseOf multi word is phrase", func(t *testing.T) {
 		require.Equal(t, Phrase("1080 HEVC"), PhraseOf("1080 HEVC"))
 	})
-
+	t.Run("raw passes through verbatim", func(t *testing.T) {
+		require.Equal(t, `"-dub"`, Raw(`"-dub"`).String())
+	})
 	t.Run("phraseOf with dash", func(t *testing.T) {
 		require.Equal(t, Term("WEB-DL"), PhraseOf("WEB-DL"))
 	})

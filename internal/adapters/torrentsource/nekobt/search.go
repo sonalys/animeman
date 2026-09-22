@@ -7,6 +7,7 @@ import (
 	"io"
 	"net/http"
 	"net/url"
+	"slices"
 	"strconv"
 	"strings"
 	"time"
@@ -132,16 +133,26 @@ func (api *API) buildQuery(entry animelist.Entry, opt torrentsource.SearchOption
 	return q.Encode(), nil
 }
 
-// buildQuery builds the `q` search query from the search options,
-// mirroring the nyaa adapter: qualities, sources and the user suffix.
+// buildQuery builds the `q` search query from the search options.
+// nekoBT's `|` OR operator is unreliable: any OR expression containing an
+// alternative that matches nothing returns zero results (verified against
+// the live endpoint). To keep OR groups safe, quality tokens present in
+// EVERY configured quality are hoisted into a plain AND (e.g. `1080` from
+// ["1080 AV1", "1080 HEVC", "1080"]), and the remaining tokens are
+// clustered into OR dimensions of tokens that never co-occur (e.g.
+// ["1080 AV1", "1080 HEVC", "720 AV1", "720 HEVC"] becomes
+// `(1080|720) (AV1|HEVC)`). Sources stay an OR: they are release-group
+// names that nekoBT indexes, and at least one always matches.
 func buildQuery(opt torrentsource.SearchOptions) string {
 	var parts []nyaaquerier.Node
 
-	if len(opt.Qualities) > 0 {
-		qualityNodes := utils.Map(opt.Qualities, func(quality string) nyaaquerier.Node {
-			return nyaaquerier.And(utils.Map(strings.Fields(quality), nyaaquerier.PhraseOf))
-		})
-		parts = append(parts, nyaaquerier.Or(qualityNodes))
+	if common, dimensions := splitQualities(opt.Qualities); len(common) > 0 || len(dimensions) > 0 {
+		for _, token := range common {
+			parts = append(parts, nyaaquerier.PhraseOf(token))
+		}
+		for _, dimension := range dimensions {
+			parts = append(parts, nyaaquerier.Or(utils.Map(dimension, nyaaquerier.PhraseOf)))
+		}
 	}
 
 	if len(opt.Sources) > 0 {
@@ -150,10 +161,92 @@ func buildQuery(opt torrentsource.SearchOptions) string {
 	}
 
 	if opt.SearchSuffix != "" {
-		parts = append(parts, nyaaquerier.PhraseOf(opt.SearchSuffix))
+		// The suffix is user-provided query syntax (e.g. `-"dub"`), pass it
+		// through verbatim instead of sanitizing it into a phrase.
+		parts = append(parts, nyaaquerier.Raw(opt.SearchSuffix))
 	}
 
 	return nyaaquerier.And(parts).String()
+}
+
+// splitQualities splits the configured qualities into tokens shared by all
+// of them (common) and OR dimensions for the rest. A dimension is a set of
+// tokens that never co-occur in any quality, so exactly one of them matches
+// a title and the OR group never contains an alternative that matches
+// nothing. Example: ["1080 AV1", "1080 HEVC", "720 AV1", "720 HEVC"]
+// yields common=nil and dimensions=[[1080 720] [AV1 HEVC]].
+func splitQualities(qualities []string) (common []string, dimensions [][]string) {
+	if len(qualities) == 0 {
+		return nil, nil
+	}
+
+	counts := make(map[string]int)
+	for _, quality := range qualities {
+		seen := make(map[string]struct{})
+		for _, token := range strings.Fields(quality) {
+			if _, ok := seen[token]; ok {
+				continue
+			}
+			seen[token] = struct{}{}
+			counts[token]++
+		}
+	}
+
+	for token, count := range counts {
+		if count == len(qualities) {
+			common = append(common, token)
+		}
+	}
+	slices.Sort(common)
+
+	// Cluster the remaining tokens: two tokens belong to the same dimension
+	// iff they never appear together in a quality. Greedy: assign each token
+	// to the first dimension compatible with all its members.
+	var dims [][]string
+	for token := range counts {
+		if counts[token] == len(qualities) {
+			continue
+		}
+		placed := false
+		for i, dim := range dims {
+			compatible := true
+			for _, member := range dim {
+				if coOccurs(token, member, qualities) {
+					compatible = false
+					break
+				}
+			}
+			if compatible {
+				dims[i] = append(dim, token)
+				placed = true
+				break
+			}
+		}
+		if !placed {
+			dims = append(dims, []string{token})
+		}
+	}
+
+	for _, dim := range dims {
+		slices.Sort(dim)
+		dimensions = append(dimensions, dim)
+	}
+	slices.SortFunc(dimensions, func(a, b []string) int {
+		return slices.Compare(a, b)
+	})
+
+	return common, dimensions
+}
+
+// coOccurs reports whether two tokens appear together in any quality.
+func coOccurs(a, b string, qualities []string) bool {
+	for _, quality := range qualities {
+		fields := strings.Fields(quality)
+		if slices.Contains(fields, a) && slices.Contains(fields, b) {
+			return true
+		}
+	}
+	return false
 }
 
 // resolveMediaID returns the nekoBT external id for the entry, e.g. `anilist-20594`.
