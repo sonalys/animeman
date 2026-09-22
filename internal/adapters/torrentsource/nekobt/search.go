@@ -97,8 +97,6 @@ func (api *API) Search(
 		return nil, err
 	}
 
-	torrents = torrentsource.Prioritize(entry, torrents, opts)
-
 	log.
 		Ctx(ctx).
 		Debug().
