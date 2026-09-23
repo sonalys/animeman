@@ -11,7 +11,7 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/pkg/math"
+	"github.com/sonalys/animeman/internal/pkg/mathutils"
 	"github.com/sonalys/animeman/internal/pkg/parser"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/pkg/stringutils"
@@ -163,7 +163,7 @@ func prioritize(
 		}
 
 		// Then title similarity.
-		titleSimilarityI := math.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
+		titleSimilarityI := mathutils.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
 			return stringutils.CalculateTextSimilarity(
 				curTitle,
 				first.Metadata.Title,
@@ -171,7 +171,7 @@ func prioritize(
 			)
 		})...)
 
-		titleSimilarityJ := math.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
+		titleSimilarityJ := mathutils.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
 			return stringutils.CalculateTextSimilarity(
 				curTitle,
 				second.Metadata.Title,

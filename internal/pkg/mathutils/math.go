@@ -1,4 +1,4 @@
-package math
+package mathutils
 
 import (
 	"cmp"
