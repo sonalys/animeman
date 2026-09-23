@@ -64,9 +64,10 @@ func (p Searcher) Search(
 		filterStats := newFilterStats()
 
 		filters := []func(torrentsource.Torrent) bool{
-			filterStats.add("minSeeders", filterSeeders(1)),
-			filterStats.add("matchingMetadata", filterMetadata(entry, opts.Sources)),
-			filterStats.add("sources", filterSources(opts.Sources)),
+			filterStats.add("minSeeders", minSeeders(1)),
+			filterStats.add("startDate", matchStartDate(entry)),
+			filterStats.add("epNumber", matchEpisodeCount(entry, opts.Sources)),
+			filterStats.add("sourceWhitelist", matchSources(opts.Sources)),
 		}
 
 		filters = append(filters, p.additionalFilters...)
@@ -114,32 +115,35 @@ func (f *filterStats) add[T any](name string, filter func(T) bool) func(T) bool 
 	}
 }
 
-// filterSources keeps only torrents whose title contains one of the
+// matchSources keeps only torrents whose title contains one of the
 // configured sources (release groups), mirroring how the parser extracts
 // the release group.
-func filterSources(sources []string) func(torrentsource.Torrent) bool {
+func matchSources(sources []string) func(torrentsource.Torrent) bool {
 	return func(item torrentsource.Torrent) bool {
-		if len(sources) == 0 {
-			return true
-		}
-		return item.Metadata.ReleaseGroup != "" &&
-			slices.Contains(sources, item.Metadata.ReleaseGroup)
+		return len(sources) == 0 || (item.Metadata.ReleaseGroup != "" &&
+			slices.ContainsFunc(sources, func(source string) bool { return strings.EqualFold(source, item.Metadata.ReleaseGroup) }))
 	}
 }
 
-func filterSeeders(minSeeders int) func(torrentsource.Torrent) bool {
+func minSeeders(minSeeders int) func(torrentsource.Torrent) bool {
 	return func(item torrentsource.Torrent) bool {
 		return item.Seeders >= minSeeders
 	}
 }
 
-func filterMetadata(entry animelist.Entry, sources []string) func(torrentsource.Torrent) bool {
+func matchStartDate(entry animelist.Entry) func(torrentsource.Torrent) bool {
 	return func(item torrentsource.Torrent) bool {
 		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
 		if !entry.StartDate.IsZero() && item.PublishedAt.Before(entry.StartDate.AddDate(0, 0, -2)) {
 			return false
 		}
 
+		return true
+	}
+}
+
+func matchEpisodeCount(entry animelist.Entry, sources []string) func(torrentsource.Torrent) bool {
+	return func(item torrentsource.Torrent) bool {
 		// If ep number is greater than season ep count, should be removed.
 		// This can happen when certain sources mark S2 but use absolute ep number, so they start like S2E13 instead of S2E01.
 		// If there's only a single source, then this won't be a problem.
