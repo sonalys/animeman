@@ -40,6 +40,7 @@ func (p Searcher) Search(
 ) ([]torrentsource.Torrent, error) {
 	torrents := make([]torrentsource.Torrent, 0, p.pageSize)
 	offset := 0
+	filterStats := newFilterStats()
 
 	for {
 		items, err := p.fetch(ctx, offset)
@@ -59,13 +60,12 @@ func (p Searcher) Search(
 
 		offset += len(items)
 
-		filterStats := newFilterStats()
-
 		filters := []FilterFunc{
 			minSeeders(1),
 			matchStartDate(entry),
 			matchEpisodeCount(entry, opts.Sources),
 			matchSources(opts.Sources),
+			newerEpisode(opts.LatestTag),
 		}
 
 		filters = append(filters, p.additionalFilters...)
@@ -80,13 +80,6 @@ func (p Searcher) Search(
 			)...,
 		)
 
-		log.
-			Ctx(ctx).
-			Trace().
-			Int("unfilteredCount", len(items)).
-			Any("ignored", filterStats).
-			Msgf("search filtered")
-
 		if len(items) < p.pageSize || !shouldPaginate(filtered, opts.LatestTag) {
 			break
 		}
@@ -98,6 +91,7 @@ func (p Searcher) Search(
 		Ctx(ctx).
 		Debug().
 		Int("results", len(torrents)).
+		Any("ignored", filterStats).
 		Msg("search results")
 
 	return torrents, nil

@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
@@ -94,6 +95,21 @@ func matchEpisodeCount(
 					ignoreCounter("epMismatch")
 					return false
 				}
+			}
+
+			return true
+		}
+	}
+}
+
+func newerEpisode(
+	latestTag tags.Tag,
+) func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
+	return func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
+		return func(torrent torrentsource.Torrent) bool {
+			if latestTag.Compare(torrent.Metadata.Tag) <= 0 {
+				ignoreCounter("oldEpisode")
+				return false
 			}
 
 			return true
