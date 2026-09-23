@@ -4,12 +4,9 @@ import (
 	"context"
 	"errors"
 	"fmt"
-	"slices"
 	"time"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/pkg/sliceutils"
-	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
@@ -131,74 +128,6 @@ func (c *Controller) RunDiscovery(ctx context.Context) error {
 	return nil
 }
 
-// filterEpisodes will only return entries that are more recent than the given latestTag.
-// excludeBatch is used when a show is airing or you have already downloaded some episodes of the season.
-// excludeBatch avoids downloading a batch for episodes which you already have.
-func filterEpisodes(
-	results []torrentsource.Torrent,
-	initialTag tags.Tag,
-) ([]torrentsource.Torrent, tags.Tag) {
-	out := make([]torrentsource.Torrent, 0, len(results))
-
-	var latestDetectedTag tags.Tag
-
-	for _, nyaaEntry := range results {
-		currentTag := nyaaEntry.Metadata.Tag
-
-		if currentTag.Compare(initialTag) <= 0 ||
-			currentTag.Compare(latestDetectedTag) <= 0 {
-			continue
-		}
-
-		if !latestDetectedTag.IsZero() {
-			if latestDetectedTag.IsMultiEpisode() && latestDetectedTag.Contains(currentTag) {
-				continue
-			}
-
-			// This scenario can happen when we are filtering for batches, and the subsequent batch contains the previous batch.
-			// Example: S01E01-13, followed by S01.
-			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
-			if currentTag.IsMultiEpisode() && currentTag.Contains(latestDetectedTag) {
-				out = sliceutils.Filter(out, func(previous torrentsource.Torrent) bool {
-					return !currentTag.Contains(previous.Metadata.Tag)
-				})
-			}
-		}
-
-		latestDetectedTag = currentTag
-		out = append(out, nyaaEntry)
-	}
-
-	return out, latestDetectedTag
-}
-
-// filterRelevantResults is responsible for filtering and ordering the raw feed into valid downloadable torrents.
-func filterRelevantResults(
-	entry animelist.Entry,
-	results []torrentsource.Torrent,
-	latestTag tags.Tag,
-) []torrentsource.Torrent {
-	results = slices.Clone(results)
-
-	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
-		batchResults := sliceutils.Filter(results, func(entry torrentsource.Torrent) bool {
-			return entry.Metadata.Tag.IsMultiEpisode()
-		})
-		if len(batchResults) > 0 {
-			results = batchResults
-		}
-	} else {
-		// Remove batches when there are latest tags, avoid episode download duplication.
-		results = sliceutils.Filter(results, func(entry torrentsource.Torrent) bool {
-			return !entry.Metadata.Tag.IsMultiEpisode()
-		})
-	}
-
-	results, _ = filterEpisodes(results, latestTag)
-
-	return results
-}
-
 // DiscoverEntry receives an anime list entry and fetches the anime feed, looking for new content.
 // It returns the latest discovered tag, whether new episodes were found, the torrents added
 // to the client (used by the shoko integration), and any error.
@@ -242,12 +171,6 @@ func (c *Controller) DiscoverEntry(
 			Int("resolution", parsed.Metadata.VerticalResolution).
 			Msg("parsed torrent result")
 	}
-
-	results = filterRelevantResults(
-		entry,
-		results,
-		latestTag,
-	)
 
 	for _, parsed := range results {
 		logger.

@@ -2,6 +2,7 @@ package searcher
 
 import (
 	"context"
+	"slices"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/pkg/parser"
@@ -84,7 +85,34 @@ func (p Searcher) Search(
 		}
 	}
 
+	// Sorts by tag, then priority. Tags are always ascending, meaning s01e01, s01e02, etc.
 	torrents = prioritize(entry, torrents, opts)
+
+	// Pick first candidate for each tag, drop the rest.
+	torrents = slices.CompactFunc(torrents, func(first, second torrentsource.Torrent) bool {
+		if first.Metadata.Tag.Compare(second.Metadata.Tag) == 0 {
+			filterStats.Inc("duplicatedTag")
+			return true
+		}
+
+		return false
+	})
+
+	// Reverse so now we have tags descending, since bundles are always ranked higher than solo episodes.
+	slices.Reverse(torrents)
+
+	// Remove tags containing other tags, like bundles.
+	torrents = slices.CompactFunc(torrents, func(first, second torrentsource.Torrent) bool {
+		if first.Metadata.Tag.Contains(second.Metadata.Tag) {
+			filterStats.Inc("bundled")
+			return true
+		}
+
+		return false
+	})
+
+	// Restore original ascending tag order.
+	slices.Reverse(torrents)
 
 	log.
 		Ctx(ctx).
