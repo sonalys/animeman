@@ -61,15 +61,24 @@ func (p Searcher) Search(
 
 		offset += len(items)
 
+		filterStats := newFilterStats()
+
 		filters := []func(torrentsource.Torrent) bool{
-			filterSeeders(1),
-			filterMetadata(entry, opts.Sources),
-			filterSources(opts.Sources),
+			filterStats.add("minSeeders", filterSeeders(1)),
+			filterStats.add("matchingMetadata", filterMetadata(entry, opts.Sources)),
+			filterStats.add("sources", filterSources(opts.Sources)),
 		}
 
 		filters = append(filters, p.additionalFilters...)
 
 		filtered := sliceutils.Filter(items, filters...)
+
+		log.
+			Ctx(ctx).
+			Trace().
+			Int("unfilteredCount", len(items)).
+			Any("stats", filterStats).
+			Msgf("search filtered")
 
 		if len(items) < p.pageSize || !shouldPaginate(filtered, opts.LatestTag) {
 			break
@@ -85,6 +94,24 @@ func (p Searcher) Search(
 		Msg("search results")
 
 	return torrents, nil
+}
+
+type filterStats map[string]uint
+
+func newFilterStats() filterStats {
+	return make(filterStats)
+}
+
+func (f *filterStats) add[T any](name string, filter func(T) bool) func(T) bool {
+	return func(t T) bool {
+		result := filter(t)
+
+		if !result {
+			(*f)[name]++
+		}
+
+		return result
+	}
 }
 
 // filterSources keeps only torrents whose title contains one of the
