@@ -107,12 +107,17 @@ func newerEpisode(
 ) func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
 	return func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
 		return func(torrent torrentsource.Torrent) bool {
-			if latestTag.Compare(torrent.Metadata.Tag) <= 0 {
-				ignoreCounter("oldEpisode")
-				return false
+			if latestTag.IsZero() {
+				return true
 			}
 
-			return true
+			if !torrent.Metadata.Tag.IsZero() && torrent.Metadata.Tag.Compare(latestTag) > 0 {
+				return true
+			}
+
+			ignoreCounter("oldEpisode")
+
+			return false
 		}
 	}
 }

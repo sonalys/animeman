@@ -83,6 +83,15 @@ func (api *API) Search(
 	query := buildQuery(entry, opts)
 	values.Add("q", query.String())
 
+	fallbackSeason := 1
+
+	for _, title := range entry.Titles {
+		if season := parser.ParseSeason(title); season > 0 {
+			fallbackSeason = season
+			break
+		}
+	}
+
 	searcher := searcher.New(
 		pageSize,
 		func(ctx context.Context, offset int) ([]torrentsource.Torrent, error) {
@@ -92,7 +101,7 @@ func (api *API) Search(
 			}
 
 			page := sliceutils.Map(items, func(item item) torrentsource.Torrent {
-				metadata := parser.Parse(item.Title, 1, opts.Sources)
+				metadata := parser.Parse(item.Title, fallbackSeason, opts.Sources)
 				publishedAt := must.Must(time.Parse(time.RFC1123Z, item.PubDate))
 
 				return torrentsource.Torrent{

@@ -72,6 +72,15 @@ func (api *API) Search(
 		return nil, fmt.Errorf("building query: %w", err)
 	}
 
+	fallbackSeason := 1
+
+	for _, title := range entry.Titles {
+		if season := parser.ParseSeason(title); season > 0 {
+			fallbackSeason = season
+			break
+		}
+	}
+
 	searcher := searcher.New(
 		pageSize,
 		func(ctx context.Context, offset int) ([]torrentsource.Torrent, error) {
@@ -87,7 +96,7 @@ func (api *API) Search(
 					Seeders:     item.seeders(),
 					PublishedAt: must.Must(time.Parse(time.RFC1123Z, item.PubDate)),
 					Hash:        item.attr("infohash"),
-					Metadata:    parser.Parse(item.Title, 1, opts.Sources),
+					Metadata:    parser.Parse(item.Title, fallbackSeason, opts.Sources),
 				}
 			})
 

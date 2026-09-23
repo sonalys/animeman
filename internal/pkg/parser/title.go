@@ -102,7 +102,7 @@ func Parse(title string, fallbackSeason int, sources []string) Metadata {
 
 	metadata.Tag.Episodes = parseEpisode(title)
 
-	if detectedSeason := parseSeason(title); detectedSeason > 0 {
+	if detectedSeason := ParseSeason(title); detectedSeason > 0 {
 		metadata.Tag.Seasons = []int{detectedSeason}
 	} else {
 		metadata.Tag.Seasons = []int{fallbackSeason}

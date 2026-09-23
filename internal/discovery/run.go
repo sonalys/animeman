@@ -172,14 +172,6 @@ func (c *Controller) DiscoverEntry(
 			Msg("parsed torrent result")
 	}
 
-	for _, parsed := range results {
-		logger.
-			Debug().
-			Str("torrentTitle", parsed.Title).
-			Str("tag", parsed.Metadata.Tag.String()).
-			Msg("torrent result kept after filtering")
-	}
-
 	foundNewEpisodes := len(results) > 0
 
 	// Hand the added torrents to the shoko integration directly, using the
