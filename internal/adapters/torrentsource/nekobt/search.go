@@ -15,11 +15,11 @@ import (
 	"time"
 	"unicode"
 
-	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
+	"github.com/sonalys/animeman/internal/utils/parser"
 	"github.com/sonalys/animeman/internal/utils/searcher"
 )
 

@@ -8,12 +8,12 @@ import (
 
 	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/parser"
 )
 
 // getLatestDownloadedTag returns the latest downloaded tag for a given anime in the torrent client.
