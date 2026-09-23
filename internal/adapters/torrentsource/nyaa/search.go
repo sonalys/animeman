@@ -120,7 +120,7 @@ func (api *API) Search(
 // qualities, sources and the user suffix, using the nyaaquerier builder.
 func buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) nyaaquerier.And {
 	// For title we filter for english and original titles.
-	sanitizedTitles := sliceutils.Transform(entry.Titles,
+	sanitizedTitles := sliceutils.ForEach(entry.Titles,
 		strings.ToLower,
 		parser.StripTitle,
 		parser.StripSubtitle,

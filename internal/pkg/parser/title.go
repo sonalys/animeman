@@ -62,7 +62,7 @@ func StripTags(title string) string {
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
 func Parse(title string, fallbackSeason int, sources []string) Metadata {
 	normalizedTitle := strings.ToLower(title)
-	normalizedSources := sliceutils.Transform(sources, func(source string) string {
+	normalizedSources := sliceutils.ForEach(sources, func(source string) string {
 		return strings.ToLower(source)
 	})
 
