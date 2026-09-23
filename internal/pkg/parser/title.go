@@ -66,8 +66,8 @@ func Parse(title string, fallbackSeason int, sources []string) Metadata {
 		return strings.ToLower(source)
 	})
 
-	resp := Metadata{
-		ShowTitle:              StripTitle(title),
+	metadata := Metadata{
+		ShowTitle:          StripTitle(title),
 		VerticalResolution: parseVerticalResolution(title),
 		Tag:                tags.Tag{},
 		// Source is extracted from the title if it matches any of the provided sources.
@@ -88,27 +88,27 @@ func Parse(title string, fallbackSeason int, sources []string) Metadata {
 		// If the title starts with a tag, we assume it's the source and set it as such.
 		// Example: [Source] Show - S03E02 [1080p].mkv
 		if title[0] == '[' {
-			resp.ReleaseGroup = tags[0][1]
+			metadata.ReleaseGroup = tags[0][1]
 			tags = tags[1:]
 		}
 
-		resp.Labels = make([]string, 0, len(tags))
+		metadata.Labels = make([]string, 0, len(tags))
 		for _, matches := range tags {
-			resp.Labels = append(resp.Labels, strings.Split(matches[1], " ")...)
+			metadata.Labels = append(metadata.Labels, strings.Split(matches[1], " ")...)
 		}
 	}
 
 	title = StripTags(title)
 
-	resp.Tag.Episodes = parseEpisode(title)
+	metadata.Tag.Episodes = parseEpisode(title)
 
 	if detectedSeason := parseSeason(title); detectedSeason > 0 {
-		resp.Tag.Seasons = []int{detectedSeason}
+		metadata.Tag.Seasons = []int{detectedSeason}
 	} else {
-		resp.Tag.Seasons = []int{fallbackSeason}
+		metadata.Tag.Seasons = []int{fallbackSeason}
 	}
 
-	return resp
+	return metadata
 }
 
 // BuildSeriesTag builds a !Serie Name tag for you to be able to search all it's episodes with a tag.

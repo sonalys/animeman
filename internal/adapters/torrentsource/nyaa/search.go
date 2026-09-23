@@ -107,22 +107,28 @@ func (api *API) Search(
 
 			return page, nil
 		},
-		func(t torrentsource.Torrent) bool {
-			for _, title := range entry.Titles {
-				// Remove season information from the original title, as it is not always present in the nyaa entry.
-				originalTitleWithoutSeason := parser.StripSeason(title)
-				originalTitleWithoutSubtitle := parser.StripSubtitle(originalTitleWithoutSeason)
+		func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
+			return func(torrent torrentsource.Torrent) bool {
+				for _, title := range entry.Titles {
+					// Remove season information from the original title, as it is not always present in the nyaa entry.
+					originalTitleWithoutSeason := parser.StripSeason(title)
+					originalTitleWithoutSubtitle := parser.StripSubtitle(
+						originalTitleWithoutSeason,
+					)
 
-				if stringutils.MatchPrefixFlexible(
-					t.Metadata.ShowTitle,
-					originalTitleWithoutSubtitle,
-					torrentsource.IgnoreCharset,
-				) {
-					return true
+					if stringutils.MatchPrefixFlexible(
+						torrent.Metadata.ShowTitle,
+						originalTitleWithoutSubtitle,
+						torrentsource.IgnoreCharset,
+					) {
+						return true
+					}
 				}
-			}
 
-			return false
+				ignoreCounter("titlePrefix")
+
+				return false
+			}
 		},
 	)
 
