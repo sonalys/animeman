@@ -24,7 +24,7 @@ import (
 	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/coalesce"
 	"github.com/sonalys/animeman/internal/utils/http/roundtripper"
 	"golang.org/x/time/rate"
 )
@@ -127,7 +127,7 @@ func main() {
 	log.Info().Msgf("starting Animeman [%s]", version)
 
 	config, err := ReadConfig(
-		utils.ValueOrDefault(os.Getenv("CONFIG_PATH"), "config.yaml"),
+		coalesce.OrDefault(os.Getenv("CONFIG_PATH"), "config.yaml"),
 	)
 	if err != nil {
 		log.Fatal().Msgf("config is not valid: %s", err)
@@ -177,7 +177,7 @@ func main() {
 			DownloadPath:     discoveryConfig.DownloadPath,
 			CreateShowFolder: discoveryConfig.CreateShowFolder,
 			PollFrequency:    discoveryConfig.PollFrequency,
-			RenameTorrent:    utils.Coalesce(discoveryConfig.RenameTorrent, true),
+			RenameTorrent:    coalesce.Coalesce(discoveryConfig.RenameTorrent, true),
 			RenameFormat:     renameScript,
 		},
 	})
@@ -224,7 +224,7 @@ func main() {
 		w.WriteHeader(http.StatusOK)
 	})
 	healthServer := &http.Server{
-		Addr:    utils.ValueOrDefault(os.Getenv("HEALTH_ADDR"), ":8080"),
+		Addr:    coalesce.OrDefault(os.Getenv("HEALTH_ADDR"), ":8080"),
 		Handler: healthMux,
 	}
 	go func() {

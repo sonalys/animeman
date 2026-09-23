@@ -1,4 +1,4 @@
-package utils
+package coalesce
 
 // Coalesce returns value if it is not nil, otherwise it returns fallback.
 func Coalesce[T comparable](value *T, fallback T) T {
@@ -8,8 +8,8 @@ func Coalesce[T comparable](value *T, fallback T) T {
 	return *value
 }
 
-// ValueOrDefault returns value if it is not the zero value, otherwise it returns fallback.
-func ValueOrDefault[T comparable](value T, fallback T) T {
+// OrDefault returns value if it is not the zero value, otherwise it returns fallback.
+func OrDefault[T comparable](value T, fallback T) T {
 	if value == *new(T) {
 		return fallback
 	}

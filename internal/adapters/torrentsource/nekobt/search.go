@@ -17,10 +17,11 @@ import (
 
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
 	"github.com/sonalys/animeman/internal/utils/parser"
 	"github.com/sonalys/animeman/internal/utils/searcher"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 const (
@@ -79,9 +80,9 @@ func (api *API) Search(
 				return nil, err
 			}
 
-			page := utils.Map(items, func(item item) torrentsource.Torrent {
+			page := sliceutils.Map(items, func(item item) torrentsource.Torrent {
 				metadata := parser.Parse(item.Title, 1, opts.Sources)
-				publishedAt := utils.Must(time.Parse(time.RFC1123Z, item.PubDate))
+				publishedAt := must.Must(time.Parse(time.RFC1123Z, item.PubDate))
 
 				return torrentsource.Torrent{
 					Title:       item.Title,
@@ -107,7 +108,7 @@ func (api *API) Search(
 
 // fetchPage fetches one torznab result page at the given offset.
 func (api *API) fetchPage(ctx context.Context, values url.Values, offset int) ([]item, error) {
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, TORZNAB_URL, nil))
+	req := must.Must(http.NewRequestWithContext(ctx, http.MethodGet, TORZNAB_URL, nil))
 
 	values.Set("offset", strconv.Itoa(offset))
 	values.Set("limit", strconv.Itoa(pageSize))
@@ -120,7 +121,7 @@ func (api *API) fetchPage(ctx context.Context, values url.Values, offset int) ([
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("request failed: %s", string(utils.Must(io.ReadAll(resp.Body))))
+		return nil, fmt.Errorf("request failed: %s", string(must.Must(io.ReadAll(resp.Body))))
 	}
 
 	var feed rss
@@ -195,7 +196,7 @@ func buildQuery(opt torrentsource.SearchOptions) string {
 			parts = append(parts, nyaaquerier.PhraseOf(token))
 		}
 		for _, dimension := range dimensions {
-			parts = append(parts, nyaaquerier.Or(utils.Map(dimension, nyaaquerier.PhraseOf)))
+			parts = append(parts, nyaaquerier.Or(sliceutils.Map(dimension, nyaaquerier.PhraseOf)))
 		}
 	}
 
@@ -447,7 +448,7 @@ func externalMediaID(entry animelist.Entry) (string, error) {
 // id via the JSON API. The response is either a plain string id or an object
 // with an `id` field, depending on the resolved media type.
 func (api *API) fetchMediaID(ctx context.Context, externalID string) (string, error) {
-	req := utils.Must(
+	req := must.Must(
 		http.NewRequestWithContext(ctx, http.MethodGet, JSON_URL+"/media/resolve", nil),
 	)
 	q := req.URL.Query()
@@ -460,7 +461,7 @@ func (api *API) fetchMediaID(ctx context.Context, externalID string) (string, er
 	}
 	defer resp.Body.Close()
 
-	body := utils.Must(io.ReadAll(resp.Body))
+	body := must.Must(io.ReadAll(resp.Body))
 	if resp.StatusCode == 404 {
 		// Not mapped on nekoBT: cache the miss so we don't re-query every
 		// scan, and fall back to the external id for the torznab search.

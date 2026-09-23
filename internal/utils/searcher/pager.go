@@ -13,8 +13,10 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/math"
 	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
+	"github.com/sonalys/animeman/internal/utils/stringutils"
 	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
@@ -56,7 +58,7 @@ func (p Searcher) Search(
 
 		offset += len(items)
 
-		filtered := utils.Filter(items,
+		filtered := sliceutils.Filter(items,
 			filterSeeders(1),
 			filterMetadata(entry, opts.Sources),
 			filterSources(opts.Sources),
@@ -161,16 +163,16 @@ func prioritize(
 		}
 
 		// Then title similarity.
-		titleSimilarityI := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
-			return utils.CalculateTextSimilarity(
+		titleSimilarityI := math.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
+			return stringutils.CalculateTextSimilarity(
 				curTitle,
 				first.Metadata.Title,
 				torrentsource.IgnoreCharset,
 			)
 		})...)
 
-		titleSimilarityJ := utils.Max(utils.Map(entry.Titles, func(curTitle string) float64 {
-			return utils.CalculateTextSimilarity(
+		titleSimilarityJ := math.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
+			return stringutils.CalculateTextSimilarity(
 				curTitle,
 				second.Metadata.Title,
 				torrentsource.IgnoreCharset,

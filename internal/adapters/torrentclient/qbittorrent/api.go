@@ -12,7 +12,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 type (
@@ -28,7 +28,7 @@ var _ torrentclient.Client = (*API)(nil)
 func New(ctx context.Context, host, username, password string) *API {
 	client := &http.Client{
 		Timeout: 3 * time.Second,
-		Jar:     utils.Must(cookiejar.New(nil)),
+		Jar:     must.Must(cookiejar.New(nil)),
 	}
 	api := &API{
 		host:     fmt.Sprintf("%s/api/v2", host),

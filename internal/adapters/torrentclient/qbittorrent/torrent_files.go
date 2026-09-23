@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 type torrentFile struct {
@@ -31,7 +31,7 @@ func (api *API) TorrentFiles(ctx context.Context, hash string) ([]string, error)
 	}
 	defer resp.Body.Close()
 
-	rawBody := utils.Must(io.ReadAll(resp.Body))
+	rawBody := must.Must(io.ReadAll(resp.Body))
 	var respBody []torrentFile
 	if err := json.Unmarshal(rawBody, &respBody); err != nil {
 		return nil, fmt.Errorf("could not read response: %w", err)

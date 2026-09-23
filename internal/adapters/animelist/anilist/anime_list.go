@@ -11,8 +11,9 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/http/roundtripper"
+	"github.com/sonalys/animeman/internal/utils/must"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 type (
@@ -212,12 +213,12 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 		},
 	}
 
-	req := utils.Must(
+	req := must.Must(
 		http.NewRequestWithContext(
 			ctx,
 			http.MethodPost,
 			API_URL,
-			bytes.NewReader(utils.Must(json.Marshal(reqBody))),
+			bytes.NewReader(must.Must(json.Marshal(reqBody))),
 		),
 	)
 	req.Header.Add("Content-Type", "application/json")
@@ -243,7 +244,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 			return nil, fmt.Errorf("anilist.co api rate limit exceeded: retry at %s", retryAfter)
 		}
 
-		return nil, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))
+		return nil, fmt.Errorf("invalid response: %s", string(must.Must(io.ReadAll(resp.Body))))
 	}
 
 	var respBody AnimeListResp
@@ -254,7 +255,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 	out := make([]AnimeListEntry, 0, len(respBody.Data.MediaListCollection.Lists))
 
 	for _, list := range respBody.Data.MediaListCollection.Lists {
-		watchingEntries := utils.Filter(list.Entries, func(entry AnimeListEntry) bool {
+		watchingEntries := sliceutils.Filter(list.Entries, func(entry AnimeListEntry) bool {
 			return entry.Status == ListStatusWatching
 		})
 		out = append(out, watchingEntries...)

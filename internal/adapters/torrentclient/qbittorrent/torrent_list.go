@@ -9,7 +9,7 @@ import (
 	"net/url"
 
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 func convertTorrent(in []Torrent) []torrentclient.Torrent {
@@ -51,7 +51,7 @@ func (api *API) List(ctx context.Context, arg *torrentclient.ListTorrentConfig) 
 		return nil, fmt.Errorf("could not list torrents: %w", err)
 	}
 	defer resp.Body.Close()
-	rawBody := utils.Must(io.ReadAll(resp.Body))
+	rawBody := must.Must(io.ReadAll(resp.Body))
 	var respBody []Torrent
 	if err := json.Unmarshal(rawBody, &respBody); err != nil {
 		return nil, fmt.Errorf("could not read response: %s: %w", string(rawBody), err)

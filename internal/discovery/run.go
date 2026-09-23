@@ -11,7 +11,7 @@ import (
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
@@ -159,7 +159,7 @@ func filterEpisodes(
 			// Example: S01E01-13, followed by S01.
 			// This happens because S01E01-13 < S01, so S01 comes afterwards. But S01 contains the previous tag.
 			if currentTag.IsMultiEpisode() && currentTag.Contains(latestDetectedTag) {
-				out = utils.Filter(out, func(previous torrentsource.Torrent) bool {
+				out = sliceutils.Filter(out, func(previous torrentsource.Torrent) bool {
 					return !currentTag.Contains(previous.Metadata.Tag)
 				})
 			}
@@ -181,7 +181,7 @@ func filterRelevantResults(
 	results = slices.Clone(results)
 
 	if latestTag.IsZero() && entry.AiringStatus == animelist.AiringStatusAired {
-		batchResults := utils.Filter(results, func(entry torrentsource.Torrent) bool {
+		batchResults := sliceutils.Filter(results, func(entry torrentsource.Torrent) bool {
 			return entry.Metadata.Tag.IsMultiEpisode()
 		})
 		if len(batchResults) > 0 {
@@ -189,7 +189,7 @@ func filterRelevantResults(
 		}
 	} else {
 		// Remove batches when there are latest tags, avoid episode download duplication.
-		results = utils.Filter(results, func(entry torrentsource.Torrent) bool {
+		results = sliceutils.Filter(results, func(entry torrentsource.Torrent) bool {
 			return !entry.Metadata.Tag.IsMultiEpisode()
 		})
 	}

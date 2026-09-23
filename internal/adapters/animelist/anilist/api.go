@@ -12,7 +12,7 @@ import (
 	"time"
 
 	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 const API_URL = "https://graphql.anilist.co"
@@ -63,7 +63,7 @@ func (api *API) ResolveMAL(ctx context.Context, malID int) (int, error) {
 		ctx,
 		http.MethodPost,
 		API_URL,
-		bytes.NewReader(utils.Must(json.Marshal(reqBody))),
+		bytes.NewReader(must.Must(json.Marshal(reqBody))),
 	)
 	if err != nil {
 		return 0, fmt.Errorf("creating request: %w", err)
@@ -78,7 +78,7 @@ func (api *API) ResolveMAL(ctx context.Context, malID int) (int, error) {
 	defer resp.Body.Close()
 
 	if resp.StatusCode != http.StatusOK {
-		return 0, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))
+		return 0, fmt.Errorf("invalid response: %s", string(must.Must(io.ReadAll(resp.Body))))
 	}
 
 	var respBody struct {

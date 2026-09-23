@@ -1,4 +1,4 @@
-package utils
+package must
 
 // Must receives (value, error) and returns value.
 // It will panic if error is not nil.

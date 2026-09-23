@@ -5,7 +5,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
@@ -62,7 +62,7 @@ func StripTags(title string) string {
 // Parse will parse a title into a Metadata, extracting stripped title, tags, season and episode information.
 func Parse(title string, fallbackSeason int, sources []string) Metadata {
 	normalizedTitle := strings.ToLower(title)
-	normalizedSources := utils.Transform(sources, func(source string) string {
+	normalizedSources := sliceutils.Transform(sources, func(source string) string {
 		return strings.ToLower(source)
 	})
 

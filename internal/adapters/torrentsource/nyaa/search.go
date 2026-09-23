@@ -15,10 +15,11 @@ import (
 
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
 	"github.com/sonalys/animeman/internal/utils/parser"
 	"github.com/sonalys/animeman/internal/utils/searcher"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 const (
@@ -89,9 +90,9 @@ func (api *API) Search(
 				return nil, err
 			}
 
-			page := utils.Map(items, func(item item) torrentsource.Torrent {
+			page := sliceutils.Map(items, func(item item) torrentsource.Torrent {
 				metadata := parser.Parse(item.Title, 1, opts.Sources)
-				publishedAt := utils.Must(time.Parse(time.RFC1123Z, item.PubDate))
+				publishedAt := must.Must(time.Parse(time.RFC1123Z, item.PubDate))
 
 				return torrentsource.Torrent{
 					Title:       item.Title,
@@ -119,7 +120,7 @@ func (api *API) Search(
 // qualities, sources and the user suffix, using the nyaaquerier builder.
 func buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) nyaaquerier.And {
 	// For title we filter for english and original titles.
-	sanitizedTitles := utils.Transform(entry.Titles,
+	sanitizedTitles := sliceutils.Transform(entry.Titles,
 		strings.ToLower,
 		parser.StripTitle,
 		parser.StripSubtitle,
@@ -129,21 +130,21 @@ func buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) nyaaquer
 	sort.Strings(sanitizedTitles)
 	sanitizedTitles = slices.Compact(sanitizedTitles)
 
-	titleNodes := utils.Map(sanitizedTitles, func(title string) nyaaquerier.Node {
+	titleNodes := sliceutils.Map(sanitizedTitles, func(title string) nyaaquerier.Node {
 		return nyaaquerier.PhraseOf(title)
 	})
 
 	parts := []nyaaquerier.Node{nyaaquerier.Or(titleNodes)}
 
 	if len(opt.Qualities) > 0 {
-		qualityNodes := utils.Map(opt.Qualities, func(quality string) nyaaquerier.Node {
-			return nyaaquerier.And(utils.Map(strings.Fields(quality), nyaaquerier.PhraseOf))
+		qualityNodes := sliceutils.Map(opt.Qualities, func(quality string) nyaaquerier.Node {
+			return nyaaquerier.And(sliceutils.Map(strings.Fields(quality), nyaaquerier.PhraseOf))
 		})
 		parts = append(parts, nyaaquerier.Or(qualityNodes))
 	}
 
 	if len(opt.Sources) > 0 {
-		sourceNodes := utils.Map(opt.Sources, nyaaquerier.PhraseOf)
+		sourceNodes := sliceutils.Map(opt.Sources, nyaaquerier.PhraseOf)
 		parts = append(parts, nyaaquerier.Or(sourceNodes))
 	}
 
@@ -159,7 +160,7 @@ func (api *API) fetchPage(
 	values url.Values,
 	offset int,
 ) ([]item, error) {
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, API_URL, nil))
+	req := must.Must(http.NewRequestWithContext(ctx, http.MethodGet, API_URL, nil))
 
 	values.Set("offset", strconv.Itoa(offset))
 	values.Set("limit", strconv.Itoa(pageSize))
@@ -172,7 +173,7 @@ func (api *API) fetchPage(
 	defer resp.Body.Close()
 
 	if resp.StatusCode != 200 {
-		return nil, fmt.Errorf("request failed: %s", string(utils.Must(io.ReadAll(resp.Body))))
+		return nil, fmt.Errorf("request failed: %s", string(must.Must(io.ReadAll(resp.Body))))
 	}
 
 	var feed rss

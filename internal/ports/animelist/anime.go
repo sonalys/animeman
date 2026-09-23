@@ -6,7 +6,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
+	"github.com/sonalys/animeman/internal/utils/stringutils"
 )
 
 type (
@@ -67,7 +68,7 @@ func NewEntry(
 	numEpisodes int,
 	episodeSchedule []EpisodeSchedule,
 ) Entry {
-	titles = utils.Filter(titles, func(s string) bool { return len(s) > 0 })
+	titles = sliceutils.Filter(titles, func(s string) bool { return len(s) > 0 })
 	slices.Sort(titles)
 	titles = slices.Compact(titles)
 
@@ -103,7 +104,7 @@ func (e Entry) GetBestTitle() string {
 	viableCandidates := make([]string, 0, len(titles))
 
 	for _, t := range titles {
-		if utils.IsASCII(t) {
+		if stringutils.IsASCII(t) {
 			viableCandidates = append(viableCandidates, t)
 		}
 	}

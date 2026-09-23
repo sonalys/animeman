@@ -10,7 +10,7 @@ import (
 	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/stringutils"
 	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
@@ -243,7 +243,11 @@ func matchEntry(title string, entries []animelist.Entry) (animelist.Entry, bool)
 	bestScore := 0.0
 	for i, entry := range entries {
 		for _, entryTitle := range entry.Titles {
-			score := utils.CalculateTextSimilarity(entryTitle, title, torrentsource.IgnoreCharset)
+			score := stringutils.CalculateTextSimilarity(
+				entryTitle,
+				title,
+				torrentsource.IgnoreCharset,
+			)
 			if score > bestScore {
 				bestScore = score
 				best = i

@@ -11,8 +11,8 @@ import (
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/stringutils"
 	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
@@ -210,7 +210,11 @@ func normalizeTitle(torrentTitle string, entries []animelist.Entry) string {
 	for _, entry := range entries {
 		bestScore := 0.0
 		for _, title := range entry.Titles {
-			score := utils.CalculateTextSimilarity(title, torrentTitle, torrentsource.IgnoreCharset)
+			score := stringutils.CalculateTextSimilarity(
+				title,
+				torrentTitle,
+				torrentsource.IgnoreCharset,
+			)
 			bestScore = max(bestScore, score)
 		}
 

@@ -11,7 +11,7 @@ import (
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 // Temporary solution for finding the correct time format for MAL entries.
@@ -50,8 +50,8 @@ func convertEntry(in []AnimeListEntry) []animelist.Entry {
 			convertTitles(fmt.Sprint(in[i].Title), in[i].TitleEng),
 			animelist.ListStatus(in[i].Status),
 			animelist.AiringStatus(in[i].AiringStatus),
-			utils.Must(time.Parse(timeFormat, in[i].AnimeStartDateString)),
-			utils.Must(time.Parse(timeFormat, in[i].AnimeEndDateString)),
+			must.Must(time.Parse(timeFormat, in[i].AnimeStartDateString)),
+			must.Must(time.Parse(timeFormat, in[i].AnimeEndDateString)),
 			in[i].NumEpisodes,
 			nil,
 		)
@@ -70,7 +70,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 
 	var path = API_URL + "/animelist/" + api.Username + "/load.json"
 
-	req := utils.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
+	req := must.Must(http.NewRequestWithContext(ctx, http.MethodGet, path, nil))
 	v := url.Values{
 		"offset": []string{"0"},
 		"status": []string{"1"},
@@ -92,7 +92,7 @@ func (api *API) GetCurrentlyWatching(ctx context.Context) ([]animelist.Entry, er
 			return api.cachedAnimeList, nil
 		}
 
-		return nil, fmt.Errorf("invalid response: %s", string(utils.Must(io.ReadAll(resp.Body))))
+		return nil, fmt.Errorf("invalid response: %s", string(must.Must(io.ReadAll(resp.Body))))
 	}
 
 	var entries []AnimeListEntry

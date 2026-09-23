@@ -11,7 +11,8 @@ import (
 	"net/url"
 
 	"github.com/sonalys/animeman/internal/ports/shoko"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
+	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 const (
@@ -49,7 +50,7 @@ func (api *API) do(ctx context.Context, req *http.Request) (*http.Response, erro
 
 func decodeJSON(resp *http.Response, out any) error {
 	defer resp.Body.Close()
-	rawBody := utils.Must(io.ReadAll(resp.Body))
+	rawBody := must.Must(io.ReadAll(resp.Body))
 	if resp.StatusCode != http.StatusOK {
 		return fmt.Errorf("request failed: %s: %s", resp.Status, string(rawBody))
 	}
@@ -202,7 +203,7 @@ func (api *API) FindEpisodes(ctx context.Context, anidbID int) ([]shoko.Episode,
 		return nil, fmt.Errorf("listing episodes: %w", err)
 	}
 
-	return utils.Map(result.List, func(in shokoEpisode) shoko.Episode {
+	return sliceutils.Map(result.List, func(in shokoEpisode) shoko.Episode {
 		return shoko.Episode{
 			AniDBID:        in.AniDB.ID,
 			ShokoEpisodeID: in.IDs.ID,
@@ -290,7 +291,7 @@ func (api *API) RescanFile(ctx context.Context, fileID int) error {
 		return fmt.Errorf(
 			"rescanning file failed: %s: %s",
 			resp.Status,
-			string(utils.Must(io.ReadAll(resp.Body))),
+			string(must.Must(io.ReadAll(resp.Body))),
 		)
 	}
 	return nil
@@ -328,7 +329,7 @@ func (api *API) AutoMatchFile(ctx context.Context, fileID int) (bool, error) {
 		return false, fmt.Errorf(
 			"auto matching file failed: %s: %s",
 			resp.Status,
-			string(utils.Must(io.ReadAll(resp.Body))),
+			string(must.Must(io.ReadAll(resp.Body))),
 		)
 	}
 }
@@ -361,7 +362,7 @@ func (api *API) LinkFileToEpisodes(ctx context.Context, fileID int, episodeIDs [
 		return fmt.Errorf(
 			"linking file failed: %s: %s",
 			resp.Status,
-			string(utils.Must(io.ReadAll(resp.Body))),
+			string(must.Must(io.ReadAll(resp.Body))),
 		)
 	}
 	return nil

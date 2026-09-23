@@ -7,7 +7,7 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 	"github.com/sonalys/animeman/internal/utils/parser"
 	"github.com/sonalys/animeman/internal/utils/tags"
 	"github.com/stretchr/testify/require"
@@ -25,7 +25,7 @@ func TestController_buildTorrentName(t *testing.T) {
 			name: "build torrent name with all placeholders",
 			dep: Dependencies{
 				Config: Config{
-					RenameFormat: utils.Must(expr.Compile(`
+					RenameFormat: must.Must(expr.Compile(`
 						join(
 							filter(
 								[

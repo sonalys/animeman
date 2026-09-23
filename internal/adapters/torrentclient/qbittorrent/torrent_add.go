@@ -10,7 +10,7 @@ import (
 	"strings"
 
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
-	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 func digestArg(arg *torrentclient.AddTorrentConfig) (io.Reader, string) {
@@ -18,20 +18,20 @@ func digestArg(arg *torrentclient.AddTorrentConfig) (io.Reader, string) {
 
 	w := multipart.NewWriter(&b)
 
-	field := utils.Must(w.CreateFormField("urls"))
-	utils.Must(io.WriteString(field, strings.Join(arg.URLs, "\n")))
-	field = utils.Must(w.CreateFormField("tags"))
-	utils.Must(io.WriteString(field, strings.Join(arg.Tags, ",")))
-	field = utils.Must(w.CreateFormField("category"))
-	utils.Must(io.WriteString(field, fmt.Sprint(arg.Category)))
-	field = utils.Must(w.CreateFormField("paused"))
-	utils.Must(io.WriteString(field, fmt.Sprint(arg.Paused)))
-	field = utils.Must(w.CreateFormField("savepath"))
-	utils.Must(io.WriteString(field, fmt.Sprint(arg.SavePath)))
+	field := must.Must(w.CreateFormField("urls"))
+	must.Must(io.WriteString(field, strings.Join(arg.URLs, "\n")))
+	field = must.Must(w.CreateFormField("tags"))
+	must.Must(io.WriteString(field, strings.Join(arg.Tags, ",")))
+	field = must.Must(w.CreateFormField("category"))
+	must.Must(io.WriteString(field, fmt.Sprint(arg.Category)))
+	field = must.Must(w.CreateFormField("paused"))
+	must.Must(io.WriteString(field, fmt.Sprint(arg.Paused)))
+	field = must.Must(w.CreateFormField("savepath"))
+	must.Must(io.WriteString(field, fmt.Sprint(arg.SavePath)))
 
 	if arg.Name != nil {
-		field = utils.Must(w.CreateFormField("rename"))
-		utils.Must(io.WriteString(field, fmt.Sprint(*arg.Name)))
+		field = must.Must(w.CreateFormField("rename"))
+		must.Must(io.WriteString(field, fmt.Sprint(*arg.Name)))
 	}
 
 	return &b, w.FormDataContentType()
