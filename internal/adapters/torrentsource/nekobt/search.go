@@ -81,16 +81,13 @@ func (api *API) Search(
 			}
 
 			page := sliceutils.Map(items, func(item item) torrentsource.Torrent {
-				metadata := parser.Parse(item.Title, 1, opts.Sources)
-				publishedAt := must.Must(time.Parse(time.RFC1123Z, item.PubDate))
-
 				return torrentsource.Torrent{
 					Title:       item.Title,
 					Link:        item.Link,
 					Seeders:     item.seeders(),
-					PublishedAt: publishedAt,
+					PublishedAt: must.Must(time.Parse(time.RFC1123Z, item.PubDate)),
 					Hash:        item.attr("infohash"),
-					Metadata:    metadata,
+					Metadata:    parser.Parse(item.Title, 1, opts.Sources),
 				}
 			})
 

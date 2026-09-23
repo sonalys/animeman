@@ -55,6 +55,12 @@ func (p Searcher) Search(
 			return nil, err
 		}
 
+		log.
+			Ctx(ctx).
+			Trace().
+			Any("torrents", items).
+			Msg("received pagination result")
+
 		if len(items) == 0 {
 			break
 		}
@@ -67,7 +73,7 @@ func (p Searcher) Search(
 			filterStats.add("minSeeders", minSeeders(1)),
 			filterStats.add("startDate", matchStartDate(entry)),
 			filterStats.add("epNumber", matchEpisodeCount(entry, opts.Sources)),
-			filterStats.add("sourceWhitelist", matchSources(opts.Sources)),
+			filterStats.add("source", matchSources(opts.Sources)),
 		}
 
 		filters = append(filters, p.additionalFilters...)
@@ -78,7 +84,7 @@ func (p Searcher) Search(
 			Ctx(ctx).
 			Trace().
 			Int("unfilteredCount", len(items)).
-			Any("stats", filterStats).
+			Any("ignored", filterStats).
 			Msgf("search filtered")
 
 		if len(items) < p.pageSize || !shouldPaginate(filtered, opts.LatestTag) {
@@ -119,22 +125,32 @@ func (f *filterStats) add[T any](name string, filter func(T) bool) func(T) bool 
 // configured sources (release groups), mirroring how the parser extracts
 // the release group.
 func matchSources(sources []string) func(torrentsource.Torrent) bool {
-	return func(item torrentsource.Torrent) bool {
-		return len(sources) == 0 || (item.Metadata.ReleaseGroup != "" &&
-			slices.ContainsFunc(sources, func(source string) bool { return strings.EqualFold(source, item.Metadata.ReleaseGroup) }))
+	return func(torrent torrentsource.Torrent) bool {
+		if len(sources) == 0 {
+			return true
+		}
+
+		if torrent.Metadata.ReleaseGroup == "" {
+			return false
+		}
+
+		return slices.ContainsFunc(sources, func(source string) bool {
+			return strings.EqualFold(source, torrent.Metadata.ReleaseGroup)
+		})
 	}
 }
 
 func minSeeders(minSeeders int) func(torrentsource.Torrent) bool {
-	return func(item torrentsource.Torrent) bool {
-		return item.Seeders >= minSeeders
+	return func(torrent torrentsource.Torrent) bool {
+		return torrent.Seeders >= minSeeders
 	}
 }
 
 func matchStartDate(entry animelist.Entry) func(torrentsource.Torrent) bool {
-	return func(item torrentsource.Torrent) bool {
+	return func(torrent torrentsource.Torrent) bool {
 		// Compares publishing date with anime start date, 2 days offset to prevent wrong timezone and hour precision.
-		if !entry.StartDate.IsZero() && item.PublishedAt.Before(entry.StartDate.AddDate(0, 0, -2)) {
+		if !entry.StartDate.IsZero() &&
+			torrent.PublishedAt.Before(entry.StartDate.AddDate(0, 0, -2)) {
 			return false
 		}
 
@@ -143,12 +159,12 @@ func matchStartDate(entry animelist.Entry) func(torrentsource.Torrent) bool {
 }
 
 func matchEpisodeCount(entry animelist.Entry, sources []string) func(torrentsource.Torrent) bool {
-	return func(item torrentsource.Torrent) bool {
+	return func(torrent torrentsource.Torrent) bool {
 		// If ep number is greater than season ep count, should be removed.
 		// This can happen when certain sources mark S2 but use absolute ep number, so they start like S2E13 instead of S2E01.
 		// If there's only a single source, then this won't be a problem.
 		if len(sources) > 1 && entry.NumEpisodes != 0 {
-			if item.Metadata.Tag.FirstEpisode() > float64(entry.NumEpisodes) {
+			if torrent.Metadata.Tag.FirstEpisode() > float64(entry.NumEpisodes) {
 				return false
 			}
 		}
