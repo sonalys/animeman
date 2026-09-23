@@ -67,7 +67,7 @@ func Parse(title string, fallbackSeason int, sources []string) Metadata {
 	})
 
 	resp := Metadata{
-		Title:              StripTitle(title),
+		ShowTitle:              StripTitle(title),
 		VerticalResolution: parseVerticalResolution(title),
 		Tag:                tags.Tag{},
 		// Source is extracted from the title if it matches any of the provided sources.
@@ -113,7 +113,7 @@ func Parse(title string, fallbackSeason int, sources []string) Metadata {
 
 // BuildSeriesTag builds a !Serie Name tag for you to be able to search all it's episodes with a tag.
 func (t Metadata) BuildSeriesTag() string {
-	return BuildTitleTag(t.Title)
+	return BuildTitleTag(t.ShowTitle)
 }
 
 // BuildTorrentTags builds all tags Animeman needs from your torrent client.

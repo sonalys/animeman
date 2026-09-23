@@ -126,7 +126,7 @@ func (c *Controller) AddTorrentEntry(
 	meta := torrent.Metadata.Clone()
 	// Use nyaa metadata, but with anime list title.
 	// This behavior avoids different sources creating different tags and downloading the same episode twice.
-	meta.Title = selectedTitle
+	meta.ShowTitle = selectedTitle
 	tags := meta.BuildTorrentTags()
 
 	req := &torrentclient.AddTorrentConfig{
@@ -173,7 +173,7 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context, entries []animel
 		meta := parser.Parse(torrent.Name, 1, nil)
 		// The torrent name might be based on an alternative title (e.g. "Show Name: Second Season").
 		// Normalize it back to the anime list title so tag-based latest episode detection works.
-		meta.Title = normalizeTitle(meta.Title, entries)
+		meta.ShowTitle = normalizeTitle(meta.ShowTitle, entries)
 		tags := meta.BuildTorrentTags()
 
 		if err := c.dep.TorrentClient.AddTorrentTags(

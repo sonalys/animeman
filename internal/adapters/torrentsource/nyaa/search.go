@@ -114,7 +114,7 @@ func (api *API) Search(
 				originalTitleWithoutSubtitle := parser.StripSubtitle(originalTitleWithoutSeason)
 
 				if stringutils.MatchPrefixFlexible(
-					t.Metadata.Title,
+					t.Metadata.ShowTitle,
 					originalTitleWithoutSubtitle,
 					torrentsource.IgnoreCharset,
 				) {

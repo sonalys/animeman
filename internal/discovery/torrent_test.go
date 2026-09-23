@@ -48,7 +48,7 @@ func TestController_buildTorrentName(t *testing.T) {
 					ReleaseGroup:       "release-group",
 					Labels:             []string{"HEVC", "10bit"},
 					Tag:                tags.Tag{Seasons: []int{1}, Episodes: []float64{1}},
-					Title:              "My Anime Title",
+					ShowTitle:              "My Anime Title",
 					VerticalResolution: 1080,
 				},
 			},

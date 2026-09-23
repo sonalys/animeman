@@ -174,7 +174,7 @@ func prioritize(
 			sliceutils.Map(entry.Titles, func(curTitle string) float64 {
 				return stringutils.CalculateTextSimilarity(
 					curTitle,
-					first.Metadata.Title,
+					first.Metadata.ShowTitle,
 					torrentsource.IgnoreCharset,
 				)
 			})...)
@@ -183,7 +183,7 @@ func prioritize(
 			sliceutils.Map(entry.Titles, func(curTitle string) float64 {
 				return stringutils.CalculateTextSimilarity(
 					curTitle,
-					second.Metadata.Title,
+					second.Metadata.ShowTitle,
 					torrentsource.IgnoreCharset,
 				)
 			})...)

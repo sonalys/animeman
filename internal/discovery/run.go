@@ -235,7 +235,7 @@ func (c *Controller) DiscoverEntry(
 		logger.
 			Debug().
 			Str("torrentTitle", parsed.Title).
-			Str("parsedTitle", parsed.Metadata.Title).
+			Str("parsedTitle", parsed.Metadata.ShowTitle).
 			Str("tag", parsed.Metadata.Tag.String()).
 			Str("seriesTag", parsed.Metadata.BuildSeriesTag()).
 			Str("releaseGroup", parsed.Metadata.ReleaseGroup).

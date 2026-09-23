@@ -81,7 +81,7 @@ drain:
 			_, err := c.linkShokoFile(
 				torrentCtx,
 				entries,
-				torrentMetadata.Metadata.Title,
+				torrentMetadata.Metadata.ShowTitle,
 				torrentMetadata.Metadata.Tag,
 				filePath,
 			)
