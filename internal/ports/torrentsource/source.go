@@ -5,8 +5,8 @@ import (
 	"time"
 
 	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // Torrent is a normalized torrent entry returned by any torrent source.

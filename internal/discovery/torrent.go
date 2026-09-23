@@ -11,9 +11,9 @@ import (
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // getLatestDownloadedTag returns the latest downloaded tag for a given anime in the torrent client.

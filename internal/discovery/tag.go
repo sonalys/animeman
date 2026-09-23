@@ -4,8 +4,8 @@ import (
 	"strings"
 
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
-	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // getLatestTag is a pure function implementation for fetching the latest tag from a list of torrent entries.

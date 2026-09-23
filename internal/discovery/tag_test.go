@@ -4,7 +4,7 @@ import (
 	"testing"
 
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
-	"github.com/sonalys/animeman/internal/tags"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 func Test_getLatestTag(t *testing.T) {

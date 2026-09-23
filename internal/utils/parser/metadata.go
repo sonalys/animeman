@@ -1,6 +1,6 @@
 package parser
 
-import "github.com/sonalys/animeman/internal/tags"
+import "github.com/sonalys/animeman/internal/utils/tags"
 
 // Metadata is a digested metadata struct parsed from titles.
 type Metadata struct {

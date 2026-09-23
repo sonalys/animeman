@@ -11,8 +11,8 @@ import (
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // RunDiscovery controls the discovery routine,

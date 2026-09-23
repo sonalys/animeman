@@ -13,9 +13,9 @@ import (
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/tags"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/parser"
+	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 type Searcher struct {
