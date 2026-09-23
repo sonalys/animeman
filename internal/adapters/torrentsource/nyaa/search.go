@@ -18,6 +18,7 @@ import (
 	"github.com/sonalys/animeman/internal/pkg/parser"
 	"github.com/sonalys/animeman/internal/pkg/searcher"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/stringutils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
@@ -105,6 +106,23 @@ func (api *API) Search(
 			})
 
 			return page, nil
+		},
+		func(t torrentsource.Torrent) bool {
+			for _, title := range entry.Titles {
+				// Remove season information from the original title, as it is not always present in the nyaa entry.
+				originalTitleWithoutSeason := parser.StripSeason(title)
+				originalTitleWithoutSubtitle := parser.StripSubtitle(originalTitleWithoutSeason)
+
+				if stringutils.MatchPrefixFlexible(
+					t.Metadata.Title,
+					originalTitleWithoutSubtitle,
+					torrentsource.IgnoreCharset,
+				) {
+					return true
+				}
+			}
+
+			return false
 		},
 	)
 

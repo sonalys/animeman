@@ -21,17 +21,20 @@ import (
 )
 
 type Searcher struct {
-	pageSize int
-	fetch    func(ctx context.Context, offset int) ([]torrentsource.Torrent, error)
+	pageSize          int
+	fetch             func(ctx context.Context, offset int) ([]torrentsource.Torrent, error)
+	additionalFilters []func(torrentsource.Torrent) bool
 }
 
 func New(
 	pageSize int,
 	fetch func(ctx context.Context, offset int) ([]torrentsource.Torrent, error),
+	additionalFilters ...func(torrentsource.Torrent) bool,
 ) Searcher {
 	return Searcher{
-		pageSize: pageSize,
-		fetch:    fetch,
+		pageSize:          pageSize,
+		fetch:             fetch,
+		additionalFilters: additionalFilters,
 	}
 }
 
@@ -58,11 +61,15 @@ func (p Searcher) Search(
 
 		offset += len(items)
 
-		filtered := sliceutils.Filter(items,
+		filters := []func(torrentsource.Torrent) bool{
 			filterSeeders(1),
 			filterMetadata(entry, opts.Sources),
 			filterSources(opts.Sources),
-		)
+		}
+
+		filters = append(filters, p.additionalFilters...)
+
+		filtered := sliceutils.Filter(items, filters...)
 
 		if len(items) < p.pageSize || !shouldPaginate(filtered, opts.LatestTag) {
 			break
@@ -163,21 +170,23 @@ func prioritize(
 		}
 
 		// Then title similarity.
-		titleSimilarityI := mathutils.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
-			return stringutils.CalculateTextSimilarity(
-				curTitle,
-				first.Metadata.Title,
-				torrentsource.IgnoreCharset,
-			)
-		})...)
+		titleSimilarityI := mathutils.Max(
+			sliceutils.Map(entry.Titles, func(curTitle string) float64 {
+				return stringutils.CalculateTextSimilarity(
+					curTitle,
+					first.Metadata.Title,
+					torrentsource.IgnoreCharset,
+				)
+			})...)
 
-		titleSimilarityJ := mathutils.Max(sliceutils.Map(entry.Titles, func(curTitle string) float64 {
-			return stringutils.CalculateTextSimilarity(
-				curTitle,
-				second.Metadata.Title,
-				torrentsource.IgnoreCharset,
-			)
-		})...)
+		titleSimilarityJ := mathutils.Max(
+			sliceutils.Map(entry.Titles, func(curTitle string) float64 {
+				return stringutils.CalculateTextSimilarity(
+					curTitle,
+					second.Metadata.Title,
+					torrentsource.IgnoreCharset,
+				)
+			})...)
 
 		if titleSimilarityI != titleSimilarityJ {
 			return titleSimilarityI > titleSimilarityJ
