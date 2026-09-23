@@ -2,7 +2,7 @@
 // torrent source adapters (nyaa, nekobt): fetch pages until they run out,
 // filter/map each page into torrents, and stop early once the source has
 // no results newer than the latest downloaded tag.
-package pager
+package searcher
 
 import (
 	"context"
@@ -10,6 +10,7 @@ import (
 	"sort"
 	"strings"
 
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
@@ -17,27 +18,34 @@ import (
 	"github.com/sonalys/animeman/internal/utils"
 )
 
-// Page describes one paginated search over an RSS/torznab feed.
-type Page[T any] struct {
-	// PageSize is the number of items requested per page.
-	PageSize int
-	// Fetch fetches one page of raw items at the given offset.
-	Fetch func(ctx context.Context, offset int) ([]T, error)
-	// Map converts a filtered item into a torrent.
-	Map func(T) torrentsource.Torrent
+type Searcher struct {
+	pageSize int
+	fetch    func(ctx context.Context, offset int) ([]torrentsource.Torrent, error)
 }
 
-// Search runs the paginated loop and returns the mapped torrents.
-func (p Page[T]) Search(
+func New(
+	pageSize int,
+	fetch func(ctx context.Context, offset int) ([]torrentsource.Torrent, error),
+) Searcher {
+	return Searcher{
+		pageSize: pageSize,
+		fetch:    fetch,
+	}
+}
+
+// Search will return all relevant torrent results for the anime list entry and search options.
+// It will prioritize and paginate based on release group and video preferences, as well for the latest present tag.
+// It returns a sorted list of torrent candidates that are newer than the provided latest tag.
+func (p Searcher) Search(
 	ctx context.Context,
 	entry animelist.Entry,
 	opts torrentsource.SearchOptions,
 ) ([]torrentsource.Torrent, error) {
-	torrents := make([]torrentsource.Torrent, 0, p.PageSize)
+	torrents := make([]torrentsource.Torrent, 0, p.pageSize)
 	offset := 0
 
 	for {
-		items, err := p.Fetch(ctx, offset)
+		items, err := p.fetch(ctx, offset)
 		if err != nil {
 			return nil, err
 		}
@@ -47,20 +55,25 @@ func (p Page[T]) Search(
 		}
 
 		offset += len(items)
-		page := utils.Map(items, p.Map)
 
-		filtered := utils.Filter(page,
+		filtered := utils.Filter(items,
 			filterSeeders(1),
 			filterMetadata(entry, opts.Sources),
 			filterSources(opts.Sources),
 		)
 
-		if len(items) < p.PageSize || !shouldPaginate(filtered, opts.LatestTag) {
+		if len(items) < p.pageSize || !shouldPaginate(filtered, opts.LatestTag) {
 			break
 		}
 	}
 
 	torrents = prioritize(entry, torrents, opts)
+
+	log.
+		Ctx(ctx).
+		Debug().
+		Int("results", len(torrents)).
+		Msg("search results")
 
 	return torrents, nil
 }
@@ -73,8 +86,8 @@ func filterSources(sources []string) func(torrentsource.Torrent) bool {
 		if len(sources) == 0 {
 			return true
 		}
-		entry := parser.Parse(item.Title, 1, sources)
-		return entry.ReleaseGroup != "" && slices.Contains(sources, entry.ReleaseGroup)
+		return item.Metadata.ReleaseGroup != "" &&
+			slices.Contains(sources, item.Metadata.ReleaseGroup)
 	}
 }
 
@@ -95,8 +108,7 @@ func filterMetadata(entry animelist.Entry, sources []string) func(torrentsource.
 		// This can happen when certain sources mark S2 but use absolute ep number, so they start like S2E13 instead of S2E01.
 		// If there's only a single source, then this won't be a problem.
 		if len(sources) > 1 && entry.NumEpisodes != 0 {
-			metadata := parser.Parse(item.Title, 1, sources)
-			if metadata.Tag.FirstEpisode() > float64(entry.NumEpisodes) {
+			if item.Metadata.Tag.FirstEpisode() > float64(entry.NumEpisodes) {
 				return false
 			}
 		}
@@ -130,7 +142,7 @@ func shouldPaginate(items []torrentsource.Torrent, latestTag tags.Tag) bool {
 	return smallest.Compare(latestTag) > 0
 }
 
-// Prioritize sorts the parsed results by season/episode, title similarity, resolution, release group and seeders.
+// prioritize sorts the parsed results by season/episode, title similarity, resolution, release group and seeders.
 // it's important it returns a crescent season/episode list, so you don't download a recent episode and
 // don't download the oldest ones in case you don't have all episodes since your latestTag.
 func prioritize(

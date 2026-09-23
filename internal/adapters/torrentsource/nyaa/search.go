@@ -13,13 +13,12 @@ import (
 	"strings"
 	"time"
 
-	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/parser"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/sonalys/animeman/internal/utils"
 	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
-	"github.com/sonalys/animeman/internal/utils/pager"
+	"github.com/sonalys/animeman/internal/utils/searcher"
 )
 
 const (
@@ -82,36 +81,36 @@ func (api *API) Search(
 	query := buildQuery(entry, opts)
 	values.Add("q", query.String())
 
-	pager := pager.Page[item]{
-		PageSize: pageSize,
-		Fetch: func(ctx context.Context, offset int) ([]item, error) {
-			return api.fetchPage(ctx, values, offset)
-		},
-		Map: func(item item) torrentsource.Torrent {
-			metadata := parser.Parse(item.Title, 1, opts.Sources)
-			publishedAt := utils.Must(time.Parse(time.RFC1123Z, item.PubDate))
-
-			return torrentsource.Torrent{
-				Title:       item.Title,
-				Link:        item.Link,
-				Seeders:     item.Seeders,
-				PublishedAt: publishedAt,
-				Hash:        item.InfoHash,
-				Metadata:    metadata,
+	searcher := searcher.New(
+		pageSize,
+		func(ctx context.Context, offset int) ([]torrentsource.Torrent, error) {
+			items, err := api.fetchPage(ctx, values, offset)
+			if err != nil {
+				return nil, err
 			}
+
+			page := utils.Map(items, func(item item) torrentsource.Torrent {
+				metadata := parser.Parse(item.Title, 1, opts.Sources)
+				publishedAt := utils.Must(time.Parse(time.RFC1123Z, item.PubDate))
+
+				return torrentsource.Torrent{
+					Title:       item.Title,
+					Link:        item.Link,
+					Seeders:     item.Seeders,
+					PublishedAt: publishedAt,
+					Hash:        item.InfoHash,
+					Metadata:    metadata,
+				}
+			})
+
+			return page, nil
 		},
-	}
+	)
 
-	torrents, err := pager.Search(ctx, entry, opts)
+	torrents, err := searcher.Search(ctx, entry, opts)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("searching torrent candidates: %w", err)
 	}
-
-	log.
-		Ctx(ctx).
-		Debug().
-		Int("results", len(torrents)).
-		Msg("search results")
 
 	return torrents, nil
 }
