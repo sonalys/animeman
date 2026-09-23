@@ -3,8 +3,8 @@ package discovery
 import (
 	"testing"
 
+	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
-	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 func Test_getLatestTag(t *testing.T) {

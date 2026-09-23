@@ -11,13 +11,13 @@ import (
 	"strings"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/pkg/math"
+	"github.com/sonalys/animeman/internal/pkg/parser"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/stringutils"
+	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils/math"
-	"github.com/sonalys/animeman/internal/utils/parser"
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
-	"github.com/sonalys/animeman/internal/utils/stringutils"
-	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 type Searcher struct {

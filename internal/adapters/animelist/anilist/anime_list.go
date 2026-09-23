@@ -10,10 +10,10 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/pkg/http/roundtripper"
+	"github.com/sonalys/animeman/internal/pkg/must"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/utils/http/roundtripper"
-	"github.com/sonalys/animeman/internal/utils/must"
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 type (

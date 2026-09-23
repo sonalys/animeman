@@ -8,11 +8,11 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
-	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // RunDiscovery controls the discovery routine,

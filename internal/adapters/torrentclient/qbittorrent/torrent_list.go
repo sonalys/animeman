@@ -8,8 +8,8 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/sonalys/animeman/internal/pkg/must"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
-	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 func convertTorrent(in []Torrent) []torrentclient.Torrent {

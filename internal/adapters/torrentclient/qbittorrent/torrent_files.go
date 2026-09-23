@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"net/url"
 
-	"github.com/sonalys/animeman/internal/utils/must"
+	"github.com/sonalys/animeman/internal/pkg/must"
 )
 
 type torrentFile struct {

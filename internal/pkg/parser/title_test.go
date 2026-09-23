@@ -3,7 +3,7 @@ package parser
 import (
 	"testing"
 
-	"github.com/sonalys/animeman/internal/utils/tags"
+	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/stretchr/testify/require"
 )
 

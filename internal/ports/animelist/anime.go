@@ -6,8 +6,8 @@ import (
 	"sort"
 	"time"
 
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
-	"github.com/sonalys/animeman/internal/utils/stringutils"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/stringutils"
 )
 
 type (

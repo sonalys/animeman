@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 )
 
 type (

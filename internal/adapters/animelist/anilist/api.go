@@ -11,8 +11,8 @@ import (
 	"sync"
 	"time"
 
+	"github.com/sonalys/animeman/internal/pkg/must"
 	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 const API_URL = "https://graphql.anilist.co"

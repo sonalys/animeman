@@ -13,13 +13,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sonalys/animeman/internal/pkg/must"
+	"github.com/sonalys/animeman/internal/pkg/nyaaquerier"
+	"github.com/sonalys/animeman/internal/pkg/parser"
+	"github.com/sonalys/animeman/internal/pkg/searcher"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils/must"
-	"github.com/sonalys/animeman/internal/utils/nyaaquerier"
-	"github.com/sonalys/animeman/internal/utils/parser"
-	"github.com/sonalys/animeman/internal/utils/searcher"
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 const (

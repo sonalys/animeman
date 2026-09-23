@@ -10,8 +10,8 @@ import (
 	"time"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/pkg/must"
 	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/utils/must"
 )
 
 // Temporary solution for finding the correct time format for MAL entries.

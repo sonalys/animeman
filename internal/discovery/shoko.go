@@ -6,12 +6,12 @@ import (
 	"path"
 
 	"github.com/rs/zerolog/log"
+	"github.com/sonalys/animeman/internal/pkg/stringutils"
+	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils/stringutils"
-	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // RunShokoIntegration links shoko's unrecognized files to episodes,

@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"testing"
 
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/stretchr/testify/require"
 )
 

@@ -10,9 +10,9 @@ import (
 	"net/http"
 	"net/url"
 
+	"github.com/sonalys/animeman/internal/pkg/must"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/ports/shoko"
-	"github.com/sonalys/animeman/internal/utils/must"
-	"github.com/sonalys/animeman/internal/utils/sliceutils"
 )
 
 const (

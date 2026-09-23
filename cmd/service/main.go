@@ -20,12 +20,12 @@ import (
 	"github.com/sonalys/animeman/internal/adapters/torrentsource/nekobt"
 	"github.com/sonalys/animeman/internal/adapters/torrentsource/nyaa"
 	"github.com/sonalys/animeman/internal/discovery"
+	"github.com/sonalys/animeman/internal/pkg/coalesce"
+	"github.com/sonalys/animeman/internal/pkg/http/roundtripper"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
-	"github.com/sonalys/animeman/internal/utils/coalesce"
-	"github.com/sonalys/animeman/internal/utils/http/roundtripper"
 	"golang.org/x/time/rate"
 )
 

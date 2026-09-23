@@ -4,9 +4,9 @@ import (
 	"context"
 	"time"
 
+	"github.com/sonalys/animeman/internal/pkg/parser"
+	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
-	"github.com/sonalys/animeman/internal/utils/parser"
-	"github.com/sonalys/animeman/internal/utils/tags"
 )
 
 // Torrent is a normalized torrent entry returned by any torrent source.

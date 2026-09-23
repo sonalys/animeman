@@ -5,7 +5,7 @@ import (
 	"io"
 	"net/http"
 
-	"github.com/sonalys/animeman/internal/utils/must"
+	"github.com/sonalys/animeman/internal/pkg/must"
 )
 
 func (api *API) Version(ctx context.Context) (string, error) {
