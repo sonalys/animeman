@@ -40,7 +40,23 @@ func (p Searcher) Search(
 ) ([]torrentsource.Torrent, error) {
 	torrents := make([]torrentsource.Torrent, 0, p.pageSize)
 	offset := 0
+
 	filterStats := newFilterStats()
+
+	unregisteredFilters := []FilterFunc{
+		minSeeders(1),
+		matchStartDate(entry),
+		matchEpisodeCount(entry, opts.Sources),
+		matchSources(opts.Sources),
+		newerEpisode(opts.LatestTag),
+	}
+	unregisteredFilters = append(unregisteredFilters, p.additionalFilters...)
+	registeredFilters := sliceutils.Map(
+		unregisteredFilters,
+		func(f FilterFunc) func(torrentsource.Torrent) bool {
+			return f(filterStats.Inc)
+		},
+	)
 
 	for {
 		items, err := p.fetch(ctx, offset)
@@ -60,25 +76,8 @@ func (p Searcher) Search(
 
 		offset += len(items)
 
-		filters := []FilterFunc{
-			minSeeders(1),
-			matchStartDate(entry),
-			matchEpisodeCount(entry, opts.Sources),
-			matchSources(opts.Sources),
-			newerEpisode(opts.LatestTag),
-		}
-
-		filters = append(filters, p.additionalFilters...)
-
-		filtered := sliceutils.Filter(
-			items,
-			sliceutils.Map(
-				filters,
-				func(f FilterFunc) func(torrentsource.Torrent) bool {
-					return f(filterStats.Inc)
-				},
-			)...,
-		)
+		filtered := sliceutils.Filter(items, registeredFilters...)
+		torrents = append(torrents, filtered...)
 
 		if len(items) < p.pageSize || !shouldPaginate(filtered, opts.LatestTag) {
 			break
