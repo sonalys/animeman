@@ -108,6 +108,8 @@ func (api *API) AutoMatchFile(ctx context.Context, fileID int) (bool, error) {
 		return true, nil
 	case http.StatusNoContent:
 		return false, nil
+	case http.StatusUnauthorized, http.StatusForbidden:
+		return false, shoko.ErrForbidden
 	default:
 		return false, fmt.Errorf(
 			"auto matching file failed: %s: %s",
@@ -120,6 +122,8 @@ func (api *API) AutoMatchFile(ctx context.Context, fileID int) (bool, error) {
 // ListUnknownFiles implements [shoko.Shoko].
 func (api *API) ListUnknownFiles(ctx context.Context) ([]shoko.File, error) {
 	values := url.Values{
+		"page":         {"1"},
+		"pageSize":     {"100"},
 		"include_only": {"Unrecognized"},
 	}
 
@@ -127,8 +131,6 @@ func (api *API) ListUnknownFiles(ctx context.Context) ([]shoko.File, error) {
 	if err != nil {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
-
-	req.Header.Add("Accept", "application/json")
 
 	req.URL.RawQuery = values.Encode()
 
@@ -138,12 +140,17 @@ func (api *API) ListUnknownFiles(ctx context.Context) ([]shoko.File, error) {
 	}
 	defer resp.Body.Close()
 
-	if resp.StatusCode != http.StatusOK {
+	switch resp.StatusCode {
+	case http.StatusOK:
+	case http.StatusUnauthorized, http.StatusForbidden:
+		return nil, shoko.ErrForbidden
+	default:
 		return nil, fmt.Errorf(
 			"linking file failed: %s: %s",
 			resp.Status,
 			string(must.Must(io.ReadAll(resp.Body))),
 		)
+
 	}
 
 	var body struct {

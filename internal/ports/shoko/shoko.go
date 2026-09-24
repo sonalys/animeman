@@ -2,8 +2,11 @@ package shoko
 
 import (
 	"context"
+	"errors"
 	"time"
 )
+
+var ErrForbidden = errors.New("forbidden")
 
 type (
 	// Episode is an AniDB episode known by shoko.

@@ -2,6 +2,7 @@ package discovery
 
 import (
 	"context"
+	"errors"
 	"sync/atomic"
 	"time"
 
@@ -101,11 +102,16 @@ func (c *Controller) runShokoLoop(ctx context.Context) {
 	defer ticker.Stop()
 
 	for {
+		if err := c.RunShokoIntegration(ctx); err != nil {
+			if errors.Is(err, shoko.ErrForbidden) {
+				log.Error().Msg("shoko is unauthorized, routine will stop")
+				return
+			}
+			log.Error().Msgf("shoko integration failed: %s", err)
+		}
+
 		select {
 		case <-ticker.C:
-			if err := c.RunShokoIntegration(ctx); err != nil {
-				log.Error().Msgf("shoko integration failed: %s", err)
-			}
 		case <-ctx.Done():
 			return
 		}
