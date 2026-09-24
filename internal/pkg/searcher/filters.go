@@ -4,8 +4,8 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
-	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
@@ -34,12 +34,12 @@ func matchSources(
 				return true
 			}
 
-			if torrent.Metadata.ReleaseGroup == "" {
+			if torrent.Metadata.Group == "" {
 				ignoreCounter("missingReleaseGroup")
 				return false
 			}
 
-			if slices.Contains(normalizedSources, strings.ToLower(torrent.Metadata.ReleaseGroup)) {
+			if slices.Contains(normalizedSources, strings.ToLower(torrent.Metadata.Group)) {
 				return true
 			}
 
@@ -91,7 +91,7 @@ func matchEpisodeCount(
 			// This can happen when certain sources mark S2 but use absolute ep number, so they start like S2E13 instead of S2E01.
 			// If there's only a single source, then this won't be a problem.
 			if len(sources) > 1 && entry.NumEpisodes != 0 {
-				if torrent.Metadata.Tag.FirstEpisode() > float64(entry.NumEpisodes) {
+				if torrent.Metadata.Tags.LastEpisode() > float32(entry.NumEpisodes) {
 					ignoreCounter("epMismatch")
 					return false
 				}
@@ -103,7 +103,7 @@ func matchEpisodeCount(
 }
 
 func newerEpisode(
-	latestTag tags.Tag,
+	latestTag metadata.Tag,
 ) func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
 	return func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
 		return func(torrent torrentsource.Torrent) bool {
@@ -111,7 +111,8 @@ func newerEpisode(
 				return true
 			}
 
-			if !torrent.Metadata.Tag.IsZero() && torrent.Metadata.Tag.Compare(latestTag) > 0 {
+			if !torrent.Metadata.Tags.IsZero() &&
+				torrent.Metadata.Tags.Compare(latestTag) > 0 {
 				return true
 			}
 

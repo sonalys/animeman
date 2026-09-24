@@ -157,13 +157,8 @@ func (c *Controller) DiscoverEntry(
 	for _, parsed := range results {
 		logger.
 			Debug().
-			Str("torrentTitle", parsed.Title).
-			Str("parsedTitle", parsed.Metadata.ShowTitle).
-			Str("tag", parsed.Metadata.Tag.String()).
-			Str("seriesTag", parsed.Metadata.BuildSeriesTag()).
-			Str("releaseGroup", parsed.Metadata.ReleaseGroup).
-			Int("resolution", parsed.Metadata.VerticalResolution).
-			Msg("parsed torrent result")
+			Any("torrent", parsed).
+			Msg("found torrent candidate")
 	}
 
 	foundNewEpisodes := len(results) > 0
@@ -183,8 +178,7 @@ func (c *Controller) DiscoverEntry(
 
 		logger.
 			Info().
-			Str("torrentTitle", torrentMetadata.Title).
-			Str("tag", torrentMetadata.Metadata.Tag.String()).
+			Str("name", torrentMetadata.Title).
 			Msg("added torrent to client")
 
 		if c.dep.Shoko != nil && hash != "" {

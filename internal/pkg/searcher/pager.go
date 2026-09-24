@@ -5,9 +5,8 @@ import (
 	"slices"
 
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/pkg/parser"
+	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
-	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
@@ -90,7 +89,7 @@ func (p Searcher) Search(
 
 	// Pick first candidate for each tag, drop the rest.
 	torrents = slices.CompactFunc(torrents, func(first, second torrentsource.Torrent) bool {
-		if first.Metadata.Tag.Compare(second.Metadata.Tag) == 0 {
+		if first.Metadata.Tags.Compare(second.Metadata.Tags) == 0 {
 			filterStats.Inc("duplicatedTag")
 			return true
 		}
@@ -103,7 +102,7 @@ func (p Searcher) Search(
 
 	// Remove tags containing other tags, like bundles.
 	torrents = slices.CompactFunc(torrents, func(first, second torrentsource.Torrent) bool {
-		if first.Metadata.Tag.Contains(second.Metadata.Tag) {
+		if first.Metadata.Tags.Contains(second.Metadata.Tags) {
 			filterStats.Inc("bundled")
 			return true
 		}
@@ -127,7 +126,7 @@ func (p Searcher) Search(
 // shouldPaginate reports whether the source may have more results after this
 // page. nekoBT returns newest results first, so paginate while even the
 // smallest tag found remains newer than the latest downloaded tag.
-func shouldPaginate(items []torrentsource.Torrent, latestTag tags.Tag) bool {
+func shouldPaginate(items []torrentsource.Torrent, latestTag metadata.Tag) bool {
 	if latestTag.IsZero() {
 		// Nothing downloaded yet: the first page already has everything.
 		return false
@@ -137,12 +136,13 @@ func shouldPaginate(items []torrentsource.Torrent, latestTag tags.Tag) bool {
 		return false
 	}
 
-	var smallest tags.Tag
+	var smallest metadata.Tags
 
 	for _, it := range items {
-		tag := parser.Parse(it.Title, 1, nil).Tag
-		if smallest.IsZero() || tag.Compare(smallest) < 0 {
-			smallest = tag
+		tags := metadata.ParseTags(it.Title)
+
+		if smallest.IsZero() || tags.Compare(smallest) < 0 {
+			smallest = tags
 		}
 	}
 

@@ -15,9 +15,9 @@ import (
 	"time"
 	"unicode"
 
+	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/pkg/must"
 	"github.com/sonalys/animeman/internal/pkg/nyaaquerier"
-	"github.com/sonalys/animeman/internal/pkg/parser"
 	"github.com/sonalys/animeman/internal/pkg/searcher"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
@@ -75,8 +75,8 @@ func (api *API) Search(
 	fallbackSeason := 1
 
 	for _, title := range entry.Titles {
-		if season := parser.ParseSeason(title); season > 0 {
-			fallbackSeason = season
+		if tags := metadata.ParseTags(title); tags.LastEpisode() > 0 {
+			fallbackSeason = tags.LastSeason()
 			break
 		}
 	}
@@ -96,7 +96,7 @@ func (api *API) Search(
 					Seeders:     item.seeders(),
 					PublishedAt: must.Must(time.Parse(time.RFC1123Z, item.PubDate)),
 					Hash:        item.attr("infohash"),
-					Metadata:    parser.Parse(item.Title, fallbackSeason, opts.Sources),
+					Metadata:    metadata.Parse(item.Title, fallbackSeason, opts.Sources),
 				}
 			})
 

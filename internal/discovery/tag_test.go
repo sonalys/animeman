@@ -3,8 +3,9 @@ package discovery
 import (
 	"testing"
 
-	"github.com/sonalys/animeman/internal/pkg/tags"
+	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
+	"github.com/stretchr/testify/require"
 )
 
 func Test_getLatestTag(t *testing.T) {
@@ -14,7 +15,7 @@ func Test_getLatestTag(t *testing.T) {
 	tests := []struct {
 		name string
 		args args
-		want tags.Tag
+		want metadata.Tag
 	}{
 		{
 			name: "batch and season",
@@ -25,9 +26,9 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S1E3"}},
 				},
 			},
-			want: tags.Tag{
-				Seasons:  []int{1},
-				Episodes: []float64{1, 13},
+			want: metadata.Tag{
+				Number:   1,
+				Episodes: []metadata.EpisodeRange{{Start: 1, End: 13}},
 			},
 		},
 		{
@@ -38,9 +39,9 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"solo leveling", "S1E7.5"}},
 				},
 			},
-			want: tags.Tag{
-				Seasons:  []int{1},
-				Episodes: []float64{7.5},
+			want: metadata.Tag{
+				Number:   1,
+				Episodes: []metadata.EpisodeRange{{Start: 7.5}},
 			},
 		},
 		{
@@ -51,13 +52,13 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S3E2"}},
 				},
 			},
-			want: tags.Tag{
-				Seasons: []int{3},
+			want: metadata.Tag{
+				Number: 3,
 			},
 		},
 		{
 			name: "empty",
-			want: tags.Tag{},
+			want: metadata.Tag{},
 		},
 		{
 			name: "one tag",
@@ -66,8 +67,8 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S01"}},
 				},
 			},
-			want: tags.Tag{
-				Seasons: []int{1},
+			want: metadata.Tag{
+				Number: 1,
 			},
 		},
 		{
@@ -79,9 +80,9 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S1E3"}},
 				},
 			},
-			want: tags.Tag{
-				Seasons:  []int{1},
-				Episodes: []float64{3},
+			want: metadata.Tag{
+				Number:   1,
+				Episodes: []metadata.EpisodeRange{{Start: 3}},
 			},
 		},
 		{
@@ -93,9 +94,9 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S1E3"}},
 				},
 			},
-			want: tags.Tag{
-				Seasons:  []int{3},
-				Episodes: []float64{1},
+			want: metadata.Tag{
+				Number:   3,
+				Episodes: []metadata.EpisodeRange{{Start: 1}},
 			},
 		},
 		{
@@ -107,8 +108,8 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S1E3"}},
 				},
 			},
-			want: tags.Tag{
-				Seasons: []int{3},
+			want: metadata.Tag{
+				Number: 3,
 			},
 		},
 		{
@@ -119,16 +120,15 @@ func Test_getLatestTag(t *testing.T) {
 					{Tags: []string{"S4"}},
 				},
 			},
-			want: tags.Tag{
-				Seasons: []int{4},
+			want: metadata.Tag{
+				Number: 4,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			if got := getLatestTag(tt.args.torrents); got.Compare(tt.want) != 0 {
-				t.Errorf("getLatestTag() = %v, want %v", got, tt.want)
-			}
+			got := getLatestTag(tt.args.torrents)
+			require.Equal(t, tt.want, got)
 		})
 	}
 }

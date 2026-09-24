@@ -25,7 +25,7 @@ func prioritize(
 		second := results[j]
 
 		// Sort first by season/episode tag.
-		cmp := first.Metadata.Tag.Compare(second.Metadata.Tag)
+		cmp := first.Metadata.Tags.Compare(second.Metadata.Tags)
 		if cmp != 0 {
 			return cmp < 0
 		}
@@ -35,7 +35,7 @@ func prioritize(
 			sliceutils.Map(entry.Titles, func(curTitle string) float64 {
 				return stringutils.CalculateTextSimilarity(
 					curTitle,
-					first.Metadata.ShowTitle,
+					first.Metadata.PrimaryTitle,
 					torrentsource.IgnoreCharset,
 				)
 			})...)
@@ -44,7 +44,7 @@ func prioritize(
 			sliceutils.Map(entry.Titles, func(curTitle string) float64 {
 				return stringutils.CalculateTextSimilarity(
 					curTitle,
-					second.Metadata.ShowTitle,
+					second.Metadata.PrimaryTitle,
 					torrentsource.IgnoreCharset,
 				)
 			})...)
@@ -64,20 +64,20 @@ func prioritize(
 		}
 
 		// Then resolution.
-		cmp = second.Metadata.VerticalResolution - first.Metadata.VerticalResolution
+		cmp = first.Metadata.Resolutions.Compare(second.Metadata.Resolutions)
 		if cmp != 0 {
 			return cmp < 0
 		}
 
 		// Then source.
 		if len(opts.Sources) > 0 &&
-			first.Metadata.ReleaseGroup != second.Metadata.ReleaseGroup {
+			first.Metadata.Group != second.Metadata.Group {
 			cmp = slices.Index(
 				opts.Sources,
-				first.Metadata.ReleaseGroup,
+				first.Metadata.Group,
 			) - slices.Index(
 				opts.Sources,
-				second.Metadata.ReleaseGroup,
+				second.Metadata.Group,
 			)
 			if cmp != 0 {
 				return cmp < 0

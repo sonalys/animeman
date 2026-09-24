@@ -1,30 +1,36 @@
 package discovery
 
 import (
+	"slices"
 	"strings"
 
-	"github.com/sonalys/animeman/internal/pkg/parser"
-	"github.com/sonalys/animeman/internal/pkg/tags"
+	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 )
 
 // getLatestTag is a pure function implementation for fetching the latest tag from a list of torrent entries.
-func getLatestTag(torrents []torrentclient.Torrent) tags.Tag {
+func getLatestTag(torrents []torrentclient.Torrent) metadata.Tag {
 	if len(torrents) == 0 {
-		return tags.Tag{}
+		return metadata.Tag{}
 	}
 
-	var latestTag tags.Tag
+	var latestTag metadata.Tag
 
 	for _, torrent := range torrents {
 		seasonEpisodeTag, ok := findSeasonEpisodeTag(torrent.Tags)
 		if !ok {
 			continue
 		}
-		tag := parser.Parse(seasonEpisodeTag, 1, nil).Tag
 
-		if latestTag.IsZero() || tag.Compare(latestTag) > 0 {
-			latestTag = tag
+		tags := metadata.ParseTags(seasonEpisodeTag)
+		if len(tags) == 0 {
+			continue
+		}
+
+		slices.SortFunc(tags, func(a, b metadata.Tag) int { return a.Compare(b) })
+
+		if latestTag.IsZero() || tags[0].Compare(latestTag) > 0 {
+			latestTag = tags[0]
 		}
 	}
 

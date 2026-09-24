@@ -4,8 +4,7 @@ import (
 	"context"
 	"time"
 
-	"github.com/sonalys/animeman/internal/pkg/parser"
-	"github.com/sonalys/animeman/internal/pkg/tags"
+	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 )
 
@@ -17,7 +16,7 @@ type Torrent struct {
 	Hash        string
 	PublishedAt time.Time
 
-	Metadata parser.Metadata
+	Metadata metadata.Metadata
 }
 
 // SearchOptions controls how a source searches for torrents of an entry.
@@ -28,7 +27,7 @@ type SearchOptions struct {
 	// LatestTag is the newest season/episode tag already downloaded in the
 	// torrent client. Sources may paginate past it when the first page only
 	// contains older episodes.
-	LatestTag tags.Tag
+	LatestTag metadata.Tag
 }
 
 // Source is the port implemented by every torrent source (nyaa, nekobt, ...).

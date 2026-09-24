@@ -5,9 +5,8 @@ import (
 	"time"
 
 	"github.com/expr-lang/expr"
+	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/pkg/must"
-	"github.com/sonalys/animeman/internal/pkg/parser"
-	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 	"github.com/stretchr/testify/require"
@@ -31,8 +30,8 @@ func TestController_buildTorrentName(t *testing.T) {
 								[
 									format("[%s]", releaseGroup), 
 									title, 
-									tag.LastEpisode() > 0 ? tag.String() : "", 
-									format("[%dp]", verticalResolution),
+									tag.IsZero() ? "" : tag.String(), 
+									format("[%s]", verticalResolution),
 									format("%v", map(labels, upper(#))),
 								], 
 								# != "",
@@ -44,12 +43,14 @@ func TestController_buildTorrentName(t *testing.T) {
 			},
 			title: "My Anime Title",
 			parsedNyaa: torrentsource.Torrent{
-				Metadata: parser.Metadata{
-					ReleaseGroup:       "release-group",
-					Labels:             []string{"HEVC", "10bit"},
-					Tag:                tags.Tag{Seasons: []int{1}, Episodes: []float64{1}},
-					ShowTitle:              "My Anime Title",
-					VerticalResolution: 1080,
+				Metadata: metadata.Metadata{
+					Group:  "release-group",
+					Labels: []string{"HEVC", "10bit"},
+					Tags: []metadata.Tag{
+						{Number: 1, Episodes: []metadata.EpisodeRange{{Start: 1}}},
+					},
+					PrimaryTitle: "My Anime Title",
+					Resolutions:  []string{"1080p"},
 				},
 			},
 			want: "[release-group] My Anime Title S1E1 [1080p] [HEVC 10BIT]",

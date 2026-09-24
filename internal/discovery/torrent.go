@@ -8,9 +8,9 @@ import (
 
 	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/internal/pkg/parser"
+	"github.com/sonalys/animeman/internal/pkg/metadata"
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/pkg/stringutils"
-	"github.com/sonalys/animeman/internal/pkg/tags"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
@@ -20,13 +20,18 @@ import (
 func (c *Controller) getLatestDownloadedTag(
 	ctx context.Context,
 	entry animelist.Entry,
-) (tags.Tag, error) {
+) (metadata.Tag, error) {
 	logger := getLogger(ctx)
 	torrents := make([]torrentclient.Torrent, 0, 100)
 
-	for _, title := range entry.Titles {
+	cleanedTitles := sliceutils.Map(entry.Titles, func(title string) string {
+		metadata := metadata.Parse(title, 1, nil)
+		return metadata.PrimaryTitle
+	})
+
+	for _, title := range cleanedTitles {
 		req := &torrentclient.ListTorrentConfig{
-			Tag: new(parser.BuildTitleTag(title)),
+			Tag: new("!" + strings.ToLower(title)),
 		}
 		resp, err := c.dep.TorrentClient.List(ctx, req)
 
@@ -40,7 +45,7 @@ func (c *Controller) getLatestDownloadedTag(
 			Msg("identified entry tag on torrent client")
 
 		if err != nil {
-			return tags.Tag{}, fmt.Errorf("listing torrents: %w", err)
+			return metadata.Tag{}, fmt.Errorf("listing torrents: %w", err)
 		}
 
 		torrents = append(torrents, resp...)
@@ -97,15 +102,15 @@ func (c *Controller) buildTorrentName(title string, torrent torrentsource.Torren
 			return fmt.Sprintf(format, input)
 		},
 		"title":              title,
-		"releaseGroup":       torrent.Metadata.ReleaseGroup,
+		"releaseGroup":       torrent.Metadata.Group,
 		"labels":             torrent.Metadata.Labels,
-		"tag":                torrent.Metadata.Tag,
-		"verticalResolution": torrent.Metadata.VerticalResolution,
+		"tag":                torrent.Metadata.Tags,
+		"verticalResolution": torrent.Metadata.Resolutions.Highest(),
 	}
 
 	outputName, err := expr.Run(c.dep.Config.RenameFormat, env)
-	if err != nil {
-		return fmt.Sprintf("%s - %s", title, torrent.Metadata.Tag.String())
+	if err != nil || outputName == "" {
+		return torrent.Title
 	}
 
 	fmt.Fprintf(&b, "%v", outputName)
@@ -123,14 +128,8 @@ func (c *Controller) AddTorrentEntry(
 ) (string, error) {
 	selectedTitle := animeListEntry.GetBestTitle()
 
-	meta := torrent.Metadata.Clone()
-	// Use nyaa metadata, but with anime list title.
-	// This behavior avoids different sources creating different tags and downloading the same episode twice.
-	meta.ShowTitle = selectedTitle
-	tags := meta.BuildTorrentTags()
-
 	req := &torrentclient.AddTorrentConfig{
-		Tags:     tags,
+		Tags:     nil,
 		URLs:     []string{torrent.Link},
 		Category: c.dep.Config.Category,
 		SavePath: c.buildTorrentDownloadPath(selectedTitle),
@@ -147,9 +146,7 @@ func (c *Controller) AddTorrentEntry(
 	log.
 		Ctx(ctx).
 		Debug().
-		Str("title", selectedTitle).
-		Str("torrentName", torrent.Title).
-		Strs("tags", tags).
+		Str("name", torrent.Title).
 		Msg("added torrent")
 
 	return torrent.Hash, nil
@@ -170,11 +167,15 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context, entries []animel
 	}
 
 	for _, torrent := range torrents {
-		meta := parser.Parse(torrent.Name, 1, nil)
+		metadata := metadata.Parse(torrent.Name, 1, nil)
+
 		// The torrent name might be based on an alternative title (e.g. "Show Name: Second Season").
 		// Normalize it back to the anime list title so tag-based latest episode detection works.
-		meta.ShowTitle = normalizeTitle(meta.ShowTitle, entries)
-		tags := meta.BuildTorrentTags()
+		metadata.PrimaryTitle = normalizeTitle(metadata.PrimaryTitle, entries)
+		tags := []string{
+			"!" + strings.ToLower(metadata.PrimaryTitle),
+			metadata.Tags.String(),
+		}
 
 		if err := c.dep.TorrentClient.AddTorrentTags(
 			ctx,

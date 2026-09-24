@@ -13,9 +13,9 @@ import (
 	"strings"
 	"time"
 
+	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/pkg/must"
 	"github.com/sonalys/animeman/internal/pkg/nyaaquerier"
-	"github.com/sonalys/animeman/internal/pkg/parser"
 	"github.com/sonalys/animeman/internal/pkg/searcher"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/pkg/stringutils"
@@ -86,11 +86,16 @@ func (api *API) Search(
 	fallbackSeason := 1
 
 	for _, title := range entry.Titles {
-		if season := parser.ParseSeason(title); season > 0 {
-			fallbackSeason = season
+		if tags := metadata.ParseTags(title); tags.LastSeason() > 0 {
+			fallbackSeason = tags.LastSeason()
 			break
 		}
 	}
+
+	cleanedTitles := sliceutils.Map(entry.Titles, func(title string) string {
+		metadata := metadata.Parse(title, fallbackSeason, opts.Sources)
+		return metadata.PrimaryTitle
+	})
 
 	searcher := searcher.New(
 		pageSize,
@@ -101,16 +106,13 @@ func (api *API) Search(
 			}
 
 			page := sliceutils.Map(items, func(item item) torrentsource.Torrent {
-				metadata := parser.Parse(item.Title, fallbackSeason, opts.Sources)
-				publishedAt := must.Must(time.Parse(time.RFC1123Z, item.PubDate))
-
 				return torrentsource.Torrent{
 					Title:       item.Title,
 					Link:        item.Link,
 					Seeders:     item.Seeders,
-					PublishedAt: publishedAt,
+					PublishedAt: must.Must(time.Parse(time.RFC1123Z, item.PubDate)),
 					Hash:        item.InfoHash,
-					Metadata:    metadata,
+					Metadata:    metadata.Parse(item.Title, fallbackSeason, opts.Sources),
 				}
 			})
 
@@ -118,16 +120,10 @@ func (api *API) Search(
 		},
 		func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
 			return func(torrent torrentsource.Torrent) bool {
-				for _, title := range entry.Titles {
-					// Remove season information from the original title, as it is not always present in the nyaa entry.
-					originalTitleWithoutSeason := parser.StripSeason(title)
-					originalTitleWithoutSubtitle := parser.StripSubtitle(
-						originalTitleWithoutSeason,
-					)
-
+				for _, title := range cleanedTitles {
 					if stringutils.MatchPrefixFlexible(
-						torrent.Metadata.ShowTitle,
-						originalTitleWithoutSubtitle,
+						torrent.Metadata.PrimaryTitle,
+						title,
 						torrentsource.IgnoreCharset,
 					) {
 						return true
@@ -152,11 +148,13 @@ func (api *API) Search(
 // buildQuery builds the `q` search query from the entry titles,
 // qualities, sources and the user suffix, using the nyaaquerier builder.
 func buildQuery(entry animelist.Entry, opt torrentsource.SearchOptions) nyaaquerier.And {
-	// For title we filter for english and original titles.
-	sanitizedTitles := sliceutils.ForEach(entry.Titles,
+	cleanedTitles := sliceutils.Map(entry.Titles, func(title string) string {
+		metadata := metadata.Parse(title, 1, opt.Sources)
+		return metadata.PrimaryTitle
+	})
+
+	sanitizedTitles := sliceutils.ForEach(cleanedTitles,
 		strings.ToLower,
-		parser.StripTitle,
-		parser.StripSubtitle,
 		nyaaquerier.Sanitize,
 	)
 
