@@ -283,15 +283,16 @@ func TestCorpusTitlesAgainstJSON(t *testing.T) {
 			})
 		}
 
-		file, err := os.Create(fn)
-		require.NoError(t, err)
-		defer file.Close()
+		// Utility to override expected results.
+		// file, err := os.Create(fn)
+		// require.NoError(t, err)
+		// defer file.Close()
 
-		encoder := json.NewEncoder(file)
-		encoder.SetIndent("", "\t")
+		// encoder := json.NewEncoder(file)
+		// encoder.SetIndent("", "\t")
 
-		err = encoder.Encode(corpus)
-		require.NoError(t, err)
+		// err = encoder.Encode(corpus)
+		// require.NoError(t, err)
 	}
 }
 
