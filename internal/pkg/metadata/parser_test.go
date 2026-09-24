@@ -11,6 +11,7 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
 
@@ -177,32 +178,32 @@ func TestTokenizerPreservesStructure(t *testing.T) {
 }
 
 type goldenResult struct {
-	Group             string            `json:"group"`
-	PrimaryTitle      string            `json:"primaryTitle"`
-	AlternateTitles   []string          `json:"alternateTitles"`
-	EpisodeTitle      string            `json:"episodeTitle"`
-	Year              int               `json:"year"`
-	Seasons           []Tag             `json:"seasons"`
-	IsBatch           bool              `json:"isBatch"`
-	IsComplete        bool              `json:"isComplete"`
-	IsRemastered      bool              `json:"isRemastered"`
-	IsRepack          bool              `json:"isRepack"`
-	Resolutions       []string          `json:"resolutions"`
-	Dimensions        []string          `json:"dimensions"`
-	BitDepths         []string          `json:"bitDepths"`
-	Sources           []string          `json:"sources"`
-	Codecs            []string          `json:"codecs"`
-	AudioCodecs       []string          `json:"audioCodecs"`
-	AudioFlags        []string          `json:"audioFlags"`
-	SubtitleFlags     []string          `json:"subtitleFlags"`
-	SubtitleLanguages []string          `json:"subtitleLanguages"`
-	AudioLanguages    []string          `json:"audioLanguages"`
-	Encoders          []string          `json:"encoders"`
-	ReleaseFlags      []string          `json:"releaseFlags"`
-	Tags              []string          `json:"tags"`
-	Checksum          string            `json:"checksum"`
-	TagFields         map[string]string `json:"tagFields"`
-	Unknown           []string          `json:"unknown"`
+	Group             string            `json:"group,omitzero"`
+	PrimaryTitle      string            `json:"primaryTitle,omitzero"`
+	AlternateTitles   []string          `json:"alternateTitles,omitzero"`
+	EpisodeTitle      string            `json:"episodeTitle,omitzero"`
+	Year              int               `json:"year,omitzero"`
+	Seasons           []Tag             `json:"seasons,omitzero"`
+	IsBatch           bool              `json:"isBatch,omitzero"`
+	IsComplete        bool              `json:"isComplete,omitzero"`
+	IsRemastered      bool              `json:"isRemastered,omitzero"`
+	IsRepack          bool              `json:"isRepack,omitzero"`
+	Resolutions       []string          `json:"resolutions,omitzero"`
+	Dimensions        []string          `json:"dimensions,omitzero"`
+	BitDepths         []string          `json:"bitDepths,omitzero"`
+	Sources           []string          `json:"sources,omitzero"`
+	Codecs            []string          `json:"codecs,omitzero"`
+	AudioCodecs       []string          `json:"audioCodecs,omitzero"`
+	AudioFlags        []string          `json:"audioFlags,omitzero"`
+	SubtitleFlags     []string          `json:"subtitleFlags,omitzero"`
+	SubtitleLanguages []string          `json:"subtitleLanguages,omitzero"`
+	AudioLanguages    []string          `json:"audioLanguages,omitzero"`
+	Encoders          []string          `json:"encoders,omitzero"`
+	ReleaseFlags      []string          `json:"releaseFlags,omitzero"`
+	Tags              []string          `json:"tags,omitzero"`
+	Checksum          string            `json:"checksum,omitzero"`
+	TagFields         map[string]string `json:"tagFields,omitzero"`
+	Unknown           []string          `json:"unknown,omitzero"`
 }
 
 type corpusCase struct {
@@ -270,15 +271,27 @@ func TestCorpusTitlesAgainstJSON(t *testing.T) {
 				}
 
 				r := Parse(tc.Input, 1, nil)
-				require.Equal(t, tc.Input, r.Raw)
+				assert.Equal(t, tc.Input, r.Raw)
 				got := projectResult(r)
 
 				ss, _ := json.Marshal(got.Seasons)
 				t.Logf("\"seasons\": %s", ss)
 
-				require.Equal(t, tc.Expected, got)
+				assert.Equal(t, tc.Expected, got)
+
+				corpus.Cases[i].Expected = got
 			})
 		}
+
+		file, err := os.Create(fn)
+		require.NoError(t, err)
+		defer file.Close()
+
+		encoder := json.NewEncoder(file)
+		encoder.SetIndent("", "\t")
+
+		err = encoder.Encode(corpus)
+		require.NoError(t, err)
 	}
 }
 

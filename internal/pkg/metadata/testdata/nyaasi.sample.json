@@ -1,3902 +1,2714 @@
 {
-  "cases": [
-    {
-      "input": "[Breeze] Mushoku Tensei S03E11 [1080p AV1 Dual Audio] | Jobless Reincarnation (weekly)",
-      "expected": {
-        "group": "Breeze",
-        "primaryTitle": "Mushoku Tensei",
-        "alternateTitles": [
-          "Jobless Reincarnation"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 3,
-            "Episodes": [
-              {
-                "Start": 11,
-                "Raw": "E11"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": [
-          "AV1"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "Dual Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Some-Stuffs] Pocket Monsters (2023) Wonder Voyage Latest News PV (1080p Opus) [04E48502]",
-      "expected": {
-        "group": "Some-Stuffs",
-        "primaryTitle": "Pocket Monsters Wonder Voyage Latest News PV",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 2023,
-        "episodes": null,
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": [
-          "Opus"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "04E48502",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Some-Stuffs] Pocket Monsters (2023) 137-150 (1080p HEVC 10-bit) [Mini-Batch] (PM23 | PM2023 | Pokemon 2023 | Pokémon Horizons The Series)",
-      "expected": {
-        "group": "Some-Stuffs",
-        "primaryTitle": "Pocket Monsters",
-        "alternateTitles": [
-          "PM23",
-          "PM2023",
-          "Pokemon 2023",
-          "Pokémon Horizons The Series"
-        ],
-        "episodeTitle": "",
-        "year": 2023,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 137,
-                "End": 150,
-                "Raw": "137-150"
-              }
-            ]
-          }
-        ],
-        "isBatch": true,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": [
-          "10-bit"
-        ],
-        "sources": null,
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Mini-Batch"
-        ],
-        "tags": [
-          "Mini-Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Some-Stuffs] Pocket Monsters (2023) 137-150 (1080p) [Mini-Batch] (PM23 | PM2023 | Pokemon 2023 | Pokémon Horizons The Series)",
-      "expected": {
-        "group": "Some-Stuffs",
-        "primaryTitle": "Pocket Monsters",
-        "alternateTitles": [
-          "PM23",
-          "PM2023",
-          "Pokemon 2023",
-          "Pokémon Horizons The Series"
-        ],
-        "episodeTitle": "",
-        "year": 2023,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 137,
-                "End": 150,
-                "Raw": "137-150"
-              }
-            ]
-          }
-        ],
-        "isBatch": true,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Mini-Batch"
-        ],
-        "tags": [
-          "Mini-Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Doomdos] - My Grave Nourishes My Cultivation - 17 [1080p IQ WEB-DL]",
-      "expected": {
-        "group": "Doomdos",
-        "primaryTitle": "My Grave Nourishes My Cultivation",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 17,
-                "Raw": " - 17 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL"
-        ],
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[geckyzz] Perfect Addiction - S01E12 (パーフェクトアディクション) [CTHP.WEB-DL 1080P AVC, AAC, M-SUB][890CBECA]",
-      "expected": {
-        "group": "geckyzz",
-        "primaryTitle": "Perfect Addiction",
-        "alternateTitles": [
-          "パーフェクトアディクション"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080P"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CTHP"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": [
-          "M-SUB"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "890CBECA",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Dogulwang - 12 (KA) [480p CR WEB-DL AVC AAC][B1579F00]",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Dogulwang",
-        "alternateTitles": [
-          "KA"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": " - 12 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "480p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "B1579F00",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Dogulwang - 12 (KA) [720p CR WEB-DL AVC AAC][C6D05075]",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Dogulwang",
-        "alternateTitles": [
-          "KA"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": " - 12 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "C6D05075",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Yameii] Saga of Tanya the Evil - S02E03 [English Dub] [CR WEB-DL 720p H264 AAC] [11F78772] (Youjo Senki II | Season 2 | S2)",
-      "expected": {
-        "group": "Yameii",
-        "primaryTitle": "Saga of Tanya the Evil",
-        "alternateTitles": [
-          "Youjo Senki II",
-          "Season 2",
-          "S2"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 3,
-                "Raw": "E03"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "English Dub"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "11F78772",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Yameii] Re:ZERO, Starting Life in Another World - S04E16 [English Dub] [CR WEB-DL 720p H264 AAC] [7B71E040] (Re:Zero kara Hajimeru Isekai Seikatsu Season 4 | S4)",
-      "expected": {
-        "group": "Yameii",
-        "primaryTitle": "Re:ZERO, Starting Life in Another World",
-        "alternateTitles": [
-          "Re:Zero kara Hajimeru Isekai Seikatsu Season 4",
-          "S4"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 16,
-                "Raw": "E16"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "English Dub"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "7B71E040",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Dogulwang - 12 (KA) [1080p CR WEB-DL AVC AAC][B83D98A6]",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Dogulwang",
-        "alternateTitles": [
-          "KA"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": " - 12 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "B83D98A6",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Yameii] Tomb Raider King - S01E10 [English Dub] [CR WEB-DL 720p H264 AAC] [87AC3A64] (Dogul Wang)",
-      "expected": {
-        "group": "Yameii",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogul Wang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "English Dub"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "87AC3A64",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Yameii] Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs - S02E10 [English Dub] [CR WEB-DL 720p H264 AAC] [40099F40] (Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 | Season 2 | S2)",
-      "expected": {
-        "group": "Yameii",
-        "primaryTitle": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs",
-        "alternateTitles": [
-          "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
-          "Season 2",
-          "S2"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "English Dub"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "40099F40",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Yameii] Hana-Kimi - S02E12 [English Dub] [CR WEB-DL 720p H264 AAC] [BDED047D] (Hanazakari no Kimitachi e Season 2 | S2)",
-      "expected": {
-        "group": "Yameii",
-        "primaryTitle": "Hana-Kimi",
-        "alternateTitles": [
-          "Hanazakari no Kimitachi e Season 2",
-          "S2"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "BD",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "English Dub"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "BDED047D",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Yameii] Clevatess - S02E12 [English Dub] [CR WEB-DL 720p H264 AAC] [10B9D488] (Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou | Season 2 | S2)",
-      "expected": {
-        "group": "Yameii",
-        "primaryTitle": "Clevatess",
-        "alternateTitles": [
-          "Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou",
-          "Season 2",
-          "S2"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "English Dub"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "10B9D488",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Gecko] Cat Tales - S01E50 (うごく！ねこむかしばなし; Ugoku! Neko Mukashibanashi) [CTHP.WEB-DL 1080P AVC, AAC, M-SUB][A081C6CB]",
-      "expected": {
-        "group": "Gecko",
-        "primaryTitle": "Cat Tales",
-        "alternateTitles": [
-          "うごく！ねこむかしばなし",
-          "Ugoku! Neko Mukashibanashi"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 50,
-                "Raw": "E50"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080P"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CTHP"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": [
-          "M-SUB"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "A081C6CB",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Gecko] Candy Caries - S01E24 (キャンディーカリエス) [CTHP.WEB-DL 1080P AVC, AAC, D-SUB][F00AB65C]",
-      "expected": {
-        "group": "Gecko",
-        "primaryTitle": "Candy Caries",
-        "alternateTitles": [
-          "キャンディーカリエス"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 24,
-                "Raw": "E24"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080P"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CTHP"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": [
-          "D-SUB"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "F00AB65C",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Doomdos] - Primeval Overlord - 20 [1080p IQ WEB-DL]",
-      "expected": {
-        "group": "Doomdos",
-        "primaryTitle": "Primeval Overlord",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 20,
-                "Raw": " - 20 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "OV"
-        ],
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ThriftySubs] Shiawase Apartment\u0026#39;s Okojo-san (2001) [Complete]",
-      "expected": {
-        "group": "ThriftySubs",
-        "primaryTitle": "Shiawase Apartment\u0026#39;s Okojo-san",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 2001,
-        "episodes": null,
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": null,
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Complete"
-        ],
-        "tags": [
-          "Complete"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Doomdos] - KAMUI ---He\u0026#39;s behind you - 02 [Uncensored] [Dub] [1080p OV WEB-DL]",
-      "expected": {
-        "group": "Doomdos",
-        "primaryTitle": "KAMUI ---He\u0026#39;s behind you",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 2,
-                "Raw": " - 02 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "OV"
-        ],
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Uncensored"
-        ],
-        "tags": [
-          "Uncensored"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Doomdos] - Against the Gods 2nd Season - 56 [1080p IQ WEB-DL]",
-      "expected": {
-        "group": "Doomdos",
-        "primaryTitle": "Against the Gods",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 56,
-                "Raw": "2nd Season - 56 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL"
-        ],
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[SubsPlease] Black Torch (01-12) (1080p) [Batch]",
-      "expected": {
-        "group": "SubsPlease",
-        "primaryTitle": "Black Torch",
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 12,
-                "Raw": "01-12"
-              }
-            ]
-          }
-        ],
-        "isBatch": true,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Batch"
-        ],
-        "tags": [
-          "Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[SubsPlease] Black Torch (01-12) (720p) [Batch]",
-      "expected": {
-        "group": "SubsPlease",
-        "primaryTitle": "Black Torch",
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 12,
-                "Raw": "01-12"
-              }
-            ]
-          }
-        ],
-        "isBatch": true,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Batch"
-        ],
-        "tags": [
-          "Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[SubsPlease] Black Torch (01-12) (480p) [Batch]",
-      "expected": {
-        "group": "SubsPlease",
-        "primaryTitle": "Black Torch",
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 12,
-                "Raw": "01-12"
-              }
-            ]
-          }
-        ],
-        "isBatch": true,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "480p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Batch"
-        ],
-        "tags": [
-          "Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[droplet] Kakusei Hunter Omegahorn Anime - Tales from the Ancient Past 01-02",
-      "expected": {
-        "group": "droplet",
-        "primaryTitle": "Kakusei Hunter Omegahorn Anime - Tales from the Ancient Past",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 2,
-                "Raw": "01-02"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": null,
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Bakugan Battle Brawlers Mechtanium Surge 22 SUB - Last Wish (854x480 YouTube).mkv",
-      "expected": {
-        "group": "",
-        "primaryTitle": "Bakugan Battle Brawlers Mechtanium Surge 22 SUB - Last Wish",
-        "alternateTitles": [
-          "854x480 YouTube"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "episodes": null,
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": null,
-        "dimensions": [
-          "854x480"
-        ],
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Bakugan Battle Brawlers Mechtanium Surge 21 SUB - A Beautiful World (854x480 YouTube).mkv",
-      "expected": {
-        "group": "",
-        "primaryTitle": "Bakugan Battle Brawlers Mechtanium Surge 21 SUB - A Beautiful World",
-        "alternateTitles": [
-          "854x480 YouTube"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "episodes": null,
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": null,
-        "dimensions": [
-          "854x480"
-        ],
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[SubsPlease] Kami no Shizuku (01-24) (1080p) [Batch]",
-      "expected": {
-        "group": "SubsPlease",
-        "primaryTitle": "Kami no Shizuku",
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 24,
-                "Raw": "01-24"
-              }
-            ]
-          }
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "isBatch": true,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Batch"
-        ],
-        "tags": [
-          "Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[SubsPlease] Kami no Shizuku (01-24) (720p) [Batch]",
-      "expected": {
-        "group": "SubsPlease",
-        "primaryTitle": "Kami no Shizuku",
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 24,
-                "Raw": "01-24"
-              }
-            ]
-          }
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "isBatch": true,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Batch"
-        ],
-        "tags": [
-          "Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[SubsPlease] Kami no Shizuku (01-24) (480p) [Batch]",
-      "expected": {
-        "group": "SubsPlease",
-        "primaryTitle": "Kami no Shizuku",
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 24,
-                "Raw": "01-24"
-              }
-            ]
-          }
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "isBatch": true,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "480p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Batch"
-        ],
-        "tags": [
-          "Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Gecko] Candy Caries - S01E24 (キャンディーカリエス) [YTB.WEB-DL 1080P AVC, Opus, M-SUB][4E2B2668]",
-      "expected": {
-        "group": "Gecko",
-        "primaryTitle": "Candy Caries",
-        "alternateTitles": [
-          "キャンディーカリエス"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 24,
-                "Raw": "E24"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080P"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "YTB"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "Opus"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": [
-          "M-SUB"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "4E2B2668",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Polarwindz] Cardcaptor Sakura - The Movie (1999) (BD 1080p HEVC Dual Audio)",
-      "expected": {
-        "group": "Polarwindz",
-        "primaryTitle": "Cardcaptor Sakura - The Movie",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 1999,
-        "episodes": null,
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "BD",
-          "OV"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "Dual Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Polarwindz] When Marnie Was There (Omoide no Marnie) (2014) (BD 1080p HEVC DTS-HD MA)",
-      "expected": {
-        "group": "Polarwindz",
-        "primaryTitle": "When Marnie Was There",
-        "alternateTitles": [
-          "Omoide no Marnie"
-        ],
-        "episodeTitle": "",
-        "year": 2014,
-        "episodes": null,
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "BD"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "DTS-HD MA"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Tomb Raider King S01E12 1080p CR WEB-DL AAC2.0 H.264 (Dogulwang, English-Sub, Korean Audio)",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogulwang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Korean Audio"
-        ],
-        "subtitleFlags": [
-          "English-Sub"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dogulwang, English-Sub, Korean Audio"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[AnoZu] Tomb Raider King S01E12 1080p CR WEB-DL AAC 2.0 H.264 | Dogulwang",
-      "expected": {
-        "group": "AnoZu",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogulwang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Candy Caries S01E24 1080p AMZN WEB-DL DDP2.0 H.264 (Multi-Subs)",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Candy Caries",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 24,
-                "Raw": "E24"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Breeze] Mushoku Tensei S03E13 [1080p AV1] | Jobless Reincarnation (weekly)",
-      "expected": {
-        "group": "Breeze",
-        "primaryTitle": "Mushoku Tensei",
-        "alternateTitles": [
-          "Jobless Reincarnation"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 3,
-            "Episodes": [
-              {
-                "Start": 13,
-                "Raw": "E13"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": [
-          "AV1"
-        ],
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Anime Time] Gachiakuta (Season 1) [BD] [Dual Audio][1080p][HEVC 10bit x265][OPUS][Eng Sub] [Batch]",
-      "expected": {
-        "group": "Anime Time",
-        "primaryTitle": "Gachiakuta",
-        "alternateTitles": [
-          "Season 1"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1
-          }
-        ],
-        "episodes": null,
-        "isBatch": true,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": [
-          "10bit"
-        ],
-        "sources": [
-          "BD"
-        ],
-        "codecs": [
-          "HEVC",
-          "x265"
-        ],
-        "audioCodecs": [
-          "OPUS"
-        ],
-        "audioFlags": [
-          "Dual Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Batch"
-        ],
-        "tags": [
-          "Batch"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": [
-          "Dual Audio",
-          "Eng Sub"
-        ]
-      }
-    },
-    {
-      "input": "Monster (2004) 01 ~ 74 + Extra [1080p Remastered HEVC DD2.0]",
-      "expected": {
-        "group": "1080p Remastered HEVC DD2.0",
-        "primaryTitle": "Monster + Extra",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 2004,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 74,
-                "Raw": "01 ~ 74"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": true,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "DD2.0"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [IQIYI WebRip 2160p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu)",
-      "expected": {
-        "group": "Feibanyama",
-        "primaryTitle": "ReZERO Starting Life in Another World",
-        "alternateTitles": [
-          "Re Zero kara Hajimeru Isekai Seikatsu"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "2160p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "IQIYI"
-        ],
-        "codecs": [
-          "H.265"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "Veryslow"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[FBI] Re:Zero Starting Life in Another World - S04E18 (CR WEB-DL 1080p AVC AAC) | Re:Zero kara Hajimeru Isekai Seikatsu Season 4 | Re Zero | ReZero",
-      "expected": {
-        "group": "FBI",
-        "primaryTitle": "Re:Zero Starting Life in Another World",
-        "alternateTitles": [
-          "Re:Zero kara Hajimeru Isekai Seikatsu Season 4",
-          "Re Zero",
-          "ReZero"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[DKB] Otome Game Sekai wa Mob ni Kibishii Sekai desu - S02E12 [1080p][END][HEVC x265 10bit][Multi-Subs][weekly]",
-      "expected": {
-        "group": "DKB",
-        "primaryTitle": "Otome Game Sekai wa Mob ni Kibishii Sekai desu",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": [
-          "10bit"
-        ],
-        "sources": null,
-        "codecs": [
-          "HEVC",
-          "x265"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "END",
-          "weekly"
-        ],
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": [
-          "END"
-        ]
-      }
-    },
-    {
-      "input": "[DKB] Katainaka no Ossan, Kensei ni Naru - S02E12 [1080p][END][HEVC x265 10bit][Dual-Audio][Multi-Subs][weekly]",
-      "expected": {
-        "group": "DKB",
-        "primaryTitle": "Katainaka no Ossan, Kensei ni Naru",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": [
-          "10bit"
-        ],
-        "sources": null,
-        "codecs": [
-          "HEVC",
-          "x265"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "END",
-          "weekly"
-        ],
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": [
-          "END",
-          "Dual-Audio"
-        ]
-      }
-    },
-    {
-      "input": "[DKB] Re:Zero kara Hajimeru Isekai Seikatsu - S04E18 [1080p][HEVC x265 10bit][Multi-Subs][weekly]",
-      "expected": {
-        "group": "DKB",
-        "primaryTitle": "Re:Zero kara Hajimeru Isekai Seikatsu",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": [
-          "10bit"
-        ],
-        "sources": null,
-        "codecs": [
-          "HEVC",
-          "x265"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "weekly"
-        ],
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[HDEncodes] Detective Conan (1996) Remastered 0501 ~ 600 [1080p WEBRip HEVC NVENC AAC]",
-      "expected": {
-        "group": "HDEncodes",
-        "primaryTitle": "Detective Conan",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 1996,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 501,
-                "End": 600,
-                "Raw": "0501 ~ 600"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": true,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "NVENC"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[DKB] Youjo Senki - S02E12 [1080p][END][HEVC x265 10bit][Multi-Subs][weekly]",
-      "expected": {
-        "group": "DKB",
-        "primaryTitle": "Youjo Senki",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": [
-          "10bit"
-        ],
-        "sources": null,
-        "codecs": [
-          "HEVC",
-          "x265"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "END",
-          "weekly"
-        ],
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": [
-          "END"
-        ]
-      }
-    },
-    {
-      "input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [IQIYI WebRip 1440p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu)",
-      "expected": {
-        "group": "Feibanyama",
-        "primaryTitle": "ReZERO Starting Life in Another World",
-        "alternateTitles": [
-          "Re Zero kara Hajimeru Isekai Seikatsu"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1440p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "IQIYI"
-        ],
-        "codecs": [
-          "H.265"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "Veryslow"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[HDEncodes] Detective Conan (1996) Remastered 0401 ~ 500 [1080p WEBRip HEVC NVENC AAC]",
-      "expected": {
-        "group": "HDEncodes",
-        "primaryTitle": "Detective Conan",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 1996,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 401,
-                "End": 500,
-                "Raw": "0401 ~ 500"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": true,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "NVENC"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[HDEncodes] Detective Conan (1996) Remastered 0301 ~ 400 [1080p WEBRip HEVC NVENC AAC]",
-      "expected": {
-        "group": "HDEncodes",
-        "primaryTitle": "Detective Conan",
-        "alternateTitles": null,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 301,
-                "End": 400,
-                "Raw": "0301 ~ 400"
-              }
-            ]
-          }
-        ],
-        "episodeTitle": "",
-        "year": 1996,
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": true,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "NVENC"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Ironclad] Katainaka no Ossan II - S02E12 [WEB.1080p.AV1] | From Old Country Bumpkin to Master Swordsman (Multi-Audio, Multi-Subs) (Weekly)",
-      "expected": {
-        "group": "Ironclad",
-        "primaryTitle": "Katainaka no Ossan II",
-        "alternateTitles": [
-          "From Old Country Bumpkin to Master Swordsman"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": [
-          "AV1"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "MULTi",
-          "Multi-Audio"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Audio, Multi-Subs"
-        ],
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[HDEncodes] Detective Conan (1996) Remastered 0201 ~ 300 [1080p WEBRip HEVC NVENC AAC]",
-      "expected": {
-        "group": "HDEncodes",
-        "primaryTitle": "Detective Conan",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 1996,
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": true,
-        "isRepack": false,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 201,
-                "End": 300,
-                "Raw": "0201 ~ 300"
-              }
-            ]
-          }
-        ],
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "NVENC"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[HDEncodes] Detective Conan (1996) Remastered 0101 ~ 200 [1080p WEBRip HEVC NVENC AAC]",
-      "expected": {
-        "group": "HDEncodes",
-        "primaryTitle": "Detective Conan",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 1996,
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": true,
-        "isRepack": false,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 101,
-                "End": 200,
-                "Raw": "0101 ~ 200"
-              }
-            ]
-          }
-        ],
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "NVENC"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Tomb Raider King S01E12 1080p LIV WEB-DL AAC2.0 H.264 (Dogulwang, English-Sub, Korean Audio)",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogulwang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "LIV"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Korean Audio"
-        ],
-        "subtitleFlags": [
-          "English-Sub"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dogulwang, English-Sub, Korean Audio"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [CR WebRip 1080p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu)",
-      "expected": {
-        "group": "Feibanyama",
-        "primaryTitle": "ReZERO Starting Life in Another World",
-        "alternateTitles": [
-          "Re Zero kara Hajimeru Isekai Seikatsu"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "CR"
-        ],
-        "codecs": [
-          "H.265"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "Veryslow"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[HDEncodes] Detective Conan (1996) Remastered 0001 ~ 100 [1080p WEBRip HEVC NVENC AAC]",
-      "expected": {
-        "group": "HDEncodes",
-        "primaryTitle": "Detective Conan",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 1996,
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": true,
-        "isRepack": false,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 100,
-                "Raw": "0001 ~ 100"
-              }
-            ]
-          }
-        ],
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": [
-          "NVENC"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [1080p AMZN WEBRip HEVC EAC3][MultiSub][94C14148]",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "II - 12 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "AMZN"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "EAC3"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "94C14148",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E09 Livia 1080p CR WEB-DL MULTi AAC2.0 H.264-VARYG (Otomege Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Audio, Multi-Subs)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
-        "alternateTitles": [
-          "Otomege Sekai wa Mob ni Kibishii Sekai desu 2"
-        ],
-        "episodeTitle": "Livia",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 9,
-                "Raw": "E09"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR",
-          "LIV"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi",
-          "Multi-Audio"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Otomege Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[CenturyZeta] Youjo Shenki 2 - 12 (1080p) (Youjo Senki)",
-      "expected": {
-        "group": "CenturyZeta",
-        "primaryTitle": "Youjo Shenki 2",
-        "alternateTitles": [
-          "Youjo Senki"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "2 - 12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Tomb Raider King S01E12 1080p CR WEB-DL AAC2.0 H.264-VARYG (Dogul Wang)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogul Wang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Tomb Raider King S01E09 The Ruler of Relics 1080p CR WEB-DL MULTi AAC2.0 H.264-VARYG (Dogul Wang, Multi-Audio, Multi-Subs)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogul Wang"
-        ],
-        "episodeTitle": "The Ruler of Relics",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 9,
-                "Raw": "E09"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi",
-          "Multi-Audio"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dogul Wang, Multi-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Doomdos] - Tomb Raider King - 12 [1080p IVI WEB-DL]",
-      "expected": {
-        "group": "Doomdos",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": " - 12 "
-              }
-            ]
-          }
-        ],
-        "year": 0,
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL"
-        ],
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Tomb Raider King S01E09 1080p CR WEB-DL MULTi AAC2.0 H.264 (Dogul Wang, Multi-Audio, Multi-Subs)",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogul Wang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 9,
-                "Raw": "E09"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi",
-          "Multi-Audio"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dogul Wang, Multi-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Clevatess S02E12 The Millennium of a Dark Beast Lord REPACK 1080p CR WEB-DL DUAL AAC2.0 H.264-VARYG (Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou, Dual-Audio, Multi-Subs)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "Clevatess",
-        "alternateTitles": [
-          "Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou"
-        ],
-        "episodeTitle": "The Millennium of a Dark Beast Lord REPACK",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": true,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou, Dual-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Serial Experiments Lain (シリアルエクスペリメンツレイン) [1998] - TV 01-13 (VHS 704x458 AVC AAC)",
-      "expected": {
-        "group": "1998",
-        "primaryTitle": "Serial Experiments Lain - TV",
-        "alternateTitles": [
-          "シリアルエクスペリメンツレイン"
-        ],
-        "episodeTitle": "",
-        "year": 1998,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 1,
-                "End": 13,
-                "Raw": "01-13"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": null,
-        "dimensions": [
-          "704x458"
-        ],
-        "bitDepths": null,
-        "sources": [
-          "VHS"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Serial Experiments Lain Complete Series (Dual-Audio)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "Serial Experiments Lain Complete Series",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "episodes": null,
-        "isBatch": false,
-        "isComplete": true,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": null,
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": null,
-        "audioCodecs": null,
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "Tomb Raider King S01E10 The Curse of Relics 1080p CR WEB-DL DUAL AAC2.0 H.264-VARYG (Dogul Wang, Dual-Audio, Multi-Subs)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogul Wang"
-        ],
-        "episodeTitle": "The Curse of Relics",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dogul Wang, Dual-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Tomb Raider King S01E10 1080p CR WEB-DL DUAL AAC2.0 H.264 (Dogulwang, Dual-Audio, Multi-Subs)",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogulwang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dogulwang, Dual-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[AnoZu] Tomb Raider King S01E10 1080p CR WEB-DL Dual-Audio DDP 2.0 H.264 | Dogulwang",
-      "expected": {
-        "group": "AnoZu",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogulwang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Yameii] Tomb Raider King - S01E10 [English Dub] [CR WEB-DL 1080p H264 AAC] [87BA319D] (Dogul Wang)",
-      "expected": {
-        "group": "Yameii",
-        "primaryTitle": "Tomb Raider King",
-        "alternateTitles": [
-          "Dogul Wang"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "English Dub"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "87BA319D",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [1080p CR WEBRip HEVC AAC][MultiSub][4AE3A605]",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "2 - 12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "CR"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "4AE3A605",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p HIDI WEB-DL DUAL AAC2.0 H.264-VARYG (Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita, Dual-Audio)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
-        "alternateTitles": [
-          "Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 6,
-                "Raw": "E06"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita, Dual-Audio"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p AMZN WEB-DL DUAL DDP2.0 H.264-VARYG (Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita, Dual-Audio)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
-        "alternateTitles": [
-          "Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 6,
-                "Raw": "E06"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita, Dual-Audio"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing S02E08 1080p HIDI WEB-DL DUAL AAC2.0 H.264-VARYG (Hell Mode: Yarikomi-zuki no Gamer wa Haisettei no Isekai de Musou Suru 2nd Season, Dual-Audio)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing",
-        "alternateTitles": [
-          "Hell Mode: Yarikomi-zuki no Gamer wa Haisettei no Isekai de Musou Suru 2nd Season"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 8,
-                "Raw": "E08"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Hell Mode: Yarikomi-zuki no Gamer wa Haisettei no Isekai de Musou Suru 2nd Season, Dual-Audio"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "The World Is Dancing S01E05 A Budding Throb 1080p HIDI WEB-DL DUAL AAC2.0 H.264-VARYG (Dual-Audio)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "The World Is Dancing",
-        "alternateTitles": null,
-        "episodeTitle": "A Budding Throb",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 5,
-                "Raw": "E05"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    },
-    {
-      "input": "The World Is Dancing S01E05 1080p AMZN WEB-DL DUAL DDP2.0 H.264-VARYG (Dual-Audio)",
-      "expected": {
-        "group": "",
-        "primaryTitle": "The World Is Dancing",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 5,
-                "Raw": "E05"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": null,
-        "audioLanguages": null,
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {},
-        "unknown": null
-      }
-    }
-  ]
+	"cases": [
+		{
+			"input": "[Breeze] Mushoku Tensei S03E11 [1080p AV1 Dual Audio] | Jobless Reincarnation (weekly)",
+			"expected": {
+				"group": "Breeze",
+				"primaryTitle": "Mushoku Tensei",
+				"alternateTitles": [
+					"Jobless Reincarnation"
+				],
+				"seasons": [
+					{
+						"number": 3,
+						"episodes": [
+							{
+								"start": 11,
+								"raw": "E11"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"codecs": [
+					"AV1"
+				],
+				"audioFlags": [
+					"Dual Audio",
+					"DUAL"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Some-Stuffs] Pocket Monsters (2023) Wonder Voyage Latest News PV (1080p Opus) [04E48502]",
+			"expected": {
+				"group": "Some-Stuffs",
+				"primaryTitle": "Pocket Monsters Wonder Voyage Latest News PV",
+				"year": 2023,
+				"resolutions": [
+					"1080p"
+				],
+				"audioCodecs": [
+					"Opus"
+				],
+				"checksum": "04E48502",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Some-Stuffs] Pocket Monsters (2023) 137-150 (1080p HEVC 10-bit) [Mini-Batch] (PM23 | PM2023 | Pokemon 2023 | Pokémon Horizons The Series)",
+			"expected": {
+				"group": "Some-Stuffs",
+				"primaryTitle": "Pocket Monsters",
+				"alternateTitles": [
+					"PM23",
+					"PM2023",
+					"Pokemon 2023",
+					"Pokémon Horizons The Series"
+				],
+				"year": 2023,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 137,
+								"end": 150,
+								"raw": "137-150"
+							}
+						]
+					}
+				],
+				"isBatch": true,
+				"resolutions": [
+					"1080p"
+				],
+				"bitDepths": [
+					"10-bit"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"releaseFlags": [
+					"Mini-Batch"
+				],
+				"tags": [
+					"Mini-Batch"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Some-Stuffs] Pocket Monsters (2023) 137-150 (1080p) [Mini-Batch] (PM23 | PM2023 | Pokemon 2023 | Pokémon Horizons The Series)",
+			"expected": {
+				"group": "Some-Stuffs",
+				"primaryTitle": "Pocket Monsters",
+				"alternateTitles": [
+					"PM23",
+					"PM2023",
+					"Pokemon 2023",
+					"Pokémon Horizons The Series"
+				],
+				"year": 2023,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 137,
+								"end": 150,
+								"raw": "137-150"
+							}
+						]
+					}
+				],
+				"isBatch": true,
+				"resolutions": [
+					"1080p"
+				],
+				"releaseFlags": [
+					"Mini-Batch"
+				],
+				"tags": [
+					"Mini-Batch"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Doomdos] - My Grave Nourishes My Cultivation - 17 [1080p IQ WEB-DL]",
+			"expected": {
+				"group": "Doomdos",
+				"primaryTitle": "My Grave Nourishes My Cultivation",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 17,
+								"raw": " - 17 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[geckyzz] Perfect Addiction - S01E12 (パーフェクトアディクション) [CTHP.WEB-DL 1080P AVC, AAC, M-SUB][890CBECA]",
+			"expected": {
+				"group": "geckyzz",
+				"primaryTitle": "Perfect Addiction",
+				"alternateTitles": [
+					"パーフェクトアディクション"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080P"
+				],
+				"sources": [
+					"WEB-DL",
+					"CTHP"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"subtitleFlags": [
+					"M-SUB"
+				],
+				"checksum": "890CBECA",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Erai-raws] Dogulwang - 12 (KA) [480p CR WEB-DL AVC AAC][B1579F00]",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Dogulwang",
+				"alternateTitles": [
+					"KA"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": " - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"480p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"checksum": "B1579F00",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Erai-raws] Dogulwang - 12 (KA) [720p CR WEB-DL AVC AAC][C6D05075]",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Dogulwang",
+				"alternateTitles": [
+					"KA"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": " - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"checksum": "C6D05075",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Yameii] Saga of Tanya the Evil - S02E03 [English Dub] [CR WEB-DL 720p H264 AAC] [11F78772] (Youjo Senki II | Season 2 | S2)",
+			"expected": {
+				"group": "Yameii",
+				"primaryTitle": "Saga of Tanya the Evil",
+				"alternateTitles": [
+					"Youjo Senki II",
+					"Season 2",
+					"S2"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 3,
+								"raw": "E03"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"English Dub"
+				],
+				"checksum": "11F78772",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Yameii] Re:ZERO, Starting Life in Another World - S04E16 [English Dub] [CR WEB-DL 720p H264 AAC] [7B71E040] (Re:Zero kara Hajimeru Isekai Seikatsu Season 4 | S4)",
+			"expected": {
+				"group": "Yameii",
+				"primaryTitle": "Re:ZERO, Starting Life in Another World",
+				"alternateTitles": [
+					"Re:Zero kara Hajimeru Isekai Seikatsu Season 4",
+					"S4"
+				],
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 16,
+								"raw": "E16"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"English Dub"
+				],
+				"checksum": "7B71E040",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Erai-raws] Dogulwang - 12 (KA) [1080p CR WEB-DL AVC AAC][B83D98A6]",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Dogulwang",
+				"alternateTitles": [
+					"KA"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": " - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"checksum": "B83D98A6",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Yameii] Tomb Raider King - S01E10 [English Dub] [CR WEB-DL 720p H264 AAC] [87AC3A64] (Dogul Wang)",
+			"expected": {
+				"group": "Yameii",
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogul Wang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"English Dub"
+				],
+				"checksum": "87AC3A64",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Yameii] Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs - S02E10 [English Dub] [CR WEB-DL 720p H264 AAC] [40099F40] (Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 | Season 2 | S2)",
+			"expected": {
+				"group": "Yameii",
+				"primaryTitle": "Trapped in a Dating Sim: The World of Otome Games is Tough for Mobs",
+				"alternateTitles": [
+					"Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
+					"Season 2",
+					"S2"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"English Dub"
+				],
+				"checksum": "40099F40",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Yameii] Hana-Kimi - S02E12 [English Dub] [CR WEB-DL 720p H264 AAC] [BDED047D] (Hanazakari no Kimitachi e Season 2 | S2)",
+			"expected": {
+				"group": "Yameii",
+				"primaryTitle": "Hana-Kimi",
+				"alternateTitles": [
+					"Hanazakari no Kimitachi e Season 2",
+					"S2"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"BD",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"English Dub"
+				],
+				"checksum": "BDED047D",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Yameii] Clevatess - S02E12 [English Dub] [CR WEB-DL 720p H264 AAC] [10B9D488] (Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou | Season 2 | S2)",
+			"expected": {
+				"group": "Yameii",
+				"primaryTitle": "Clevatess",
+				"alternateTitles": [
+					"Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou",
+					"Season 2",
+					"S2"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"English Dub"
+				],
+				"checksum": "10B9D488",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Gecko] Cat Tales - S01E50 (うごく！ねこむかしばなし; Ugoku! Neko Mukashibanashi) [CTHP.WEB-DL 1080P AVC, AAC, M-SUB][A081C6CB]",
+			"expected": {
+				"group": "Gecko",
+				"primaryTitle": "Cat Tales",
+				"alternateTitles": [
+					"うごく！ねこむかしばなし",
+					"Ugoku! Neko Mukashibanashi"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 50,
+								"raw": "E50"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080P"
+				],
+				"sources": [
+					"WEB-DL",
+					"CTHP"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"subtitleFlags": [
+					"M-SUB"
+				],
+				"checksum": "A081C6CB",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Gecko] Candy Caries - S01E24 (キャンディーカリエス) [CTHP.WEB-DL 1080P AVC, AAC, D-SUB][F00AB65C]",
+			"expected": {
+				"group": "Gecko",
+				"primaryTitle": "Candy Caries",
+				"alternateTitles": [
+					"キャンディーカリエス"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 24,
+								"raw": "E24"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080P"
+				],
+				"sources": [
+					"WEB-DL",
+					"CTHP"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"subtitleFlags": [
+					"D-SUB"
+				],
+				"checksum": "F00AB65C",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Doomdos] - Primeval Overlord - 20 [1080p IQ WEB-DL]",
+			"expected": {
+				"group": "Doomdos",
+				"primaryTitle": "Primeval Overlord",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 20,
+								"raw": " - 20 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"OV"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[ThriftySubs] Shiawase Apartment\u0026#39;s Okojo-san (2001) [Complete]",
+			"expected": {
+				"group": "ThriftySubs",
+				"primaryTitle": "Shiawase Apartment\u0026#39;s Okojo-san",
+				"year": 2001,
+				"isComplete": true,
+				"releaseFlags": [
+					"Complete"
+				],
+				"tags": [
+					"Complete"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Doomdos] - KAMUI ---He\u0026#39;s behind you - 02 [Uncensored] [Dub] [1080p OV WEB-DL]",
+			"expected": {
+				"group": "Doomdos",
+				"primaryTitle": "KAMUI ---He\u0026#39;s behind you",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 2,
+								"raw": " - 02 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"OV"
+				],
+				"releaseFlags": [
+					"Uncensored"
+				],
+				"tags": [
+					"Uncensored"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Doomdos] - Against the Gods 2nd Season - 56 [1080p IQ WEB-DL]",
+			"expected": {
+				"group": "Doomdos",
+				"primaryTitle": "Against the Gods",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 56,
+								"raw": "2nd Season - 56 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[SubsPlease] Black Torch (01-12) (1080p) [Batch]",
+			"expected": {
+				"group": "SubsPlease",
+				"primaryTitle": "Black Torch",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 12,
+								"raw": "01-12"
+							}
+						]
+					}
+				],
+				"isBatch": true,
+				"isComplete": true,
+				"resolutions": [
+					"1080p"
+				],
+				"releaseFlags": [
+					"Batch"
+				],
+				"tags": [
+					"Batch"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[SubsPlease] Black Torch (01-12) (720p) [Batch]",
+			"expected": {
+				"group": "SubsPlease",
+				"primaryTitle": "Black Torch",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 12,
+								"raw": "01-12"
+							}
+						]
+					}
+				],
+				"isBatch": true,
+				"isComplete": true,
+				"resolutions": [
+					"720p"
+				],
+				"releaseFlags": [
+					"Batch"
+				],
+				"tags": [
+					"Batch"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[SubsPlease] Black Torch (01-12) (480p) [Batch]",
+			"expected": {
+				"group": "SubsPlease",
+				"primaryTitle": "Black Torch",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 12,
+								"raw": "01-12"
+							}
+						]
+					}
+				],
+				"isBatch": true,
+				"isComplete": true,
+				"resolutions": [
+					"480p"
+				],
+				"releaseFlags": [
+					"Batch"
+				],
+				"tags": [
+					"Batch"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[droplet] Kakusei Hunter Omegahorn Anime - Tales from the Ancient Past 01-02",
+			"expected": {
+				"group": "droplet",
+				"primaryTitle": "Kakusei Hunter Omegahorn Anime - Tales from the Ancient Past",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 2,
+								"raw": "01-02"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Bakugan Battle Brawlers Mechtanium Surge 22 SUB - Last Wish (854x480 YouTube).mkv",
+			"expected": {
+				"primaryTitle": "Bakugan Battle Brawlers Mechtanium Surge 22 SUB - Last Wish",
+				"alternateTitles": [
+					"854x480 YouTube"
+				],
+				"dimensions": [
+					"854x480"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Bakugan Battle Brawlers Mechtanium Surge 21 SUB - A Beautiful World (854x480 YouTube).mkv",
+			"expected": {
+				"primaryTitle": "Bakugan Battle Brawlers Mechtanium Surge 21 SUB - A Beautiful World",
+				"alternateTitles": [
+					"854x480 YouTube"
+				],
+				"dimensions": [
+					"854x480"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[SubsPlease] Kami no Shizuku (01-24) (1080p) [Batch]",
+			"expected": {
+				"group": "SubsPlease",
+				"primaryTitle": "Kami no Shizuku",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 24,
+								"raw": "01-24"
+							}
+						]
+					}
+				],
+				"isBatch": true,
+				"isComplete": true,
+				"resolutions": [
+					"1080p"
+				],
+				"releaseFlags": [
+					"Batch"
+				],
+				"tags": [
+					"Batch"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[SubsPlease] Kami no Shizuku (01-24) (720p) [Batch]",
+			"expected": {
+				"group": "SubsPlease",
+				"primaryTitle": "Kami no Shizuku",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 24,
+								"raw": "01-24"
+							}
+						]
+					}
+				],
+				"isBatch": true,
+				"isComplete": true,
+				"resolutions": [
+					"720p"
+				],
+				"releaseFlags": [
+					"Batch"
+				],
+				"tags": [
+					"Batch"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[SubsPlease] Kami no Shizuku (01-24) (480p) [Batch]",
+			"expected": {
+				"group": "SubsPlease",
+				"primaryTitle": "Kami no Shizuku",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 24,
+								"raw": "01-24"
+							}
+						]
+					}
+				],
+				"isBatch": true,
+				"isComplete": true,
+				"resolutions": [
+					"480p"
+				],
+				"releaseFlags": [
+					"Batch"
+				],
+				"tags": [
+					"Batch"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Gecko] Candy Caries - S01E24 (キャンディーカリエス) [YTB.WEB-DL 1080P AVC, Opus, M-SUB][4E2B2668]",
+			"expected": {
+				"group": "Gecko",
+				"primaryTitle": "Candy Caries",
+				"alternateTitles": [
+					"キャンディーカリエス"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 24,
+								"raw": "E24"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080P"
+				],
+				"sources": [
+					"WEB-DL",
+					"YTB"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"Opus"
+				],
+				"subtitleFlags": [
+					"M-SUB"
+				],
+				"checksum": "4E2B2668",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Polarwindz] Cardcaptor Sakura - The Movie (1999) (BD 1080p HEVC Dual Audio)",
+			"expected": {
+				"group": "Polarwindz",
+				"primaryTitle": "Cardcaptor Sakura - The Movie",
+				"year": 1999,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"BD",
+					"OV"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioFlags": [
+					"Dual Audio",
+					"DUAL"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Polarwindz] When Marnie Was There (Omoide no Marnie) (2014) (BD 1080p HEVC DTS-HD MA)",
+			"expected": {
+				"group": "Polarwindz",
+				"primaryTitle": "When Marnie Was There",
+				"alternateTitles": [
+					"Omoide no Marnie"
+				],
+				"year": 2014,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"BD"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"DTS-HD MA"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[ToonsHub] Tomb Raider King S01E12 1080p CR WEB-DL AAC2.0 H.264 (Dogulwang, English-Sub, Korean Audio)",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogulwang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Korean Audio"
+				],
+				"subtitleFlags": [
+					"English-Sub"
+				],
+				"releaseFlags": [
+					"English-Sub",
+					"Korean Audio"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[AnoZu] Tomb Raider King S01E12 1080p CR WEB-DL AAC 2.0 H.264 | Dogulwang",
+			"expected": {
+				"group": "AnoZu",
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogulwang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[ToonsHub] Candy Caries S01E24 1080p AMZN WEB-DL DDP2.0 H.264 (Multi-Subs)",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Candy Caries",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 24,
+								"raw": "E24"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Breeze] Mushoku Tensei S03E13 [1080p AV1] | Jobless Reincarnation (weekly)",
+			"expected": {
+				"group": "Breeze",
+				"primaryTitle": "Mushoku Tensei",
+				"alternateTitles": [
+					"Jobless Reincarnation"
+				],
+				"seasons": [
+					{
+						"number": 3,
+						"episodes": [
+							{
+								"start": 13,
+								"raw": "E13"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"codecs": [
+					"AV1"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Anime Time] Gachiakuta (Season 1) [BD] [Dual Audio][1080p][HEVC 10bit x265][OPUS][Eng Sub] [Batch]",
+			"expected": {
+				"group": "Anime Time",
+				"primaryTitle": "Gachiakuta",
+				"alternateTitles": [
+					"Season 1"
+				],
+				"seasons": [
+					{
+						"number": 1
+					}
+				],
+				"isBatch": true,
+				"resolutions": [
+					"1080p"
+				],
+				"bitDepths": [
+					"10bit"
+				],
+				"sources": [
+					"BD"
+				],
+				"codecs": [
+					"HEVC",
+					"x265"
+				],
+				"audioCodecs": [
+					"OPUS"
+				],
+				"audioFlags": [
+					"Dual Audio",
+					"DUAL"
+				],
+				"releaseFlags": [
+					"Batch"
+				],
+				"tags": [
+					"Batch"
+				],
+				"tagFields": {},
+				"unknown": [
+					"Dual Audio",
+					"Eng Sub"
+				]
+			}
+		},
+		{
+			"input": "Monster (2004) 01 ~ 74 + Extra [1080p Remastered HEVC DD2.0]",
+			"expected": {
+				"group": "1080p Remastered HEVC DD2.0",
+				"primaryTitle": "Monster + Extra",
+				"year": 2004,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 74,
+								"raw": "01 ~ 74"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"isRemastered": true,
+				"resolutions": [
+					"1080p"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"DD2.0"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [IQIYI WebRip 2160p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu)",
+			"expected": {
+				"group": "Feibanyama",
+				"primaryTitle": "ReZERO Starting Life in Another World",
+				"alternateTitles": [
+					"Re Zero kara Hajimeru Isekai Seikatsu"
+				],
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"2160p"
+				],
+				"sources": [
+					"WEBRip",
+					"IQIYI"
+				],
+				"codecs": [
+					"H.265"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"encoders": [
+					"Veryslow"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[FBI] Re:Zero Starting Life in Another World - S04E18 (CR WEB-DL 1080p AVC AAC) | Re:Zero kara Hajimeru Isekai Seikatsu Season 4 | Re Zero | ReZero",
+			"expected": {
+				"group": "FBI",
+				"primaryTitle": "Re:Zero Starting Life in Another World",
+				"alternateTitles": [
+					"Re:Zero kara Hajimeru Isekai Seikatsu Season 4",
+					"Re Zero",
+					"ReZero"
+				],
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[DKB] Otome Game Sekai wa Mob ni Kibishii Sekai desu - S02E12 [1080p][END][HEVC x265 10bit][Multi-Subs][weekly]",
+			"expected": {
+				"group": "DKB",
+				"primaryTitle": "Otome Game Sekai wa Mob ni Kibishii Sekai desu",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"bitDepths": [
+					"10bit"
+				],
+				"codecs": [
+					"HEVC",
+					"x265"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"END",
+					"weekly"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {},
+				"unknown": [
+					"END"
+				]
+			}
+		},
+		{
+			"input": "[DKB] Katainaka no Ossan, Kensei ni Naru - S02E12 [1080p][END][HEVC x265 10bit][Dual-Audio][Multi-Subs][weekly]",
+			"expected": {
+				"group": "DKB",
+				"primaryTitle": "Katainaka no Ossan, Kensei ni Naru",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"bitDepths": [
+					"10bit"
+				],
+				"codecs": [
+					"HEVC",
+					"x265"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"END",
+					"weekly"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {},
+				"unknown": [
+					"END",
+					"Dual-Audio"
+				]
+			}
+		},
+		{
+			"input": "[DKB] Re:Zero kara Hajimeru Isekai Seikatsu - S04E18 [1080p][HEVC x265 10bit][Multi-Subs][weekly]",
+			"expected": {
+				"group": "DKB",
+				"primaryTitle": "Re:Zero kara Hajimeru Isekai Seikatsu",
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"bitDepths": [
+					"10bit"
+				],
+				"codecs": [
+					"HEVC",
+					"x265"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"weekly"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[HDEncodes] Detective Conan (1996) Remastered 0501 ~ 600 [1080p WEBRip HEVC NVENC AAC]",
+			"expected": {
+				"group": "HDEncodes",
+				"primaryTitle": "Detective Conan",
+				"year": 1996,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 501,
+								"end": 600,
+								"raw": "0501 ~ 600"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"isRemastered": true,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"encoders": [
+					"NVENC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[DKB] Youjo Senki - S02E12 [1080p][END][HEVC x265 10bit][Multi-Subs][weekly]",
+			"expected": {
+				"group": "DKB",
+				"primaryTitle": "Youjo Senki",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"bitDepths": [
+					"10bit"
+				],
+				"codecs": [
+					"HEVC",
+					"x265"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"END",
+					"weekly"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {},
+				"unknown": [
+					"END"
+				]
+			}
+		},
+		{
+			"input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [IQIYI WebRip 1440p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu)",
+			"expected": {
+				"group": "Feibanyama",
+				"primaryTitle": "ReZERO Starting Life in Another World",
+				"alternateTitles": [
+					"Re Zero kara Hajimeru Isekai Seikatsu"
+				],
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1440p"
+				],
+				"sources": [
+					"WEBRip",
+					"IQIYI"
+				],
+				"codecs": [
+					"H.265"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"encoders": [
+					"Veryslow"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[HDEncodes] Detective Conan (1996) Remastered 0401 ~ 500 [1080p WEBRip HEVC NVENC AAC]",
+			"expected": {
+				"group": "HDEncodes",
+				"primaryTitle": "Detective Conan",
+				"year": 1996,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 401,
+								"end": 500,
+								"raw": "0401 ~ 500"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"isRemastered": true,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"encoders": [
+					"NVENC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[HDEncodes] Detective Conan (1996) Remastered 0301 ~ 400 [1080p WEBRip HEVC NVENC AAC]",
+			"expected": {
+				"group": "HDEncodes",
+				"primaryTitle": "Detective Conan",
+				"year": 1996,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 301,
+								"end": 400,
+								"raw": "0301 ~ 400"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"isRemastered": true,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"encoders": [
+					"NVENC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Ironclad] Katainaka no Ossan II - S02E12 [WEB.1080p.AV1] | From Old Country Bumpkin to Master Swordsman (Multi-Audio, Multi-Subs) (Weekly)",
+			"expected": {
+				"group": "Ironclad",
+				"primaryTitle": "Katainaka no Ossan II",
+				"alternateTitles": [
+					"From Old Country Bumpkin to Master Swordsman"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"codecs": [
+					"AV1"
+				],
+				"audioFlags": [
+					"MULTi",
+					"Multi-Audio"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"Multi-Audio",
+					"Multi-Subs"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[HDEncodes] Detective Conan (1996) Remastered 0201 ~ 300 [1080p WEBRip HEVC NVENC AAC]",
+			"expected": {
+				"group": "HDEncodes",
+				"primaryTitle": "Detective Conan",
+				"year": 1996,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 201,
+								"end": 300,
+								"raw": "0201 ~ 300"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"isRemastered": true,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"encoders": [
+					"NVENC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[HDEncodes] Detective Conan (1996) Remastered 0101 ~ 200 [1080p WEBRip HEVC NVENC AAC]",
+			"expected": {
+				"group": "HDEncodes",
+				"primaryTitle": "Detective Conan",
+				"year": 1996,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 101,
+								"end": 200,
+								"raw": "0101 ~ 200"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"isRemastered": true,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"encoders": [
+					"NVENC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[ToonsHub] Tomb Raider King S01E12 1080p LIV WEB-DL AAC2.0 H.264 (Dogulwang, English-Sub, Korean Audio)",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogulwang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"LIV"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Korean Audio"
+				],
+				"subtitleFlags": [
+					"English-Sub"
+				],
+				"releaseFlags": [
+					"English-Sub",
+					"Korean Audio"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [CR WebRip 1080p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu)",
+			"expected": {
+				"group": "Feibanyama",
+				"primaryTitle": "ReZERO Starting Life in Another World",
+				"alternateTitles": [
+					"Re Zero kara Hajimeru Isekai Seikatsu"
+				],
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip",
+					"CR"
+				],
+				"codecs": [
+					"H.265"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"encoders": [
+					"Veryslow"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[HDEncodes] Detective Conan (1996) Remastered 0001 ~ 100 [1080p WEBRip HEVC NVENC AAC]",
+			"expected": {
+				"group": "HDEncodes",
+				"primaryTitle": "Detective Conan",
+				"year": 1996,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 100,
+								"raw": "0001 ~ 100"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"isRemastered": true,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"encoders": [
+					"NVENC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [1080p AMZN WEBRip HEVC EAC3][MultiSub][94C14148]",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "II - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip",
+					"AMZN"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"EAC3"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"checksum": "94C14148",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E09 Livia 1080p CR WEB-DL MULTi AAC2.0 H.264-VARYG (Otomege Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Audio, Multi-Subs)",
+			"expected": {
+				"primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
+				"alternateTitles": [
+					"Otomege Sekai wa Mob ni Kibishii Sekai desu 2"
+				],
+				"episodeTitle": "Livia",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 9,
+								"raw": "E09"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR",
+					"LIV"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi",
+					"Multi-Audio"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"Multi-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[CenturyZeta] Youjo Shenki 2 - 12 (1080p) (Youjo Senki)",
+			"expected": {
+				"group": "CenturyZeta",
+				"primaryTitle": "Youjo Shenki 2",
+				"alternateTitles": [
+					"Youjo Senki"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "2 - 12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Tomb Raider King S01E12 1080p CR WEB-DL AAC2.0 H.264-VARYG (Dogul Wang)",
+			"expected": {
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogul Wang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Tomb Raider King S01E09 The Ruler of Relics 1080p CR WEB-DL MULTi AAC2.0 H.264-VARYG (Dogul Wang, Multi-Audio, Multi-Subs)",
+			"expected": {
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogul Wang"
+				],
+				"episodeTitle": "The Ruler of Relics",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 9,
+								"raw": "E09"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi",
+					"Multi-Audio"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"Multi-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Doomdos] - Tomb Raider King - 12 [1080p IVI WEB-DL]",
+			"expected": {
+				"group": "Doomdos",
+				"primaryTitle": "Tomb Raider King",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": " - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[ToonsHub] Tomb Raider King S01E09 1080p CR WEB-DL MULTi AAC2.0 H.264 (Dogul Wang, Multi-Audio, Multi-Subs)",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogul Wang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 9,
+								"raw": "E09"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi",
+					"Multi-Audio"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"Multi-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Clevatess S02E12 The Millennium of a Dark Beast Lord REPACK 1080p CR WEB-DL DUAL AAC2.0 H.264-VARYG (Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou, Dual-Audio, Multi-Subs)",
+			"expected": {
+				"primaryTitle": "Clevatess",
+				"alternateTitles": [
+					"Clevatess II: Majuu no Ou to Itsuwari no Yuusha Denshou"
+				],
+				"episodeTitle": "The Millennium of a Dark Beast Lord REPACK",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"isRepack": true,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Serial Experiments Lain (シリアルエクスペリメンツレイン) [1998] - TV 01-13 (VHS 704x458 AVC AAC)",
+			"expected": {
+				"group": "1998",
+				"primaryTitle": "Serial Experiments Lain - TV",
+				"alternateTitles": [
+					"シリアルエクスペリメンツレイン"
+				],
+				"year": 1998,
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 1,
+								"end": 13,
+								"raw": "01-13"
+							}
+						]
+					}
+				],
+				"isComplete": true,
+				"dimensions": [
+					"704x458"
+				],
+				"sources": [
+					"VHS"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Serial Experiments Lain Complete Series (Dual-Audio)",
+			"expected": {
+				"primaryTitle": "Serial Experiments Lain Complete Series",
+				"isComplete": true,
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"releaseFlags": [
+					"Dual-Audio"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "Tomb Raider King S01E10 The Curse of Relics 1080p CR WEB-DL DUAL AAC2.0 H.264-VARYG (Dogul Wang, Dual-Audio, Multi-Subs)",
+			"expected": {
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogul Wang"
+				],
+				"episodeTitle": "The Curse of Relics",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[ToonsHub] Tomb Raider King S01E10 1080p CR WEB-DL DUAL AAC2.0 H.264 (Dogulwang, Dual-Audio, Multi-Subs)",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogulwang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[AnoZu] Tomb Raider King S01E10 1080p CR WEB-DL Dual-Audio DDP 2.0 H.264 | Dogulwang",
+			"expected": {
+				"group": "AnoZu",
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogulwang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Yameii] Tomb Raider King - S01E10 [English Dub] [CR WEB-DL 1080p H264 AAC] [87BA319D] (Dogul Wang)",
+			"expected": {
+				"group": "Yameii",
+				"primaryTitle": "Tomb Raider King",
+				"alternateTitles": [
+					"Dogul Wang"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"English Dub"
+				],
+				"checksum": "87BA319D",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [1080p CR WEBRip HEVC AAC][MultiSub][4AE3A605]",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "2 - 12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip",
+					"CR"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"checksum": "4AE3A605",
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p HIDI WEB-DL DUAL AAC2.0 H.264-VARYG (Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita, Dual-Audio)",
+			"expected": {
+				"primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
+				"alternateTitles": [
+					"Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 6,
+								"raw": "E06"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"releaseFlags": [
+					"Dual-Audio"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p AMZN WEB-DL DUAL DDP2.0 H.264-VARYG (Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita, Dual-Audio)",
+			"expected": {
+				"primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
+				"alternateTitles": [
+					"Suterare Seijo no Isekai Gohantabi: Kakure Skill de Camping Car wo Shoukan Shimashita"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 6,
+								"raw": "E06"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"releaseFlags": [
+					"Dual-Audio"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing S02E08 1080p HIDI WEB-DL DUAL AAC2.0 H.264-VARYG (Hell Mode: Yarikomi-zuki no Gamer wa Haisettei no Isekai de Musou Suru 2nd Season, Dual-Audio)",
+			"expected": {
+				"primaryTitle": "HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing",
+				"alternateTitles": [
+					"Hell Mode: Yarikomi-zuki no Gamer wa Haisettei no Isekai de Musou Suru 2nd Season"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 8,
+								"raw": "E08"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"releaseFlags": [
+					"Dual-Audio"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "The World Is Dancing S01E05 A Budding Throb 1080p HIDI WEB-DL DUAL AAC2.0 H.264-VARYG (Dual-Audio)",
+			"expected": {
+				"primaryTitle": "The World Is Dancing",
+				"episodeTitle": "A Budding Throb",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 5,
+								"raw": "E05"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"releaseFlags": [
+					"Dual-Audio"
+				],
+				"tagFields": {}
+			}
+		},
+		{
+			"input": "The World Is Dancing S01E05 1080p AMZN WEB-DL DUAL DDP2.0 H.264-VARYG (Dual-Audio)",
+			"expected": {
+				"primaryTitle": "The World Is Dancing",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 5,
+								"raw": "E05"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"releaseFlags": [
+					"Dual-Audio"
+				],
+				"tagFields": {}
+			}
+		}
+	]
 }

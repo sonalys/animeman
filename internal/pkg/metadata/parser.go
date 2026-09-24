@@ -9,14 +9,14 @@ import (
 )
 
 type EpisodeRange struct {
-	Start float32
-	End   float32
-	Raw   string
+	Start float32 `json:"start,omitzero"`
+	End   float32 `json:"end,omitzero"`
+	Raw   string  `json:"raw,omitzero"`
 }
 
 type Tag struct {
-	Number   int            `json:"Number"`
-	Episodes []EpisodeRange `json:"Episodes"`
+	Number   int            `json:"number,omitzero"`
+	Episodes []EpisodeRange `json:"episodes,omitzero"`
 }
 
 type Metadata struct {
@@ -844,7 +844,7 @@ func parseSemanticGroups(ts []Token, r *Metadata) {
 			classifyBracket(t.Text, r)
 		}
 		if t.Kind == TokenParen {
-			classifyParen(t.Text, r)
+			classifyParenthesis(t.Text, r)
 		}
 	}
 }
@@ -880,7 +880,7 @@ func classifyBracket(x string, r *Metadata) {
 	}
 }
 
-func classifyParen(x string, r *Metadata) {
+func classifyParenthesis(x string, r *Metadata) {
 	x = strings.TrimSpace(x)
 	if x == "" {
 		return
@@ -902,6 +902,10 @@ func classifyParen(x string, r *Metadata) {
 		var alias []string
 		for _, p := range parts {
 			p = strings.TrimSpace(p)
+			if len(p) == 0 {
+				continue
+			}
+
 			if containsAnyCI(
 				p,
 				"Multi-Subs",
@@ -910,18 +914,16 @@ func classifyParen(x string, r *Metadata) {
 				"English-Sub",
 				"Korean Audio",
 			) {
-				break
+				r.ReleaseFlags = append(r.ReleaseFlags, p)
+				continue
 			}
-			if p != "" {
-				alias = append(alias, p)
-			}
+			alias = append(alias, p)
 		}
 
 		if len(alias) > 0 {
-			r.AlternateTitles = append(r.AlternateTitles, strings.Join(alias, ", "))
+			r.AlternateTitles = append(r.AlternateTitles, alias...)
 		}
 
-		r.ReleaseFlags = append(r.ReleaseFlags, x)
 		return
 	}
 
@@ -936,9 +938,13 @@ func classifyParen(x string, r *Metadata) {
 		return
 	}
 
-	if containsCI(x, "Multi-Subs") || containsCI(x, "Multi-Audio") || containsCI(x, "Dual-Audio") ||
-		containsCI(x, "English-Sub") ||
-		containsCI(x, "Korean Audio") {
+	if containsAnyCI(x,
+		"Multi-Subs",
+		"Multi-Audio",
+		"Dual-Audio",
+		"English-Sub",
+		"Korean Audio",
+	) {
 		r.ReleaseFlags = append(r.ReleaseFlags, x)
 		return
 	}

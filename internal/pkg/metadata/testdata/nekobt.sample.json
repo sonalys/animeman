@@ -1,3830 +1,3190 @@
 {
-  "cases": [
-    {
-      "input": "[geckyzz] Perfect Addiction - S01E12 (パーフェクトアディクション) [CTHP.WEB-DL 1080P AVC, AAC, M-SUB][890CBECA] {Tags:L0;V9;C1;A=ja;S=en,zhhans,zhhant,id,ms,th,vi;}",
-      "expected": {
-        "group": "geckyzz",
-        "primaryTitle": "Perfect Addiction",
-        "alternateTitles": [
-          "パーフェクトアディクション"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080P"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CTHP"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": [
-          "M-SUB"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "zhhans",
-          "zhhant",
-          "id",
-          "ms",
-          "th",
-          "vi"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "890CBECA",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,zhhans,zhhant,id,ms,th,vi",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Gecko] Cat Tales - S01E50 (うごく！ねこむかしばなし; Ugoku! Neko Mukashibanashi) [CTHP.WEB-DL 1080P AVC, AAC, M-SUB][A081C6CB] {Tags:L0;V9;C1;A=ja;S=en,zhhans,zhhant,id,ms,th,vi;}",
-      "expected": {
-        "group": "Gecko",
-        "primaryTitle": "Cat Tales",
-        "alternateTitles": [
-          "うごく！ねこむかしばなし",
-          "Ugoku! Neko Mukashibanashi"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 50,
-                "Raw": "E50"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080P"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CTHP"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": [
-          "M-SUB"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "zhhans",
-          "zhhant",
-          "id",
-          "ms",
-          "th",
-          "vi"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "A081C6CB",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,zhhans,zhhant,id,ms,th,vi",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Gecko] Candy Caries - S01E24 (キャンディーカリエス) [CTHP.WEB-DL 1080P AVC, AAC, D-SUB][F00AB65C] {Tags:L0;V9;C1;A=ja;S=en,id;}",
-      "expected": {
-        "group": "Gecko",
-        "primaryTitle": "Candy Caries",
-        "alternateTitles": [
-          "キャンディーカリエス"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 24,
-                "Raw": "E24"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080P"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CTHP"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": [
-          "D-SUB"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "id"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "F00AB65C",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,id",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Gecko] Candy Caries - S01E24 (キャンディーカリエス) [YTB.WEB-DL 1080P AVC, Opus, M-SUB][4E2B2668] {Tags:L0;V9;C1;A=ja;S=en,frfr,de,it,ptbr,es419,eses;}",
-      "expected": {
-        "group": "Gecko",
-        "primaryTitle": "Candy Caries",
-        "alternateTitles": [
-          "キャンディーカリエス"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 24,
-                "Raw": "E24"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080P"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "YTB"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "Opus"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": [
-          "M-SUB"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "frfr",
-          "de",
-          "it",
-          "ptbr",
-          "es419",
-          "eses"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "4E2B2668",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,frfr,de,it,ptbr,es419,eses",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Candy Caries S01E24 1080p AMZN WEB-DL DDP2.0 H.264 (Multi-Subs) {Tags:L0;V9;C1;A=ja;S=en,frfr,de,it,ptbr,es419,eses;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Candy Caries",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 24,
-                "Raw": "E24"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "frfr",
-          "de",
-          "it",
-          "ptbr",
-          "es419",
-          "eses"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,frfr,de,it,ptbr,es419,eses",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [IQIYI WebRip 2160p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu) {Tags:L0;V7;C2;A=ja;S=zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419;}",
-      "expected": {
-        "group": "Feibanyama",
-        "primaryTitle": "ReZERO Starting Life in Another World",
-        "alternateTitles": [
-          "Re Zero kara Hajimeru Isekai Seikatsu"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "2160p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "IQIYI"
-        ],
-        "codecs": [
-          "H.265"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "zhhans",
-          "zhhant",
-          "en",
-          "ar",
-          "frfr",
-          "de",
-          "id",
-          "it",
-          "ms",
-          "pl",
-          "ptbr",
-          "ru",
-          "es419"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": [
-          "Veryslow"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "2",
-          "L": "0",
-          "S": "zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [IQIYI WebRip 1440p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu) {Tags:L0;V7;C2;A=ja;S=zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419;}",
-      "expected": {
-        "group": "Feibanyama",
-        "primaryTitle": "ReZERO Starting Life in Another World",
-        "alternateTitles": [
-          "Re Zero kara Hajimeru Isekai Seikatsu"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1440p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "IQIYI"
-        ],
-        "codecs": [
-          "H.265"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "zhhans",
-          "zhhant",
-          "en",
-          "ar",
-          "frfr",
-          "de",
-          "id",
-          "it",
-          "ms",
-          "pl",
-          "ptbr",
-          "ru",
-          "es419"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": [
-          "Veryslow"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "2",
-          "L": "0",
-          "S": "zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Ironclad] From Old Country Bumpkin to Master Swordsman - S02E12 (WEB 1080p AV1) | Katainaka no Ossan II (Multi-Audio, Multi-Subs) (Weekly) {Tags:L0;V7;C3;A=es419,frfr,de,ptbr,th,it,en,ja,eses;S=es419,ptbr,it,ms,id,eses,th,ko,frca,zhhant,zhhans,en,nl,tr,frfr,de,ja,hi,pl,ar;}",
-      "expected": {
-        "group": "Ironclad",
-        "primaryTitle": "From Old Country Bumpkin to Master Swordsman",
-        "alternateTitles": [
-          "Katainaka no Ossan II"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": [
-          "AV1"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "MULTi",
-          "Multi-Audio"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "es419",
-          "ptbr",
-          "it",
-          "ms",
-          "id",
-          "eses",
-          "th",
-          "ko",
-          "frca",
-          "zhhant",
-          "zhhans",
-          "en",
-          "nl",
-          "tr",
-          "frfr",
-          "de",
-          "ja",
-          "hi",
-          "pl",
-          "ar"
-        ],
-        "audioLanguages": [
-          "es419",
-          "frfr",
-          "de",
-          "ptbr",
-          "th",
-          "it",
-          "en",
-          "ja",
-          "eses"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Audio, Multi-Subs"
-        ],
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {
-          "A": "es419,frfr,de,ptbr,th,it,en,ja,eses",
-          "C": "3",
-          "L": "0",
-          "S": "es419,ptbr,it,ms,id,eses,th,ko,frca,zhhant,zhhans,en,nl,tr,frfr,de,ja,hi,pl,ar",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [CR WebRip 1080p H265 Veryslow AAC Multi-Subs] (Re:Zero kara Hajimeru Isekai Seikatsu) {Tags:L0;V7;C2;A=ja;S=zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419;}",
-      "expected": {
-        "group": "Feibanyama",
-        "primaryTitle": "ReZERO Starting Life in Another World",
-        "alternateTitles": [
-          "Re:Zero kara Hajimeru Isekai Seikatsu"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "CR"
-        ],
-        "codecs": [
-          "H.265"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "zhhans",
-          "zhhant",
-          "en",
-          "ar",
-          "frfr",
-          "de",
-          "id",
-          "it",
-          "ms",
-          "pl",
-          "ptbr",
-          "ru",
-          "es419"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": [
-          "Veryslow"
-        ],
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "2",
-          "L": "0",
-          "S": "zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [1080p AMZN WEBRip HEVC EAC3][MultiSub][94C14148] {Tags:L0;V7;C2;A=ja;S=en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "II - 12 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "AMZN"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "EAC3"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "frca",
-          "de",
-          "it",
-          "ja",
-          "pl",
-          "nl",
-          "tr",
-          "id",
-          "th",
-          "ko",
-          "zhhans",
-          "zhhant",
-          "ms"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "94C14148",
-        "tagFields": {
-          "A": "ja",
-          "C": "2",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E09 Livia 1080p CR WEB-DL MULTi AAC2.0 H.264 (Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,de,es419,frfr,ptbr;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
-        "alternateTitles": [
-          "Otome Game Sekai wa Mob ni Kibishii Sekai desu 2"
-        ],
-        "episodeTitle": "Livia",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 9,
-                "Raw": "E09"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR",
-          "LIV"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "it",
-          "ptbr",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en",
-          "de",
-          "es419",
-          "frfr",
-          "ptbr"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en,de,es419,frfr,ptbr",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] Clevatess S02E12 The Millennium of a Dark Beast Lord REPACK 1080p CR WEB-DL DUAL AAC2.0 H.264 (Clevatess: Majuu no Ou to Akago to Shikabane no Yuusha, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,id,it,ms,pl,ptbr,ru,th,vi,zhhans,zhhant;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "Clevatess",
-        "alternateTitles": [
-          "Clevatess: Majuu no Ou to Akago to Shikabane no Yuusha"
-        ],
-        "episodeTitle": "The Millennium of a Dark Beast Lord REPACK",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": true,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "id",
-          "it",
-          "ms",
-          "pl",
-          "ptbr",
-          "ru",
-          "th",
-          "vi",
-          "zhhans",
-          "zhhant"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Clevatess: Majuu no Ou to Akago to Shikabane no Yuusha, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,id,it,ms,pl,ptbr,ru,th,vi,zhhans,zhhant",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [1080p CR WEBRip HEVC AAC][MultiSub][4AE3A605] {Tags:L0;V7;C2;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "2 - 12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "CR"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "de",
-          "it",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "4AE3A605",
-        "tagFields": {
-          "A": "ja",
-          "C": "2",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,de,it,ru",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p HIDI WEB-DL DUAL AAC2.0 H.264 (Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shim) {Tags:L0;V9;C1;A=ja,en;S=en;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
-        "alternateTitles": [
-          "Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shim"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 6,
-                "Raw": "E06"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p AMZN WEB-DL DUAL DDP2.0 H.264 (Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shim) {Tags:L0;V9;C1;A=ja,en;S=en;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
-        "alternateTitles": [
-          "Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shim"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 6,
-                "Raw": "E06"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing S02E08 1080p HIDI WEB-DL DUAL AAC2.0 H.264 (Hell Mode: Yarikomizuki no Gamer wa Hai Settei no Isekai de Musou suru) {Tags:L0;V9;C1;A=ja,en;S=en;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing",
-        "alternateTitles": [
-          "Hell Mode: Yarikomizuki no Gamer wa Hai Settei no Isekai de Musou suru"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 8,
-                "Raw": "E08"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] The World Is Dancing S01E05 A Budding Throb 1080p HIDI WEB-DL DUAL AAC2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "The World Is Dancing",
-        "alternateTitles": null,
-        "episodeTitle": "A Budding Throb",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 5,
-                "Raw": "E05"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] The World Is Dancing S01E05 1080p AMZN WEB-DL DUAL DDP2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "The World Is Dancing",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 5,
-                "Raw": "E05"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing S02E08 1080p HIDIVE WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, English-Sub) {Tags:L0;V9;C1;A=ja,en;S=en;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 8,
-                "Raw": "E08"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI",
-          "HIDIVE"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": [
-          "English-Sub"
-        ],
-        "subtitleLanguages": [
-          "en"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio, English-Sub"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] The World Is Dancing S01E05 1080p HIDIVE WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, English-Sub) {Tags:L0;V9;C1;A=ja,en;S=en;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "The World Is Dancing",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 5,
-                "Raw": "E05"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI",
-          "HIDIVE"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": [
-          "English-Sub"
-        ],
-        "subtitleLanguages": [
-          "en"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio, English-Sub"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p HIDIVE WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, English-Sub) {Tags:L0;V9;C1;A=ja,en;S=en;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 1,
-            "Episodes": [
-              {
-                "Start": 6,
-                "Raw": "E06"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "HIDI",
-          "HIDIVE"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": [
-          "English-Sub"
-        ],
-        "subtitleLanguages": [
-          "en"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio, English-Sub"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] Hana Kimi S02E11 What Do You Want 1080p CR WEB-DL MULTi AAC2.0 H.264 (Hanazakari no Kimitachi e, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,es419,frfr,hi,ptbr,ta,te;S=en,ar,de,es419,eses,frfr,hi,id,it,pl,ptbr,ru,ta,te,th,zhhant;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "Hana Kimi",
-        "alternateTitles": [
-          "Hanazakari no Kimitachi e"
-        ],
-        "episodeTitle": "What Do You Want",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 11,
-                "Raw": "E11"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "hi",
-          "id",
-          "it",
-          "pl",
-          "ptbr",
-          "ru",
-          "ta",
-          "te",
-          "th",
-          "zhhant"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en",
-          "es419",
-          "frfr",
-          "hi",
-          "ptbr",
-          "ta",
-          "te"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Hanazakari no Kimitachi e, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en,es419,frfr,hi,ptbr,ta,te",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,hi,id,it,pl,ptbr,ru,ta,te,th,zhhant",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Onalrie] Otomege Sekai wa Mob ni Kibishii Sekai Desu - S02E12 [1080p WEBRip AV1] {Tags:L0;V7;C3;A=ja;S=en,ptpt,es419,eses,ar,frfr,de,it,ru;}",
-      "expected": {
-        "group": "Onalrie",
-        "primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip"
-        ],
-        "codecs": [
-          "AV1"
-        ],
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en",
-          "ptpt",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "de",
-          "it",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "3",
-          "L": "0",
-          "S": "en,ptpt,es419,eses,ar,frfr,de,it,ru",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[AnoZu] From Old Country Bumpkin to Master Swordsman S02 1080p AMZN WEB-DL Dual-Audio DDP 2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frca,frfr,hi,id,it,ja,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant;}",
-      "expected": {
-        "group": "AnoZu",
-        "primaryTitle": "From Old Country Bumpkin to Master Swordsman",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": null
-          }
-        ],
-        "episodes": null,
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frca",
-          "frfr",
-          "hi",
-          "id",
-          "it",
-          "ja",
-          "ko",
-          "ms",
-          "nl",
-          "pl",
-          "ptbr",
-          "th",
-          "tr",
-          "zhhans",
-          "zhhant"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frca,frfr,hi,id,it,ja,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Hana-Kimi S02E11 1080p CR WEB-DL MULTi AAC2.0 H.264 (Multi-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,ptbr,es419;S=en,ar,zhhant,frfr,de,id,it,pl,ptbr,ru,es419,eses,th;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Hana-Kimi",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 11,
-                "Raw": "E11"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi",
-          "Multi-Audio"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "zhhant",
-          "frfr",
-          "de",
-          "id",
-          "it",
-          "pl",
-          "ptbr",
-          "ru",
-          "es419",
-          "eses",
-          "th"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en",
-          "ptbr",
-          "es419"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en,ptbr,es419",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,zhhant,frfr,de,id,it,pl,ptbr,ru,es419,eses,th",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] Hana Kimi S02E12 It Cant Be Helped 1080p CR WEB-DL DUAL AAC2.0 H.264 (Hanazakari no Kimitachi e, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,id,it,pl,ptbr,ru,th,zhhant;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "Hana Kimi",
-        "alternateTitles": [
-          "Hanazakari no Kimitachi e"
-        ],
-        "episodeTitle": "It Cant Be Helped",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "id",
-          "it",
-          "pl",
-          "ptbr",
-          "ru",
-          "th",
-          "zhhant"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Hanazakari no Kimitachi e, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,id,it,pl,ptbr,ru,th,zhhant",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[AnoZu] Hana-Kimi S02E12 1080p CR WEB-DL Dual-Audio DDP 2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,id,it,pl,ptbr,ru,th,zhhant;}",
-      "expected": {
-        "group": "AnoZu",
-        "primaryTitle": "Hana-Kimi",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "id",
-          "it",
-          "pl",
-          "ptbr",
-          "ru",
-          "th",
-          "zhhant"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,id,it,pl,ptbr,ru,th,zhhant",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Hana-Kimi S02E12 1080p CR WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,zhhant,frfr,de,id,it,pl,ptbr,ru,es419,eses,th;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Hana-Kimi",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "zhhant",
-          "frfr",
-          "de",
-          "id",
-          "it",
-          "pl",
-          "ptbr",
-          "ru",
-          "es419",
-          "eses",
-          "th"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,zhhant,frfr,de,id,it,pl,ptbr,ru,es419,eses,th",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Re:Zero kara Hajimeru Isekai Seikatsu S04E18 [1080p CR WEBRip HEVC AAC][MultiSub][4AC2CE74] {Tags:L0;V7;C2;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru,pl;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Re:Zero kara Hajimeru Isekai Seikatsu",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 4,
-            "Episodes": [
-              {
-                "Start": 18,
-                "Raw": "E18"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip",
-          "CR"
-        ],
-        "codecs": [
-          "HEVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "de",
-          "it",
-          "ru",
-          "pl"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "4AC2CE74",
-        "tagFields": {
-          "A": "ja",
-          "C": "2",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,de,it,ru,pl",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Onalrie] Katainaka no Ossan, Kensei ni Naru - S02E12 [1080p WEBRip AV1] {Tags:L0;V7;C3;A=ja;S=en,ptpt,es419,eses,ar,de,frfr,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms,hi;}",
-      "expected": {
-        "group": "Onalrie",
-        "primaryTitle": "Katainaka no Ossan, Kensei ni Naru",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEBRip"
-        ],
-        "codecs": [
-          "AV1"
-        ],
-        "audioCodecs": null,
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en",
-          "ptpt",
-          "es419",
-          "eses",
-          "ar",
-          "de",
-          "frfr",
-          "it",
-          "ja",
-          "pl",
-          "nl",
-          "tr",
-          "id",
-          "th",
-          "ko",
-          "zhhans",
-          "zhhant",
-          "ms",
-          "hi"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "3",
-          "L": "0",
-          "S": "en,ptpt,es419,eses,ar,de,frfr,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms,hi",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Ironclad] Clevatess - S02E12 (WEB 1080p AV1) | Clevatess II (Multi-Audio, Multi-Subs) (Weekly) {Tags:L0;V7;C3;A=ptbr,ar,en,te,ja,es419,hi,ta,de,frfr;S=ptbr,ar,en,te,es419,eses,hi,ta,de,frfr;}",
-      "expected": {
-        "group": "Ironclad",
-        "primaryTitle": "Clevatess",
-        "alternateTitles": [
-          "Clevatess II"
-        ],
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": null,
-        "codecs": [
-          "AV1"
-        ],
-        "audioCodecs": null,
-        "audioFlags": [
-          "MULTi",
-          "Multi-Audio"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "ptbr",
-          "ar",
-          "en",
-          "te",
-          "es419",
-          "eses",
-          "hi",
-          "ta",
-          "de",
-          "frfr"
-        ],
-        "audioLanguages": [
-          "ptbr",
-          "ar",
-          "en",
-          "te",
-          "ja",
-          "es419",
-          "hi",
-          "ta",
-          "de",
-          "frfr"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Audio, Multi-Subs"
-        ],
-        "tags": [
-          "weekly"
-        ],
-        "checksum": "",
-        "tagFields": {
-          "A": "ptbr,ar,en,te,ja,es419,hi,ta,de,frfr",
-          "C": "3",
-          "L": "0",
-          "S": "ptbr,ar,en,te,es419,eses,hi,ta,de,frfr",
-          "V": "7"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E12 1080p CR WEB-DL AAC2.0 H.264 (Multi-Subs) {Tags:L0;V9;C1;A=ja;S=en,ar,frfr,de,it,ptbr,ru,es419,eses;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "frfr",
-          "de",
-          "it",
-          "ptbr",
-          "ru",
-          "es419",
-          "eses"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,frfr,de,it,ptbr,ru,es419,eses",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E10 They Hit Where It Hurts 1080p CR WEB-DL DUAL AAC2.0 H.264 (Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
-        "alternateTitles": [
-          "Otome Game Sekai wa Mob ni Kibishii Sekai desu 2"
-        ],
-        "episodeTitle": "They Hit Where It Hurts",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "it",
-          "ptbr",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E12 This World Is Tough for Mobs 1080p CR WEB-DL AAC2.0 H.264 (Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs) {Tags:L0;V9;C1;A=ja;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
-        "alternateTitles": [
-          "Otome Game Sekai wa Mob ni Kibishii Sekai desu 2"
-        ],
-        "episodeTitle": "This World Is Tough for Mobs",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "it",
-          "ptbr",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[AnoZu] Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs S02E10 1080p CR WEB-DL Dual-Audio DDP 2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
-      "expected": {
-        "group": "AnoZu",
-        "primaryTitle": "Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL"
-        ],
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "it",
-          "ptbr",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[AnoZu] Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs S02E12 1080p CR WEB-DL AAC 2.0 H.264 {Tags:L0;V9;C1;A=ja;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
-      "expected": {
-        "group": "AnoZu",
-        "primaryTitle": "Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": null,
-        "subtitleFlags": null,
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "it",
-          "ptbr",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E10 1080p CR WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,frfr,de,it,ptbr,ru,es419,eses;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 10,
-                "Raw": "E10"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "frfr",
-          "de",
-          "it",
-          "ptbr",
-          "ru",
-          "es419",
-          "eses"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,frfr,de,it,ptbr,ru,es419,eses",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [480p CR WEB-DL AVC AAC][MultiSub][6BF3D97E] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "2 - 12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "480p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "de",
-          "it",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "6BF3D97E",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,de,it,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [720p CR WEB-DL AVC AAC][MultiSub][0298C7AC] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "2 - 12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "de",
-          "it",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "0298C7AC",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,de,it,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [1080p CR WEB-DL AVC AAC][MultiSub][41BBC396] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "2 - 12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "AAC"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "de",
-          "it",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "41BBC396",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,de,it,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] Trapped in a Dating Sim The World of Otome Games Is Tough for Mobs S02E12 1080p BILI WEB-DL AAC2.0 H.265 (Multi-Subs) {Tags:L0;V9;C2;A=ja;S=en,id,th;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "Trapped in a Dating Sim The World of Otome Games Is Tough for Mobs",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "BILI"
-        ],
-        "codecs": [
-          "H.265"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "id",
-          "th"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja",
-          "C": "2",
-          "L": "0",
-          "S": "en,id,th",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [540p AMZN WEB-DL AVC EAC3][MultiSub][6EE02503] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "II - 12 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "540p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "EAC3"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "frca",
-          "de",
-          "it",
-          "ja",
-          "pl",
-          "nl",
-          "tr",
-          "id",
-          "th",
-          "ko",
-          "zhhans",
-          "zhhant",
-          "ms"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "6EE02503",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [720p AMZN WEB-DL AVC EAC3][MultiSub][8665E032] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "II - 12 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "720p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "EAC3"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "frca",
-          "de",
-          "it",
-          "ja",
-          "pl",
-          "nl",
-          "tr",
-          "id",
-          "th",
-          "ko",
-          "zhhans",
-          "zhhant",
-          "ms"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "8665E032",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [1080p AMZN WEB-DL AVC EAC3][MultiSub][5830863B] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms;}",
-      "expected": {
-        "group": "Erai-raws",
-        "primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "II - 12 "
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "AVC"
-        ],
-        "audioCodecs": [
-          "EAC3"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "MultiSub"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ptbr",
-          "es419",
-          "eses",
-          "ar",
-          "frfr",
-          "frca",
-          "de",
-          "it",
-          "ja",
-          "pl",
-          "nl",
-          "tr",
-          "id",
-          "th",
-          "ko",
-          "zhhans",
-          "zhhant",
-          "ms"
-        ],
-        "audioLanguages": [
-          "ja"
-        ],
-        "encoders": null,
-        "releaseFlags": null,
-        "tags": null,
-        "checksum": "5830863B",
-        "tagFields": {
-          "A": "ja",
-          "C": "1",
-          "L": "0",
-          "S": "en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] From Old Country Bumpkin to Master Swordsman S02E12 The Old Country Bumpkin Goes Home 1080p AMZN WEB-DL MULTi DDP2.0 H.264 (Katainaka no Ossan, Kensei ni Naru II, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,de,es419,eses,frfr,it,ptbr,th;S=en,ja,ar,de,es419,eses,frca,frfr,hi,id,it,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "From Old Country Bumpkin to Master Swordsman",
-        "alternateTitles": [
-          "Katainaka no Ossan, Kensei ni Naru II"
-        ],
-        "episodeTitle": "The Old Country Bumpkin Goes Home",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ja",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frca",
-          "frfr",
-          "hi",
-          "id",
-          "it",
-          "ko",
-          "ms",
-          "nl",
-          "pl",
-          "ptbr",
-          "th",
-          "tr",
-          "zhhans",
-          "zhhant"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "it",
-          "ptbr",
-          "th"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Katainaka no Ossan, Kensei ni Naru II, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en,de,es419,eses,frfr,it,ptbr,th",
-          "C": "1",
-          "L": "0",
-          "S": "en,ja,ar,de,es419,eses,frca,frfr,hi,id,it,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] From Old Country Bumpkin to Master Swordsman S02E12 The Old Country Bumpkin Goes Home 1080p AMZN WEB-DL DUAL DDP2.0 H.264 (Katainaka no Ossan, Kensei ni Naru II, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ja,ar,de,es419,eses,frca,frfr,hi,id,it,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "From Old Country Bumpkin to Master Swordsman",
-        "alternateTitles": [
-          "Katainaka no Ossan, Kensei ni Naru II"
-        ],
-        "episodeTitle": "The Old Country Bumpkin Goes Home",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ja",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frca",
-          "frfr",
-          "hi",
-          "id",
-          "it",
-          "ko",
-          "ms",
-          "nl",
-          "pl",
-          "ptbr",
-          "th",
-          "tr",
-          "zhhans",
-          "zhhant"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Katainaka no Ossan, Kensei ni Naru II, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ja,ar,de,es419,eses,frca,frfr,hi,id,it,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[VARYG] Saga of Tanya the Evil S02E09 Sightseeing Tour 1080p CR WEB-DL MULTi AAC2.0 H.264 (Youjo Senki Movie, Multi-Subs) {Tags:L0;V9;C1;A=ja,de,es419,ptbr;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
-      "expected": {
-        "group": "VARYG",
-        "primaryTitle": "Saga of Tanya the Evil",
-        "alternateTitles": [
-          "Youjo Senki Movie"
-        ],
-        "episodeTitle": "Sightseeing Tour",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 9,
-                "Raw": "E09"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "CR",
-          "OV"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "AAC2.0"
-        ],
-        "audioFlags": [
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "de",
-          "es419",
-          "eses",
-          "frfr",
-          "it",
-          "ptbr",
-          "ru"
-        ],
-        "audioLanguages": [
-          "ja",
-          "de",
-          "es419",
-          "ptbr"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Youjo Senki Movie, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,de,es419,ptbr",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] From Old Country Bumpkin to Master Swordsman S02E12 1080p AMZN WEB-DL MULTi DDP2.0 H.264 (Multi-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,frfr,de,it,ptbr,eses,es419,th;S=en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "From Old Country Bumpkin to Master Swordsman",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "MULTi",
-          "Multi-Audio"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "zhhans",
-          "zhhant",
-          "nl",
-          "frfr",
-          "frca",
-          "de",
-          "hi",
-          "id",
-          "it",
-          "ja",
-          "ko",
-          "ms",
-          "pl",
-          "ptbr",
-          "es419",
-          "eses",
-          "th",
-          "tr"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en",
-          "frfr",
-          "de",
-          "it",
-          "ptbr",
-          "eses",
-          "es419",
-          "th"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Multi-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en,frfr,de,it,ptbr,eses,es419,th",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] From Old Country Bumpkin to Master Swordsman S02E12 1080p AMZN WEB-DL DUAL DDP2.0 H.264 (Dual-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "From Old Country Bumpkin to Master Swordsman",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.264"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "zhhans",
-          "zhhant",
-          "nl",
-          "frfr",
-          "frca",
-          "de",
-          "hi",
-          "id",
-          "it",
-          "ja",
-          "ko",
-          "ms",
-          "pl",
-          "ptbr",
-          "es419",
-          "eses",
-          "th",
-          "tr"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "1",
-          "L": "0",
-          "S": "en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    },
-    {
-      "input": "[ToonsHub] From Old Country Bumpkin to Master Swordsman S02E12 1080p AMZN WEB-DL DUAL DDP2.0 H.265 (Dual-Audio, Multi-Subs) {Tags:L0;V9;C2;A=ja,en;S=en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr;}",
-      "expected": {
-        "group": "ToonsHub",
-        "primaryTitle": "From Old Country Bumpkin to Master Swordsman",
-        "alternateTitles": null,
-        "episodeTitle": "",
-        "year": 0,
-        "seasons": [
-          {
-            "Number": 2,
-            "Episodes": [
-              {
-                "Start": 12,
-                "Raw": "E12"
-              }
-            ]
-          }
-        ],
-        "isBatch": false,
-        "isComplete": false,
-        "isRemastered": false,
-        "isRepack": false,
-        "resolutions": [
-          "1080p"
-        ],
-        "dimensions": null,
-        "bitDepths": null,
-        "sources": [
-          "WEB-DL",
-          "AMZN"
-        ],
-        "codecs": [
-          "H.265"
-        ],
-        "audioCodecs": [
-          "DDP2.0"
-        ],
-        "audioFlags": [
-          "Dual-Audio",
-          "DUAL",
-          "MULTi"
-        ],
-        "subtitleFlags": [
-          "Multi-Subs"
-        ],
-        "subtitleLanguages": [
-          "en",
-          "ar",
-          "zhhans",
-          "zhhant",
-          "nl",
-          "frfr",
-          "frca",
-          "de",
-          "hi",
-          "id",
-          "it",
-          "ja",
-          "ko",
-          "ms",
-          "pl",
-          "ptbr",
-          "es419",
-          "eses",
-          "th",
-          "tr"
-        ],
-        "audioLanguages": [
-          "ja",
-          "en"
-        ],
-        "encoders": null,
-        "releaseFlags": [
-          "Dual-Audio, Multi-Subs"
-        ],
-        "tags": null,
-        "checksum": "",
-        "tagFields": {
-          "A": "ja,en",
-          "C": "2",
-          "L": "0",
-          "S": "en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr",
-          "V": "9"
-        },
-        "unknown": null
-      }
-    }
-  ]
+	"cases": [
+		{
+			"input": "[geckyzz] Perfect Addiction - S01E12 (パーフェクトアディクション) [CTHP.WEB-DL 1080P AVC, AAC, M-SUB][890CBECA] {Tags:L0;V9;C1;A=ja;S=en,zhhans,zhhant,id,ms,th,vi;}",
+			"expected": {
+				"group": "geckyzz",
+				"primaryTitle": "Perfect Addiction",
+				"alternateTitles": [
+					"パーフェクトアディクション"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080P"
+				],
+				"sources": [
+					"WEB-DL",
+					"CTHP"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"subtitleFlags": [
+					"M-SUB"
+				],
+				"subtitleLanguages": [
+					"en",
+					"zhhans",
+					"zhhant",
+					"id",
+					"ms",
+					"th",
+					"vi"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "890CBECA",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,zhhans,zhhant,id,ms,th,vi",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Gecko] Cat Tales - S01E50 (うごく！ねこむかしばなし; Ugoku! Neko Mukashibanashi) [CTHP.WEB-DL 1080P AVC, AAC, M-SUB][A081C6CB] {Tags:L0;V9;C1;A=ja;S=en,zhhans,zhhant,id,ms,th,vi;}",
+			"expected": {
+				"group": "Gecko",
+				"primaryTitle": "Cat Tales",
+				"alternateTitles": [
+					"うごく！ねこむかしばなし",
+					"Ugoku! Neko Mukashibanashi"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 50,
+								"raw": "E50"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080P"
+				],
+				"sources": [
+					"WEB-DL",
+					"CTHP"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"subtitleFlags": [
+					"M-SUB"
+				],
+				"subtitleLanguages": [
+					"en",
+					"zhhans",
+					"zhhant",
+					"id",
+					"ms",
+					"th",
+					"vi"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "A081C6CB",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,zhhans,zhhant,id,ms,th,vi",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Gecko] Candy Caries - S01E24 (キャンディーカリエス) [CTHP.WEB-DL 1080P AVC, AAC, D-SUB][F00AB65C] {Tags:L0;V9;C1;A=ja;S=en,id;}",
+			"expected": {
+				"group": "Gecko",
+				"primaryTitle": "Candy Caries",
+				"alternateTitles": [
+					"キャンディーカリエス"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 24,
+								"raw": "E24"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080P"
+				],
+				"sources": [
+					"WEB-DL",
+					"CTHP"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"subtitleFlags": [
+					"D-SUB"
+				],
+				"subtitleLanguages": [
+					"en",
+					"id"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "F00AB65C",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,id",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Gecko] Candy Caries - S01E24 (キャンディーカリエス) [YTB.WEB-DL 1080P AVC, Opus, M-SUB][4E2B2668] {Tags:L0;V9;C1;A=ja;S=en,frfr,de,it,ptbr,es419,eses;}",
+			"expected": {
+				"group": "Gecko",
+				"primaryTitle": "Candy Caries",
+				"alternateTitles": [
+					"キャンディーカリエス"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 24,
+								"raw": "E24"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080P"
+				],
+				"sources": [
+					"WEB-DL",
+					"YTB"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"Opus"
+				],
+				"subtitleFlags": [
+					"M-SUB"
+				],
+				"subtitleLanguages": [
+					"en",
+					"frfr",
+					"de",
+					"it",
+					"ptbr",
+					"es419",
+					"eses"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "4E2B2668",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,frfr,de,it,ptbr,es419,eses",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] Candy Caries S01E24 1080p AMZN WEB-DL DDP2.0 H.264 (Multi-Subs) {Tags:L0;V9;C1;A=ja;S=en,frfr,de,it,ptbr,es419,eses;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Candy Caries",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 24,
+								"raw": "E24"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"frfr",
+					"de",
+					"it",
+					"ptbr",
+					"es419",
+					"eses"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,frfr,de,it,ptbr,es419,eses",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [IQIYI WebRip 2160p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu) {Tags:L0;V7;C2;A=ja;S=zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419;}",
+			"expected": {
+				"group": "Feibanyama",
+				"primaryTitle": "ReZERO Starting Life in Another World",
+				"alternateTitles": [
+					"Re Zero kara Hajimeru Isekai Seikatsu"
+				],
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"2160p"
+				],
+				"sources": [
+					"WEBRip",
+					"IQIYI"
+				],
+				"codecs": [
+					"H.265"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"zhhans",
+					"zhhant",
+					"en",
+					"ar",
+					"frfr",
+					"de",
+					"id",
+					"it",
+					"ms",
+					"pl",
+					"ptbr",
+					"ru",
+					"es419"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"encoders": [
+					"Veryslow"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "2",
+					"L": "0",
+					"S": "zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [IQIYI WebRip 1440p H265 Veryslow AAC Multi-Subs] (Re Zero kara Hajimeru Isekai Seikatsu) {Tags:L0;V7;C2;A=ja;S=zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419;}",
+			"expected": {
+				"group": "Feibanyama",
+				"primaryTitle": "ReZERO Starting Life in Another World",
+				"alternateTitles": [
+					"Re Zero kara Hajimeru Isekai Seikatsu"
+				],
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1440p"
+				],
+				"sources": [
+					"WEBRip",
+					"IQIYI"
+				],
+				"codecs": [
+					"H.265"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"zhhans",
+					"zhhant",
+					"en",
+					"ar",
+					"frfr",
+					"de",
+					"id",
+					"it",
+					"ms",
+					"pl",
+					"ptbr",
+					"ru",
+					"es419"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"encoders": [
+					"Veryslow"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "2",
+					"L": "0",
+					"S": "zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[Ironclad] From Old Country Bumpkin to Master Swordsman - S02E12 (WEB 1080p AV1) | Katainaka no Ossan II (Multi-Audio, Multi-Subs) (Weekly) {Tags:L0;V7;C3;A=es419,frfr,de,ptbr,th,it,en,ja,eses;S=es419,ptbr,it,ms,id,eses,th,ko,frca,zhhant,zhhans,en,nl,tr,frfr,de,ja,hi,pl,ar;}",
+			"expected": {
+				"group": "Ironclad",
+				"primaryTitle": "From Old Country Bumpkin to Master Swordsman",
+				"alternateTitles": [
+					"Katainaka no Ossan II"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"codecs": [
+					"AV1"
+				],
+				"audioFlags": [
+					"MULTi",
+					"Multi-Audio"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"es419",
+					"ptbr",
+					"it",
+					"ms",
+					"id",
+					"eses",
+					"th",
+					"ko",
+					"frca",
+					"zhhant",
+					"zhhans",
+					"en",
+					"nl",
+					"tr",
+					"frfr",
+					"de",
+					"ja",
+					"hi",
+					"pl",
+					"ar"
+				],
+				"audioLanguages": [
+					"es419",
+					"frfr",
+					"de",
+					"ptbr",
+					"th",
+					"it",
+					"en",
+					"ja",
+					"eses"
+				],
+				"releaseFlags": [
+					"Multi-Audio",
+					"Multi-Subs"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {
+					"A": "es419,frfr,de,ptbr,th,it,en,ja,eses",
+					"C": "3",
+					"L": "0",
+					"S": "es419,ptbr,it,ms,id,eses,th,ko,frca,zhhant,zhhans,en,nl,tr,frfr,de,ja,hi,pl,ar",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[Feibanyama] ReZERO Starting Life in Another World S04E18 [CR WebRip 1080p H265 Veryslow AAC Multi-Subs] (Re:Zero kara Hajimeru Isekai Seikatsu) {Tags:L0;V7;C2;A=ja;S=zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419;}",
+			"expected": {
+				"group": "Feibanyama",
+				"primaryTitle": "ReZERO Starting Life in Another World",
+				"alternateTitles": [
+					"Re:Zero kara Hajimeru Isekai Seikatsu"
+				],
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip",
+					"CR"
+				],
+				"codecs": [
+					"H.265"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"zhhans",
+					"zhhant",
+					"en",
+					"ar",
+					"frfr",
+					"de",
+					"id",
+					"it",
+					"ms",
+					"pl",
+					"ptbr",
+					"ru",
+					"es419"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"encoders": [
+					"Veryslow"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "2",
+					"L": "0",
+					"S": "zhhans,zhhant,en,ar,frfr,de,id,it,ms,pl,ptbr,ru,es419",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [1080p AMZN WEBRip HEVC EAC3][MultiSub][94C14148] {Tags:L0;V7;C2;A=ja;S=en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "II - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip",
+					"AMZN"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"EAC3"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"frca",
+					"de",
+					"it",
+					"ja",
+					"pl",
+					"nl",
+					"tr",
+					"id",
+					"th",
+					"ko",
+					"zhhans",
+					"zhhant",
+					"ms"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "94C14148",
+				"tagFields": {
+					"A": "ja",
+					"C": "2",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E09 Livia 1080p CR WEB-DL MULTi AAC2.0 H.264 (Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,de,es419,frfr,ptbr;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
+				"alternateTitles": [
+					"Otome Game Sekai wa Mob ni Kibishii Sekai desu 2"
+				],
+				"episodeTitle": "Livia",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 9,
+								"raw": "E09"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR",
+					"LIV"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"it",
+					"ptbr",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja",
+					"en",
+					"de",
+					"es419",
+					"frfr",
+					"ptbr"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en,de,es419,frfr,ptbr",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] Clevatess S02E12 The Millennium of a Dark Beast Lord REPACK 1080p CR WEB-DL DUAL AAC2.0 H.264 (Clevatess: Majuu no Ou to Akago to Shikabane no Yuusha, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,id,it,ms,pl,ptbr,ru,th,vi,zhhans,zhhant;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "Clevatess",
+				"alternateTitles": [
+					"Clevatess: Majuu no Ou to Akago to Shikabane no Yuusha"
+				],
+				"episodeTitle": "The Millennium of a Dark Beast Lord REPACK",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"isRepack": true,
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"id",
+					"it",
+					"ms",
+					"pl",
+					"ptbr",
+					"ru",
+					"th",
+					"vi",
+					"zhhans",
+					"zhhant"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,id,it,ms,pl,ptbr,ru,th,vi,zhhans,zhhant",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [1080p CR WEBRip HEVC AAC][MultiSub][4AE3A605] {Tags:L0;V7;C2;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "2 - 12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip",
+					"CR"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"de",
+					"it",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "4AE3A605",
+				"tagFields": {
+					"A": "ja",
+					"C": "2",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,de,it,ru",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p HIDI WEB-DL DUAL AAC2.0 H.264 (Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shim) {Tags:L0;V9;C1;A=ja,en;S=en;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
+				"alternateTitles": [
+					"Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shim"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 6,
+								"raw": "E06"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"DUAL"
+				],
+				"subtitleLanguages": [
+					"en"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p AMZN WEB-DL DUAL DDP2.0 H.264 (Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shim) {Tags:L0;V9;C1;A=ja,en;S=en;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
+				"alternateTitles": [
+					"Suterare Seijo no Isekai Gohan Tabi: Kakure Skill de Camping Car wo Shoukan shim"
+				],
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 6,
+								"raw": "E06"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"DUAL"
+				],
+				"subtitleLanguages": [
+					"en"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing S02E08 1080p HIDI WEB-DL DUAL AAC2.0 H.264 (Hell Mode: Yarikomizuki no Gamer wa Hai Settei no Isekai de Musou suru) {Tags:L0;V9;C1;A=ja,en;S=en;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing",
+				"alternateTitles": [
+					"Hell Mode: Yarikomizuki no Gamer wa Hai Settei no Isekai de Musou suru"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 8,
+								"raw": "E08"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"DUAL"
+				],
+				"subtitleLanguages": [
+					"en"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] The World Is Dancing S01E05 A Budding Throb 1080p HIDI WEB-DL DUAL AAC2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "The World Is Dancing",
+				"episodeTitle": "A Budding Throb",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 5,
+								"raw": "E05"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"DUAL"
+				],
+				"subtitleLanguages": [
+					"en"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] The World Is Dancing S01E05 1080p AMZN WEB-DL DUAL DDP2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "The World Is Dancing",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 5,
+								"raw": "E05"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"DUAL"
+				],
+				"subtitleLanguages": [
+					"en"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing S02E08 1080p HIDIVE WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, English-Sub) {Tags:L0;V9;C1;A=ja,en;S=en;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "HELL MODE The Hardcore Gamer Dominates in Another World with Garbage Balancing",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 8,
+								"raw": "E08"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI",
+					"HIDIVE"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"subtitleFlags": [
+					"English-Sub"
+				],
+				"subtitleLanguages": [
+					"en"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"English-Sub"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] The World Is Dancing S01E05 1080p HIDIVE WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, English-Sub) {Tags:L0;V9;C1;A=ja,en;S=en;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "The World Is Dancing",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 5,
+								"raw": "E05"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI",
+					"HIDIVE"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"subtitleFlags": [
+					"English-Sub"
+				],
+				"subtitleLanguages": [
+					"en"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"English-Sub"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] The Forsaken Saintess and Her Foodie Roadtrip in Another World S01E06 1080p HIDIVE WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, English-Sub) {Tags:L0;V9;C1;A=ja,en;S=en;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "The Forsaken Saintess and Her Foodie Roadtrip in Another World",
+				"seasons": [
+					{
+						"number": 1,
+						"episodes": [
+							{
+								"start": 6,
+								"raw": "E06"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"HIDI",
+					"HIDIVE"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"subtitleFlags": [
+					"English-Sub"
+				],
+				"subtitleLanguages": [
+					"en"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"English-Sub"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] Hana Kimi S02E11 What Do You Want 1080p CR WEB-DL MULTi AAC2.0 H.264 (Hanazakari no Kimitachi e, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,es419,frfr,hi,ptbr,ta,te;S=en,ar,de,es419,eses,frfr,hi,id,it,pl,ptbr,ru,ta,te,th,zhhant;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "Hana Kimi",
+				"alternateTitles": [
+					"Hanazakari no Kimitachi e"
+				],
+				"episodeTitle": "What Do You Want",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 11,
+								"raw": "E11"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"hi",
+					"id",
+					"it",
+					"pl",
+					"ptbr",
+					"ru",
+					"ta",
+					"te",
+					"th",
+					"zhhant"
+				],
+				"audioLanguages": [
+					"ja",
+					"en",
+					"es419",
+					"frfr",
+					"hi",
+					"ptbr",
+					"ta",
+					"te"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en,es419,frfr,hi,ptbr,ta,te",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,hi,id,it,pl,ptbr,ru,ta,te,th,zhhant",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Onalrie] Otomege Sekai wa Mob ni Kibishii Sekai Desu - S02E12 [1080p WEBRip AV1] {Tags:L0;V7;C3;A=ja;S=en,ptpt,es419,eses,ar,frfr,de,it,ru;}",
+			"expected": {
+				"group": "Onalrie",
+				"primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip"
+				],
+				"codecs": [
+					"AV1"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptpt",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"de",
+					"it",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "3",
+					"L": "0",
+					"S": "en,ptpt,es419,eses,ar,frfr,de,it,ru",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[AnoZu] From Old Country Bumpkin to Master Swordsman S02 1080p AMZN WEB-DL Dual-Audio DDP 2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frca,frfr,hi,id,it,ja,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant;}",
+			"expected": {
+				"group": "AnoZu",
+				"primaryTitle": "From Old Country Bumpkin to Master Swordsman",
+				"seasons": [
+					{
+						"number": 2
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frca",
+					"frfr",
+					"hi",
+					"id",
+					"it",
+					"ja",
+					"ko",
+					"ms",
+					"nl",
+					"pl",
+					"ptbr",
+					"th",
+					"tr",
+					"zhhans",
+					"zhhant"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frca,frfr,hi,id,it,ja,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] Hana-Kimi S02E11 1080p CR WEB-DL MULTi AAC2.0 H.264 (Multi-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,ptbr,es419;S=en,ar,zhhant,frfr,de,id,it,pl,ptbr,ru,es419,eses,th;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Hana-Kimi",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 11,
+								"raw": "E11"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi",
+					"Multi-Audio"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"zhhant",
+					"frfr",
+					"de",
+					"id",
+					"it",
+					"pl",
+					"ptbr",
+					"ru",
+					"es419",
+					"eses",
+					"th"
+				],
+				"audioLanguages": [
+					"ja",
+					"en",
+					"ptbr",
+					"es419"
+				],
+				"releaseFlags": [
+					"Multi-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en,ptbr,es419",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,zhhant,frfr,de,id,it,pl,ptbr,ru,es419,eses,th",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] Hana Kimi S02E12 It Cant Be Helped 1080p CR WEB-DL DUAL AAC2.0 H.264 (Hanazakari no Kimitachi e, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,id,it,pl,ptbr,ru,th,zhhant;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "Hana Kimi",
+				"alternateTitles": [
+					"Hanazakari no Kimitachi e"
+				],
+				"episodeTitle": "It Cant Be Helped",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"id",
+					"it",
+					"pl",
+					"ptbr",
+					"ru",
+					"th",
+					"zhhant"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,id,it,pl,ptbr,ru,th,zhhant",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[AnoZu] Hana-Kimi S02E12 1080p CR WEB-DL Dual-Audio DDP 2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,id,it,pl,ptbr,ru,th,zhhant;}",
+			"expected": {
+				"group": "AnoZu",
+				"primaryTitle": "Hana-Kimi",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"id",
+					"it",
+					"pl",
+					"ptbr",
+					"ru",
+					"th",
+					"zhhant"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,id,it,pl,ptbr,ru,th,zhhant",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] Hana-Kimi S02E12 1080p CR WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,zhhant,frfr,de,id,it,pl,ptbr,ru,es419,eses,th;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Hana-Kimi",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"zhhant",
+					"frfr",
+					"de",
+					"id",
+					"it",
+					"pl",
+					"ptbr",
+					"ru",
+					"es419",
+					"eses",
+					"th"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,zhhant,frfr,de,id,it,pl,ptbr,ru,es419,eses,th",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Re:Zero kara Hajimeru Isekai Seikatsu S04E18 [1080p CR WEBRip HEVC AAC][MultiSub][4AC2CE74] {Tags:L0;V7;C2;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru,pl;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Re:Zero kara Hajimeru Isekai Seikatsu",
+				"seasons": [
+					{
+						"number": 4,
+						"episodes": [
+							{
+								"start": 18,
+								"raw": "E18"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip",
+					"CR"
+				],
+				"codecs": [
+					"HEVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"de",
+					"it",
+					"ru",
+					"pl"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "4AC2CE74",
+				"tagFields": {
+					"A": "ja",
+					"C": "2",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,de,it,ru,pl",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[Onalrie] Katainaka no Ossan, Kensei ni Naru - S02E12 [1080p WEBRip AV1] {Tags:L0;V7;C3;A=ja;S=en,ptpt,es419,eses,ar,de,frfr,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms,hi;}",
+			"expected": {
+				"group": "Onalrie",
+				"primaryTitle": "Katainaka no Ossan, Kensei ni Naru",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEBRip"
+				],
+				"codecs": [
+					"AV1"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptpt",
+					"es419",
+					"eses",
+					"ar",
+					"de",
+					"frfr",
+					"it",
+					"ja",
+					"pl",
+					"nl",
+					"tr",
+					"id",
+					"th",
+					"ko",
+					"zhhans",
+					"zhhant",
+					"ms",
+					"hi"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "3",
+					"L": "0",
+					"S": "en,ptpt,es419,eses,ar,de,frfr,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms,hi",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[Ironclad] Clevatess - S02E12 (WEB 1080p AV1) | Clevatess II (Multi-Audio, Multi-Subs) (Weekly) {Tags:L0;V7;C3;A=ptbr,ar,en,te,ja,es419,hi,ta,de,frfr;S=ptbr,ar,en,te,es419,eses,hi,ta,de,frfr;}",
+			"expected": {
+				"group": "Ironclad",
+				"primaryTitle": "Clevatess",
+				"alternateTitles": [
+					"Clevatess II"
+				],
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"codecs": [
+					"AV1"
+				],
+				"audioFlags": [
+					"MULTi",
+					"Multi-Audio"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"ptbr",
+					"ar",
+					"en",
+					"te",
+					"es419",
+					"eses",
+					"hi",
+					"ta",
+					"de",
+					"frfr"
+				],
+				"audioLanguages": [
+					"ptbr",
+					"ar",
+					"en",
+					"te",
+					"ja",
+					"es419",
+					"hi",
+					"ta",
+					"de",
+					"frfr"
+				],
+				"releaseFlags": [
+					"Multi-Audio",
+					"Multi-Subs"
+				],
+				"tags": [
+					"weekly"
+				],
+				"tagFields": {
+					"A": "ptbr,ar,en,te,ja,es419,hi,ta,de,frfr",
+					"C": "3",
+					"L": "0",
+					"S": "ptbr,ar,en,te,es419,eses,hi,ta,de,frfr",
+					"V": "7"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E12 1080p CR WEB-DL AAC2.0 H.264 (Multi-Subs) {Tags:L0;V9;C1;A=ja;S=en,ar,frfr,de,it,ptbr,ru,es419,eses;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"frfr",
+					"de",
+					"it",
+					"ptbr",
+					"ru",
+					"es419",
+					"eses"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,frfr,de,it,ptbr,ru,es419,eses",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E10 They Hit Where It Hurts 1080p CR WEB-DL DUAL AAC2.0 H.264 (Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
+				"alternateTitles": [
+					"Otome Game Sekai wa Mob ni Kibishii Sekai desu 2"
+				],
+				"episodeTitle": "They Hit Where It Hurts",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"it",
+					"ptbr",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E12 This World Is Tough for Mobs 1080p CR WEB-DL AAC2.0 H.264 (Otome Game Sekai wa Mob ni Kibishii Sekai desu 2, Multi-Subs) {Tags:L0;V9;C1;A=ja;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
+				"alternateTitles": [
+					"Otome Game Sekai wa Mob ni Kibishii Sekai desu 2"
+				],
+				"episodeTitle": "This World Is Tough for Mobs",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"it",
+					"ptbr",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[AnoZu] Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs S02E10 1080p CR WEB-DL Dual-Audio DDP 2.0 H.264 {Tags:L0;V9;C1;A=ja,en;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
+			"expected": {
+				"group": "AnoZu",
+				"primaryTitle": "Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"it",
+					"ptbr",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[AnoZu] Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs S02E12 1080p CR WEB-DL AAC 2.0 H.264 {Tags:L0;V9;C1;A=ja;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
+			"expected": {
+				"group": "AnoZu",
+				"primaryTitle": "Trapped in a Dating Sim: The World of Otome Games Is Tough for Mobs",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"it",
+					"ptbr",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] Trapped in a Dating Sim The World of Otome Games is Tough for Mobs S02E10 1080p CR WEB-DL DUAL AAC2.0 H.264 (Dual-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,frfr,de,it,ptbr,ru,es419,eses;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Trapped in a Dating Sim The World of Otome Games is Tough for Mobs",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 10,
+								"raw": "E10"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"frfr",
+					"de",
+					"it",
+					"ptbr",
+					"ru",
+					"es419",
+					"eses"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,frfr,de,it,ptbr,ru,es419,eses",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [480p CR WEB-DL AVC AAC][MultiSub][6BF3D97E] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "2 - 12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"480p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"de",
+					"it",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "6BF3D97E",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,de,it,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [720p CR WEB-DL AVC AAC][MultiSub][0298C7AC] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "2 - 12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"de",
+					"it",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "0298C7AC",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,de,it,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Otomege Sekai wa Mob ni Kibishii Sekai Desu 2 - 12 [1080p CR WEB-DL AVC AAC][MultiSub][41BBC396] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,de,it,ru;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Otomege Sekai wa Mob ni Kibishii Sekai Desu 2",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "2 - 12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"AAC"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"de",
+					"it",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "41BBC396",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,de,it,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] Trapped in a Dating Sim The World of Otome Games Is Tough for Mobs S02E12 1080p BILI WEB-DL AAC2.0 H.265 (Multi-Subs) {Tags:L0;V9;C2;A=ja;S=en,id,th;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "Trapped in a Dating Sim The World of Otome Games Is Tough for Mobs",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"BILI"
+				],
+				"codecs": [
+					"H.265"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"id",
+					"th"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja",
+					"C": "2",
+					"L": "0",
+					"S": "en,id,th",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [540p AMZN WEB-DL AVC EAC3][MultiSub][6EE02503] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "II - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"540p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"EAC3"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"frca",
+					"de",
+					"it",
+					"ja",
+					"pl",
+					"nl",
+					"tr",
+					"id",
+					"th",
+					"ko",
+					"zhhans",
+					"zhhant",
+					"ms"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "6EE02503",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [720p AMZN WEB-DL AVC EAC3][MultiSub][8665E032] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "II - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"720p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"EAC3"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"frca",
+					"de",
+					"it",
+					"ja",
+					"pl",
+					"nl",
+					"tr",
+					"id",
+					"th",
+					"ko",
+					"zhhans",
+					"zhhant",
+					"ms"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "8665E032",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[Erai-raws] Katainaka no Ossan, Kensei ni Naru II - 12 [1080p AMZN WEB-DL AVC EAC3][MultiSub][5830863B] {Tags:L0;V9;C1;A=ja;S=en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms;}",
+			"expected": {
+				"group": "Erai-raws",
+				"primaryTitle": "Katainaka no Ossan, Kensei ni Naru II",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "II - 12 "
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"AVC"
+				],
+				"audioCodecs": [
+					"EAC3"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"MultiSub"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ptbr",
+					"es419",
+					"eses",
+					"ar",
+					"frfr",
+					"frca",
+					"de",
+					"it",
+					"ja",
+					"pl",
+					"nl",
+					"tr",
+					"id",
+					"th",
+					"ko",
+					"zhhans",
+					"zhhant",
+					"ms"
+				],
+				"audioLanguages": [
+					"ja"
+				],
+				"checksum": "5830863B",
+				"tagFields": {
+					"A": "ja",
+					"C": "1",
+					"L": "0",
+					"S": "en,ptbr,es419,eses,ar,frfr,frca,de,it,ja,pl,nl,tr,id,th,ko,zhhans,zhhant,ms",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] From Old Country Bumpkin to Master Swordsman S02E12 The Old Country Bumpkin Goes Home 1080p AMZN WEB-DL MULTi DDP2.0 H.264 (Katainaka no Ossan, Kensei ni Naru II, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,de,es419,eses,frfr,it,ptbr,th;S=en,ja,ar,de,es419,eses,frca,frfr,hi,id,it,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "From Old Country Bumpkin to Master Swordsman",
+				"alternateTitles": [
+					"Katainaka no Ossan",
+					"Kensei ni Naru II"
+				],
+				"episodeTitle": "The Old Country Bumpkin Goes Home",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ja",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frca",
+					"frfr",
+					"hi",
+					"id",
+					"it",
+					"ko",
+					"ms",
+					"nl",
+					"pl",
+					"ptbr",
+					"th",
+					"tr",
+					"zhhans",
+					"zhhant"
+				],
+				"audioLanguages": [
+					"ja",
+					"en",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"it",
+					"ptbr",
+					"th"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en,de,es419,eses,frfr,it,ptbr,th",
+					"C": "1",
+					"L": "0",
+					"S": "en,ja,ar,de,es419,eses,frca,frfr,hi,id,it,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] From Old Country Bumpkin to Master Swordsman S02E12 The Old Country Bumpkin Goes Home 1080p AMZN WEB-DL DUAL DDP2.0 H.264 (Katainaka no Ossan, Kensei ni Naru II, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ja,ar,de,es419,eses,frca,frfr,hi,id,it,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "From Old Country Bumpkin to Master Swordsman",
+				"alternateTitles": [
+					"Katainaka no Ossan",
+					"Kensei ni Naru II"
+				],
+				"episodeTitle": "The Old Country Bumpkin Goes Home",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ja",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frca",
+					"frfr",
+					"hi",
+					"id",
+					"it",
+					"ko",
+					"ms",
+					"nl",
+					"pl",
+					"ptbr",
+					"th",
+					"tr",
+					"zhhans",
+					"zhhant"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ja,ar,de,es419,eses,frca,frfr,hi,id,it,ko,ms,nl,pl,ptbr,th,tr,zhhans,zhhant",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[VARYG] Saga of Tanya the Evil S02E09 Sightseeing Tour 1080p CR WEB-DL MULTi AAC2.0 H.264 (Youjo Senki Movie, Multi-Subs) {Tags:L0;V9;C1;A=ja,de,es419,ptbr;S=en,ar,de,es419,eses,frfr,it,ptbr,ru;}",
+			"expected": {
+				"group": "VARYG",
+				"primaryTitle": "Saga of Tanya the Evil",
+				"alternateTitles": [
+					"Youjo Senki Movie"
+				],
+				"episodeTitle": "Sightseeing Tour",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 9,
+								"raw": "E09"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"CR",
+					"OV"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"AAC2.0"
+				],
+				"audioFlags": [
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"de",
+					"es419",
+					"eses",
+					"frfr",
+					"it",
+					"ptbr",
+					"ru"
+				],
+				"audioLanguages": [
+					"ja",
+					"de",
+					"es419",
+					"ptbr"
+				],
+				"releaseFlags": [
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,de,es419,ptbr",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,de,es419,eses,frfr,it,ptbr,ru",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] From Old Country Bumpkin to Master Swordsman S02E12 1080p AMZN WEB-DL MULTi DDP2.0 H.264 (Multi-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en,frfr,de,it,ptbr,eses,es419,th;S=en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "From Old Country Bumpkin to Master Swordsman",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"MULTi",
+					"Multi-Audio"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"zhhans",
+					"zhhant",
+					"nl",
+					"frfr",
+					"frca",
+					"de",
+					"hi",
+					"id",
+					"it",
+					"ja",
+					"ko",
+					"ms",
+					"pl",
+					"ptbr",
+					"es419",
+					"eses",
+					"th",
+					"tr"
+				],
+				"audioLanguages": [
+					"ja",
+					"en",
+					"frfr",
+					"de",
+					"it",
+					"ptbr",
+					"eses",
+					"es419",
+					"th"
+				],
+				"releaseFlags": [
+					"Multi-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en,frfr,de,it,ptbr,eses,es419,th",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] From Old Country Bumpkin to Master Swordsman S02E12 1080p AMZN WEB-DL DUAL DDP2.0 H.264 (Dual-Audio, Multi-Subs) {Tags:L0;V9;C1;A=ja,en;S=en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "From Old Country Bumpkin to Master Swordsman",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.264"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"zhhans",
+					"zhhant",
+					"nl",
+					"frfr",
+					"frca",
+					"de",
+					"hi",
+					"id",
+					"it",
+					"ja",
+					"ko",
+					"ms",
+					"pl",
+					"ptbr",
+					"es419",
+					"eses",
+					"th",
+					"tr"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "1",
+					"L": "0",
+					"S": "en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr",
+					"V": "9"
+				}
+			}
+		},
+		{
+			"input": "[ToonsHub] From Old Country Bumpkin to Master Swordsman S02E12 1080p AMZN WEB-DL DUAL DDP2.0 H.265 (Dual-Audio, Multi-Subs) {Tags:L0;V9;C2;A=ja,en;S=en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr;}",
+			"expected": {
+				"group": "ToonsHub",
+				"primaryTitle": "From Old Country Bumpkin to Master Swordsman",
+				"seasons": [
+					{
+						"number": 2,
+						"episodes": [
+							{
+								"start": 12,
+								"raw": "E12"
+							}
+						]
+					}
+				],
+				"resolutions": [
+					"1080p"
+				],
+				"sources": [
+					"WEB-DL",
+					"AMZN"
+				],
+				"codecs": [
+					"H.265"
+				],
+				"audioCodecs": [
+					"DDP2.0"
+				],
+				"audioFlags": [
+					"Dual-Audio",
+					"DUAL",
+					"MULTi"
+				],
+				"subtitleFlags": [
+					"Multi-Subs"
+				],
+				"subtitleLanguages": [
+					"en",
+					"ar",
+					"zhhans",
+					"zhhant",
+					"nl",
+					"frfr",
+					"frca",
+					"de",
+					"hi",
+					"id",
+					"it",
+					"ja",
+					"ko",
+					"ms",
+					"pl",
+					"ptbr",
+					"es419",
+					"eses",
+					"th",
+					"tr"
+				],
+				"audioLanguages": [
+					"ja",
+					"en"
+				],
+				"releaseFlags": [
+					"Dual-Audio",
+					"Multi-Subs"
+				],
+				"tagFields": {
+					"A": "ja,en",
+					"C": "2",
+					"L": "0",
+					"S": "en,ar,zhhans,zhhant,nl,frfr,frca,de,hi,id,it,ja,ko,ms,pl,ptbr,es419,eses,th,tr",
+					"V": "9"
+				}
+			}
+		}
+	]
 }
