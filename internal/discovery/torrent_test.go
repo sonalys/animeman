@@ -105,3 +105,25 @@ func Test_normalizeTitle(t *testing.T) {
 		require.Equal(t, "Some Show", got)
 	})
 }
+
+// Do not break compatibility, or the torrent client will re-download everything again without proper discovery.
+func Test_buildTitleTag(t *testing.T) {
+	cases := []struct {
+		name  string
+		input string
+		want  string
+	}{
+		{
+			name:  "alpha-numerical only",
+			input: "Honzuki no Gekokujou: Ryoushu no Youjo",
+			want:  "!honzuki no gekokujou ryoushu no youjo",
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			got := buildTitleTag(tc.input)
+			require.Equal(t, tc.want, got)
+		})
+	}
+}
