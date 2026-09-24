@@ -16,12 +16,6 @@ import (
 )
 
 const (
-	seriesSearch      = "/api/v3/Series/AniDB/Search"
-	seriesByAnilistID = "/api/v3/Anilist/Anime/%d/Shoko/Series"
-	episodesPath      = "/api/v3/Series/AniDB/%d/Episode"
-	pathEndsWith      = "/api/v3/File/PathEndsWith/%s"
-	linkFilePath      = "/api/v3/File/%d/Link"
-	rescanPath        = "/api/v3/File/%d/Rescan"
 	filePath          = "/api/v3/File"
 	autoMatchFilePath = "/api/v3/ReleaseInfo/File/%d/AutoPreview"
 )
