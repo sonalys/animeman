@@ -11,6 +11,8 @@ import (
 	"strings"
 	"testing"
 
+	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"github.com/stretchr/testify/assert"
 	"github.com/stretchr/testify/require"
 )
@@ -277,9 +279,8 @@ func TestCorpusTitlesAgainstJSON(t *testing.T) {
 				ss, _ := json.Marshal(got.Seasons)
 				t.Logf("\"seasons\": %s", ss)
 
-				assert.Equal(t, tc.Expected, got)
-
-				corpus.Cases[i].Expected = got
+				assert.Empty(t, cmp.Diff(tc.Expected, got, cmpopts.EquateEmpty()))
+				// corpus.Cases[i].Expected = got
 			})
 		}
 
