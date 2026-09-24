@@ -6,6 +6,8 @@ import (
 	"slices"
 	"strconv"
 	"strings"
+
+	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 )
 
 type EpisodeRange struct {
@@ -805,8 +807,8 @@ func parseYear(s string, r *Metadata) {
 }
 
 func parseTech(s string, r *Metadata) {
-	r.Resolutions = resRE.FindAllString(s, -1)
-	r.Dimensions = dimRE.FindAllString(s, -1)
+	r.Resolutions = sliceutils.Map(resRE.FindAllString(s, -1), strings.ToLower)
+	r.Dimensions = sliceutils.Map(dimRE.FindAllString(s, -1), strings.ToLower)
 	for _, x := range regexp.MustCompile(`(?i)\b(?:8|10|12)-?bit\b`).FindAllString(s, -1) {
 		r.BitDepths = append(r.BitDepths, x)
 	}

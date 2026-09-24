@@ -180,30 +180,30 @@ func TestTokenizerPreservesStructure(t *testing.T) {
 type goldenResult struct {
 	Group             string            `json:"group,omitzero"`
 	PrimaryTitle      string            `json:"primaryTitle,omitzero"`
-	AlternateTitles   []string          `json:"alternateTitles,omitzero"`
+	AlternateTitles   []string          `json:"alternateTitles,omitempty"`
 	EpisodeTitle      string            `json:"episodeTitle,omitzero"`
 	Year              int               `json:"year,omitzero"`
-	Seasons           []Tag             `json:"seasons,omitzero"`
+	Seasons           []Tag             `json:"seasons,omitempty"`
 	IsBatch           bool              `json:"isBatch,omitzero"`
 	IsComplete        bool              `json:"isComplete,omitzero"`
 	IsRemastered      bool              `json:"isRemastered,omitzero"`
 	IsRepack          bool              `json:"isRepack,omitzero"`
-	Resolutions       []string          `json:"resolutions,omitzero"`
-	Dimensions        []string          `json:"dimensions,omitzero"`
-	BitDepths         []string          `json:"bitDepths,omitzero"`
-	Sources           []string          `json:"sources,omitzero"`
-	Codecs            []string          `json:"codecs,omitzero"`
-	AudioCodecs       []string          `json:"audioCodecs,omitzero"`
-	AudioFlags        []string          `json:"audioFlags,omitzero"`
-	SubtitleFlags     []string          `json:"subtitleFlags,omitzero"`
-	SubtitleLanguages []string          `json:"subtitleLanguages,omitzero"`
-	AudioLanguages    []string          `json:"audioLanguages,omitzero"`
-	Encoders          []string          `json:"encoders,omitzero"`
-	ReleaseFlags      []string          `json:"releaseFlags,omitzero"`
-	Tags              []string          `json:"tags,omitzero"`
+	Resolutions       []string          `json:"resolutions,omitempty"`
+	Dimensions        []string          `json:"dimensions,omitempty"`
+	BitDepths         []string          `json:"bitDepths,omitempty"`
+	Sources           []string          `json:"sources,omitempty"`
+	Codecs            []string          `json:"codecs,omitempty"`
+	AudioCodecs       []string          `json:"audioCodecs,omitempty"`
+	AudioFlags        []string          `json:"audioFlags,omitempty"`
+	SubtitleFlags     []string          `json:"subtitleFlags,omitempty"`
+	SubtitleLanguages []string          `json:"subtitleLanguages,omitempty"`
+	AudioLanguages    []string          `json:"audioLanguages,omitempty"`
+	Encoders          []string          `json:"encoders,omitempty"`
+	ReleaseFlags      []string          `json:"releaseFlags,omitempty"`
+	Tags              []string          `json:"tags,omitempty"`
 	Checksum          string            `json:"checksum,omitzero"`
-	TagFields         map[string]string `json:"tagFields,omitzero"`
-	Unknown           []string          `json:"unknown,omitzero"`
+	TagFields         map[string]string `json:"tagFields,omitempty"`
+	Unknown           []string          `json:"unknown,omitempty"`
 }
 
 type corpusCase struct {

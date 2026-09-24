@@ -31,8 +31,7 @@
 				],
 				"tags": [
 					"weekly"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -47,8 +46,7 @@
 				"audioCodecs": [
 					"Opus"
 				],
-				"checksum": "04E48502",
-				"tagFields": {}
+				"checksum": "04E48502"
 			}
 		},
 		{
@@ -90,8 +88,7 @@
 				],
 				"tags": [
 					"Mini-Batch"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -127,8 +124,7 @@
 				],
 				"tags": [
 					"Mini-Batch"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -152,8 +148,7 @@
 				],
 				"sources": [
 					"WEB-DL"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -176,7 +171,7 @@
 					}
 				],
 				"resolutions": [
-					"1080P"
+					"1080p"
 				],
 				"sources": [
 					"WEB-DL",
@@ -191,8 +186,7 @@
 				"subtitleFlags": [
 					"M-SUB"
 				],
-				"checksum": "890CBECA",
-				"tagFields": {}
+				"checksum": "890CBECA"
 			}
 		},
 		{
@@ -227,8 +221,7 @@
 				"audioCodecs": [
 					"AAC"
 				],
-				"checksum": "B1579F00",
-				"tagFields": {}
+				"checksum": "B1579F00"
 			}
 		},
 		{
@@ -263,8 +256,7 @@
 				"audioCodecs": [
 					"AAC"
 				],
-				"checksum": "C6D05075",
-				"tagFields": {}
+				"checksum": "C6D05075"
 			}
 		},
 		{
@@ -304,8 +296,7 @@
 				"audioFlags": [
 					"English Dub"
 				],
-				"checksum": "11F78772",
-				"tagFields": {}
+				"checksum": "11F78772"
 			}
 		},
 		{
@@ -344,8 +335,7 @@
 				"audioFlags": [
 					"English Dub"
 				],
-				"checksum": "7B71E040",
-				"tagFields": {}
+				"checksum": "7B71E040"
 			}
 		},
 		{
@@ -380,8 +370,7 @@
 				"audioCodecs": [
 					"AAC"
 				],
-				"checksum": "B83D98A6",
-				"tagFields": {}
+				"checksum": "B83D98A6"
 			}
 		},
 		{
@@ -419,8 +408,7 @@
 				"audioFlags": [
 					"English Dub"
 				],
-				"checksum": "87AC3A64",
-				"tagFields": {}
+				"checksum": "87AC3A64"
 			}
 		},
 		{
@@ -460,8 +448,7 @@
 				"audioFlags": [
 					"English Dub"
 				],
-				"checksum": "40099F40",
-				"tagFields": {}
+				"checksum": "40099F40"
 			}
 		},
 		{
@@ -501,8 +488,7 @@
 				"audioFlags": [
 					"English Dub"
 				],
-				"checksum": "BDED047D",
-				"tagFields": {}
+				"checksum": "BDED047D"
 			}
 		},
 		{
@@ -542,8 +528,7 @@
 				"audioFlags": [
 					"English Dub"
 				],
-				"checksum": "10B9D488",
-				"tagFields": {}
+				"checksum": "10B9D488"
 			}
 		},
 		{
@@ -567,7 +552,7 @@
 					}
 				],
 				"resolutions": [
-					"1080P"
+					"1080p"
 				],
 				"sources": [
 					"WEB-DL",
@@ -582,8 +567,7 @@
 				"subtitleFlags": [
 					"M-SUB"
 				],
-				"checksum": "A081C6CB",
-				"tagFields": {}
+				"checksum": "A081C6CB"
 			}
 		},
 		{
@@ -606,7 +590,7 @@
 					}
 				],
 				"resolutions": [
-					"1080P"
+					"1080p"
 				],
 				"sources": [
 					"WEB-DL",
@@ -621,8 +605,7 @@
 				"subtitleFlags": [
 					"D-SUB"
 				],
-				"checksum": "F00AB65C",
-				"tagFields": {}
+				"checksum": "F00AB65C"
 			}
 		},
 		{
@@ -647,8 +630,7 @@
 				"sources": [
 					"WEB-DL",
 					"OV"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -663,8 +645,7 @@
 				],
 				"tags": [
 					"Complete"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -695,8 +676,7 @@
 				],
 				"tags": [
 					"Uncensored"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -720,8 +700,7 @@
 				],
 				"sources": [
 					"WEB-DL"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -751,8 +730,7 @@
 				],
 				"tags": [
 					"Batch"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -782,8 +760,7 @@
 				],
 				"tags": [
 					"Batch"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -813,8 +790,7 @@
 				],
 				"tags": [
 					"Batch"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -834,8 +810,7 @@
 						]
 					}
 				],
-				"isComplete": true,
-				"tagFields": {}
+				"isComplete": true
 			}
 		},
 		{
@@ -847,8 +822,7 @@
 				],
 				"dimensions": [
 					"854x480"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -860,8 +834,7 @@
 				],
 				"dimensions": [
 					"854x480"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -891,8 +864,7 @@
 				],
 				"tags": [
 					"Batch"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -922,8 +894,7 @@
 				],
 				"tags": [
 					"Batch"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -953,8 +924,7 @@
 				],
 				"tags": [
 					"Batch"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -977,7 +947,7 @@
 					}
 				],
 				"resolutions": [
-					"1080P"
+					"1080p"
 				],
 				"sources": [
 					"WEB-DL",
@@ -992,8 +962,7 @@
 				"subtitleFlags": [
 					"M-SUB"
 				],
-				"checksum": "4E2B2668",
-				"tagFields": {}
+				"checksum": "4E2B2668"
 			}
 		},
 		{
@@ -1015,8 +984,7 @@
 				"audioFlags": [
 					"Dual Audio",
 					"DUAL"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1039,8 +1007,7 @@
 				],
 				"audioCodecs": [
 					"DTS-HD MA"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1084,8 +1051,7 @@
 				"releaseFlags": [
 					"English-Sub",
 					"Korean Audio"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1119,8 +1085,7 @@
 				],
 				"audioCodecs": [
 					"AAC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1160,8 +1125,7 @@
 				],
 				"releaseFlags": [
 					"Multi-Subs"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1191,8 +1155,7 @@
 				],
 				"tags": [
 					"weekly"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1235,7 +1198,6 @@
 				"tags": [
 					"Batch"
 				],
-				"tagFields": {},
 				"unknown": [
 					"Dual Audio",
 					"Eng Sub"
@@ -1270,8 +1232,7 @@
 				],
 				"audioCodecs": [
 					"DD2.0"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1314,8 +1275,7 @@
 				],
 				"encoders": [
 					"Veryslow"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1351,8 +1311,7 @@
 				],
 				"audioCodecs": [
 					"AAC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1394,7 +1353,6 @@
 				"tags": [
 					"weekly"
 				],
-				"tagFields": {},
 				"unknown": [
 					"END"
 				]
@@ -1441,7 +1399,6 @@
 				"tags": [
 					"weekly"
 				],
-				"tagFields": {},
 				"unknown": [
 					"END",
 					"Dual-Audio"
@@ -1485,8 +1442,7 @@
 				],
 				"tags": [
 					"weekly"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1523,8 +1479,7 @@
 				],
 				"encoders": [
 					"NVENC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1566,7 +1521,6 @@
 				"tags": [
 					"weekly"
 				],
-				"tagFields": {},
 				"unknown": [
 					"END"
 				]
@@ -1612,8 +1566,7 @@
 				],
 				"encoders": [
 					"Veryslow"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1650,8 +1603,7 @@
 				],
 				"encoders": [
 					"NVENC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1688,8 +1640,7 @@
 				],
 				"encoders": [
 					"NVENC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1730,8 +1681,7 @@
 				],
 				"tags": [
 					"weekly"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1768,8 +1718,7 @@
 				],
 				"encoders": [
 					"NVENC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1806,8 +1755,7 @@
 				],
 				"encoders": [
 					"NVENC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1851,8 +1799,7 @@
 				"releaseFlags": [
 					"English-Sub",
 					"Korean Audio"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1895,8 +1842,7 @@
 				],
 				"encoders": [
 					"Veryslow"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1933,8 +1879,7 @@
 				],
 				"encoders": [
 					"NVENC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -1972,8 +1917,7 @@
 				"subtitleFlags": [
 					"MultiSub"
 				],
-				"checksum": "94C14148",
-				"tagFields": {}
+				"checksum": "94C14148"
 			}
 		},
 		{
@@ -2019,8 +1963,7 @@
 				"releaseFlags": [
 					"Multi-Audio",
 					"Multi-Subs"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2044,8 +1987,7 @@
 				],
 				"resolutions": [
 					"1080p"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2078,8 +2020,7 @@
 				],
 				"audioCodecs": [
 					"AAC2.0"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2124,8 +2065,7 @@
 				"releaseFlags": [
 					"Multi-Audio",
 					"Multi-Subs"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2149,8 +2089,7 @@
 				],
 				"sources": [
 					"WEB-DL"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2195,8 +2134,7 @@
 				"releaseFlags": [
 					"Multi-Audio",
 					"Multi-Subs"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2243,8 +2181,7 @@
 				"releaseFlags": [
 					"Dual-Audio",
 					"Multi-Subs"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2280,8 +2217,7 @@
 				],
 				"audioCodecs": [
 					"AAC"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2295,8 +2231,7 @@
 				],
 				"releaseFlags": [
 					"Dual-Audio"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2342,8 +2277,7 @@
 				"releaseFlags": [
 					"Dual-Audio",
 					"Multi-Subs"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2389,8 +2323,7 @@
 				"releaseFlags": [
 					"Dual-Audio",
 					"Multi-Subs"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2428,8 +2361,7 @@
 				"audioFlags": [
 					"Dual-Audio",
 					"DUAL"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2467,8 +2399,7 @@
 				"audioFlags": [
 					"English Dub"
 				],
-				"checksum": "87BA319D",
-				"tagFields": {}
+				"checksum": "87BA319D"
 			}
 		},
 		{
@@ -2506,8 +2437,7 @@
 				"subtitleFlags": [
 					"MultiSub"
 				],
-				"checksum": "4AE3A605",
-				"tagFields": {}
+				"checksum": "4AE3A605"
 			}
 		},
 		{
@@ -2547,8 +2477,7 @@
 				],
 				"releaseFlags": [
 					"Dual-Audio"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2588,8 +2517,7 @@
 				],
 				"releaseFlags": [
 					"Dual-Audio"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2629,8 +2557,7 @@
 				],
 				"releaseFlags": [
 					"Dual-Audio"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2668,8 +2595,7 @@
 				],
 				"releaseFlags": [
 					"Dual-Audio"
-				],
-				"tagFields": {}
+				]
 			}
 		},
 		{
@@ -2706,8 +2632,7 @@
 				],
 				"releaseFlags": [
 					"Dual-Audio"
-				],
-				"tagFields": {}
+				]
 			}
 		}
 	]
