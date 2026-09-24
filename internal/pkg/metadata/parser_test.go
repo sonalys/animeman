@@ -251,19 +251,21 @@ func TestCorpusTitlesAgainstJSON(t *testing.T) {
 	wd, _ := os.Getwd()
 
 	for _, fn := range files {
-		b, err := os.ReadFile(fn)
+		buffer, err := os.ReadFile(fn)
 		if err != nil {
 			t.Fatal(err)
 		}
+
 		var corpus corpusFile
-		if err := json.Unmarshal(b, &corpus); err != nil {
+		if err := json.Unmarshal(buffer, &corpus); err != nil {
 			t.Fatalf("%s: %v", fn, err)
 		}
+
 		for i, tc := range corpus.Cases {
 			t.Run(filepath.Base(fn)+"/"+strconv.Itoa(i), func(t *testing.T) {
-				indexOf := bytes.Index(b, []byte(tc.Input))
+				indexOf := bytes.Index(buffer, []byte(tc.Input))
 				if indexOf > -1 {
-					line := bytes.Count(b[:indexOf], []byte("\n"))
+					line := bytes.Count(buffer[:indexOf], []byte("\n"))
 					t.Logf("%s:%d", path.Join(wd, fn), line)
 				}
 

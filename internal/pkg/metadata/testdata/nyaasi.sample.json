@@ -1075,9 +1075,6 @@
       "expected": {
         "group": "SubsPlease",
         "primaryTitle": "Black Torch",
-        "alternateTitles": [
-          "01-12"
-        ],
         "episodeTitle": "",
         "year": 0,
         "seasons": [
@@ -1125,9 +1122,6 @@
       "expected": {
         "group": "SubsPlease",
         "primaryTitle": "Black Torch",
-        "alternateTitles": [
-          "01-12"
-        ],
         "episodeTitle": "",
         "year": 0,
         "seasons": [
@@ -1175,9 +1169,6 @@
       "expected": {
         "group": "SubsPlease",
         "primaryTitle": "Black Torch",
-        "alternateTitles": [
-          "01-12"
-        ],
         "episodeTitle": "",
         "year": 0,
         "seasons": [
@@ -1337,9 +1328,6 @@
       "expected": {
         "group": "SubsPlease",
         "primaryTitle": "Kami no Shizuku",
-        "alternateTitles": [
-          "01-24"
-        ],
         "seasons": [
           {
             "Number": 1,
@@ -1387,9 +1375,6 @@
       "expected": {
         "group": "SubsPlease",
         "primaryTitle": "Kami no Shizuku",
-        "alternateTitles": [
-          "01-24"
-        ],
         "seasons": [
           {
             "Number": 1,
@@ -1437,9 +1422,6 @@
       "expected": {
         "group": "SubsPlease",
         "primaryTitle": "Kami no Shizuku",
-        "alternateTitles": [
-          "01-24"
-        ],
         "seasons": [
           {
             "Number": 1,

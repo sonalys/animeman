@@ -885,10 +885,18 @@ func classifyParen(x string, r *Metadata) {
 	if x == "" {
 		return
 	}
+
 	if resRE.MatchString(x) || codecRE.MatchString(x) || audioCodecRE.MatchString(x) ||
 		containsAnyCI(x, "WEB", "BD") {
 		return
 	}
+
+	// Numeric episode ranges such as (01-12), (01~12) are episode
+	// metadata, not alternate titles.
+	if hasEpisodes(r) && epRangeRE.MatchString(x) {
+		return
+	}
+
 	if containsAnyCI(x, "Multi-Subs", "Multi-Audio", "Dual-Audio", "English-Sub", "Korean Audio") {
 		parts := strings.Split(x, ",")
 		var alias []string
@@ -908,27 +916,33 @@ func classifyParen(x string, r *Metadata) {
 				alias = append(alias, p)
 			}
 		}
+
 		if len(alias) > 0 {
 			r.AlternateTitles = append(r.AlternateTitles, strings.Join(alias, ", "))
 		}
+
 		r.ReleaseFlags = append(r.ReleaseFlags, x)
 		return
 	}
+
 	if strings.Contains(x, "|") || strings.Contains(x, ";") {
 		for _, p := range splitAlias(x) {
 			r.AlternateTitles = append(r.AlternateTitles, p)
 		}
 		return
 	}
+
 	if yearRE.MatchString(x) {
 		return
 	}
+
 	if containsCI(x, "Multi-Subs") || containsCI(x, "Multi-Audio") || containsCI(x, "Dual-Audio") ||
 		containsCI(x, "English-Sub") ||
 		containsCI(x, "Korean Audio") {
 		r.ReleaseFlags = append(r.ReleaseFlags, x)
 		return
 	}
+
 	// Parentheses containing separators are usually aliases, except obvious release notes.
 	if strings.Contains(x, "|") || strings.Contains(x, ";") {
 		for _, p := range splitAlias(x) {
@@ -936,12 +950,14 @@ func classifyParen(x string, r *Metadata) {
 		}
 		return
 	}
+
 	if strings.ContainsAny(x, ";,|") {
 		for _, p := range splitAlias(x) {
 			r.AlternateTitles = append(r.AlternateTitles, p)
 		}
 		return
 	}
+
 	if !containsAnyCI(x, "weekly", "batch", "dual", "multi-sub", "multi-audio") {
 		r.AlternateTitles = append(r.AlternateTitles, x)
 	}

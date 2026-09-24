@@ -137,7 +137,8 @@ func (api *API) ListUnknownFiles(ctx context.Context) ([]shoko.File, error) {
 		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
-	req.Header.Set("Content-Type", "application/json")
+	req.Header.Add("Accept", "application/json")
+
 	req.URL.RawQuery = values.Encode()
 
 	resp, err := api.do(ctx, req)
