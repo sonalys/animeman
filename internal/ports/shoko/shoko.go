@@ -41,8 +41,6 @@ type (
 type Shoko interface {
 	// Wait blocks until shoko is reachable or the context is cancelled.
 	Wait(ctx context.Context)
-	// AutoMatchFile asks shoko to run its local filename-based release search
-	// on an unrecognized file. It reports whether shoko found a match.
-	AutoMatchFile(ctx context.Context, fileID int) (matched bool, err error)
 	ListUnknownFiles(ctx context.Context) ([]File, error)
+	AutoMatchAndSaveFile(ctx context.Context, fileID int) (bool, error)
 }

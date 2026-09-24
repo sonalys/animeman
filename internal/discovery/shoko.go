@@ -24,7 +24,7 @@ func (c *Controller) RunShokoIntegration(
 			continue
 		}
 
-		if _, err := c.dep.Shoko.AutoMatchFile(ctx, file.ID); err != nil {
+		if _, err := c.dep.Shoko.AutoMatchAndSaveFile(ctx, file.ID); err != nil {
 			return fmt.Errorf("auto-matching file: %w", err)
 		}
 
