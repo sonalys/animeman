@@ -12,8 +12,8 @@ Torrent sources are pluggable; Animeman currently supports **Nyaa.si** and **Nek
 
 * **Automatic Downloads** weekly releases from your WatchList
 * **Downloads batch releases**: from complete series from your WatchList
-* **Tags**: all torrent entries under the configured category with [`!Serie name`, `Serie name S01E01`] as an example
-* **Source and quality filter**: you can specify resolution and HEVC tag
+* **Tags**: all torrent entries under the configured category with [`!Serie name`, `S01E01`] as an example
+* **Source and quality filter**: you can specify prioritized matching based on source and quality filters
 * **Smart episode detection**: you don't need to worry about downloading the same episode twice
 * **Custom torrent renaming logic**: you are able to write exactly how your torrents should be named using [expr-lang](https://expr-lang.org/docs/language-definition)
 
@@ -104,7 +104,7 @@ join(
       // Format tag as a string. e.g. S1E4.
       tag.String(), 
       // Put vertical resolution inside square brackets + p, if any.
-      format("[%dp]", verticalResolution),
+      format("[%s]", verticalResolution),
       // Format array of labels as [v1,v2,v3...]. 
       format("%v", labels),
     ], 
@@ -141,7 +141,6 @@ Support for `linux/amd64` and `linux/arm64`.
 
 ```yaml
 # docker-compose.yaml
-version: "2.1"
 services:
   animeman:
     image: ghcr.io/sonalys/animeman:v3

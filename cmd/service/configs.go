@@ -28,7 +28,7 @@ const (
 					// Format tag as a string. e.g. S1E4.
 					tag.String(), 
 					// Put vertical resolution inside square brackets + p, if any.
-					format("[%dp]", verticalResolution),
+					format("[%s]", verticalResolution),
 				], 
 				# != "",
 			), 
