@@ -9,7 +9,6 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/pkg/metadata"
-	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/pkg/stringutils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
@@ -24,12 +23,7 @@ func (c *Controller) getLatestDownloadedTag(
 	logger := getLogger(ctx)
 	torrents := make([]torrentclient.Torrent, 0, 100)
 
-	cleanedTitles := sliceutils.Map(entry.Titles, func(title string) string {
-		metadata := metadata.Parse(title, 1, nil)
-		return metadata.PrimaryTitle
-	})
-
-	for _, title := range cleanedTitles {
+	for _, title := range entry.Titles {
 		req := &torrentclient.ListTorrentConfig{
 			Tag: new(buildTitleTag(title)),
 		}
@@ -61,7 +55,6 @@ func (c *Controller) getLatestDownloadedTag(
 	} else {
 		logger.
 			Debug().
-			Strs("titles", cleanedTitles).
 			Int("torrents", len(torrents)).
 			Msg("no latest tag found on torrent client")
 	}
