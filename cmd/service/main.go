@@ -188,11 +188,6 @@ func main() {
 		defer cancel()
 
 		var failed []string
-		if shokoClient != nil {
-			if _, err := shokoClient.FindSeriesByTitle(checkCtx, "test"); err != nil {
-				failed = append(failed, "shoko")
-			}
-		}
 		deps := c.Deps()
 		if _, err := deps.TorrentClient.List(checkCtx, nil); err != nil {
 			failed = append(failed, "torrentClient")

@@ -37,14 +37,10 @@ type (
 	}
 
 	Controller struct {
-		dep             Dependencies
-		intervalTracker *intervalTracker
-		lastRunErr      atomic.Pointer[error]
-
-		// shokoQueue carries torrents added but not yet completed, consumed
-		// by the shoko loop every minute until they are done.
-		shokoQueue  chan torrentsource.Torrent
-		lastEntries []animelist.Entry
+		dep                           Dependencies
+		intervalTracker               *intervalTracker
+		lastRunErr                    atomic.Pointer[error]
+		lastShokoUnknownFileTimestamp time.Time
 	}
 )
 
@@ -52,8 +48,6 @@ func New(dep Dependencies) *Controller {
 	return &Controller{
 		dep:             dep,
 		intervalTracker: newIntervalTracker(dep.Config.PollFrequency),
-		// Buffered so the discovery run never blocks on enqueue.
-		shokoQueue: make(chan torrentsource.Torrent, 1024),
 	}
 }
 
@@ -109,23 +103,11 @@ func (c *Controller) runShokoLoop(ctx context.Context) {
 	for {
 		select {
 		case <-ticker.C:
-			if err := c.RunShokoIntegration(ctx, c.lastEntries); err != nil {
+			if err := c.RunShokoIntegration(ctx); err != nil {
 				log.Error().Msgf("shoko integration failed: %s", err)
 			}
 		case <-ctx.Done():
 			return
 		}
-	}
-}
-
-// enqueueShoko adds a torrent to the shoko queue, dropping it when the
-// queue is full to avoid blocking the discovery run.
-func (c *Controller) enqueueShoko(torrentMetadata torrentsource.Torrent) {
-	select {
-	case c.shokoQueue <- torrentMetadata:
-	default:
-		log.Warn().
-			Str("torrent", torrentMetadata.Title).
-			Msg("shoko queue full, dropping torrent")
 	}
 }
