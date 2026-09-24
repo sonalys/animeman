@@ -31,10 +31,9 @@ func (c *Controller) getLatestDownloadedTag(
 
 	for _, title := range cleanedTitles {
 		req := &torrentclient.ListTorrentConfig{
-			Tag: new("!" + strings.ToLower(title)),
+			Tag: new(buildTitleTag(title)),
 		}
 		resp, err := c.dep.TorrentClient.List(ctx, req)
-
 		if len(resp) == 0 {
 			continue
 		}
@@ -118,6 +117,29 @@ func (c *Controller) buildTorrentName(title string, torrent torrentsource.Torren
 	return b.String()
 }
 
+func filterAlphanumeric(s string) string {
+	var result strings.Builder
+	result.Grow(len(s))
+	for i := 0; i < len(s); i++ {
+		b := s[i]
+		if ('a' <= b && b <= 'z') || ('A' <= b && b <= 'Z') || ('0' <= b && b <= '9') || b == ' ' {
+			result.WriteByte(b)
+		}
+	}
+	return result.String()
+}
+
+func buildTitleTag(title string) string {
+	return "!" + strings.ToLower(filterAlphanumeric(title))
+}
+
+func buildTorrentTags(title string, metadata metadata.Metadata) []string {
+	return []string{
+		buildTitleTag(title),
+		metadata.Tags.String(),
+	}
+}
+
 // AddTorrentEntry receives an anime list entry and a downloadable torrent.
 // It will configure all necessary metadata and send it to your torrent client.
 // It returns the torrent's info hash, empty when the source didn't provide one.
@@ -129,7 +151,7 @@ func (c *Controller) AddTorrentEntry(
 	selectedTitle := animeListEntry.GetBestTitle()
 
 	req := &torrentclient.AddTorrentConfig{
-		Tags:     nil,
+		Tags:     buildTorrentTags(selectedTitle, torrent.Metadata),
 		URLs:     []string{torrent.Link},
 		Category: c.dep.Config.Category,
 		SavePath: c.buildTorrentDownloadPath(selectedTitle),
@@ -172,15 +194,11 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context, entries []animel
 		// The torrent name might be based on an alternative title (e.g. "Show Name: Second Season").
 		// Normalize it back to the anime list title so tag-based latest episode detection works.
 		metadata.PrimaryTitle = normalizeTitle(metadata.PrimaryTitle, entries)
-		tags := []string{
-			"!" + strings.ToLower(metadata.PrimaryTitle),
-			metadata.Tags.String(),
-		}
 
 		if err := c.dep.TorrentClient.AddTorrentTags(
 			ctx,
 			[]string{torrent.Hash},
-			tags,
+			buildTorrentTags(metadata.PrimaryTitle, metadata),
 		); err != nil {
 			return fmt.Errorf("updating tags: %w", err)
 		}
@@ -189,7 +207,7 @@ func (c *Controller) TorrentRegenerateTags(ctx context.Context, entries []animel
 			Ctx(ctx).
 			Info().
 			Str("torrentName", torrent.Name).
-			Strs("tags", tags).
+			Strs("tags", metadata.Labels).
 			Msgf("generated torrent tags")
 	}
 
