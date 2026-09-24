@@ -80,14 +80,14 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 			"roman season colon episode",
 			"[G] Show Season IV: 3",
 			[]Tag{
-				{Number: 4, Episodes: []EpisodeRange{{Start: 3, Raw: "Season IV: 3"}}},
+				{Number: 4, Episodes: []EpisodeRange{{Start: 3, Raw: "3"}}},
 			},
 		},
 		{
 			"roman season dash episode",
 			"[G] Show Season IV - 3",
 			[]Tag{
-				{Number: 4, Episodes: []EpisodeRange{{Start: 3, Raw: "Season IV - 3"}}},
+				{Number: 4, Episodes: []EpisodeRange{{Start: 3, Raw: "3"}}},
 			},
 		},
 		{

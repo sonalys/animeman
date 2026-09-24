@@ -109,7 +109,7 @@ var (
 	// stripFilenameExtension() is called before parseSeasonEpisode(),
 	// so this regex intentionally knows nothing about .mkv.
 	bareTrailingEpisodeRE = regexp.MustCompile(
-		`(?i)(?:^|\s)-\s*(\d{1,4})(?:\.[A-Za-z0-9]+)?(?:\s|$)`,
+		`(?i)(?:^|\s)-\s*(\d{1,4}(?:\.\d+)?)(?:\s|$)`,
 	)
 
 	yearRE = regexp.MustCompile(`\b(?:19|20)\d{2}\b`)
@@ -275,7 +275,7 @@ func appendEpisode(r *Metadata, season int, start, end, raw string) {
 	s.Episodes = append(s.Episodes, EpisodeRange{
 		Start: float32(startValue),
 		End:   endValue,
-		Raw:   raw,
+		Raw:   strings.TrimSpace(raw),
 	})
 }
 
@@ -502,19 +502,19 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		switch {
 		case m[2] >= 0:
 			// S4
-			seasonRaw = s[m[2]:m[3]]
+			seasonRaw = strings.TrimSpace(s[m[2]:m[3]])
 
 		case m[4] >= 0:
 			// Season 4 / Season IV
-			seasonRaw = s[m[4]:m[5]]
+			seasonRaw = strings.TrimSpace(s[m[4]:m[5]])
 
 		case m[6] >= 0:
 			// 4th season
-			seasonRaw = s[m[6]:m[7]]
+			seasonRaw = strings.TrimSpace(s[m[6]:m[7]])
 
 		case m[8] >= 0:
 			// III
-			seasonRaw = s[m[8]:m[9]]
+			seasonRaw = strings.TrimSpace(s[m[8]:m[9]])
 		}
 
 		season, ok := parseSeasonNumber(seasonRaw)
@@ -525,8 +525,13 @@ func parseSeasonEpisode(s string, r *Metadata) {
 
 		epStart := m[10]
 		epEnd := m[11]
+		if epStart < 0 || epEnd < 0 {
+			continue
+		}
 
-		appendEpisode(r, season, s[epStart:epEnd], "", s[m[0]:m[1]])
+		// Use only the episode capture for Raw, not the full
+		// season-tagged match (e.g. "II - 12").
+		appendEpisode(r, season, s[epStart:epEnd], "", s[epStart:epEnd])
 	}
 
 	// ------------------------------------------------------------
@@ -625,12 +630,14 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		if overlapsMatch(m[0], m[1], numericSeasonMatches) {
 			continue
 		}
+
 		// A season-tagged form such as "II - 12" has already been
 		// consumed above. Do not also parse its trailing "- 12" as a
 		// bare episode (which would incorrectly default to season 1).
 		if overlapsMatch(m[0], m[1], seasonTaggedMatches) {
 			continue
 		}
+
 		start := s[m[2]:m[3]]
 
 		// Avoid interpreting a year as an episode.
@@ -639,8 +646,15 @@ func parseSeasonEpisode(s string, r *Metadata) {
 			continue
 		}
 
-		season := seasonBefore(m[0], seasonOnlyRE.FindAllStringSubmatchIndex(parseS, -1), parseS)
-		appendEpisode(r, season, start, "", s[m[0]:m[1]])
+		season := seasonBefore(
+			m[0],
+			seasonOnlyRE.FindAllStringSubmatchIndex(parseS, -1),
+			parseS,
+		)
+
+		// m[2]:m[3] is the episode capture, so Raw should contain
+		// only the episode number, not the surrounding "- " syntax.
+		appendEpisode(r, season, start, "", s[m[2]:m[3]])
 	}
 
 	sortSeasons(r)
