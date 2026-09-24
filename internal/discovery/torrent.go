@@ -33,6 +33,7 @@ func (c *Controller) getLatestDownloadedTag(
 		req := &torrentclient.ListTorrentConfig{
 			Tag: new(buildTitleTag(title)),
 		}
+
 		resp, err := c.dep.TorrentClient.List(ctx, req)
 		if len(resp) == 0 {
 			continue
@@ -55,10 +56,13 @@ func (c *Controller) getLatestDownloadedTag(
 		logger.
 			Debug().
 			Str("latestTag", latestTag.String()).
+			Int("torrents", len(torrents)).
 			Msg("identified latest tag on torrent client")
 	} else {
 		logger.
 			Debug().
+			Strs("titles", cleanedTitles).
+			Int("torrents", len(torrents)).
 			Msg("no latest tag found on torrent client")
 	}
 
