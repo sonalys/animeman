@@ -126,10 +126,7 @@ func (api *API) AutoMatchFile(ctx context.Context, fileID int) (bool, error) {
 // ListUnknownFiles implements [shoko.Shoko].
 func (api *API) ListUnknownFiles(ctx context.Context) ([]shoko.File, error) {
 	values := url.Values{
-		"include_only": {"Unrecognized", "ImportLimbo"},
-		"sort_order":   {"FileName"},
-		"pageSize":     {"200"},
-		"page":         {"1"},
+		"include_only": {"Unrecognized"},
 	}
 
 	req, err := http.NewRequestWithContext(ctx, http.MethodGet, api.config.Host+filePath, nil)
