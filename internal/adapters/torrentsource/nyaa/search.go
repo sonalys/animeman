@@ -18,7 +18,6 @@ import (
 	"github.com/sonalys/animeman/internal/pkg/nyaaquerier"
 	"github.com/sonalys/animeman/internal/pkg/searcher"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
-	"github.com/sonalys/animeman/internal/pkg/stringutils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
@@ -92,11 +91,6 @@ func (api *API) Search(
 		}
 	}
 
-	cleanedTitles := sliceutils.Map(entry.Titles, func(title string) string {
-		metadata := metadata.Parse(title, fallbackSeason, opts.Sources)
-		return metadata.PrimaryTitle
-	})
-
 	searcher := searcher.New(
 		pageSize,
 		func(ctx context.Context, offset int) ([]torrentsource.Torrent, error) {
@@ -117,23 +111,6 @@ func (api *API) Search(
 			})
 
 			return page, nil
-		},
-		func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
-			return func(torrent torrentsource.Torrent) bool {
-				for _, title := range cleanedTitles {
-					if stringutils.MatchPrefixFlexible(
-						torrent.Metadata.PrimaryTitle,
-						title,
-						torrentsource.IgnoreCharset,
-					) {
-						return true
-					}
-				}
-
-				ignoreCounter("titlePrefix")
-
-				return false
-			}
 		},
 	)
 

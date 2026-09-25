@@ -49,6 +49,7 @@ func (p Searcher) Search(
 		matchEpisodeCount(entry, opts.Sources),
 		matchSources(opts.Sources),
 		newerEpisode(opts.LatestTag),
+		matchTitlePrefix(entry.Titles),
 	}
 	unregisteredFilters = append(unregisteredFilters, p.additionalFilters...)
 	registeredFilters := sliceutils.Map(

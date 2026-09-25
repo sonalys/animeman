@@ -6,6 +6,7 @@ import (
 
 	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/stringutils"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
@@ -117,6 +118,33 @@ func newerEpisode(
 			}
 
 			ignoreCounter("oldEpisode")
+
+			return false
+		}
+	}
+}
+
+func matchTitlePrefix(
+	titles []string,
+) func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
+	cleanedTitles := sliceutils.Map(titles, func(title string) string {
+		metadata := metadata.Parse(title, 1, nil)
+		return metadata.PrimaryTitle
+	})
+
+	return func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
+		return func(torrent torrentsource.Torrent) bool {
+			for _, title := range cleanedTitles {
+				if stringutils.MatchPrefixFlexible(
+					torrent.Metadata.PrimaryTitle,
+					title,
+					torrentsource.IgnoreCharset,
+				) {
+					return true
+				}
+			}
+
+			ignoreCounter("titlePrefix")
 
 			return false
 		}
