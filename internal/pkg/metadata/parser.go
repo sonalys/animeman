@@ -22,7 +22,6 @@ type Tag struct {
 }
 
 type Metadata struct {
-	Raw               string
 	Group             string
 	PrimaryTitle      string
 	AlternateTitles   []string
@@ -49,7 +48,6 @@ type Metadata struct {
 	Checksum          string
 	TagFields         map[string]string
 	Unknown           []string
-	Tokens            []Token
 }
 
 var (
@@ -138,9 +136,12 @@ var (
 )
 
 func Parse(raw string, fallbackSeason int, sources []string) Metadata {
-	r := Metadata{Raw: raw, TagFields: map[string]string{},
-		Tokens: Tokenize(raw)}
-	r.Group = extractGroup(r.Tokens)
+	r := Metadata{
+		TagFields: map[string]string{},
+	}
+
+	tokens := Tokenize(raw)
+	r.Group = extractGroup(tokens)
 	if r.Group == "" {
 		r.Group = extractFilenameGroup(raw)
 	}
@@ -156,7 +157,7 @@ func Parse(raw string, fallbackSeason int, sources []string) Metadata {
 			}
 		}
 	}
-	r.Checksum = extractChecksum(r.Tokens)
+	r.Checksum = extractChecksum(tokens)
 	r.IsBatch = containsAnyCI(raw, "batch", "mini-batch")
 	r.IsComplete = containsAnyCI(raw, "complete series", "complete", "01-", "01 ~")
 	r.IsRemastered = containsAnyCI(raw, "remastered")
@@ -164,7 +165,7 @@ func Parse(raw string, fallbackSeason int, sources []string) Metadata {
 	if containsAnyCI(raw, "weekly") {
 		r.Labels = append(r.Labels, "weekly")
 	}
-	for _, t := range r.Tokens {
+	for _, t := range tokens {
 		if t.Kind == TokenTagBlock {
 			parseTagBlock(t.Text, &r)
 		}
@@ -172,7 +173,7 @@ func Parse(raw string, fallbackSeason int, sources []string) Metadata {
 	parseTech(raw, &r)
 	parseSeasonEpisode(raw, &r)
 	parseYear(raw, &r)
-	parseSemanticGroups(r.Tokens, &r)
+	parseSemanticGroups(tokens, &r)
 	parseMainText(raw, &r)
 	dedupe(&r.AlternateTitles)
 	dedupe(&r.Labels)
@@ -356,16 +357,19 @@ func parseSeasonEpisode(s string, r *Metadata) {
 	// notation. This prevents values such as "E3" in a checksum like
 	// "4AE3A605" from becoming an episode.
 	parseS := maskBracketContent(s)
-	// ------------------------------------------------------------
-	// 1. Explicit SxxExx notation
-	// ------------------------------------------------------------
 
-	// Seasons: collect explicit ranges first so S1-3 is not also
-	// emitted as S1.
+	seasonTaggedMatches := seasonTaggedBareEpisodeRE.FindAllStringSubmatchIndex(parseS, -1)
 	seasonRanges := seasonRangeRE.FindAllStringSubmatchIndex(parseS, -1)
 
 	for _, m := range seasonRanges {
-		start, _ := strconv.Atoi(s[m[2]:m[3]])
+		// "S2 - 13" is season 2, episode 13, not a season range.
+		// A compact form such as "S1-3" remains a season range.
+		raw := parseS[m[0]:m[1]]
+		if regexp.MustCompile(`(?i)^S\d{1,3}\s+-\s+\d{1,4}$`).MatchString(raw) {
+			continue
+		}
+
+		start, _ := strconv.Atoi(parseS[m[2]:m[3]])
 		end, _ := strconv.Atoi(parseS[m[4]:m[5]])
 
 		if start >= end {
@@ -385,6 +389,11 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		insideRange := false
 		for _, rr := range seasonRanges {
 			if m[0] >= rr[0] && m[0] < rr[1] {
+				raw := parseS[rr[0]:rr[1]]
+				if regexp.MustCompile(`(?i)^S\d{1,3}\s+-\s+\d{1,4}$`).MatchString(raw) {
+					continue
+				}
+
 				insideRange = true
 				break
 			}
@@ -398,13 +407,8 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		appendSeason(r, n)
 	}
 
-	// ------------------------------------------------------------
-	// 2. Long-form / ordinal / Roman season tags
-	// ------------------------------------------------------------
-
 	// Keep the full match around so long-form season parsing does not also
 	// add a second season when the same season is part of "Season IV: 3".
-	seasonTaggedMatches := seasonTaggedBareEpisodeRE.FindAllStringSubmatchIndex(parseS, -1)
 
 	// Season 4 / Season IV
 	for _, m := range seasonWordRE.FindAllStringSubmatchIndex(parseS, -1) {
@@ -438,10 +442,6 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		}
 	}
 
-	// ------------------------------------------------------------
-	// 3. Explicit SxxExx notation
-	// ------------------------------------------------------------
-
 	// The episode regex also matches the E portion of SxxExx. Keep the
 	// season from the combined form here.
 	for _, m := range seasonEpRE.FindAllStringSubmatchIndex(parseS, -1) {
@@ -450,10 +450,6 @@ func parseSeasonEpisode(s string, r *Metadata) {
 			appendSeason(r, n)
 		}
 	}
-
-	// ------------------------------------------------------------
-	// 4. Explicit E notation
-	// ------------------------------------------------------------
 
 	// Supports:
 	//   E1
@@ -468,13 +464,13 @@ func parseSeasonEpisode(s string, r *Metadata) {
 			end = s[m[4]:m[5]]
 		}
 
-		season := seasonBefore(m[0], seasonEpRE.FindAllStringSubmatchIndex(parseS, -1), parseS)
+		season := seasonBefore(
+			m[0],
+			seasonEpRE.FindAllStringSubmatchIndex(parseS, -1),
+			parseS,
+		)
 		appendEpisode(r, season, start, end, s[m[0]:m[1]])
 	}
-
-	// ------------------------------------------------------------
-	// 4. Season-tagged dangling episodes
-	// ------------------------------------------------------------
 
 	// Examples:
 	//
@@ -491,7 +487,10 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		isSeasonRange := false
 		for _, rr := range seasonRanges {
 			if m[0] >= rr[0] && m[0] < rr[1] {
-				isSeasonRange = true
+				raw := parseS[rr[0]:rr[1]]
+				if !regexp.MustCompile(`(?i)^S\d{1,3}\s+-\s+\d{1,4}$`).MatchString(raw) {
+					isSeasonRange = true
+				}
 				break
 			}
 		}
@@ -536,13 +535,6 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		appendEpisode(r, season, s[epStart:epEnd], "", s[epStart:epEnd])
 	}
 
-	// ------------------------------------------------------------
-	// 5. Numeric season/episode notation
-	//
-	//   Show 2 - 12
-	//
-	// This is stronger than a generic numeric range because it occurs in
-	// title text immediately before the release metadata.
 	numericSeasonMatches := numericSeasonEpisodeRE.FindAllStringSubmatchIndex(parseS, -1)
 	for _, m := range numericSeasonMatches {
 		season, _ := strconv.Atoi(parseS[m[2]:m[3]])
@@ -550,17 +542,6 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		appendSeason(r, season)
 		appendEpisode(r, season, episode, "", s[m[0]:m[1]])
 	}
-
-	// ------------------------------------------------------------
-	// 6. Season x Episode notation
-	//
-	//   2x1
-	//   2x1-12
-	//   2x1~12
-	//
-	// The episode Raw value intentionally contains only the episode part,
-	// matching the representation used by the other episode notations.
-	// ------------------------------------------------------------
 
 	seasonXMatches := seasonXEpisodeRE.FindAllStringSubmatchIndex(parseS, -1)
 	for _, m := range seasonXMatches {
@@ -579,20 +560,12 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		appendEpisode(r, season, start, end, s[m[4]:rawEnd])
 	}
 
-	// ------------------------------------------------------------
-	// 7. Bare numeric episode ranges
-	// ------------------------------------------------------------
-
-	// Examples:
-	//   0501 ~ 0600
-	//   1-12
-	//
-	// Exclude years and ranges that are actually season ranges.
 	for _, m := range epRangeRE.FindAllStringSubmatchIndex(parseS, -1) {
 		if overlapsMatch(m[0], m[1], numericSeasonMatches) ||
 			overlapsMatch(m[0], m[1], seasonXMatches) {
 			continue
 		}
+
 		a, _ := strconv.Atoi(parseS[m[2]:m[3]])
 		b, _ := strconv.Atoi(parseS[m[4]:m[5]])
 
@@ -602,10 +575,12 @@ func parseSeasonEpisode(s string, r *Metadata) {
 		}
 
 		seasonRange := false
-
 		for _, rr := range seasonRanges {
 			if m[0] >= rr[0] && m[0] < rr[1] {
-				seasonRange = true
+				raw := parseS[rr[0]:rr[1]]
+				if !regexp.MustCompile(`(?i)^S\d{1,3}\s+-\s+\d{1,4}$`).MatchString(raw) {
+					seasonRange = true
+				}
 				break
 			}
 		}
@@ -614,19 +589,13 @@ func parseSeasonEpisode(s string, r *Metadata) {
 			continue
 		}
 
-		season := seasonBefore(m[0], seasonOnlyRE.FindAllStringSubmatchIndex(parseS, -1), parseS)
+		season := seasonBefore(
+			m[0],
+			seasonOnlyRE.FindAllStringSubmatchIndex(parseS, -1),
+			parseS,
+		)
 		appendEpisode(r, season, s[m[2]:m[3]], s[m[4]:m[5]], s[m[0]:m[1]])
 	}
-
-	// ------------------------------------------------------------
-	// 6. Dangling episode after "-":
-	//
-	//   Show - 13
-	//   Show - 13.mkv
-	//
-	// The extension is allowed here because Parse receives the raw
-	// filename, before stripFilenameExtension() is called.
-	// ------------------------------------------------------------
 
 	for _, m := range bareTrailingEpisodeRE.FindAllStringSubmatchIndex(parseS, -1) {
 		if overlapsMatch(m[0], m[1], numericSeasonMatches) {

@@ -23,6 +23,13 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 		input string
 		eps   Tags
 	}{
+		{
+			"Season - Episode",
+			"[Erai-raws] Hell Mode: Yarikomizuki no Gamer wa Hai Settei no Isekai de Musou suru S2 - 13 [1080p HIDIVE WEB-DL AVC AAC][E1C62DE2] {Tags:L0;V9;C1;A=ja;S=en;}",
+			[]Tag{
+				{Number: 2, Episodes: []EpisodeRange{{Start: 13, Raw: "13"}}},
+			},
+		},
 		{"multiple seasons", "[G] Show S1 S2 S3", []Tag{{Number: 1}, {Number: 2}, {Number: 3}}},
 		{
 			"multiple seasons with commas",
@@ -273,7 +280,6 @@ func TestCorpusTitlesAgainstJSON(t *testing.T) {
 				}
 
 				r := Parse(tc.Input, 1, nil)
-				assert.Equal(t, tc.Input, r.Raw)
 				got := projectResult(r)
 
 				ss, _ := json.Marshal(got.Seasons)
