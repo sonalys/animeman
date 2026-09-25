@@ -11,7 +11,7 @@ import (
 	"github.com/expr-lang/expr"
 	"github.com/rs/zerolog"
 	"github.com/rs/zerolog/log"
-	"github.com/sonalys/animeman/cmd/service/discovery"
+	"github.com/sonalys/animeman/cmd/service/controller"
 	"github.com/sonalys/animeman/internal/adapters/animelist/anilist"
 	"github.com/sonalys/animeman/internal/adapters/animelist/myanimelist"
 	shokoadapter "github.com/sonalys/animeman/internal/adapters/shoko"
@@ -162,13 +162,13 @@ func main() {
 	// so that shoko can be matched by exact id instead of fuzzy title search.
 	anilistAPI := anilist.New(httpClient, config.Username, config.CacheTTL)
 
-	deps := discovery.Dependencies{
+	deps := controller.Dependencies{
 		AnimeListSource:   initializeAnimeList(httpClient, config.AnimeListConfig, anilistAPI),
 		TorrentSource:     initializeTorrentSource(config.TorrentSourceConfig),
 		TorrentClient:     initializeTorrentClient(ctx, config.TorrentConfig),
 		AnilistIDResolver: anilistAPI,
 		Shoko:             shokoClient,
-		Config: discovery.Config{
+		Config: controller.Config{
 			SearchSuffix:     discoveryConfig.SearchSuffix,
 			ReleaseGroups:    discoveryConfig.Sources,
 			Qualitites:       discoveryConfig.Qualities,
@@ -181,7 +181,7 @@ func main() {
 		},
 	}
 
-	controller := discovery.New(deps)
+	controller := controller.New(deps)
 
 	healthServer := newHealthcheck(deps)
 

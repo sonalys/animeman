@@ -6,13 +6,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/sonalys/animeman/cmd/service/discovery"
+	"github.com/sonalys/animeman/cmd/service/controller"
 	"github.com/sonalys/animeman/internal/pkg/coalesce"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
 
-func newHealthcheck(deps discovery.Dependencies) *http.Server {
+func newHealthcheck(deps controller.Dependencies) *http.Server {
 	healthMux := http.NewServeMux()
 	healthMux.HandleFunc("/healthz", func(w http.ResponseWriter, r *http.Request) {
 		var failed []string

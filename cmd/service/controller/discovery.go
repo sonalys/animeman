@@ -1,4 +1,4 @@
-package discovery
+package controller
 
 import (
 	"context"
@@ -12,10 +12,29 @@ import (
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
 
-// RunDiscovery controls the discovery routine,
+func (c *Controller) startDiscovery(ctx context.Context, shutdown <-chan struct{}) {
+	ticker := time.NewTicker(c.dep.Config.PollFrequency)
+	defer ticker.Stop()
+
+	for {
+		if err := c.runDiscovery(ctx); err != nil {
+			log.Error().Msgf("discovery scan failed: %s", err)
+		}
+
+		select {
+		case <-ticker.C:
+		case <-ctx.Done():
+			return
+		case <-shutdown:
+			return
+		}
+	}
+}
+
+// runDiscovery controls the discovery routine,
 // fetching entries from your anime list and looking for updates in the torrent source.
 // After finding updates, it will verify episode collision and dispatch it to your torrent client.
-func (c *Controller) RunDiscovery(ctx context.Context) error {
+func (c *Controller) runDiscovery(ctx context.Context) error {
 	ctx, cancel := context.WithTimeout(ctx, 5*time.Minute)
 	defer cancel()
 
