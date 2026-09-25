@@ -61,7 +61,7 @@ func (c *Controller) runDiscovery(ctx context.Context) error {
 				continue
 			}
 
-			anilistID, err := c.dep.AnilistIDResolver.ResolveMAL(ctx, entry.MALID)
+			anilistID, err := c.dep.AnilistIDResolver.FromMAL(ctx, entry.MALID)
 			if err != nil {
 				log.Ctx(ctx).
 					Warn().

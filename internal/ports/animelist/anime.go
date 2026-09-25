@@ -16,10 +16,16 @@ type (
 		GetCurrentlyWatching(ctx context.Context) ([]Entry, error)
 	}
 
-	// AnilistIDResolver is an optional port for anime list adapters that can
-	// resolve an AniList id from a MAL id, so entries always carry an AniList id.
 	AnilistIDResolver interface {
-		ResolveMAL(ctx context.Context, malID int) (anilistID int, err error)
+		FromMAL(ctx context.Context, malID int) (anilistID int, err error)
+	}
+
+	AnidbIDResolver interface {
+		FromAnilist(ctx context.Context, anilistID int) (anidbID int, err error)
+	}
+
+	EpisodeAnidbIDResolver interface {
+		EpisodeID(ctx context.Context, anilistID int, epNumber int) (epID int, err error)
 	}
 
 	ListStatus   int

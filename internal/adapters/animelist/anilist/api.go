@@ -44,7 +44,7 @@ func New(client *http.Client, username string, cacheTTL time.Duration) *API {
 }
 
 // GetAnilistIDByMALID implements animelist.AnilistIDResolver.
-func (api *API) ResolveMAL(ctx context.Context, malID int) (int, error) {
+func (api *API) FromMAL(ctx context.Context, malID int) (int, error) {
 	api.lock.Lock()
 	defer api.lock.Unlock()
 

@@ -111,7 +111,7 @@ func initializeTorrentSource(c TorrentSourceConfig) torrentsource.Source {
 	return nil
 }
 
-func initializeShoko(c ShokoConfig) shoko.Shoko {
+func initializeShoko(c ShokoConfig) *shokoadapter.API {
 	httpClient := &http.Client{
 		Transport: defaultTransport,
 		Timeout:   15 * time.Second,
@@ -144,10 +144,14 @@ func main() {
 
 	discoveryConfig := config.DiscoveryConfig
 
+	var anidbEpResolver animelist.EpisodeAnidbIDResolver
 	var shokoClient shoko.Shoko
 	if config.ShokoConfig.Host != "" {
-		shokoClient = initializeShoko(config.ShokoConfig)
-		shokoClient.Wait(ctx)
+		api := initializeShoko(config.ShokoConfig)
+		api.Wait(ctx)
+
+		anidbEpResolver = api
+		shokoClient = api
 	}
 
 	httpClient := &http.Client{
@@ -161,12 +165,20 @@ func main() {
 	// Anilist API is used for MAL->AniList id resolution,
 	// so that shoko can be matched by exact id instead of fuzzy title search.
 	anilistAPI := anilist.New(httpClient, config.Username, config.CacheTTL)
+	torrentSource := initializeTorrentSource(config.TorrentSourceConfig)
+
+	var anidbResolver animelist.AnidbIDResolver
+	if nekobt, ok := torrentSource.(*nekobt.API); ok {
+		anidbResolver = nekobt
+	}
 
 	deps := controller.Dependencies{
 		AnimeListSource:   initializeAnimeList(httpClient, config.AnimeListConfig, anilistAPI),
-		TorrentSource:     initializeTorrentSource(config.TorrentSourceConfig),
+		TorrentSource:     torrentSource,
 		TorrentClient:     initializeTorrentClient(ctx, config.TorrentConfig),
 		AnilistIDResolver: anilistAPI,
+		AnidbIDResolver:   anidbResolver,
+		AnidbEpIDResolver: anidbEpResolver,
 		Shoko:             shokoClient,
 		Config: controller.Config{
 			SearchSuffix:     discoveryConfig.SearchSuffix,

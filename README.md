@@ -79,7 +79,9 @@ torrentClient:
     host: http://ip:port
     username: username
     password: password
-shoko: # Optional. Used for linking files when Shoko is unable to find suitable matches.
+# Optional. Used for linking files when Shoko is unable to find suitable matches.
+# Requires nekobt set, since it's the only way I have to correlate anilist or mal ids to anidb.
+shoko:
   host: http://ip:port
   apiKey: YOUR_API_KEY
 ```

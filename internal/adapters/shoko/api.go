@@ -17,10 +17,11 @@ import (
 )
 
 const (
-	filePath            = "/api/v3/File"
-	autoMatchFilePath   = "/api/v3/ReleaseInfo/File/%d/AutoPreview"
-	releaseInfoFilePath = "/api/v3/ReleaseInfo/File/%d"
-	releaseProviderPath = "/api/v3/ReleaseInfo/Provider"
+	filePath               = "/api/v3/File"
+	releaseInfoPreviewPath = "/api/v3/ReleaseInfo/File/%d/AutoPreview"
+	releaseInfoFilePath    = "/api/v3/ReleaseInfo/File/%d"
+	releaseProviderPath    = "/api/v3/ReleaseInfo/Provider"
+	episodePath            = "/api/v3/Anime/%d/Episodes"
 )
 
 type (
@@ -194,23 +195,23 @@ func (api *API) ListReleaseProviders(ctx context.Context) ([]string, error) {
 	return providerIDs, nil
 }
 
-// AutoMatchFile asks Shoko to run its local filename-based release search.
+// PreviewReleaseInfo asks Shoko to run its local filename-based release search.
 //
 // A 200 response means Shoko found a release and returns the release info.
 // A 204 response means no match was found.
-func (api *API) AutoMatchFile(
+func (api *API) PreviewReleaseInfo(
 	ctx context.Context,
 	fileID int,
 	providerIDs []string,
-) (*ReleaseInfo, bool, error) {
+) (*ReleaseInfo, error) {
 	req, err := http.NewRequestWithContext(
 		ctx,
 		http.MethodPost,
-		api.config.Host+fmt.Sprintf(autoMatchFilePath, fileID),
+		api.config.Host+fmt.Sprintf(releaseInfoPreviewPath, fileID),
 		nil,
 	)
 	if err != nil {
-		return nil, false, fmt.Errorf("creating request: %w", err)
+		return nil, fmt.Errorf("creating request: %w", err)
 	}
 
 	q := url.Values{
@@ -222,7 +223,7 @@ func (api *API) AutoMatchFile(
 
 	resp, err := api.do(ctx, req)
 	if err != nil {
-		return nil, false, fmt.Errorf("request failed: %w", err)
+		return nil, fmt.Errorf("request failed: %w", err)
 	}
 
 	defer resp.Body.Close()
@@ -232,25 +233,25 @@ func (api *API) AutoMatchFile(
 		var release ReleaseInfo
 
 		if err := json.NewDecoder(resp.Body).Decode(&release); err != nil {
-			return nil, false, fmt.Errorf(
-				"decoding auto-match response: %w",
+			return nil, fmt.Errorf(
+				"decoding release preview response: %w",
 				err,
 			)
 		}
 
-		return &release, true, nil
+		return &release, nil
 
 	case http.StatusNoContent:
-		return nil, false, nil
+		return nil, nil
 
 	case http.StatusUnauthorized, http.StatusForbidden:
-		return nil, false, shoko.ErrForbidden
+		return nil, shoko.ErrForbidden
 
 	default:
 		body := must.Must(io.ReadAll(resp.Body))
 
-		return nil, false, fmt.Errorf(
-			"auto matching file failed: %s: %s",
+		return nil, fmt.Errorf(
+			"file release preview failed: %s: %s",
 			resp.Status,
 			string(body),
 		)
@@ -311,29 +312,40 @@ func (api *API) SaveReleaseInfo(
 	return nil
 }
 
-// AutoMatchAndSaveFile runs the complete workflow:
-//
-//  1. Ask Shoko to preview/automatically match the file.
-//  2. If a match was found, submit that release information back to Shoko.
-//
-// It returns matched=false when AutoPreview did not find a release.
-func (api *API) AutoMatchAndSaveFile(
+func (api *API) MatchFileToCrossReference(
 	ctx context.Context,
 	fileID int,
+	anidbID int,
+	epID int,
 ) (matched bool, err error) {
 	providers, err := api.ListReleaseProviders(ctx)
 	if err != nil {
 		return false, fmt.Errorf("listing release providers: %w", err)
 	}
 
-	release, matched, err := api.AutoMatchFile(ctx, fileID, providers)
+	release, err := api.PreviewReleaseInfo(ctx, fileID, providers)
 	if err != nil {
 		return false, err
 	}
 
-	if !matched {
+	switch {
+	case len(release.CrossReferences) > 0:
+		filteredReferences := sliceutils.Filter(
+			release.CrossReferences,
+			func(rcr ReleaseCrossReference) bool {
+				return rcr.AnidbAnimeID == anidbID
+			},
+		)
+
+		if len(filteredReferences) == 1 {
+			release.CrossReferences = filteredReferences
+		}
+	case len(release.CrossReferences) == 0:
 		return false, nil
 	}
+
+	release.CrossReferences[0].AnidbAnimeID = anidbID
+	release.CrossReferences[0].AnidbEpisodeID = epID
 
 	if err := api.SaveReleaseInfo(ctx, fileID, release); err != nil {
 		return false, fmt.Errorf(
@@ -397,4 +409,75 @@ func (api *API) ListUnknownFiles(ctx context.Context) ([]shoko.File, error) {
 	})
 
 	return files, nil
+}
+
+type shokoEpisode struct {
+	ID struct {
+		ID    *int `json:"id"`
+		AniDB *int `json:"aniDB"`
+	} `json:"id"`
+
+	Number int    `json:"number"`
+	Type   string `json:"type"`
+}
+
+func (api *API) EpisodeID(
+	ctx context.Context,
+	aniDBAnimeID int,
+	episodeNumber int,
+) (int, error) {
+	req, err := http.NewRequestWithContext(
+		ctx,
+		http.MethodGet,
+		api.config.Host+fmt.Sprintf(episodePath, aniDBAnimeID),
+		nil,
+	)
+	if err != nil {
+		return 0, fmt.Errorf("creating request: %w", err)
+	}
+
+	resp, err := api.do(ctx, req)
+	if err != nil {
+		return 0, fmt.Errorf("request failed: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode == http.StatusUnauthorized ||
+		resp.StatusCode == http.StatusForbidden {
+		return 0, shoko.ErrForbidden
+	}
+
+	if resp.StatusCode != http.StatusOK {
+		body := must.Must(io.ReadAll(resp.Body))
+
+		return 0, fmt.Errorf(
+			"getting episodes failed: %s: %s",
+			resp.Status,
+			string(body),
+		)
+	}
+
+	var episodes []shokoEpisode
+
+	if err := json.NewDecoder(resp.Body).Decode(&episodes); err != nil {
+		return 0, fmt.Errorf("decoding episodes: %w", err)
+	}
+
+	for _, episode := range episodes {
+		if episode.Number != episodeNumber {
+			continue
+		}
+
+		if episode.ID.AniDB == nil {
+			continue
+		}
+
+		return *episode.ID.AniDB, nil
+	}
+
+	return 0, fmt.Errorf(
+		"AniDB episode %d not found for anime %d",
+		episodeNumber,
+		aniDBAnimeID,
+	)
 }

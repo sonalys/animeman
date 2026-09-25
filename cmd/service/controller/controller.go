@@ -18,6 +18,8 @@ type (
 		AnimeListSource   animelist.AnimeListSource
 		TorrentClient     torrentclient.Client
 		AnilistIDResolver animelist.AnilistIDResolver
+		AnidbIDResolver   animelist.AnidbIDResolver
+		AnidbEpIDResolver animelist.EpisodeAnidbIDResolver
 		// Shoko is optional, nil disables the shoko integration.
 		Shoko  shoko.Shoko
 		Config Config
@@ -54,7 +56,7 @@ func New(dep Dependencies) *Controller {
 func (c *Controller) Start() {
 	log.Info().Msgf("starting polling with frequency %s", c.dep.Config.PollFrequency.String())
 
-	if c.dep.Shoko != nil {
+	if c.dep.Shoko != nil && c.dep.AnidbEpIDResolver != nil && c.dep.AnidbIDResolver != nil {
 		c.Runner.Run(c.startShokoRoutine)
 	}
 

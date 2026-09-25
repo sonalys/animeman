@@ -42,5 +42,5 @@ type Shoko interface {
 	// Wait blocks until shoko is reachable or the context is cancelled.
 	Wait(ctx context.Context)
 	ListUnknownFiles(ctx context.Context) ([]File, error)
-	AutoMatchAndSaveFile(ctx context.Context, fileID int) (bool, error)
+	MatchFileToCrossReference(ctx context.Context, fileID int, anidbID, epID int) (bool, error)
 }
