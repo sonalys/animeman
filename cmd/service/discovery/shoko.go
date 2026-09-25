@@ -3,6 +3,8 @@ package discovery
 import (
 	"context"
 	"fmt"
+
+	"github.com/rs/zerolog/log"
 )
 
 // RunShokoIntegration links shoko's unrecognized files to episodes,
@@ -24,8 +26,23 @@ func (c *Controller) RunShokoIntegration(
 			continue
 		}
 
-		if _, err := c.dep.Shoko.AutoMatchAndSaveFile(ctx, file.ID); err != nil {
+		matched, err := c.dep.Shoko.AutoMatchAndSaveFile(ctx, file.ID)
+		if err != nil {
 			return fmt.Errorf("auto-matching file: %w", err)
+		}
+
+		if matched {
+			log.
+				Ctx(ctx).
+				Info().
+				Str("path", file.RelativePath).
+				Msg("matched shoko file")
+		} else {
+			log.
+				Ctx(ctx).
+				Info().
+				Str("path", file.RelativePath).
+				Msg("could not match shoko file")
 		}
 
 		c.lastShokoUnknownFileTimestamp = file.CreatedAt

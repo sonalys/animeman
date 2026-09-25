@@ -2,11 +2,9 @@ package main
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
@@ -26,6 +24,7 @@ import (
 	"github.com/sonalys/animeman/internal/ports/shoko"
 	"github.com/sonalys/animeman/internal/ports/torrentclient"
 	"github.com/sonalys/animeman/internal/ports/torrentsource"
+	"golang.org/x/sync/errgroup"
 	"golang.org/x/time/rate"
 )
 
@@ -163,7 +162,7 @@ func main() {
 	// so that shoko can be matched by exact id instead of fuzzy title search.
 	anilistAPI := anilist.New(httpClient, config.Username, config.CacheTTL)
 
-	c := discovery.New(discovery.Dependencies{
+	deps := discovery.Dependencies{
 		AnimeListSource:   initializeAnimeList(httpClient, config.AnimeListConfig, anilistAPI),
 		TorrentSource:     initializeTorrentSource(config.TorrentSourceConfig),
 		TorrentClient:     initializeTorrentClient(ctx, config.TorrentConfig),
@@ -180,63 +179,44 @@ func main() {
 			RenameTorrent:    coalesce.Coalesce(discoveryConfig.RenameTorrent, true),
 			RenameFormat:     renameScript,
 		},
-	})
-
-	healthMux := http.NewServeMux()
-	healthMux.HandleFunc("/healthz", func(w http.ResponseWriter, _ *http.Request) {
-		checkCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-
-		var failed []string
-		deps := c.Deps()
-		if _, err := deps.TorrentClient.List(checkCtx, nil); err != nil {
-			failed = append(failed, "torrentClient")
-		}
-		if _, err := deps.AnimeListSource.GetCurrentlyWatching(checkCtx); err != nil {
-			failed = append(failed, "animeList")
-		}
-		if _, err := deps.TorrentSource.Search(
-			checkCtx,
-			animelist.Entry{},
-			torrentsource.SearchOptions{},
-		); err != nil {
-			failed = append(failed, "torrentSource")
-		}
-
-		if len(failed) > 0 {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			fmt.Fprintf(w, "unhealthy: %s", strings.Join(failed, ", "))
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-	})
-	healthMux.HandleFunc("/readyz", func(w http.ResponseWriter, _ *http.Request) {
-		if err := c.LastRunErr(); err != nil {
-			w.WriteHeader(http.StatusServiceUnavailable)
-			fmt.Fprintf(w, "last scan failed: %s", err)
-			return
-		}
-		w.WriteHeader(http.StatusOK)
-	})
-	healthServer := &http.Server{
-		Addr:    coalesce.OrDefault(os.Getenv("HEALTH_ADDR"), ":8080"),
-		Handler: healthMux,
 	}
+
+	controller := discovery.New(deps)
+
+	healthServer := newHealthcheck(deps)
+
 	go func() {
 		log.Info().Msgf("health server listening on %s", healthServer.Addr)
 		if err := healthServer.ListenAndServe(); err != http.ErrServerClosed {
 			log.Error().Msgf("health server: %s", err)
 		}
 	}()
-	defer func() {
-		shutdownCtx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-		defer cancel()
-		healthServer.Shutdown(shutdownCtx)
-	}()
 
-	if err := c.Start(ctx); err != nil {
-		log.Error().Msgf("failed to shutdown: %s", err)
-	} else {
-		log.Info().Msg("shutdown successful")
+	controller.Start()
+
+	<-ctx.Done()
+
+	shutdownCtx, cancel := context.WithTimeout(context.Background(), 15*time.Second)
+	defer cancel()
+
+	errgrp, errctx := errgroup.WithContext(shutdownCtx)
+
+	errgrp.Go(func() error {
+		return healthServer.Shutdown(errctx)
+	})
+
+	errgrp.Go(func() error {
+		return controller.Shutdown(errctx)
+	})
+
+	if err := errgrp.Wait(); err != nil {
+		log.
+			Error().
+			Err(err).
+			Msg("could not shutdown gracefully")
+
+		return
 	}
+
+	log.Info().Msg("shutdown successful")
 }
