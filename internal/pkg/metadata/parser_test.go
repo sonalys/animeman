@@ -472,3 +472,11 @@ func TestMetadataCompareSeasonPackBeforeEpisodeRelease(t *testing.T) {
 		})
 	}
 }
+
+func Test_TitleParser(t *testing.T) {
+	input := "Ascendance.of.a.Bookworm.S04E23.Charlottes.Baptism.1080p.CR.WEB-DL.JPN.AAC2.0.H.264.MSubs-ToonsHub.mkv"
+	got := ParsePrimaryTitle(input)
+
+	want := "Ascendance of a Bookworm"
+	require.Equal(t, want, got)
+}

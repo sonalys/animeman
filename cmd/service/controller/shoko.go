@@ -5,12 +5,15 @@ import (
 	"errors"
 	"fmt"
 	"path"
+	"strings"
 	"time"
 
 	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
+	"github.com/sonalys/animeman/internal/pkg/stringutils"
 	"github.com/sonalys/animeman/internal/ports/shoko"
+	"github.com/sonalys/animeman/internal/ports/torrentsource"
 )
 
 func (c *Controller) startShokoRoutine(ctx context.Context, shutdown <-chan struct{}) {
@@ -65,11 +68,33 @@ func (c *Controller) triggerAutoMatch(
 outer:
 	for _, file := range files {
 		filename := path.Base(file.RelativePath)
-		metadata := metadata.Parse(filename, 1, nil)
+		meta := metadata.Parse(filename, 1, nil)
 
 		for _, entry := range list {
-			for _, title := range entry.Titles {
-				if metadata.PrimaryTitle != title {
+			cleanedTitles := sliceutils.Map(entry.Titles, func(title string) string {
+				primaryTitle := metadata.ParsePrimaryTitle(title)
+				// Some shows do not include subtitles, so we should prefix compare without them.
+				// Example:
+				// title="Ascendance of a Bookworm"
+				// titles=["Ascendance of a Bookworm: Adopted Daughter of an Archduke","Honzuki no Gekokujou: Ryoushu no Youjo","本好きの下剋上 領主の養女"]
+				mainTitle, _, _ := strings.CutLast(primaryTitle, ": ")
+				return mainTitle
+			})
+
+			matchTitlePrefix := func(title string) bool {
+				if stringutils.MatchPrefixFlexible(
+					meta.PrimaryTitle,
+					title,
+					torrentsource.IgnoreCharset,
+				) {
+					return true
+				}
+
+				return false
+			}
+
+			for _, title := range cleanedTitles {
+				if !matchTitlePrefix(title) {
 					continue
 				}
 
@@ -84,7 +109,7 @@ outer:
 				}
 
 				// Usually one file per episode, so lastEpisode is nota problem.
-				epID, err := c.dep.AnidbEpIDResolver.EpisodeID(ctx, anidbID, int(metadata.Tags.LastEpisode()))
+				epID, err := c.dep.AnidbEpIDResolver.EpisodeID(ctx, anidbID, int(meta.Tags.LastEpisode()))
 				if err != nil {
 					log.
 						Ctx(ctx).
