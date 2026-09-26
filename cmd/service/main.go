@@ -43,13 +43,16 @@ var (
 )
 
 func init() {
-	wd, _ := os.Getwd()
-
 	writer := zerolog.ConsoleWriter{
 		Out:        os.Stderr,
 		TimeFormat: time.RFC3339,
 		FormatCaller: func(i any) string {
-			return strings.TrimPrefix(fmt.Sprint(i), wd)
+			before, after, found := strings.CutLast(fmt.Sprint(i), "animeman/")
+			if !found {
+				return before
+			}
+
+			return after
 		},
 	}
 

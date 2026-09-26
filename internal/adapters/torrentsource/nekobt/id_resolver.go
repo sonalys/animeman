@@ -3,6 +3,7 @@ package nekobt
 import (
 	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"io"
 	"net/http"
@@ -41,7 +42,7 @@ func (api *API) resolveMediaID(ctx context.Context, externalID string) (*IDMap, 
 
 	resolvedIDMap, err := api.fetchMediaID(ctx, externalID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("fetching external ids: %w", err)
 	}
 
 	api.idMapCache[externalID] = resolvedIDMap
@@ -83,7 +84,7 @@ func (api *API) fetchMediaID(ctx context.Context, externalID string) (*IDMap, er
 	if resp.StatusCode == 404 {
 		// Not mapped on nekoBT: cache the miss so we don't re-query every
 		// scan, and fall back to the external id for the torznab search.
-		return nil, nil
+		return nil, errors.New("not found")
 	}
 	if resp.StatusCode != 200 {
 		return nil, fmt.Errorf("request failed: %s", string(body))

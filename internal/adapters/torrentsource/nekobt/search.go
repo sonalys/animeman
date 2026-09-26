@@ -142,21 +142,19 @@ func (api *API) buildQuery(
 	entry animelist.Entry,
 	opt torrentsource.SearchOptions,
 ) (*url.Values, error) {
-	q := url.Values{}
-
-	q.Set("t", "search")
-
 	externalID, err := externalMediaID(entry)
 	if err != nil {
 		return nil, fmt.Errorf("cross-correlating media id: %w", err)
 	}
 
 	externalIDs, err := api.resolveMediaID(ctx, externalID)
-	if err != nil {
-		return nil, fmt.Errorf("resolving external media id")
+	if err == nil {
+		externalID = externalIDs.MediaID
 	}
 
-	q.Set("media_id", externalIDs.MediaID)
+	var q url.Values
+	q.Set("t", "search")
+	q.Set("media_id", externalID)
 
 	// Quality tokens that are video types or codecs are sent as dedicated
 	// torznab params (video_type, video_codec) instead of `q` tokens.
