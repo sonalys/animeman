@@ -2,9 +2,11 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -41,11 +43,13 @@ var (
 )
 
 func init() {
+	wd, _ := os.Getwd()
+
 	writer := zerolog.ConsoleWriter{
 		Out:        os.Stderr,
 		TimeFormat: time.RFC3339,
 		FormatCaller: func(i any) string {
-			return i.(string)
+			return strings.TrimPrefix(fmt.Sprint(i), wd)
 		},
 	}
 
