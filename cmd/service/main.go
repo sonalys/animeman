@@ -6,6 +6,7 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
+	"strings"
 	"syscall"
 	"time"
 
@@ -46,7 +47,7 @@ func init() {
 		Out:        os.Stderr,
 		TimeFormat: time.RFC3339,
 		FormatCaller: func(i any) string {
-			return fmt.Sprint(i)
+			return strings.TrimPrefix(fmt.Sprint(i), "github.com/sonalys/animeman/")
 		},
 	}
 
