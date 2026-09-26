@@ -27,7 +27,7 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 			"Season - Episode",
 			"[Erai-raws] Hell Mode: Yarikomizuki no Gamer wa Hai Settei no Isekai de Musou suru S2 - 13 [1080p HIDIVE WEB-DL AVC AAC][E1C62DE2] {Tags:L0;V9;C1;A=ja;S=en;}",
 			[]Tag{
-				{Number: 2, Episodes: []EpisodeRange{{Start: 13, Raw: "13"}}},
+				{Number: 2, Episodes: []EpisodeRange{{Start: 13}}},
 			},
 		},
 		{"multiple seasons", "[G] Show S1 S2 S3", []Tag{{Number: 1}, {Number: 2}, {Number: 3}}},
@@ -46,7 +46,7 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 			"season range with E range",
 			"[G] Show S1-3 E1-12",
 			[]Tag{
-				{Number: 1, Episodes: []EpisodeRange{{Start: 1, End: 12, Raw: "E1-12"}}},
+				{Number: 1, Episodes: []EpisodeRange{{Start: 1, End: 12}}},
 				{Number: 2},
 				{Number: 3},
 			},
@@ -57,7 +57,7 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 			[]Tag{
 				{
 					Number:   2,
-					Episodes: []EpisodeRange{{Start: 1, Raw: "E1"}, {Start: 2, Raw: "E2"}},
+					Episodes: []EpisodeRange{{Start: 1}, {Start: 2}},
 				},
 			},
 		},
@@ -67,7 +67,7 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 			[]Tag{
 				{
 					Number:   2,
-					Episodes: []EpisodeRange{{Start: 1, Raw: "E1"}, {Start: 2, Raw: "E2"}},
+					Episodes: []EpisodeRange{{Start: 1}, {Start: 2}},
 				},
 			},
 		},
@@ -75,35 +75,35 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 			"half episode",
 			"[G] Show S1E6.5",
 			[]Tag{
-				{Number: 1, Episodes: []EpisodeRange{{Start: 6.5, Raw: "E6.5"}}},
+				{Number: 1, Episodes: []EpisodeRange{{Start: 6.5}}},
 			},
 		},
 		{
 			"half episode with title",
 			"[G] Show S1E6.5 Halfway There",
 			[]Tag{
-				{Number: 1, Episodes: []EpisodeRange{{Start: 6.5, Raw: "E6.5"}}},
+				{Number: 1, Episodes: []EpisodeRange{{Start: 6.5}}},
 			},
 		},
 		{
 			"roman season colon episode",
 			"[G] Show Season IV: 3",
 			[]Tag{
-				{Number: 4, Episodes: []EpisodeRange{{Start: 3, Raw: "3"}}},
+				{Number: 4, Episodes: []EpisodeRange{{Start: 3}}},
 			},
 		},
 		{
 			"roman season dash episode",
 			"[G] Show Season IV - 3",
 			[]Tag{
-				{Number: 4, Episodes: []EpisodeRange{{Start: 3, Raw: "3"}}},
+				{Number: 4, Episodes: []EpisodeRange{{Start: 3}}},
 			},
 		},
 		{
 			"bare episode range",
 			"[G] Show E1-12",
 			[]Tag{
-				{Number: 1, Episodes: []EpisodeRange{{Start: 1, End: 12, Raw: "E1-12"}}},
+				{Number: 1, Episodes: []EpisodeRange{{Start: 1, End: 12}}},
 			},
 		},
 		{
@@ -111,9 +111,9 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 			"[G] Show E1 E2 E3",
 			[]Tag{
 				{Number: 1, Episodes: []EpisodeRange{
-					{Start: 1, Raw: "E1"},
-					{Start: 2, Raw: "E2"},
-					{Start: 3, Raw: "E3"},
+					{Start: 1},
+					{Start: 2},
+					{Start: 3},
 				}},
 			},
 		},
@@ -121,21 +121,21 @@ func TestComplexSeasonAndEpisodeNotation(t *testing.T) {
 			"Season x Episode",
 			"[G] Show 2x12",
 			[]Tag{
-				{Number: 2, Episodes: []EpisodeRange{{Start: 12, Raw: "12"}}},
+				{Number: 2, Episodes: []EpisodeRange{{Start: 12}}},
 			},
 		},
 		{
 			"Season x Episode",
 			"[G] Show 2x1~12",
 			[]Tag{
-				{Number: 2, Episodes: []EpisodeRange{{Start: 1, End: 12, Raw: "1~12"}}},
+				{Number: 2, Episodes: []EpisodeRange{{Start: 1, End: 12}}},
 			},
 		},
 		{
 			"Season x Episode",
 			"[G] Show 2x1-12",
 			[]Tag{
-				{Number: 2, Episodes: []EpisodeRange{{Start: 1, End: 12, Raw: "1-12"}}},
+				{Number: 2, Episodes: []EpisodeRange{{Start: 1, End: 12}}},
 			},
 		},
 	}
@@ -192,7 +192,7 @@ type goldenResult struct {
 	AlternateTitles   []string          `json:"alternateTitles,omitempty"`
 	EpisodeTitle      string            `json:"episodeTitle,omitzero"`
 	Year              int               `json:"year,omitzero"`
-	Seasons           []Tag             `json:"seasons,omitempty"`
+	Tags              []Tag             `json:"seasons,omitempty"`
 	IsBatch           bool              `json:"isBatch,omitzero"`
 	IsComplete        bool              `json:"isComplete,omitzero"`
 	IsRemastered      bool              `json:"isRemastered,omitzero"`
@@ -209,7 +209,7 @@ type goldenResult struct {
 	AudioLanguages    []string          `json:"audioLanguages,omitempty"`
 	Encoders          []string          `json:"encoders,omitempty"`
 	ReleaseFlags      []string          `json:"releaseFlags,omitempty"`
-	Tags              []string          `json:"tags,omitempty"`
+	Labels            []string          `json:"tags,omitempty"`
 	Checksum          string            `json:"checksum,omitzero"`
 	TagFields         map[string]string `json:"tagFields,omitempty"`
 	Unknown           []string          `json:"unknown,omitempty"`
@@ -231,7 +231,7 @@ func projectResult(r Metadata) goldenResult {
 		AlternateTitles:   r.AlternateTitles,
 		EpisodeTitle:      r.EpisodeTitle,
 		Year:              r.Year,
-		Seasons:           r.Tags,
+		Tags:              r.Tags,
 		IsBatch:           r.IsBatch,
 		IsComplete:        r.IsComplete,
 		IsRemastered:      r.IsRemastered,
@@ -248,7 +248,7 @@ func projectResult(r Metadata) goldenResult {
 		AudioLanguages:    r.AudioLanguages,
 		Encoders:          r.Encoders,
 		ReleaseFlags:      r.ReleaseFlags,
-		Tags:              r.Labels,
+		Labels:            r.Labels,
 		Checksum:          r.Checksum,
 		TagFields:         r.TagFields,
 		Unknown:           r.Unknown,
@@ -282,10 +282,11 @@ func TestCorpusTitlesAgainstJSON(t *testing.T) {
 				r := Parse(tc.Input, 1, nil)
 				got := projectResult(r)
 
-				ss, _ := json.Marshal(got.Seasons)
-				t.Logf("\"seasons\": %s", ss)
-
 				assert.Empty(t, cmp.Diff(tc.Expected, got, cmpopts.EquateEmpty()))
+
+				primaryTitle := ParsePrimaryTitle(tc.Input)
+				assert.Equal(t, r.PrimaryTitle, primaryTitle)
+
 				// corpus.Cases[i].Expected = got
 			})
 		}
