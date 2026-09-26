@@ -4,6 +4,7 @@ import (
 	"slices"
 	"strings"
 
+	"github.com/rs/zerolog/log"
 	"github.com/sonalys/animeman/internal/pkg/metadata"
 	"github.com/sonalys/animeman/internal/pkg/sliceutils"
 	"github.com/sonalys/animeman/internal/pkg/stringutils"
@@ -46,6 +47,12 @@ func matchSources(
 
 			ignoreCounter("releaseGroupWhitelist")
 
+			log.
+				Trace().
+				Strs("sourceWhitelist", sources).
+				Str("source", torrent.Metadata.Group).
+				Msg("torrent source is not whitelisted")
+
 			return false
 		}
 	}
@@ -56,6 +63,12 @@ func minSeeders(minSeeders int) func(ignoreCounter func(string)) func(torrentsou
 		return func(torrent torrentsource.Torrent) bool {
 			if torrent.Seeders < minSeeders {
 				ignoreCounter("minSeeders")
+
+				log.
+					Trace().
+					Int("seeders", torrent.Seeders).
+					Int("minSeeders", minSeeders).
+					Msg("torrent doesn't have enough seeders")
 
 				return false
 			}
@@ -74,6 +87,13 @@ func matchStartDate(
 			if !entry.StartDate.IsZero() &&
 				torrent.PublishedAt.Before(entry.StartDate.AddDate(0, 0, -2)) {
 				ignoreCounter("startDateMismatch")
+
+				log.
+					Trace().
+					Time("publishedAt", torrent.PublishedAt).
+					Time("startDate", entry.StartDate).
+					Msg("torrent was published before show airing date")
+
 				return false
 			}
 
@@ -94,6 +114,13 @@ func matchEpisodeCount(
 			if len(sources) > 1 && entry.NumEpisodes != 0 {
 				if torrent.Metadata.Tags.LastEpisode() > float32(entry.NumEpisodes) {
 					ignoreCounter("epMismatch")
+
+					log.
+						Trace().
+						Float32("episode", torrent.Metadata.Tags.LastEpisode()).
+						Int("totalEpisodes", entry.NumEpisodes).
+						Msg("torrent detected episode tag is above the season total episode count")
+
 					return false
 				}
 			}
@@ -119,6 +146,12 @@ func newerEpisode(
 
 			ignoreCounter("oldEpisode")
 
+			log.
+				Trace().
+				Stringer("latestTag", latestTag).
+				Stringer("tag", torrent.Metadata.Tags).
+				Msg("torrent is older than latestTag")
+
 			return false
 		}
 	}
@@ -142,6 +175,12 @@ func matchTitlePrefix(
 					return true
 				}
 			}
+
+			log.
+				Trace().
+				Strs("titles", cleanedTitles).
+				Str("title", torrent.Metadata.PrimaryTitle).
+				Msg("torrent primary title did not match any of the entry titles")
 
 			ignoreCounter("titlePrefix")
 
