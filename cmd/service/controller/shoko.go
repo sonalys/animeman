@@ -106,6 +106,8 @@ outer:
 						Str("path", file.RelativePath).
 						Err(err).
 						Msg("could not cross-correlate anilist-id to anidb-id")
+
+					lastTimestamp = file.CreatedAt
 					continue outer
 				}
 
@@ -118,6 +120,8 @@ outer:
 						Str("path", file.RelativePath).
 						Err(err).
 						Msg("could not cross-correlate anilist episode id to anidb-id")
+
+					lastTimestamp = file.CreatedAt
 					continue outer
 				}
 
