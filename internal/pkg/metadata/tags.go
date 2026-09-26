@@ -3,6 +3,7 @@ package metadata
 import (
 	"fmt"
 	"slices"
+	"strconv"
 	"strings"
 )
 
@@ -20,7 +21,7 @@ type (
 	}
 )
 
-func (e EpisodeRange) compare(other EpisodeRange) int {
+func (e EpisodeRange) Compare(other EpisodeRange) int {
 	maxA := max(e.Start, e.End)
 	maxB := max(other.Start, other.End)
 
@@ -37,12 +38,12 @@ func compareEpisodes(a, b []EpisodeRange) int {
 	aa := append([]EpisodeRange(nil), a...)
 	bb := append([]EpisodeRange(nil), b...)
 
-	slices.SortFunc(aa, func(x, y EpisodeRange) int { return y.compare(x) })
-	slices.SortFunc(bb, func(x, y EpisodeRange) int { return y.compare(x) })
+	slices.SortFunc(aa, func(x, y EpisodeRange) int { return y.Compare(x) })
+	slices.SortFunc(bb, func(x, y EpisodeRange) int { return y.Compare(x) })
 
 	n := min(len(bb), len(aa))
 	for i := range n {
-		if c := aa[i].compare(bb[i]); c != 0 {
+		if c := aa[i].Compare(bb[i]); c != 0 {
 			return c
 		}
 	}
@@ -76,25 +77,10 @@ func episodeBounds(e EpisodeRange) (float32, float32) {
 }
 
 func (s Tags) String() string {
-	var parts []string
+	parts := make([]string, 0, len(s))
 
 	for _, season := range s {
-		for _, episode := range season.Episodes {
-			if episode.End != 0 {
-				parts = append(parts,
-					fmt.Sprintf("S%dE%g-E%g", season.Number, episode.Start, episode.End),
-				)
-			} else {
-				parts = append(parts,
-					fmt.Sprintf("S%dE%g", season.Number, episode.Start),
-				)
-			}
-		}
-
-		// A season without explicit episodes is a season pack.
-		if len(season.Episodes) == 0 {
-			parts = append(parts, fmt.Sprintf("S%d", season.Number))
-		}
+		parts = append(parts, season.String())
 	}
 
 	return strings.Join(parts, " ")
@@ -106,7 +92,7 @@ func (t Tag) String() string {
 	for _, seasonTag := range t.Episodes {
 		if seasonTag.End != 0 {
 			parts = append(parts,
-				fmt.Sprintf("S%dE%g-E%g", t.Number, seasonTag.Start, seasonTag.End),
+				fmt.Sprintf("S%dE%g-%g", t.Number, seasonTag.Start, seasonTag.End),
 			)
 		} else {
 			parts = append(parts,
@@ -227,8 +213,35 @@ func (tags *Tags) AppendSeason(number int) *Tag {
 			return &(*tags)[i]
 		}
 	}
+
 	*tags = append(*tags, Tag{Number: number})
+	*tags = sortSeasons(*tags)
+
 	return &(*tags)[len(*tags)-1]
+}
+
+func sortSeasons(tags Tags) Tags {
+	slices.SortFunc(tags, func(a, b Tag) int {
+		if a.Number < b.Number {
+			return -1
+		}
+		if a.Number > b.Number {
+			return 1
+		}
+		return 0
+	})
+
+	out := tags[:0]
+	for _, season := range tags {
+		if len(out) > 0 && out[len(out)-1].Number == season.Number {
+			out[len(out)-1].Episodes = append(out[len(out)-1].Episodes, season.Episodes...)
+			continue
+		}
+		out = append(out, season)
+	}
+	tags = out
+
+	return tags
 }
 
 func findSeason(seasons []Tag, number int) *Tag {
@@ -270,6 +283,36 @@ func highestTags(tags []Tag) []Tag {
 	}
 
 	return []Tag{highest}
+}
+
+func appendEpisode(tags *Tags, season, fallbackSeason int, start, end string) {
+	if season <= 0 {
+		season = fallbackSeason
+	}
+	if season <= 0 {
+		season = 1
+	}
+
+	s := tags.AppendSeason(season)
+
+	startValue, _ := strconv.ParseFloat(start, 32)
+	endValue := float32(0)
+	if end != "" {
+		value, _ := strconv.ParseFloat(end, 32)
+		endValue = float32(value)
+	}
+
+	epRange := EpisodeRange{
+		Start: float32(startValue),
+		End:   endValue,
+	}
+
+	if !containsEpisode(s.Episodes, epRange) {
+		s.Episodes = append(s.Episodes, EpisodeRange{
+			Start: float32(startValue),
+			End:   endValue,
+		})
+	}
 }
 
 func normalizeTags(tags any) []Tag {

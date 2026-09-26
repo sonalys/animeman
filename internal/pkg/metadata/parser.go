@@ -2,7 +2,6 @@ package metadata
 
 import (
 	"regexp"
-	"slices"
 	"strconv"
 	"strings"
 
@@ -290,29 +289,6 @@ func maskBracketContent(s string) string {
 	return string(b)
 }
 
-func appendEpisode(tags *Tags, season, fallbackSeason int, start, end string) {
-	if season <= 0 {
-		season = fallbackSeason
-	}
-	if season <= 0 {
-		season = 1
-	}
-
-	s := tags.AppendSeason(season)
-
-	startValue, _ := strconv.ParseFloat(start, 32)
-	endValue := float32(0)
-	if end != "" {
-		value, _ := strconv.ParseFloat(end, 32)
-		endValue = float32(value)
-	}
-
-	s.Episodes = append(s.Episodes, EpisodeRange{
-		Start: float32(startValue),
-		End:   endValue,
-	})
-}
-
 func hasEpisodes(tags Tags) bool {
 	for _, season := range tags {
 		if len(season.Episodes) > 0 {
@@ -339,28 +315,6 @@ func seasonBefore(pos int, seasonMatches [][]int, s string) int {
 	}
 
 	return bestSeason
-}
-
-func sortSeasons(tags Tags) {
-	slices.SortFunc(tags, func(a, b Tag) int {
-		if a.Number < b.Number {
-			return -1
-		}
-		if a.Number > b.Number {
-			return 1
-		}
-		return 0
-	})
-
-	out := tags[:0]
-	for _, season := range tags {
-		if len(out) > 0 && out[len(out)-1].Number == season.Number {
-			out[len(out)-1].Episodes = append(out[len(out)-1].Episodes, season.Episodes...)
-			continue
-		}
-		out = append(out, season)
-	}
-	tags = out
 }
 
 func dedupeSeasonEpisodes(tags Tags) {
@@ -576,7 +530,6 @@ func parseTags(s string, fallbackSeason int) Tags {
 		appendEpisode(&tags, season, fallbackSeason, start, "")
 	}
 
-	sortSeasons(tags)
 	dedupeSeasonEpisodes(tags)
 
 	return tags
