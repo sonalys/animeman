@@ -5,7 +5,7 @@ run:
 	go run cmd/service/main.go
 
 build:
-	CGO_ENABLED=0 go build -o ./bin/animeman ./cmd/service/main.go
+	CGO_ENABLED=0 go build -trimpath -o ./bin/animeman ./cmd/service/main.go
 
 image:
 	docker build -t ${IMG}:latest -f builders/Dockerfile.linux.$(ARCHITECTURE) .

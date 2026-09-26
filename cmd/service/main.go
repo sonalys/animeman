@@ -6,7 +6,6 @@ import (
 	"net/http"
 	"os"
 	"os/signal"
-	"strings"
 	"syscall"
 	"time"
 
@@ -47,12 +46,7 @@ func init() {
 		Out:        os.Stderr,
 		TimeFormat: time.RFC3339,
 		FormatCaller: func(i any) string {
-			before, after, found := strings.CutLast(fmt.Sprint(i), "animeman/")
-			if !found {
-				return before
-			}
-
-			return after
+			return fmt.Sprint(i)
 		},
 	}
 

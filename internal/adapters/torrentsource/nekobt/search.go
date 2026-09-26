@@ -152,7 +152,7 @@ func (api *API) buildQuery(
 		externalID = externalIDs.MediaID
 	}
 
-	var q url.Values
+	q := url.Values{}
 	q.Set("t", "search")
 	q.Set("media_id", externalID)
 
