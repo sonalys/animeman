@@ -44,6 +44,9 @@ func init() {
 	writer := zerolog.ConsoleWriter{
 		Out:        os.Stderr,
 		TimeFormat: time.RFC3339,
+		FormatCaller: func(i any) string {
+			return i.(string)
+		},
 	}
 
 	log.Logger = log.

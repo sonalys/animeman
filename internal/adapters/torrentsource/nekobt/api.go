@@ -32,7 +32,7 @@ type (
 		// mediaIDs caches resolved nekoBT internal media ids, keyed by the
 		// external identifier used for the lookup (e.g. `anilist-20594`).
 		mediaIDsMu sync.Mutex
-		idMap      map[string]*IDMap
+		idMapCache      map[string]*IDMap
 	}
 )
 
@@ -45,6 +45,6 @@ func New(client *http.Client, c Config) *API {
 	return &API{
 		config: c,
 		client: client,
-		idMap:  make(map[string]*IDMap),
+		idMapCache:  make(map[string]*IDMap),
 	}
 }

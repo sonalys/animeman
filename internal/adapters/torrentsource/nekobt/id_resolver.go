@@ -32,22 +32,21 @@ func (api *API) FromAnilist(ctx context.Context, anilistID int) (int, error) {
 // https://wiki.nekobt.to/technical-details/json/#resolve-external-media-id
 func (api *API) resolveMediaID(ctx context.Context, externalID string) (*IDMap, error) {
 	api.mediaIDsMu.Lock()
-	idMap, ok := api.idMap[externalID]
-	api.mediaIDsMu.Unlock()
+	defer api.mediaIDsMu.Unlock()
+
+	idMap, ok := api.idMapCache[externalID]
 	if ok {
 		return idMap, nil
 	}
 
-	externalIDs, err := api.fetchMediaID(ctx, externalID)
+	resolvedIDMap, err := api.fetchMediaID(ctx, externalID)
 	if err != nil {
 		return nil, err
 	}
 
-	api.mediaIDsMu.Lock()
-	api.idMap[externalID] = idMap
-	api.mediaIDsMu.Unlock()
+	api.idMapCache[externalID] = resolvedIDMap
 
-	return externalIDs, nil
+	return resolvedIDMap, nil
 }
 
 // externalMediaID returns the nekoBT external identifier for the entry,
