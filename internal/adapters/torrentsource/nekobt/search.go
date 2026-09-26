@@ -148,15 +148,15 @@ func (api *API) buildQuery(
 
 	externalID, err := externalMediaID(entry)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("cross-correlating media id: %w", err)
 	}
 
 	externalIDs, err := api.resolveMediaID(ctx, externalID)
 	if err != nil {
-		return nil, err
+		return nil, fmt.Errorf("resolving external media id")
 	}
 
-	q.Set("media_id", externalIDs["media_id"])
+	q.Set("media_id", externalIDs.MediaID)
 
 	// Quality tokens that are video types or codecs are sent as dedicated
 	// torznab params (video_type, video_codec) instead of `q` tokens.

@@ -3,46 +3,39 @@ package nekobt
 import (
 	"context"
 	"encoding/json"
-	"errors"
 	"fmt"
 	"io"
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/sonalys/animeman/internal/pkg/must"
 	"github.com/sonalys/animeman/internal/ports/animelist"
 )
 
+type IDMap struct {
+	MediaID   string `json:"media_id"`
+	AnilistID int    `json:"anilist_id"`
+	AnidbID   int    `json:"anidb_id"`
+}
+
 func (api *API) FromAnilist(ctx context.Context, anilistID int) (int, error) {
 	externalIDs, err := api.resolveMediaID(ctx, fmt.Sprintf("anilist-%d", anilistID))
 	if err != nil {
 		return 0, nil
 	}
-
-	anidbIDStr, ok := externalIDs["anidb"]
-	if !ok {
-		return -1, errors.New("not found")
-	}
-
-	anidbID, err := strconv.ParseInt(anidbIDStr, 10, 64)
-	if err != nil {
-		return -1, fmt.Errorf("malformed anidb id: %w", err)
-	}
-
-	return int(anidbID), nil
+	return externalIDs.AnidbID, nil
 }
 
 // resolveMediaID returns the nekoBT internal media id for the entry, e.g.
 // `s123` or `m456`. It resolves the entry's external id (anilist/mal) through
 // the JSON API `/media/resolve` endpoint, caching results per external id.
 // https://wiki.nekobt.to/technical-details/json/#resolve-external-media-id
-func (api *API) resolveMediaID(ctx context.Context, externalID string) (map[string]string, error) {
+func (api *API) resolveMediaID(ctx context.Context, externalID string) (*IDMap, error) {
 	api.mediaIDsMu.Lock()
-	mediaID, ok := api.mediaIDs[externalID]
+	idMap, ok := api.idMap[externalID]
 	api.mediaIDsMu.Unlock()
 	if ok {
-		return mediaID, nil
+		return idMap, nil
 	}
 
 	externalIDs, err := api.fetchMediaID(ctx, externalID)
@@ -50,23 +43,8 @@ func (api *API) resolveMediaID(ctx context.Context, externalID string) (map[stri
 		return nil, err
 	}
 
-	if len(externalIDs) == 0 {
-		// Unmapped on nekoBT: search by the external id instead.
-		source, id, found := strings.Cut(externalID, "-")
-		if !found {
-			return nil, fmt.Errorf("malformed externalID: %v", externalID)
-		}
-
-		return map[string]string{
-			source: id,
-		}, nil
-	}
-
 	api.mediaIDsMu.Lock()
-	// Map for each combination of ids the final result.
-	for key, value := range externalIDs {
-		api.mediaIDs[fmt.Sprintf("%s-%s", key, value)] = externalIDs
-	}
+	api.idMap[externalID] = idMap
 	api.mediaIDsMu.Unlock()
 
 	return externalIDs, nil
@@ -88,7 +66,7 @@ func externalMediaID(entry animelist.Entry) (string, error) {
 // fetchMediaID resolves an external identifier to the nekoBT internal media
 // id via the JSON API. The response is either a plain string id or an object
 // with an `id` field, depending on the resolved media type.
-func (api *API) fetchMediaID(ctx context.Context, externalID string) (map[string]string, error) {
+func (api *API) fetchMediaID(ctx context.Context, externalID string) (*IDMap, error) {
 	req := must.Must(
 		http.NewRequestWithContext(ctx, http.MethodGet, JSON_URL+"/media/resolve", nil),
 	)
@@ -113,12 +91,12 @@ func (api *API) fetchMediaID(ctx context.Context, externalID string) (map[string
 	}
 
 	var resolved struct {
-		Data map[string]string `json:"data"`
+		Data IDMap `json:"data"`
 	}
 
 	if err := json.Unmarshal(body, &resolved); err != nil {
 		return nil, fmt.Errorf("reading response: %w", err)
 	}
 
-	return resolved.Data, nil
+	return &resolved.Data, nil
 }

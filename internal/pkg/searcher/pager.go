@@ -2,6 +2,7 @@ package searcher
 
 import (
 	"context"
+	"fmt"
 	"slices"
 
 	"github.com/rs/zerolog/log"
@@ -62,7 +63,7 @@ func (p Searcher) Search(
 	for {
 		items, err := p.fetch(ctx, offset)
 		if err != nil {
-			return nil, err
+			return nil, fmt.Errorf("fetching page: %w", err)
 		}
 
 		log.
