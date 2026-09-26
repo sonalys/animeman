@@ -104,6 +104,7 @@ outer:
 						Ctx(ctx).
 						Error().
 						Str("path", file.RelativePath).
+						Err(err).
 						Msg("could not cross-correlate anilist-id to anidb-id")
 					continue outer
 				}
@@ -115,6 +116,7 @@ outer:
 						Ctx(ctx).
 						Error().
 						Str("path", file.RelativePath).
+						Err(err).
 						Msg("could not cross-correlate anilist episode id to anidb-id")
 					continue outer
 				}
