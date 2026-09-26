@@ -128,8 +128,7 @@ func matchTitlePrefix(
 	titles []string,
 ) func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
 	cleanedTitles := sliceutils.Map(titles, func(title string) string {
-		metadata := metadata.Parse(title, 1, nil)
-		return metadata.PrimaryTitle
+		return metadata.ParsePrimaryTitle(title)
 	})
 
 	return func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
