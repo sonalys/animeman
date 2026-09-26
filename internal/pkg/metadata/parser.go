@@ -39,7 +39,7 @@ type Metadata struct {
 
 const (
 	seasonNumberPattern  = `\d{1,3}`
-	episodeNumberPattern = `\d{1,4}`
+	episodeNumberPattern = `\d{1,4}(?:\.\d+)?`
 	seasonValuePattern   = `(?:` + seasonNumberPattern + `|[IVXLCDM]+)`
 	resolutionPattern    = `(?:2160|1440|1080|720|540|480|360|240)`
 	videoCodecPattern    = `(?:AV1|HEVC|H\.265|H265|AVC|H\.264|H264|x265|x264)`
@@ -51,13 +51,13 @@ var (
 	// seasonEpRE matches explicit season + episode notation.
 	// Examples: S1E1, S01E12, S1E1-E24, S2E3~E12, S1E1E2E3
 	seasonEpRE = regexp.MustCompile(
-		`(?i)\bS(` + seasonNumberPattern + `)\s*E(\d+(?:\.\d+)?)(?:\s*[-~]\s*(?:E)?(\d+(?:\.\d+)?))?(?:E\d+(?:\.\d+)?)*\b`,
+		`(?i)\bS(` + seasonNumberPattern + `)\s*E(` + episodeNumberPattern + `)(?:\s*[-~]\s*(?:E)?(` + episodeNumberPattern + `))?(?:E` + episodeNumberPattern + `)*\b`,
 	)
 
 	// seasonRangeRE matches a season range.
-	// Examples: S1-S2, S1--S2, S1~S2, S1-2
+	// Examples: S1-S2, S1~S2, S1-2
 	seasonRangeRE = regexp.MustCompile(
-		`(?i)\bS(` + seasonNumberPattern + `)\s*(?:-{1,2}|~{1})\s*S?(` + seasonNumberPattern + `)\b`,
+		`(?i)\bS(` + seasonNumberPattern + `)\s*(?:-|~)\s*S?(` + seasonNumberPattern + `)\b`,
 	)
 
 	// seasonOnlyRE matches a standalone season tag.
@@ -67,17 +67,17 @@ var (
 	// episodeRE matches explicit episode notation.
 	// Examples: E1, E12, E12-E24, E12~E24
 	episodeRE = regexp.MustCompile(
-		`(?i)E(\d+(?:\.\d+)?)(?:\s*(?:-|~)\s*E?(\d+(?:\.\d+)?))?`,
+		`(?i)E(` + episodeNumberPattern + `)(?:\s*(?:-|~)\s*E?(` + episodeNumberPattern + `))?`,
 	)
 
 	// numericSeasonEpisodeRE matches numeric season-episode notation.
-	// Examples: 1-12, 01-12, 2-5
+	// Examples: 1-12, 01-12, 2-5, 1-12.5
 	numericSeasonEpisodeRE = regexp.MustCompile(
 		`(?i)\b([1-9]\d?)\s*-\s*(` + episodeNumberPattern + `)\b`,
 	)
 
 	// seasonXEpisodeRE matches season x episode notation, including ranges.
-	// Examples: 1x12, 01x12, 1×12, 2x5-8, 2x5~8
+	// Examples: 1x12, 01x12, 1×12, 2x5-8, 2x5~8, 2x5.5
 	seasonXEpisodeRE = regexp.MustCompile(
 		`(?i)\b([1-9]\d?)\s*[x×]\s*(` + episodeNumberPattern + `)(?:\s*[-~]\s*(` + episodeNumberPattern + `))?\b`,
 	)
@@ -107,7 +107,7 @@ var (
 	// bareTrailingEpisodeRE matches a bare episode number after a dash.
 	// Examples: "Title - 12", "Title - 1", "Title - 12.5"
 	bareTrailingEpisodeRE = regexp.MustCompile(
-		`(?i)(?:^|\s)-\s*(` + episodeNumberPattern + `(?:\.\d+)?)(?:\s|$)`,
+		`(?i)(?:^|\s)-\s*(` + episodeNumberPattern + `)(?:\s|$)`,
 	)
 
 	// yearRE matches a four-digit year beginning with 19 or 20.
@@ -115,7 +115,7 @@ var (
 	yearRE = regexp.MustCompile(`\b(?:19|20)\d{2}\b`)
 
 	// epRangeRE matches a bare episode range.
-	// Examples: 01-24, 1-12, 0501~600, 01 ~ 74
+	// Examples: 01-24, 1-12, 0501~600, 01 ~ 74, 1-12.5
 	epRangeRE = regexp.MustCompile(
 		`(?i)\b(` + episodeNumberPattern + `)\s*(?:-|~)\s*(` + episodeNumberPattern + `)\b`,
 	)
@@ -144,28 +144,60 @@ var (
 )
 
 var (
-	filenameGroupRE               = regexp.MustCompile(`(?i)-([A-Za-z][A-Za-z0-9_-]*)$`)
+	filenameGroupRE = regexp.MustCompile(`(?i)-([A-Za-z][A-Za-z0-9_-]*)$`)
+
 	seasonEpisodeRangeExceptionRE = regexp.MustCompile(
 		`(?i)^S` + seasonNumberPattern + `\s+-\s+` + episodeNumberPattern + `$`,
 	)
-	bitDepthRE             = regexp.MustCompile(`(?i)\b(?:8|10|12)-?bit\b`)
-	encoderRE              = regexp.MustCompile(`(?i)\b(?:NVENC|Veryslow)\b`)
-	tagResidueRE           = regexp.MustCompile(`\s+\{Tags:.*$`)
-	releaseSuffixRE        = regexp.MustCompile(`(?i)\s+-[A-Za-z0-9]+\s*$`)
+
+	bitDepthRE = regexp.MustCompile(`(?i)\b(?:8|10|12)-?bit\b`)
+
+	encoderRE = regexp.MustCompile(`(?i)\b(?:NVENC|Veryslow)\b`)
+
+	tagResidueRE = regexp.MustCompile(`\s+\{Tags:.*$`)
+
+	releaseSuffixRE = regexp.MustCompile(`(?i)\s+-[A-Za-z0-9]+\s*$`)
+
 	leadingEpisodeNumberRE = regexp.MustCompile(`^` + episodeNumberPattern + `\b`)
-	multipleSpaceRE        = regexp.MustCompile(`\s{2,}`)
-	filenameExtensionRE    = regexp.MustCompile(
+
+	multipleSpaceRE = regexp.MustCompile(`\s{2,}`)
+
+	filenameExtensionRE = regexp.MustCompile(
 		`(?i)\.(?:mkv|mp4|avi|mov|webm|m4v|ts|m2ts|wmv|flac|mp3|torrent)$`,
 	)
+
 	remasteredSuffixRE = regexp.MustCompile(`(?i)\s+Remastered$`)
+
 	resolutionSuffixRE = regexp.MustCompile(`(?i)\s+` + resolutionPattern + `p\b.*$`)
-	tagFieldRE         = regexp.MustCompile(`^([A-Za-z]+)(.+)$`)
-	startsTechRE       = regexp.MustCompile(
-		`(?i)^(?:` + resolutionPattern + `p\b|WEB(?:-DL|Rip)?\b|CR\b|AMZN\b|HIDI(?:VE)?\b|IQIYI\b|BILI\b|LIV\b|YTB\b|BD\b|BluRay\b|` + videoCodecPattern + `\b|` + techAudioPattern + `\b)`,
+
+	tagFieldRE = regexp.MustCompile(`^([A-Za-z]+)(.+)$`)
+
+	startsTechRE = regexp.MustCompile(
+		`(?i)^(?:` +
+			resolutionPattern + `p\b|` +
+			`WEB(?:-DL|Rip)?\b|` +
+			`CR\b|` +
+			`AMZN\b|` +
+			`HIDI(?:VE)?\b|` +
+			`IQIYI\b|` +
+			`BILI\b|` +
+			`LIV\b|` +
+			`YTB\b|` +
+			`BD\b|` +
+			`BluRay\b|` +
+			videoCodecPattern + `\b|` +
+			techAudioPattern + `\b)`,
 	)
-	startsEpisodeRE          = regexp.MustCompile(`(?i)^(?:E\d|\.\d)`)
-	episodeTitleResolutionRE = regexp.MustCompile(`(?i)\s+\b` + resolutionPattern + `p\b`)
-	episodeTitleSourceRE     = regexp.MustCompile(`(?i)\s+` + sourcePattern + `\b`)
+
+	startsEpisodeRE = regexp.MustCompile(`(?i)^(?:E\d|\.\d)`)
+
+	episodeTitleResolutionRE = regexp.MustCompile(
+		`(?i)\s+\b` + resolutionPattern + `p\b`,
+	)
+
+	episodeTitleSourceRE = regexp.MustCompile(
+		`(?i)\s+` + sourcePattern + `\b`,
+	)
 )
 
 // Parse extracts metadata from a release name.
