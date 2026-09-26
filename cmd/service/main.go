@@ -41,10 +41,16 @@ var (
 )
 
 func init() {
-	log.Logger = log.Output(zerolog.ConsoleWriter{
+	writer := zerolog.ConsoleWriter{
 		Out:        os.Stderr,
 		TimeFormat: time.RFC3339,
-	})
+	}
+
+	log.Logger = log.
+		Output(writer).
+		With().
+		Caller().
+		Logger()
 
 	zerolog.DefaultContextLogger = &log.Logger
 	zerolog.SetGlobalLevel(zerolog.InfoLevel)

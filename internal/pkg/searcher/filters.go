@@ -161,7 +161,13 @@ func matchTitlePrefix(
 	titles []string,
 ) func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
 	cleanedTitles := sliceutils.Map(titles, func(title string) string {
-		return metadata.ParsePrimaryTitle(title)
+		primaryTitle := metadata.ParsePrimaryTitle(title)
+		// Some shows do not include subtitles, so we should prefix compare without them.
+		// Example:
+		// title="Ascendance of a Bookworm"
+		// titles=["Ascendance of a Bookworm: Adopted Daughter of an Archduke","Honzuki no Gekokujou: Ryoushu no Youjo","本好きの下剋上 領主の養女"]
+		mainTitle, _, _ := strings.CutLast(primaryTitle, ": ")
+		return mainTitle
 	})
 
 	return func(ignoreCounter func(string)) func(torrentsource.Torrent) bool {
