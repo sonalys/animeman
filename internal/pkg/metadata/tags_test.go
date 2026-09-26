@@ -34,7 +34,7 @@ func TestTags_String(t *testing.T) {
 		},
 		{
 			name:  "multiple seasons",
-			input: "S2E1~13",
+			input: "S2E01~13",
 			want:  "S2E1-13",
 		},
 	}
